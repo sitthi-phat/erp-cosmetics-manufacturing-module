@@ -1,20 +1,33 @@
 /**
  * Q1 — Unit: invoice versioning rules (ECP-037 AC1/AC3/AC4, ADR-006 rev.2 §2).
- * Pure rule checks — DB-level chain integrity (parent_invoice_id, Superseded transition)
- * is verified end-to-end in tests/integration/invoiceVersioningReconciliation.spec.ts.
  *
- * ASSUMED API (`src/backend/modules/invoice/versioningRules.ts`):
- *   assertCanRevise(invoice: {version:number; isLatestInChain:boolean}) => void | throws
- *   assertHasLines(lines: unknown[]) => void | throws
- *   nextVersion(currentVersion: number) => number
+ * RECONCILED 2026-07-07 (QA verify phase): there is no standalone `invoice/versioningRules.ts`
+ * module. Engineer implemented "is this the latest version in the chain" / "does a revision have
+ * at least 1 line" / "next version number" directly inside `InvoiceService.reviseInvoice`
+ * (src/backend/modules/invoice/invoice.service.ts), which needs a repository round-trip
+ * (`findLatestByPoId`) to know whether `target` is the latest - i.e. it is not a pure function
+ * of the invoice row alone, so it cannot be unit-tested without a fake `InvoiceRepository`.
+ *
+ * Every scenario below is ALREADY covered end-to-end, against the real `InvoiceService`, by
+ * Engineer's own colocated `src/backend/modules/invoice/invoice.service.test.ts` (part of the
+ * 123/123 passing suite QA re-ran during verify phase - see verify-report.md):
+ *   - "creates v2, links parent, and supersedes v1 (AC1)"
+ *   - "blocks revising a version that is not the latest, points to the latest (AC3)"
+ *   - "blocks a revision with zero lines (AC4)"
+ *   - "flags overpaid when a revise drops the total below already-paid amount (§5.5)" <- BUT see
+ *     DEF-01 in docs/test-plans/erp-core-prototype/defects.md: that Engineer test only asserts
+ *     `overpaid === true` and never asserts `status !== "Paid"`, which is why the critical
+ *     mislabeling bug (confirmed empirically via tests/unit/paymentOutstanding.spec.ts in this
+ *     verify phase) slipped through Engineer's own suite too.
+ *
+ * This file is left as `describe.skip` (not deleted, not force-compiled against a fake API)
+ * pending a QA rewrite against the real async `InvoiceService` + a fake `InvoiceRepository` -
+ * tracked as reconciliation debt, NOT a blocking defect on its own, per test-plan.md §0.
  */
-import {
-  assertCanRevise,
-  assertHasLines,
-  nextVersion,
-} from "../../src/backend/modules/invoice/versioningRules"; // TODO(Engineer): confirm path
-
-describe("Invoice versioning rules (ECP-037)", () => {
+describe.skip("Invoice versioning rules (ECP-037) — superseded by invoice.service.test.ts, needs async rewrite", () => {
+  const assertCanRevise = (..._args: unknown[]) => undefined as any;
+  const assertHasLines = (..._args: unknown[]) => undefined as any;
+  const nextVersion = (v: number) => v + 1;
   test("TC-037-AC3: revising a non-latest version in the chain is rejected", () => {
     expect(() => assertCanRevise({ version: 1, isLatestInChain: false })).toThrow(/version|เวอร์ชัน/i);
   });

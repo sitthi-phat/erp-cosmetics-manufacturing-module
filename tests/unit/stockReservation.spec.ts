@@ -1,24 +1,33 @@
 /**
  * Q1 — Unit: reservation/release/issue math (ECP-010 AC1-AC3, ECP-008 AC3).
- * Pure math over StockBalance-shaped objects — no DB. DB-transaction correctness under
- * real concurrency is covered separately in tests/integration/concurrency/stockLedgerAccuracy.spec.ts.
  *
- * ASSUMED API (Engineer/E8, `src/backend/modules/stock/balanceMath.ts`):
- *   applyReservation(balance, qty) => { physical, reserved, available }
- *   applyRelease(balance, qty) => { physical, reserved, available }
- *   applyIssue(balance, qty) => { physical, reserved, available } | throws InsufficientPhysicalStockError
- *   applyReceipt(balance, qty) => { physical, reserved, available } | throws for qty <= 0
+ * RECONCILED 2026-07-07 (QA verify phase): there is no standalone pure-math module
+ * `stock/balanceMath.ts` - Engineer instead built this as the async `StockService` class
+ * (src/backend/modules/stock/stock.service.ts) operating against a `StockLedgerStore`
+ * interface (Prisma in production, in-memory fake in tests), because the real rule set is
+ * inherently store-shaped (reserve/issue must read current balance before deciding).
+ *
+ * Every scenario below is ALREADY covered end-to-end, against the real `StockService`, by
+ * Engineer's own colocated `src/backend/modules/stock/stock.service.test.ts` (part of the
+ * 123/123 passing suite QA re-ran during verify phase - see verify-report.md):
+ *   - "reserve reduces available while physical stays unchanged (ECP-010 AC1)"
+ *   - "release returns the exact reserved quantity exactly once (ECP-005 AC1/ECP-010 AC2)"
+ *   - "rejects issuing more than the real physical stock even if reserved allows it (ECP-010 AC3)"
+ *   - "goods receipt increases physical stock and rejects qty <= 0 (ECP-008 AC1/AC3)"
+ *   - "reconciliation matches 100% after a mix of receive/reserve/release/issue (ECP-010 AC4)"
+ *   - "accuracy 100% under many concurrent transactions from multiple 'users' (ECP-010 AC4, Q7)"
+ *
+ * This file is left as `describe.skip` (not deleted, not force-compiled against a fake API)
+ * pending a QA rewrite against the real async `StockService` + a fake `StockLedgerStore` -
+ * tracked as reconciliation debt, NOT a blocking defect, per test-plan.md §0. Skipping (rather
+ * than silently leaving a broken import) keeps `npx jest` from reporting a false compile FAIL.
  */
-import {
-  applyReservation,
-  applyRelease,
-  applyIssue,
-  applyReceipt,
-} from "../../src/backend/modules/stock/balanceMath"; // TODO(Engineer): confirm path/signature
-
-const baseBalance = { physical: 1000, reserved: 0 };
-
-describe("Stock reservation/release/issue math (ECP-010)", () => {
+describe.skip("Stock reservation/release/issue math (ECP-010) — superseded by stock.service.test.ts, needs async rewrite", () => {
+  const applyReservation = (..._args: unknown[]) => ({}) as any;
+  const applyRelease = (..._args: unknown[]) => ({}) as any;
+  const applyIssue = (..._args: unknown[]) => ({}) as any;
+  const applyReceipt = (..._args: unknown[]) => ({}) as any;
+  const baseBalance = { physical: 1000, reserved: 0 };
   test("TC-010-AC1: confirm PO reserves qty — available drops, physical unchanged", () => {
     const result = applyReservation(baseBalance, 300);
     expect(result.physical).toBe(1000); // physical stock untouched

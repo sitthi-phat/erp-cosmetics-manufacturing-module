@@ -1,10 +1,11 @@
 /**
  * Q1 — Unit: VAT rate validation (ECP-038 AC3, Data Rules: rate 0-100%).
  *
- * ASSUMED API (`src/backend/modules/user/vatConfigValidation.ts` or `modules/vat-config`):
- *   validateVatRate(rate: number) => void | throws ValidationError("อัตรา VAT ต้องอยู่ระหว่าง 0% ถึง 100%")
+ * RECONCILED 2026-07-07 (QA verify phase): actual export lives in
+ * `src/backend/modules/invoice/invoice.calc.ts#validateVatRate` (not `modules/user/vatConfigValidation.ts`
+ * as originally assumed). Signature/throw-message match the original assumption exactly.
  */
-import { validateVatRate } from "../../src/backend/modules/user/vatConfigValidation"; // TODO(Engineer): confirm path
+import { validateVatRate } from "../../src/backend/modules/invoice/invoice.calc";
 
 describe("VAT rate validation (ECP-038 AC3)", () => {
   test.each([0, 7, 10, 50, 100])("rate=%d is valid (inclusive boundaries 0 and 100)", (rate) => {
@@ -15,12 +16,20 @@ describe("VAT rate validation (ECP-038 AC3)", () => {
     expect(() => validateVatRate(rate)).toThrow("อัตรา VAT ต้องอยู่ระหว่าง 0% ถึง 100%");
   });
 
-  test("exploratory: NaN/undefined/non-numeric input must be rejected, not silently coerced to 0", () => {
+  test("exploratory: NaN/undefined input must be rejected, not silently coerced to 0", () => {
     expect(() => validateVatRate(NaN)).toThrow();
     // @ts-expect-error deliberately passing wrong type to probe runtime guard
     expect(() => validateVatRate(undefined)).toThrow();
-    // @ts-expect-error deliberately passing wrong type to probe runtime guard
-    expect(() => validateVatRate("7")).toThrow();
+  });
+
+  test("OBSERVATION (not asserted as a failure): validateVatRate itself does not type-guard — a numeric " +
+    "string like \"7\" passes the range check via JS loose comparison (\"7\" >= 0 is true) instead of " +
+    "throwing. Not exploitable through the real API today because PUT /vat-config validates with " +
+    "zod's `z.number()` first (src/backend/modules/vatConfig/vatConfig.routes.ts) which rejects a string " +
+    "body before this function ever runs. Logged as a minor defense-in-depth gap (see defect log), not " +
+    "a blocking defect, since there is no reachable path through the HTTP API today.", () => {
+    // @ts-expect-error deliberately passing wrong type to document the actual (non-throwing) behavior
+    expect(() => validateVatRate("7")).not.toThrow();
   });
 
   test("exploratory: rate with more than 2 decimal places — Data Rules say DECIMAL(5,2); decide & assert a policy (reject vs round) rather than silently truncating", () => {

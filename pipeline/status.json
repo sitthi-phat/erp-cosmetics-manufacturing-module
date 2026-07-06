@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "engineer",
-      "status": "READY_FOR_QA_VERIFY",
+      "current_agent": "qa",
+      "status": "FAILED",
       "human_gates": {
         "gate1_architecture": {"approved": true, "approved_at": "2026-07-06T21:30:00+07:00", "note": "Approved with conditions by Pond: (1) เลขเอกสารทุก format ต้องรองรับปริมาณ/การทำงานพร้อมกันสูง (running number เผื่อหลัก), เพิ่ม format Customer ID และ User ID, Invoice ต้องมี version number และ reference ถึง parent invoice เมื่อมีการแก้ไข (2) GMP rule: OK ตามที่เสนอ (3) role change ไม่ revoke ทันทีได้ แต่ permission ต้องมีผลภายใน TTL ไม่เกิน 5 นาที (4) Ant Design OK แต่ต้องออกแบบเผื่อเปลี่ยน UI library ภายหลัง — เพิ่มเติม: ระบบเน้นความเร็วและความแม่นยำสูง, VAT 7% ต้อง configurable ใน admin portal (ที่เดียวกับหน้า manage user) — เงื่อนไขต้องถูกปรับใน stories/ADR/design ก่อน Engineer เริ่ม"},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
@@ -288,6 +288,34 @@
           "summary": "Implement ครบ E0–E21 ตาม tasks.md rev.2: backend modular monolith (Express+TS+Zod+Prisma/MySQL) กับ frontend React+Vite+antd หลัง ui/ wrapper (ADR-008). จุดวิกฤตตามที่ระบุ: (1) stock ledger — StockService row-lock ใน $transaction, unit test รวม simulate concurrency 100 ops พร้อมกัน reconciliation ตรง 100% เสมอ (2) NumberSequence — MySQL INSERT..ON DUPLICATE KEY UPDATE LAST_INSERT_ID pattern ตาม ADR-006 + unit test concurrency 50-200 คำขอพร้อมกันไม่ซ้ำ + padding ไม่ตัดทอนเมื่อ overflow (3) invoice versioning+reconciliation — revise เฉพาะ version ล่าสุด, parent chain, payment carry-over ข้าม version, overpaid flag, นโยบาย INVOICE_EDIT_AFTER_PAYMENT (allow/block) wire เข้า service จริงแล้ว (4) permission cache TTL — คลาส PermissionCache ทดสอบด้วย fake clock ยืนยัน role เปลี่ยนมีผลภายใน TTL แม้ไม่ invalidate เชิงรุก (5) audit interceptor — retry แล้วยัง fail ต้อง log ระบบเสมอไม่เงียบ, unit test ครบ, ไม่มี endpoint update/delete audit ที่ไหนเลย. เพิ่ม RBAC guardrail กัน lockout (ECP-024 AC2) และ Admin UI แก้ permission matrix จริงแล้ว. seed.ts ครบตาม §8 (idempotent เต็ม reset+reseed). ESLint no-restricted-imports ยืนยันด้วยไฟล์ sanity-check จริง (สร้าง import antd นอก ui/ แล้วเห็น error, ลบไฟล์ทิ้ง). สิ่งที่ verify ไม่ได้ในสภาพแวดล้อมนี้ (ไม่มี MySQL/Docker daemon): migration ยังไม่เคยรันกับ MySQL จริง (generate ผ่าน prisma migrate diff offline แทน), seed.ts ยังไม่เคยรันจริง, docker-compose ยังไม่เคย up เต็ม stack — เขียนตาม spec ครบและผ่าน TypeScript compile แต่ DevOps/QA ต้องเป็นคนแรกที่รันกับ MySQL จริง ก็อปคำเตือนนี้ไว้ให้ QA ทราบก่อนรัน integration/e2e. ผลตัวเลขจริง: unit tests 123/123 ผ่าน (22 suites, `npx jest`), backend `tsc --noEmit` 0 error, frontend `tsc --noEmit` 0 error, `vite build` สำเร็จ, ESLint 0 error/warning ทั้ง backend+frontend. FE ครอบคลุมทุก story อย่างน้อย 1 ทาง แต่บางหน้ายังเป็นเวอร์ชันเรียบง่าย (dashboard แสดง JSON ดิบแทน widget สวยงาม, ฟอร์มเพิ่มบรรทัด PO/Invoice เป็นแบบเพิ่มทีละรายการไม่ใช่ตารางแก้ไขได้, invoice issue ผูกกับ product ของ PO line แรกเป็นค่าเริ่มต้น) — เป็นเรื่อง UI polish ไม่ใช่ business logic ที่ขาด. QA e2e spec (tests/e2e/*.spec.ts) ใช้ data-testid ที่ยังไม่ได้เพิ่มในโค้ด FE (QA เขียนไว้ว่าเป็น best-guess รอ engineer's markup) — ยังไม่ได้ปรับ selector ให้ตรงกัน เป็นงานที่เหลือให้ QA/Engineer sync กันในรอบถัดไป ไม่ block unit-test gate ของ Engineer เอง.",
           "overridden_by": null,
           "updated_at": "2026-07-07T14:20:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "verify",
+          "status": "FAILED",
+          "gate_checklist": [
+            {"item": "ทุก AC มี test case ที่ผ่าน หรือ defect เปิดพร้อมเหตุผล", "pass": false, "missing": "119 AC: unit-level ส่วนใหญ่ verify แล้วผ่านจริง (Engineer 123/123 + QA reconciled unit spec 45/46) แต่ integration(13)/concurrency(4)/e2e(6) = 23 ไฟล์ยังไม่เคยรันเลยแม้แต่ครั้งเดียว (DEF-02 test infra ไม่เชื่อมต่อ + ENV-01 ไม่มี Docker/MySQL) และพบ Critical/Major defect จริง 5 รายการ (DEF-01..DEF-05) ที่ต้องแก้ก่อน"},
+            {"item": "Automation coverage ระบุ % ชัดเจนพร้อมเหตุผลส่วนที่เหลือ", "pass": true, "missing": null},
+            {"item": "ไม่มี Critical/Major defect เปิดอยู่", "pass": false, "missing": "DEF-01 (Critical, ยืนยันด้วยเทสต์จริง): computeReconciliation ตั้ง status='Paid' แม้ overpaid หลัง revise ลดยอด — ละเมิดเงื่อนไข Gate 1 เรื่อง payment reconciliation โดยตรง. DEF-02 (Critical): jest.config.js testMatch ไม่ครอบคลุม tests/ เลย + ไม่มี supertest/@playwright/test ติดตั้ง ทำให้ 27 automated spec ของ QA (Q2/Q7) ไม่เคยถูกรันแม้แต่ครั้งเดียว รวมเคสวิกฤต Q7 ทั้งหมด. DEF-03 (Major): 0 data-testid ใน FE ทั้งโปรเจกต์ + ui/ wrapper ไม่รับ testid prop เลย + flow จริง (PO create 2 หน้าแยก, ไม่มี customer autocomplete) ต่างจาก e2e spec เดิมมาก บล็อกทั้ง 6 ไฟล์ e2e. DEF-04 (Major): Dashboard epic 9 (ECP-027 AC2/ECP-028 AC3/ECP-029 AC2) ข้อความ empty/edge-state ตาม AC ไม่ถูก implement ทั้ง backend และ FE (FE render raw JSON). DEF-05 (Major): invoice line ผูก productId กับ PO line แรกเสมอ ข้อมูลผิดจริงสำหรับ PO multi-line ไม่ใช่แค่ UI polish ตามที่ Engineer ระบุ"},
+            {"item": "Real test-run output แนบมาด้วย", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/test-plan.md",
+            "docs/test-plans/erp-core-prototype/defects.md",
+            "docs/test-plans/erp-core-prototype/verify-report.md",
+            "tests/unit/bomCheck.spec.ts",
+            "tests/unit/vatConfigValidation.spec.ts",
+            "tests/unit/numberSequenceFormat.spec.ts",
+            "tests/unit/invoiceVat.spec.ts",
+            "tests/unit/paymentOutstanding.spec.ts",
+            "tests/unit/stateTransitions.spec.ts",
+            "tests/unit/stockReservation.spec.ts",
+            "tests/unit/invoiceVersioning.spec.ts"
+          ],
+          "questions_for_pond": [],
+          "summary": "รัน `npx jest` เดิมของ Engineer ซ้ำ: ยืนยัน 123/123 ผ่านจริง (22 suites), tsc backend+frontend 0 error, ESLint 0 error/5 warning (ของ QA เอง), vite build สำเร็จ, backend GET /health 200 ไม่มี DB, frontend serve 200 — ตรงกับรายงาน Engineer ทั้งหมด. ตรวจ docker info: daemon ต่อไม่ได้ในกล่องนี้ (ยืนยัน ENV-01) จึงรัน integration/concurrency/e2e (23 ไฟล์) ไม่ได้เลย และพบเพิ่มว่า jest.config.js ของ Engineer ไม่ครอบคลุม tests/ เลยตั้งแต่ต้น + ไม่มี supertest/@playwright/test ติดตั้ง (DEF-02, Critical) ทำให้ QA reconcile unit spec 8 ไฟล์ใน tests/unit/ ให้ตรง API จริงแล้วรันด้วย ephemeral jest config (ไม่แก้ jest.config.js ของ Engineer): 45 ผ่าน, 1 ไม่ผ่าน, 12 skip มีเหตุผล/อ้างอิง. เทสต์ที่ไม่ผ่าน (paymentOutstanding.spec.ts) ยืนยันบั๊กจริงด้วยหลักฐานรัน: computeReconciliation (invoice.calc.ts) ตั้ง status='Paid' แม้ overpaid หลัง revise ลดยอดต่ำกว่าที่จ่ายไปแล้ว (DEF-01, Critical, ตรงเงื่อนไข Gate 1 เรื่อง payment reconciliation) — บั๊กนี้หลุดแม้จาก Engineer's own invoice.service.test.ts เพราะเทสต์นั้น assert แค่ overpaid=true ไม่เคย assert status!=='Paid'. Static review เพิ่มเติมพบ: DEF-03 (Major, 0 data-testid ทั้ง FE + flow จริงต่างจาก e2e spec เดิม บล็อก 6 ไฟล์ e2e ทั้งหมด — ไม่แก้ src/ ตามกติกา ส่งเป็น request กลับ Engineer แทน), DEF-04 (Major, dashboard epic 9 ข้อความ empty-state ตาม AC ไม่ implement ทั้ง backend/FE), DEF-05 (Major, invoice line productId ผูกกับ PO line แรกเสมอ ข้อมูลผิดจริงสำหรับ PO multi-line). อัปเดต test-plan.md: ปรับ UAT เป็น 2-3 คน/role ตามคำตอบปอนด์ (option B) พร้อมหมายเหตุว่ายังไม่ควรนัดหมายจริงจนกว่าจะผ่าน gate นี้, เพิ่ม §9 สรุปผล verify. เขียน defects.md (2 Critical, 3 Major, 3 Minor, 2 Environment-blocked) และ verify-report.md ครบตามที่ระบุ. สถานะ FAILED — ส่งกลับ Engineer พร้อม defect list เต็ม; ยังมีเคส Q7/integration/e2e ค้างรอ DevOps เตรียม environment (Docker/MySQL) หลัง DEF-02 ถูกแก้ด้วย.",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T18:45:00+07:00"
         }
       ]
     }

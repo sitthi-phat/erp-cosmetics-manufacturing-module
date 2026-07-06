@@ -1,11 +1,17 @@
 /**
  * Q1 — Unit: payment outstanding/status math (ECP-021 AC1-AC3, §5.5 reconciliation math).
  *
- * ASSUMED API (`src/backend/modules/invoice/paymentMath.ts`):
- *   computePaymentStatus(totalAmount: number, paymentsSum: number)
- *     => { status: "Issued"|"PartiallyPaid"|"Paid"; outstanding: number; overpaid: boolean }
+ * RECONCILED 2026-07-07 (QA verify phase): actual export is
+ * `computeReconciliation(totalAmount: number, paidAmount: number)` in
+ * `src/backend/modules/invoice/invoice.calc.ts` (not `invoice/paymentMath.ts#computePaymentStatus`).
+ * Result shape matches what was assumed: `{status, outstanding, overpaid}`.
+ *
+ * *** This reconciliation exposed DEF-01 (see docs/test-plans/erp-core-prototype/defects.md): ***
+ * the overpaid test below (§4.4 of test-plan.md / TC-037-REC1) FAILS against the real
+ * implementation - `status` is reported as "Paid" even when `overpaid` is true, which is exactly
+ * the "mislabeled as Paid" bug test-plan.md §4.4 called out as a critical risk to check for.
  */
-import { computePaymentStatus } from "../../src/backend/modules/invoice/paymentMath"; // TODO(Engineer): confirm path
+import { computeReconciliation as computePaymentStatus } from "../../src/backend/modules/invoice/invoice.calc";
 
 describe("Payment outstanding/status math (ECP-021, §5.5)", () => {
   test("TC-021-AC1: full payment => Paid, outstanding 0.00", () => {
