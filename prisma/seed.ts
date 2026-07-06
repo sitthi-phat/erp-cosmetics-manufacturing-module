@@ -67,6 +67,12 @@ const ROLE_DEFS = [
 // stock list/dashboard that Finance has no business need for - see product.routes.ts comment).
 // Granted to every role that already had `stock.view` too (SA/WH/PR) so their behavior is
 // unchanged, plus FI (Finance) as the actual fix.
+// DEF-14 fix (QA verify-4, Major): added `user.view_basic` as a dedicated, read-only permission
+// (distinct from the Admin-only `user_management.view_users`) so Production can populate the
+// "assign worker" dropdown (ECP-012, GET /users/basic - see user.routes.ts comment) WITHOUT also
+// getting `user_management.view_users`, which would additionally expose every user's username/
+// role/status - full user-management data Production has no legitimate need to see just to pick
+// an assignee.
 const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "SA", resource: "customer", action: "view" },
   { role: "SA", resource: "customer", action: "create" },
@@ -101,6 +107,7 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "PR", resource: "production", action: "produce" },
   { role: "PR", resource: "qc", action: "view_batches" },
   { role: "PR", resource: "dashboard", action: "production" },
+  { role: "PR", resource: "user", action: "view_basic" },
 
   { role: "QA", resource: "traceability", action: "view" },
   { role: "QA", resource: "qc", action: "inspect_batch" },
@@ -153,6 +160,7 @@ const AD_EXTRA: Array<{ resource: string; action: string }> = [
   { resource: "user_management", action: "view_users" },
   { resource: "user_management", action: "manage_users" },
   { resource: "user_management", action: "manage_permission" },
+  { resource: "user", action: "view_basic" },
   { resource: "admin", action: "manage_vat_config" },
   { resource: "audit", action: "view" },
   { resource: "dashboard", action: "sales" },

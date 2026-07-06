@@ -1,5 +1,19 @@
 import { useState } from "react";
-import { Card, DataTable, Button, Modal, Form, NumberField, DateField, TextField, SubmitButton, StatusTag, Notify } from "../ui";
+import {
+  Card,
+  DataTable,
+  Button,
+  Modal,
+  Form,
+  NumberField,
+  DateField,
+  TextField,
+  NativeSelectField,
+  SubmitButton,
+  StatusTag,
+  Notify,
+  normalizeSelectValues
+} from "../ui";
 import { useInvoices, useInvoiceVersions, useRecordPayment, useReviseInvoice } from "../hooks/useInvoices";
 import { useProducts } from "../hooks/useProducts";
 import { ApiError } from "../lib/apiClient";
@@ -32,7 +46,8 @@ export function InvoicesPage() {
     }
   }
 
-  function addReviseLine(values: Record<string, unknown>) {
+  function addReviseLine(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     setReviseLines((prev) => [
       ...prev,
       {
@@ -157,13 +172,12 @@ export function InvoicesPage() {
           </p>
         )}
         <Form onSubmit={addReviseLine}>
-          <select name="productId" style={{ marginBottom: 8, width: "100%" }} onChange={() => undefined}>
-            {(products ?? []).map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          <NativeSelectField
+            name="productId"
+            label="สินค้า"
+            required
+            options={(products ?? []).map((p: any) => ({ value: p.id, label: p.name }))}
+          />
           <TextField name="description" label="รายละเอียด" required />
           <NumberField name="quantity" label="จำนวน" required min={0.001} testId="revise-line-qty-0" />
           <NumberField name="unitPrice" label="ราคาต่อหน่วย" required min={0} />

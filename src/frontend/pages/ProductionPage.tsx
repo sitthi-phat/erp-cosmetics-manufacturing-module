@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Card, DataTable, Button, Modal, Form, SelectField, NumberField, SubmitButton, Notify, normalizeSelectValues } from "../ui";
 import { useProductionQueue, useAssignedProductionOrders, useAssignProduction, useProduceBatch } from "../hooks/useProduction";
-import { useUsers } from "../hooks/useAdmin";
+import { useBasicUsers } from "../hooks/useAdmin";
 import { useMaterials } from "../hooks/useProducts";
 import { ApiError } from "../lib/apiClient";
 
 export function ProductionPage() {
   const { data: queue, isLoading } = useProductionQueue();
   const { data: assignedOrders, isLoading: assignedLoading } = useAssignedProductionOrders();
-  const { data: users } = useUsers();
+  const { data: users } = useBasicUsers();
   const { data: materials } = useMaterials();
   const assign = useAssignProduction();
   const produce = useProduceBatch();

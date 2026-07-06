@@ -182,6 +182,47 @@ export function SelectField({ name, label, options, required, placeholder, testI
   );
 }
 
+export interface NativeSelectFieldOption {
+  value: string | number;
+  label: string;
+}
+
+export interface NativeSelectFieldProps {
+  name: string;
+  label: string;
+  options: NativeSelectFieldOption[];
+  required?: boolean;
+  testId?: string;
+}
+
+/**
+ * DEF-15 fix (QA verify-4, Major): `InvoicesPage.tsx`'s revise-invoice product picker used a raw
+ * native `<select>` rendered OUTSIDE any `AntForm.Item`, with its own `onChange={() => undefined}`
+ * discarding the change event entirely - it was never registered with the surrounding `<Form>`'s
+ * state at all, so `values.productId` was always `undefined` on submit (-> `Number(undefined) =
+ * NaN` -> Zod always rejected it). A plain HTML `<select>` genuinely needs to stay a NATIVE
+ * element here (unlike every other picker in the app, which uses antd's div-based `SelectField`
+ * combobox) because `tests/e2e/invoiceRevisionTimeline.spec.ts` drives it with Playwright's
+ * `.selectOption()`, which only works on real `<select>` elements. This wraps a genuine native
+ * `<select>` in `AntForm.Item` (antd's default `getValueFromEvent` already knows how to read
+ * `e.target.value` off plain DOM elements, no extra wiring needed) so it registers with Form
+ * state correctly while remaining a real `<select>` in the DOM - fixes the wiring bug without
+ * breaking the e2e interaction pattern.
+ */
+export function NativeSelectField({ name, label, options, required, testId }: NativeSelectFieldProps) {
+  return (
+    <AntForm.Item name={name} label={label} rules={required ? [{ required: true, message: `กรุณาเลือก${label}` }] : []}>
+      <select name={name} data-testid={testId ?? name} style={{ width: "100%", marginBottom: 8 }}>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </AntForm.Item>
+  );
+}
+
 /**
  * `labelInValue` makes every `SelectField` store `{ value, label }` instead of a bare value.
  * Call this on a form's raw submitted values before reading any select-backed field, so

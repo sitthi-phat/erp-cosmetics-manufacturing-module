@@ -85,6 +85,33 @@ userRouter.get("/", requirePermission("user_management", "view_users"), async (_
   }
 });
 
+/**
+ * DEF-14 fix (QA verify-4, Major): ECP-012's "assign worker" dropdown (ProductionPage.tsx,
+ * assign-worker-select) populates via GET /users, guarded by `user_management.view_users`
+ * (Admin-only per the permission matrix) - Production, the ONLY role that actually does ECP-012
+ * assign-worker in this app, never had that permission, so the dropdown was always empty
+ * (confirmed via curl: 403 FORBIDDEN as production_demo). Same shape of bug as DEF-12
+ * (an endpoint's guard is scoped to the wrong/broader resource than what it actually needs).
+ * Fix follows the same least-privilege pattern as DEF-12's `product.view`: a new, narrower
+ * `user.view_basic` permission + a separate lightweight endpoint that returns ONLY {id,
+ * fullName} for active users - NOT the full user-management record (username, role, status)
+ * that only Admin should see via GET /users. This avoids granting Production the broader
+ * `user_management.view_users` (which would also expose every other user's username/role/
+ * status - information Production has no legitimate need to see just to pick who to assign
+ * a production order to).
+ */
+userRouter.get("/basic", requirePermission("user", "view_basic"), async (_req, res, next) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { status: "Active" },
+      select: { id: true, fullName: true }
+    });
+    res.json({ data: users });
+  } catch (err) {
+    next(err);
+  }
+});
+
 userRouter.post(
   "/",
   requirePermission("user_management", "manage_users"),

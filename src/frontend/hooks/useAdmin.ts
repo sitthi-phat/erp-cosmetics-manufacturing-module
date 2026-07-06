@@ -8,6 +8,22 @@ export function useUsers() {
   });
 }
 
+/**
+ * DEF-14 fix (QA verify-4, Major): ProductionPage's "assign worker" dropdown used to call
+ * `useUsers()` -> `GET /users`, which requires the Admin-only `user_management.view_users`
+ * permission - Production never had it, so the dropdown was always empty (403). This calls the
+ * new, narrower `GET /users/basic` (permission `user.view_basic`, granted to Production) which
+ * returns only `{id, fullName}` for active users - enough to populate an assignee picker without
+ * needing full user-management visibility (username/role/status) that Production has no business
+ * need for.
+ */
+export function useBasicUsers() {
+  return useQuery({
+    queryKey: ["basic-users"],
+    queryFn: () => apiClient.get<{ data: Array<{ id: number; fullName: string }> }>("/users/basic").then((r) => r.data)
+  });
+}
+
 export function useRoles() {
   return useQuery({
     queryKey: ["admin-roles"],

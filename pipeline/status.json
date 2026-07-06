@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "qa",
-      "status": "FAILED",
+      "current_agent": "engineer",
+      "status": "READY_FOR_QA_VERIFY",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -1096,6 +1096,75 @@
           "summary": "Verify-4 (รอบปิดงานตามที่คาดหวัง): ยืนยัน DEF-09 (Critical, stock ledger TOCTOU) fixed จริงด้วยการรันอิสระ stockLedgerAccuracy.spec.ts แยก 3 รอบติดกันบน Docker volume ที่ reset ใหม่ล้วนๆ เขียวทั้ง 3 รอบทั้ง 2 sub-test (100-concurrent-op + lot-level boundary-race) มั่นใจว่าปิดแล้วจริง. ยืนยัน DEF-10 (PO->Invoiced transition + 409-before-400 ordering), DEF-11 (antd Select label ถูกต้อง ยืนยันด้วย DOM probe ตรงในเบราว์เซอร์จริง เห็น 5 ตัวเลือกครบพร้อม label ภาษาไทยถูกต้อง ไม่ virtualize เหลือ ~2 เหมือนก่อน), DEF-12 (Finance เรียก GET /products ได้ 200 จริงแล้ว), DEF-13 (VAT rate validator error แสดงผ่าน UI จริง) fixed ทั้งหมด และ OPEN-1/2/3 (dashboard/polling timeout + notify-error) ปิดครบทั้ง 3 รายการ. รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152 passed/2 skipped/0 failed จาก 154 (17/17 suites) ตรงกับที่ Engineer อ้างเป๊ะ. ตรวจสอบ 2 จุด selector ที่ Engineer ชี้ว่าเป็นบั๊กใน spec ของ QA เอง (ไม่ใช่โค้ด) ด้วย DOM probe ตรงในเบราว์เซอร์จริงก่อนแก้ (ไม่เชื่อคำอธิบายเปล่าๆ): ยืนยันว่า Engineer วิเคราะห์ถูกทั้งคู่จริง - demoFlow.spec.ts ใช้ getByRole(option) ที่ match rc-select hidden ARIA shadow listbox ผิดที่ (ต้องใช้ .ant-select-item-option ที่มองเห็นได้จริงแทน) และ invoiceRevisionTimeline.spec.ts ใช้ input[name=unitPrice] ที่ antd InputNumber ไม่เคย render name attribute เลย (ต้องใช้ getByTestId แทน) แก้ทั้งสองจุดตามที่ชี้แนะ. ระหว่างแก้ให้ flow ทั้งสองไฟล์นี้ผ่านจริงจนสุดทาง กลับพบ defect โค้ดจริงใหม่อีก 2 ตัวที่ Engineer ไม่เคยรายงาน (เพราะไม่ได้ทดสอบ flow เต็มผ่านเบราว์เซอร์จริงจนสุดทางเหมือนกัน): DEF-14 (Major) - Production role (role เดียวที่ทำ ECP-012 assign worker) เรียก GET /users ไม่ได้ (403, endpoint ต้องการ user_management.view_users ซึ่งมีแค่ Admin) ทำให้ assign-worker-select dropdown ว่างเปล่าเสมอสำหรับ role ที่ต้องใช้งานจริง ยืนยันด้วย curl ตรง - รูปแบบ permission-matrix-gap เดียวกับ DEF-12 เป๊ะ แต่คนละ endpoint/role ที่ Engineer ยังไม่ได้ตรวจ; DEF-15 (Major) - revise-invoice modal product <select> ใน InvoicesPage.tsx ไม่ได้ครอบด้วย AntForm.Item และ onChange ทิ้ง event () เลย ทำให้ values.productId เป็น undefined เสมอตอน submit -> ส่ง NaN -> Zod reject ทุกครั้ง (ยืนยันด้วย DOM probe ตรง เห็น form-error message ทุกครั้งหลัง submit) เป็นบั๊กคนละชั้นที่ซ่อนอยู่หลัง DEF-12: DEF-12 (permission) ทำให้ dropdown มีตัวเลือกให้เลือกแล้วจริง แต่การเลือกไม่มีผลอะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise invoice จึงยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดีแม้ DEF-12 จะแก้แล้วก็ตาม - integration test เดิมจับบั๊กนี้ไม่ได้เพราะส่ง productId ตรงผ่าน request body อยู่แล้ว ไม่ผ่าน form ที่พังจุดนี้. ตัวเลขจริงสุดท้าย: unit 175/175, integration 152/154 (2 skip, 0 fail, 17/17 suites เขียว), stockLedgerAccuracy 3/3 รอบเขียว, e2e 16/19 (2 fail = DEF-14/15 ใหม่ + 1 skip มีเหตุผลเดิม). สถานะ FAILED ตามกติกา Exit Gate (พบ Major defect ใหม่ 2 ตัว) - ส่งกลับ Engineer พร้อม defect list เต็ม เน้นว่า DEF-01-13 + OPEN-1-3 ปิดหมดแล้วไม่ต้องแก้ซ้ำ เหลือแค่ DEF-14/15 ที่มีรูปแบบชัดเจน (permission gap + form-wiring bug) ไม่ใช่ปัญหา architecture ใหญ่เหมือน DEF-09 คาดว่ารอบถัดไปจะปิดงานได้จริง. อัปเดต UAT plan summary (2-3 คน/role ตามที่ปอนด์อนุมัติ) ใน verify-report.md พร้อมคำแนะนำว่ายังไม่ควรเริ่มนัดหมาย UAT จนกว่า DEF-14/15 จะแก้เสร็จ.",
           "overridden_by": null,
           "updated_at": "2026-07-08T18:00:00+07:00"
+        },
+        {
+          "agent": "engineer",
+          "phase": "defect-fix-4",
+          "status": "READY_FOR_QA_VERIFY",
+          "gate_checklist": [
+            {
+              "item": "DEF-14 [Major] fixed: added a new, narrower `user.view_basic` permission (distinct from Admin-only `user_management.view_users`) + a new GET /users/basic endpoint returning only {id, fullName} for active users; granted to Production (the only role that does ECP-012 assign-worker) instead of the broader user-management permission",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DEF-14 verified via curl as production_demo: GET /users/basic now returns 200 with a minimal {id, fullName} list (no username/role/status leaked), confirmed Admin's existing GET /users (full record) untouched/unaffected",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DEF-15 [Major] fixed: revise-invoice modal's product picker was a native <select> rendered OUTSIDE any AntForm.Item with an onChange that discarded the event, so productId was always undefined on submit. Added a new ui/Form.tsx `NativeSelectField` component (a real native <select>, wrapped in AntForm.Item so it registers with Form state via antd's default getValueFromEvent) and wired InvoicesPage.tsx to use it - keeps the DOM element a genuine native <select> (required since tests/e2e/invoiceRevisionTimeline.spec.ts drives it with Playwright's .selectOption(), which only works on native <select> elements) while fixing the actual form-state wiring bug",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DEF-15 verified via direct Playwright probe: selecting a product now yields a real id (not NaN) in the added revise-line, and via the full e2e suite: tests/e2e/invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 (the exact test that was blocked by DEF-15) now passes",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npm run reset && npm run setup passes end-to-end on a genuinely fresh Docker volume; no stale dev server left over on ports 4000/5173 before any test run (explicitly checked with netstat before every server start this round)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "unit tests pass (175/175, unchanged from defect-fix-3 - DEF-14/15 required no unit-level logic changes worth new unit tests beyond the existing route/permission/component coverage)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "tsc (backend+frontend) / eslint / vite build clean",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 152 passed / 2 skipped / 0 failed (154 total), 17/17 suites green - unchanged from defect-fix-3, confirming DEF-14/15 fixes did not regress anything",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "stockLedgerAccuracy.spec.ts re-run 3 consecutive times on the fresh volume - green all 3 times (DEF-09 re-confirmed stable, not touched this round)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npx playwright test: 17 passed / 1 failed / 1 skipped (19 total) - both DEF-14 and DEF-15 blockers are gone (demoFlow.spec.ts now progresses far past both the assign-worker step and the whole customer/product select flow; invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 fully passes) but the 19/19 or 18/19+1-skip target was not fully hit",
+              "pass": false,
+              "missing": "demoFlow.spec.ts now fails at a NEW checkpoint never reached before (line 163): `expect(...).toHaveText(/QC Approved/i)` expects a space in \"QC Approved\" but the actual rendered text is \"QCApproved\" (no space) - StatusTag (ui/StatusTag.tsx) renders every status enum value in the app verbatim with no spaces inserted, by a single consistent app-wide convention (InProduction, ReadyToShip, QCApproved, PartiallyPaid, etc. - every Prisma status enum across the whole schema is one PascalCase word, never two). This is not a DEF-14/DEF-15 regression and not a business-logic defect: it is a pre-existing test-expectation-vs-naming-convention mismatch in demoFlow.spec.ts's own regex, unrelated to and unreachable before this round (the test never got this far previously). Per instructions (never edit tests/, scope limited to DEF-14/DEF-15), left as-is and documented here for QA to decide: either fix the regex to /QCApproved/i (matching the app's real, consistent convention) or, if QA believes inserting spaces into status labels is a genuine UX improvement worth doing app-wide, log it as a new defect/enhancement for a future round - changing StatusTag's rendering would affect every status badge across the entire app and is out of this round's scope."
+            }
+          ],
+          "output_files": [
+            "src/backend/modules/user/user.routes.ts",
+            "prisma/seed.ts",
+            "src/frontend/hooks/useAdmin.ts",
+            "src/frontend/pages/ProductionPage.tsx",
+            "src/frontend/ui/Form.tsx",
+            "src/frontend/pages/InvoicesPage.tsx"
+          ],
+          "questions_for_pond": [],
+          "summary": "แก้ครบทั้ง 2 defect (DEF-14, DEF-15) ตามรูปแบบที่ QA ระบุ (เหมือน DEF-12 ที่เคยแก้มาแล้ว). DEF-14: เพิ่ม permission ใหม่ที่แคบกว่า `user.view_basic` แยกจาก `user_management.view_users` (Admin-only เดิม) พร้อม endpoint ใหม่ `GET /users/basic` ที่คืนแค่ {id, fullName} ของ user ที่ active เท่านั้น (ไม่คืน username/roleName/status แบบ endpoint เดิม) แล้วให้สิทธิ์นี้กับ Production (role เดียวที่ทำ ECP-012 มอบหมายงานผลิตจริง) แทนที่จะให้ user_management.view_users แบบเต็ม - เหตุผลเดียวกับ DEF-12 เป๊ะ (least privilege): dropdown มอบหมายงานต้องการแค่ 'ใครคือใคร' (id+ชื่อ) ไม่ต้องเห็น username/role/status ของพนักงานคนอื่นทั้งระบบซึ่งเป็นข้อมูล user-management เต็มรูปแบบที่ Production ไม่มีความจำเป็นต้องเห็นเพื่อเลือกคนมอบหมายงาน อัปเดต ProductionPage.tsx ให้เรียก useBasicUsers() (hook ใหม่) แทน useUsers() เดิม (ซึ่งยังคงใช้เฉพาะใน AdminPage.tsx สำหรับ Admin เต็มรูปแบบเหมือนเดิม ไม่กระทบ) ยืนยันด้วย curl ตรงเป็น production_demo: GET /users/basic คืน 200 พร้อม {id,fullName} เท่านั้นจริง. DEF-15: root cause คือ native `<select>` ใน InvoicesPage.tsx ไม่เคยถูกครอบด้วย AntForm.Item เลย (ประกาศ onChange ของตัวเองทิ้ง event ด้วย () => undefined) ทำให้ไม่เคยลงทะเบียนกับ Form state จริง - values.productId เป็น undefined เสมอตอน submit เพิ่ม component ใหม่ `NativeSelectField` ใน ui/Form.tsx ที่ยังคงเป็น native `<select>` จริง (จำเป็นเพราะ tests/e2e/invoiceRevisionTimeline.spec.ts ใช้ Playwright's .selectOption() ซึ่งทำงานกับ native <select> เท่านั้น ไม่ใช่ antd's div-based Select เหมือนที่อื่นในแอป) แต่ครอบด้วย AntForm.Item อย่างถูกต้อง (antd's default getValueFromEvent อ่าน e.target.value จาก DOM element ธรรมดาได้อยู่แล้วโดยไม่ต้องเขียนโค้ดเพิ่ม) แก้ที่ wiring เท่านั้น ไม่เปลี่ยนพฤติกรรมที่มองเห็น ยืนยันด้วย Playwright probe ตรง (เลือกสินค้าแล้วได้ id จริงไม่ใช่ NaN, บรรทัดถูกเพิ่มเข้า preview list) และยืนยันด้วย e2e จริง: invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 (เทสต์ที่เคยติด DEF-15 พอดี) ผ่านแล้ว. ตัวเลขจริงหลังแก้ทั้งหมด (บน Docker volume ที่ reset ใหม่ล้วนๆ, kill stale dev server ทุกครั้งก่อนรัน e2e ตามที่กำชับ): `npm run test:unit` = 175 passed/12 skipped/0 failed (28/30 suites, ไม่เปลี่ยนจากรอบก่อน); `npx tsc` backend+frontend = 0 error ทั้งคู่; `npx eslint .` = 0 error (2 pre-existing warning ใน tests/ เดิม); `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 152 passed/2 skipped/0 failed จาก 154 (17/17 suites เขียว, ตัวเลขเท่าเดิมกับรอบก่อนยืนยันว่า DEF-14/15 ไม่กระทบ integration เลย); `stockLedgerAccuracy.spec.ts` แยก 3 รอบติดกันซ้ำ = เขียวทั้ง 3 รอบ (DEF-09 ยังนิ่งดี ไม่ได้แตะรอบนี้); `npx playwright test` = **17 passed/1 failed/1 skipped จาก 19** (ขึ้นจาก 16/19 เดิม - ยืนยันทั้ง DEF-14 (demoFlow.spec.ts เดินหน้าผ่านจุด assign-worker ไปได้แล้ว) และ DEF-15 (invoiceRevisionTimeline TC-037-AC1/AC2 ผ่านเต็มแล้ว) ปิดจริงทั้งคู่ ไม่ใช่แค่ static review) เหลือ 1 fail ใหม่ที่ demoFlow.spec.ts พบเจอเป็นจุดแรก (ไม่เคยเดินไปถึงจุดนี้มาก่อนเพราะติด DEF-14 ก่อนหน้านี้เสมอ) ไม่เกี่ยวกับ DEF-14/15: บรรทัด 163 `expect(...).toHaveText(/QC Approved/i)` คาดหวัง 'QC Approved' มีเว้นวรรค แต่ข้อความจริงที่ render คือ 'QCApproved' (ไม่มีวรรค) เพราะ StatusTag (ui/StatusTag.tsx) render สถานะทุกตัวในทั้งแอปแบบ verbatim ไม่เว้นวรรคเป็น convention เดียวกันทั้งระบบ (InProduction, ReadyToShip, PartiallyPaid ฯลฯ ทุก enum สถานะใน Prisma schema เป็นคำเดียวติดกันหมด ไม่มีที่ไหนเว้นวรรคเลย) - เป็นบั๊กใน spec ของ QA เอง (regex คาดหวังวรรคที่ไม่เคยมีอยู่จริงในระบบ) ไม่ใช่ DEF-14/DEF-15 regression และไม่ใช่ business logic bug ไม่ได้แก้ tests/ ตามกติกา บันทึกไว้ให้ QA พิจารณา (แก้ regex เป็น /QCApproved/i ให้ตรง convention จริง หรือถ้า QA เห็นว่าควรเว้นวรรค label ทั้งแอปเพื่อ UX ให้เปิดเป็น defect/enhancement ใหม่แยกต่างหากในรอบถัดไป เพราะเป็นการเปลี่ยนพฤติกรรมการแสดงผล status ทุกจุดในทั้งแอป เกินขอบเขตของรอบนี้ที่จำกัดไว้แค่ DEF-14/15). ไม่ใช้ git ตลอดทั้งรอบ ไม่แก้ tests/ แม้แต่ไฟล์เดียว seed ทั้ง dev/test DB ให้สะอาดก่อนส่งต่อ QA.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T20:15:00+07:00"
         }
       ]
     }
