@@ -1,11 +1,17 @@
 # Task Breakdown — ERP Core Prototype
 
 - **slug**: `erp-core-prototype`
-- **สถานะ**: Proposed — รอ Human Gate 1
-- **อ้างอิง**: architecture.md, ADR-001–008, user-stories.md (ECP-001–036)
+- **สถานะ**: Accepted (rev.2 หลัง Gate 1 approve-with-conditions) → READY_FOR_ENGINEER
+- **อ้างอิง**: architecture.md (rev.2), ADR-001–008 (005/006/008 rev.2), user-stories.md (**ECP-001–038**)
 
-> Engineer และ QA ทำงาน **ขนานกันได้**: QA เขียน test plan/automation จาก AC + API contract
-> (§6 architecture) โดยไม่ต้องรอโค้ดเสร็จ. ลำดับ dependency ด้านล่างใช้จัดคิว Engineer เป็นหลัก.
+> Engineer และ QA ทำงาน **ขนานกันได้**: QA เขียน test plan/automation จาก AC + API contract (§6) โดยไม่ต้องรอโค้ด.
+> **[NEW]/[CHANGED]** = task ที่เพิ่ม/เปลี่ยนในรอบ rev.2 (Gate 1 amendment) — ที่เหลือคงเดิมจาก rev.1
+
+## ประวัติการแก้ไข
+| rev | สาระ |
+|---|---|
+| 1 | Engineer E0–E19, QA Q1–Q6, DevOps D1–D5 (ECP-001–036) |
+| **2** | เพิ่ม **E20 (invoice versioning+reconciliation, ECP-037)**, **E21 (VATConfig admin, ECP-038)**, **Q7 (concurrency/accuracy/TTL)**; แก้ E1/E2/E3/E4/E6/E8/E15/E17/E19 + Q1/Q2/Q4 + D2 |
 
 ---
 
@@ -13,244 +19,222 @@
 
 รูปแบบ: **ID — งาน | โมดูล/ไฟล์ | Stories | ขึ้นกับ | นิยาม "เสร็จ" (DoD)**
 
-### กลุ่ม Foundation (ต้องเสร็จก่อนโดเมน)
+### กลุ่ม Foundation
 
-**E0 — Project scaffolding**
-- ไฟล์: `package.json`, `tsconfig`, `src/backend/app.ts|server.ts`, `src/frontend` (Vite),
-  `.env.example`, `Dockerfile.*`, `docker-compose.yml`
-- Stories: (เอื้อทั้งหมด) | ขึ้นกับ: —
-- DoD: `npm run dev` ยก backend+frontend+MySQL (compose) ได้, health endpoint ตอบ 200,
-  env อ่านจาก config ไม่ hardcode (ADR-001)
+**E0 — Project scaffolding** (คงเดิม)
+- ไฟล์: `package.json`, `tsconfig`, `src/backend/app.ts|server.ts`, `src/frontend` (Vite), `.env.example`, `Dockerfile.*`, `docker-compose.yml`
+- DoD: `npm run dev` ยก backend+frontend+MySQL ได้, health 200, env อ่านจาก config ไม่ hardcode (ADR-001)
 
-**E1 — Prisma schema + migration + seed**
+**E1 — Prisma schema + migration + seed** **[CHANGED]**
 - ไฟล์: `prisma/schema.prisma`, `prisma/migrations/*`, `prisma/seed.ts`
-- Stories: รองรับ Data Rules ทุก entity (§3) | ขึ้นกับ: E0
-- DoD: `prisma migrate` สร้างครบทุกตาราง §3.1, `prisma db seed` โหลด mock data ตามกลยุทธ์ §8
-  (รวมเคส BOM ขาด, stock ต่ำ, stock=0, flow สำเร็จ 1 ชุด) และรันซ้ำได้ (idempotent)
+- Stories: Data Rules ทุก entity (§3) | ขึ้นกับ: E0
+- DoD: สร้างครบทุกตาราง **รวมของใหม่ rev.2: Invoice(invoice_no/version/parent_invoice_id self-FK/subtotal/vat_rate_applied/vat_amount/total_amount/status+Superseded), VATConfig, Customer.customer_id, User.user_id**;
+  **สร้าง index ตาม §NFR N3** (StockTransaction(material_id,created_at), unique(invoice_no,version), Payment(invoice_chain_key), AuditLog(user_id,timestamp)/(action_type,timestamp), Customer/User unique ฯลฯ);
+  seed ตาม §8 **รวม VATConfig=7.00, customer_id/user_id auto-gen, demo revise invoice v2**; idempotent
 
-**E19 — NumberSequence service (ADR-006)**
+**E19 — NumberSequence service** **[CHANGED]** (ADR-006 rev.2)
 - ไฟล์: `src/backend/lib/numberSequence.ts`, ตาราง `NumberSequence`
-- Stories: ECP-004,013,018,020 (เลข PO/Batch/Shipment/Invoice) | ขึ้นกับ: E1
-- DoD: ออกเลขตาม format ADR-006 ภายใน tx เดียวกับเอกสาร, ไม่ซ้ำเมื่อเรียกพร้อมกัน (ทดสอบ concurrency)
+- Stories: ECP-001,004,013,018,020,023,037 (Customer/User/PO/Batch/Shipment/Invoice) | ขึ้นกับ: E1
+- DoD: ออกเลขทุก format **เผื่อหลักตาม ADR-006 rev.2** (CUS-8, USR-8, PO-6, B/SH-5, INV-6) **ภายใน tx เดียว + row-lock ต่อคีย์** (UPDATE...LAST_INSERT_ID หรือ SELECT FOR UPDATE);
+  **padding overflow ไม่ตัดทอน**; **invoice_no คงที่ทั้ง chain, version+parent จัดการที่ E20**; ทดสอบ concurrency ไม่ซ้ำ (คู่กับ Q7)
 
-**E2 — Auth (JWT + bcrypt) + middleware pipeline (ADR-002,005)**
-- ไฟล์: `middleware/{requestId,auth,errorHandler}.ts`, `modules/user` (login/logout/me), `lib/errors.ts`
-- Stories: ECP-025 (login log hook), ECP-036 (error กลางไทย) | ขึ้นกับ: E1
-- DoD: login ออก JWT (httpOnly cookie) ฝัง permission snapshot, `/auth/me` คืน user+permission,
-  รหัสผ่าน bcrypt, errorHandler แปลง error เป็น `{error:{code,message(ไทย),fields}}`
+**E2 — Auth (JWT identity) + middleware pipeline** **[CHANGED]** (ADR-002,005 rev.2)
+- ไฟล์: `middleware/{requestId,auth,resolvePermission,errorHandler}.ts`, `lib/permissionCache.ts`, `modules/user` (login/logout/me), `lib/errors.ts`
+- Stories: ECP-025 (login log hook), ECP-036 (error ไทย), **ECP-023 AC2 (role change ≤5 นาที)** | ขึ้นกับ: E1
+- DoD: login ออก JWT (httpOnly) **payload = user_id เท่านั้น (ไม่ฝัง permission)**; bcrypt;
+  **`resolvePermission` โหลด role+permission ต่อ request จาก `permissionCache` TTL=`PERMISSION_CACHE_TTL` (default 60s, clamp ≤300s)** — source of truth = DB;
+  `/auth/me` คืน user+permission สดจาก cache; errorHandler แปลงเป็น `{error:{code,message(ไทย),fields}}`
 
-**E3 — RBAC: permission matrix + `requirePermission` + config API (ADR-005)**
+**E3 — RBAC: permission matrix + requirePermission + config API** **[CHANGED]** (ADR-005 rev.2)
 - ไฟล์: `middleware/requirePermission.ts`, `modules/user` (roles/permissions)
-- Stories: **ECP-024** (config สิทธิ์ผ่านหน้าจอ), รองรับ AC3 ของ ECP-016/022/027–033 | ขึ้นกับ: E2
-- DoD: middleware ปฏิเสธ 403 เมื่อไม่มีสิทธิ์ (แม้เรียก URL ตรง), แก้ permission ผ่าน API มีผล
-  login ถัดไป, **guardrail กัน lockout `manage_permission`** (ECP-024 AC2) ทำงาน
+- Stories: **ECP-024**, รองรับ AC3 ของ ECP-016/022/027–033 | ขึ้นกับ: E2
+- DoD: 403 เมื่อไม่มีสิทธิ์ (แม้เรียก URL ตรง); **แก้ permission/role → `permissionCache.invalidate` + มีผล ≤5 นาทีโดยไม่ re-login (ECP-023 AC2/ECP-024 AC1)**;
+  guardrail กัน lockout `manage_permission` (ECP-024 AC2); seed matrix §7 รวม `admin.manage_vat_config`, `invoice.revise`
 
-**E4 — User Management (ECP-023)**
-- ไฟล์: `modules/user`
-- Stories: ECP-023 | ขึ้นกับ: E3
-- DoD: สร้าง/แก้ user + assign role, username ซ้ำถูกปฏิเสธ (AC3), role ใหม่มีผล login ถัดไป (AC2)
+**E4 — User Management** **[CHANGED]** (ECP-023)
+- ไฟล์: `modules/user` | ขึ้นกับ: E3
+- DoD: สร้าง/แก้ user + assign role; **user_id auto-gen ผ่าน E19, server strip `user_id` ที่ client ส่งเสมอ (ECP-023 AC4)**; username ซ้ำถูกปฏิเสธ (AC3); role ใหม่มีผล ≤5 นาที (AC2 ผ่าน E2/E3)
 
-**E5 — Audit log core (ADR-007)**
-- ไฟล์: `middleware/audit.ts`, `modules/audit`
-- Stories: ECP-025, ECP-026 | ขึ้นกับ: E2
-- DoD: บันทึก login สำเร็จ+ล้มเหลว (ECP-025 AC1/AC2), interceptor เขียน action สำคัญ,
-  write-fail ไม่เงียบ (retry+system log, AC3), `GET /audit-logs` filter+pagination,
-  **ไม่มี path ใด update/delete audit ได้** (ECP-026 AC3)
+**E5 — Audit log core** (คงเดิม + action ใหม่) (ADR-007)
+- ไฟล์: `middleware/audit.ts`, `modules/audit` | Stories: ECP-025, ECP-026 | ขึ้นกับ: E2
+- DoD: login สำเร็จ+ล้มเหลว; interceptor เขียน action สำคัญ **รวม `ReviseInvoice`, `UpdateVATConfig`**; write-fail ไม่เงียบ (retry+system log); `GET /audit-logs` filter+pagination; **ไม่มี path ใด update/delete audit** (ECP-026 AC3)
 
-### กลุ่ม Master data & Stock (หัวใจ real-time)
+### กลุ่ม Master data & Stock
 
-**E6 — Customer module (ECP-001,002,003)**
-- ไฟล์: `modules/customer` + FE pages | ขึ้นกับ: E3
-- DoD: CRUD + ค้นหา, required field validation (AC3), เตือนชื่อซ้ำไม่ block (ECP-001 AC2),
-  เตือนเมื่อ inactive ทั้งที่มี PO เปิด (ECP-002 AC2), แสดงประวัติ PO (ECP-003)
+**E6 — Customer module** **[CHANGED]** (ECP-001,002,003)
+- ไฟล์: `modules/customer` + FE pages | ขึ้นกับ: E3, E19
+- DoD: CRUD + ค้นหา; **customer_id auto-gen ผ่าน E19, ไม่มีช่องกรอกในฟอร์ม, server strip `customer_id` ที่ client ส่ง (ECP-001 AC1/AC4)**; required field (AC3); เตือนชื่อซ้ำไม่ block (AC2); เตือน inactive ทั้งมี PO เปิด (ECP-002 AC2); ประวัติ PO (ECP-003)
 
-**E7 — Master: Product / RawMaterial / BOM (support)**
-- ไฟล์: `modules/stock` (master) หรือ `modules/product` | ขึ้นกับ: E1
-- DoD: อ่าน master + BOM ได้ (ส่วนใหญ่มาจาก seed), รองรับเคส product ไม่มี BOM
+**E7 — Master: Product / RawMaterial / BOM** (คงเดิม)
+- ไฟล์: `modules/stock`(master)/`modules/product` | ขึ้นกับ: E1 | DoD: อ่าน master+BOM, รองรับเคส product ไม่มี BOM
 
-**E8 — Stock core: balance + ledger + realtimeGateway + goods receipt (ADR-004)**
-- ไฟล์: `modules/stock` (balance, transaction, receipt), `lib/realtimeGateway.ts`, socket server
-- Stories: **ECP-007, ECP-008, ECP-010** | ขึ้นกับ: E1, E19
-- DoD: goods receipt สร้าง Lot + physical += ใน tx + StockTxn (ECP-008; AC2 lot ซ้ำถามยืนยัน,
-  AC3 qty≤0 block), แยก physical/reserved/available (ECP-010), emit `stock.changed`,
-  หน้า stock อัปเดต ≤1 นาทีไม่ refresh (ECP-007 AC1), แสดงยอด 0 + "หมดสต็อก" (AC2),
-  error state คงเวลาล่าสุด (AC3), เบิกเกิน physical ถูกปฏิเสธ (ECP-010 AC3)
+**E8 — Stock core: balance + ledger + realtimeGateway + goods receipt** **[CHANGED]** (ADR-004, §NFR)
+- ไฟล์: `modules/stock` (balance, transaction, receipt, **reconciliation**), `lib/realtimeGateway.ts`, socket server
+- Stories: **ECP-007, ECP-008, ECP-010 (รวม AC4)** | ขึ้นกับ: E1, E19
+- DoD: goods receipt สร้าง Lot + physical += ใน tx + StockTxn (AC2 lot ซ้ำถามยืนยัน, AC3 qty≤0 block);
+  แยก physical/reserved/available (ECP-010); **ทุก path ที่แก้ยอดใช้ row-lock `StockBalance` (SELECT FOR UPDATE) กัน lost-update (§NFR N1)**;
+  emit `stock.changed`, หน้า stock ≤1 นาทีไม่ refresh (ECP-007 AC1), ยอด 0+"หมดสต็อก" (AC2), error state คงเวลาล่าสุด (AC3), เบิกเกิน physical ปฏิเสธ (ECP-010 AC3);
+  **`GET /stock/reconciliation`: Σledger = physical 100% (ECP-010 AC4)**
 
-**E9 — BOM stock check (ECP-009)**
-- ไฟล์: `modules/stock` (check service) | ขึ้นกับ: E7, E8
-- DoD: คำนวณ need = Σ(qty_per_unit×order_qty) เทียบ available, ระบุเฉพาะ material ที่ขาด
-  (ชื่อ+จำนวนขาด, AC2), block ถ้าไม่มี BOM (AC3)
+**E9 — BOM stock check** (คงเดิม) (ECP-009)
+- ไฟล์: `modules/stock`(check) | ขึ้นกับ: E7, E8 | DoD: need=Σ(qty_per_unit×order_qty) เทียบ available, ระบุเฉพาะ material ที่ขาด (AC2), block ถ้าไม่มี BOM (AC3)
 
 ### กลุ่ม Order-to-Cash flow
 
-**E10 — PO module: create/confirm(reserve)/cancel/timeline**
-- ไฟล์: `modules/po` + FE | Stories: **ECP-004, ECP-005, ECP-006** | ขึ้นกับ: E6, E9, E19
-- DoD: create Draft (≥1 line, ECP-004 AC3), confirm → เช็ค stock + reserve ใน tx + emit
-  (AC1/AC2 block เมื่อไม่พอ), cancel คืน reservation ครั้งเดียว (ECP-005 AC1/AC3), block cancel
-  เมื่อ InProduction (AC2), timeline 5 สถานะ + วันเวลา (ECP-006 AC1), แสดง "รอผลิตใหม่" เมื่อ QC
-  reject (AC2), ไม่พบ PO → ข้อความชัด (AC3)
+**E10 — PO module: create/confirm(reserve)/cancel/timeline** (คงเดิม)
+- ไฟล์: `modules/po` + FE | Stories: **ECP-004,005,006** | ขึ้นกับ: E6, E9, E19
+- DoD: create Draft (≥1 line), confirm → stock check+reserve ใน tx+emit (block เมื่อไม่พอ), cancel คืน reservation ครั้งเดียว, block cancel เมื่อ InProduction, timeline 5 สถานะ, "รอผลิตใหม่" เมื่อ QC reject, ไม่พบ PO → ข้อความชัด
 
-**E11 — Production: queue + assign + produce(batch) + issue stock**
-- ไฟล์: `modules/production` + FE | Stories: **ECP-011,012,013** | ขึ้นกับ: E10, E8
-- DoD: queue จาก PO Confirmed เรียงตาม delivery date (ECP-011), assign สร้าง ProductionOrder
-  (ECP-012; AC2 assign ซ้ำถามยืนยัน, AC3 ไม่มี operator → ข้อความ), produce สร้าง Batch+เลข,
-  ผูกหลาย Lot (BatchLotUsage, ECP-013 AC2), เบิก physical ใน tx + emit, block ถ้าไม่เลือก Lot (AC3)
+**E11 — Production: queue + assign + produce(batch) + issue stock** (คงเดิม) (ECP-011,012,013)
+- ไฟล์: `modules/production` + FE | ขึ้นกับ: E10, E8 | DoD: queue เรียง delivery date, assign สร้าง ProductionOrder, produce สร้าง Batch+เลข ผูกหลาย Lot (BatchLotUsage), เบิก physical ใน tx+emit, block ถ้าไม่เลือก Lot
 
-**E12 — Traceability (ECP-014)**
-- ไฟล์: `modules/stock` (trace) หรือ `modules/production` | ขึ้นกับ: E11
-- DoD: ค้นด้วย Lot → คืน Lot→Batch(หลาย)→FG→PO ครบสาย (AC1 ≤5 นาที = ตอบเร็ว), หลาย Batch ต่อ Lot
-  (AC2), Lot ไม่มี → ข้อความ (AC3)
+**E12 — Traceability** (คงเดิม) (ECP-014)
+- ไฟล์: `modules/stock`(trace) | ขึ้นกับ: E11 | DoD: Lot→Batch(หลาย)→FG→PO ครบสาย ≤5 นาที (ใช้ index §NFR N3), หลาย Batch/Lot (AC2), Lot ไม่มี → ข้อความ
 
-**E13 — QC: batch inspect + incoming lot inspect (ECP-015,016,017)**
-- ไฟล์: `modules/qc` + FE | ขึ้นกับ: E11, E8
-- DoD: Approve/Reject batch เปลี่ยนสถานะ + audit (ECP-015; AC2 reject → PO "รอผลิตใหม่",
-  AC3 กันอนุมัติซ้ำ), รายการ+filter สถานะ (ECP-016; AC3 ปฏิเสธ role ไม่มีสิทธิ์),
-  incoming lot QC gate การเลือก Lot ผลิต (ECP-017)
+**E13 — QC: batch inspect + incoming lot inspect** (คงเดิม) (ECP-015,016,017)
+- ไฟล์: `modules/qc` + FE | ขึ้นกับ: E11, E8 | DoD: Approve/Reject batch+audit, reject→PO "รอผลิตใหม่", กันอนุมัติซ้ำ, filter สถานะ+ปฏิเสธ role, incoming lot QC gate การเลือก Lot
 
-**E14 — Shipping (ECP-018,019)**
-- ไฟล์: `modules/shipping` + FE | ขึ้นกับ: E13
-- DoD: สร้าง Shipment เฉพาะ Batch=QCApproved (ECP-018; AC2 กรอง reject ออก, AC3 ปฏิเสธ pending
-  แม้เรียกตรง), update สถานะ Shipped→Delivered ห้ามข้ามขั้น (ECP-019 AC2), วันที่ส่ง ≤ วันนี้ (AC3),
-  อัปเดตสถานะ PO (ECP-006)
+**E14 — Shipping** (คงเดิม) (ECP-018,019)
+- ไฟล์: `modules/shipping` + FE | ขึ้นกับ: E13 | DoD: Shipment เฉพาะ Batch=QCApproved (กรอง reject, ปฏิเสธ pending แม้เรียกตรง), Shipped→Delivered ห้ามข้ามขั้น, วันที่ส่ง ≤ วันนี้, อัปเดต PO
 
-**E15 — Invoice + Payment (ECP-020,021,022)**
-- ไฟล์: `modules/invoice` + FE | ขึ้นกับ: E14, E19
-- DoD: ออก invoice จาก PO Shipped, amount=Σ(qty×unit_price) ไม่มี VAT, 1 ใบ/PO (ECP-020 AC2),
-  block ถ้ายังไม่ Shipped (AC3), payment full/partial คำนวณคงค้าง (ECP-021 AC1/AC2), ห้ามเกินคงค้าง
-  (AC3), รายการ+filter (ECP-022; AC3 ปฏิเสธ role)
+**E15 — Invoice (issue v1 + VAT snapshot) + Payment** **[CHANGED]** (ECP-020,021,022)
+- ไฟล์: `modules/invoice` + FE | ขึ้นกับ: E14, E19, **E21 (VATConfig)** | Stories: ECP-020,021,022
+- DoD: `POST /pos/:id/invoice` ออก **version 1 (parent=null)** จาก PO=Shipped, **subtotal=Σ(qty×unit_price), ดึง rate ปัจจุบันจาก VATConfig → snapshot `vat_rate_applied`, คำนวณ vat_amount=round(subtotal×rate/100,2), total=subtotal+vat (ECP-020 AC1)**;
+  block ออกสายซ้ำต่อ PO → ชี้ไป revise (ECP-020 AC2), block ถ้ายังไม่ Shipped (AC3);
+  payment full/partial คำนวณคงค้างจาก **total_amount ของ version ล่าสุด** (ECP-021 AC1/AC2), ห้ามเกินคงค้าง (AC3); รายการ+filter+ปฏิเสธ role (ECP-022)
 
-**E16 — Dashboard APIs (ECP-027–033)**
-- ไฟล์: `modules/dashboard` + FE 7 หน้า | ขึ้นกับ: E10,E8,E11,E13,E14,E15,E5
-- DoD: aggregation ต่อ role ตรงข้อมูลจริง, empty state มีคำแนะนำ (ทุก AC2), RBAC ปฏิเสธ role อื่น
-  (ทุก AC3), dashboard คลัง real-time (ECP-028 AC2), dashboard admin แสดงครบ 7 role รวม 0 คน (ECP-033)
+**E20 — Invoice versioning + Payment reconciliation** **[NEW]** (ECP-037, §5.4/§5.5)
+- ไฟล์: `modules/invoice` (revise service, versions query, reconciliation) + FE (timeline versions) | ขึ้นกับ: E15
+- Stories: **ECP-037 (AC1-AC4)** | task-level acceptance:
+  - `POST /invoices/:id/revise`: แก้ได้เฉพาะ **version ล่าสุดของสาย** → สร้าง `version = n+1`, `parent_invoice_id = id ของ v(n)`, snapshot VAT rate ปัจจุบันใหม่, ตั้ง v(n) = **Superseded (read-only)** (ECP-037 AC1)
+  - `GET /pos/:id/invoice/versions`: คืนทั้งสายเรียงเวลา + ป้าย "ถูกแทนที่โดย vN เมื่อ [เวลา] โดย [ผู้แก้]"; version เก่าเปิดดูได้ครบไม่ถูกเขียนทับ (ECP-037 AC2)
+  - แก้ version ที่ไม่ใช่ล่าสุด → block + ลิงก์ไป version ล่าสุด (ECP-037 AC3)
+  - version ต้องมี ≥1 line มิฉะนั้น block (ECP-037 AC4)
+  - **Payment reconciliation (§5.5):** payment ผูก chain (invoice_chain_key), carry-over เมื่อมี version ใหม่, recompute status (Issued/PartiallyPaid/Paid) จาก Σpayment vs total ของ version ล่าสุด, ธง `overpaid` + เตือนเมื่อ total ใหม่ < ยอดจ่าย, เตือนก่อน revise ถ้ามี payment แล้ว
+  - **นโยบาย `INVOICE_EDIT_AFTER_PAYMENT` (config)**: default = allow (BA default); เปลี่ยนเป็น block ได้ด้วย config เดียว — **⚠ UAT ต้องยืนยันกับปอนด์** (ดู Q7/E)
+  - audit `ReviseInvoice` (E5)
+
+**E21 — VATConfig + Admin Portal (VAT settings)** **[NEW]** (ECP-038)
+- ไฟล์: `modules/user`(vat-config service) หรือ `modules/vat-config` + FE `pages/admin/*` | ขึ้นกับ: E3
+- Stories: **ECP-038 (AC1-AC3)** | task-level acceptance:
+  - `GET/PUT /admin/vat-config` (permission `admin.manage_vat_config`, Admin only)
+  - PUT บันทึก rate ใหม่ (0–100 validate; นอกช่วง → error "อัตรา VAT ต้องอยู่ระหว่าง 0% ถึง 100%" คงค่าเดิม, ECP-038 AC3)
+  - ค่าใหม่มีผลกับ invoice ที่ออกใหม่เท่านั้น (E15 อ่านตอนออกเอกสาร) — invoice เดิม snapshot ไม่เปลี่ยน (ECP-038 AC2)
+  - FE: ส่วน "ตั้งค่า VAT" อยู่ **หน้าเดียวกับจัดการผู้ใช้งาน** (route `/admin`, ECP-038 AC1)
+  - audit `UpdateVATConfig` (E5)
+
+**E16 — Dashboard APIs** (คงเดิม) (ECP-027–033)
+- ไฟล์: `modules/dashboard` + FE 7 หน้า | ขึ้นกับ: E10,E8,E11,E13,E14,E15,E5 | DoD: aggregation ตรงจริง, empty state, RBAC, dashboard คลัง real-time, admin ครบ 7 role รวม 0 คน
 
 ### กลุ่ม Frontend cross-cutting
 
-**E17 — FE foundation: router, auth/permission guard, apiClient, socket, error UX, layout/menu, onboarding**
-- ไฟล์: `src/frontend/lib/*`, `components/*`, `App.tsx`, `router.tsx`
-- Stories: **ECP-034, ECP-036** (+ เป็นฐานของทุกหน้า) | ขึ้นกับ: E2, E3
-- DoD: เมนู/home ตาม permission (ECP-034 AC1), onboarding tour ครั้งแรก (AC2), role ว่างเปล่า
-  → ข้อความติดต่อ Admin (AC3), error กลางเป็นไทยไม่โผล่ technical (ECP-036 AC1/AC2),
-  socket client invalidate React Query + fallback polling (ADR-004)
+**E17 — FE foundation: ui/ wrapper + router + auth/permission guard + apiClient + socket + error UX + layout/menu + onboarding** **[CHANGED]** (ADR-008 rev.2)
+- ไฟล์: `src/frontend/ui/*` (**wrapper layer**), `lib/*`, `hooks/*`, `components/*`, `App.tsx`, `router.tsx`, `.eslintrc`
+- Stories: **ECP-034, ECP-036** (+ ฐานทุกหน้า) | ขึ้นกับ: E2, E3
+- DoD: **สร้าง `ui/` ห่อ antd (Button/DataTable/Form/Modal/StatusTag/Notify/Tooltip/OnboardingTour/Steps/Layout/Menu/theme)**;
+  **ESLint `no-restricted-imports` ห้าม import antd นอก `ui/`** (CI/lint ผ่าน);
+  business logic อยู่ใน hooks ไม่พึ่ง antd; เมนู/home ตาม permission (ECP-034 AC1), onboarding tour ครั้งแรก (AC2), role ว่าง → ติดต่อ Admin (AC3);
+  error ไทยไม่โผล่ technical ผ่าน `ui/Notify` (ECP-036); **FE refetch `/auth/me` เป็นระยะ/เมื่อ 401-403 เพื่อ sync เมนูภายในกรอบ TTL (ADR-005 rev.2)**;
+  socket client invalidate React Query + fallback polling
 
-> FE ของแต่ละโดเมนรวมอยู่ในงาน E6/E10/E11/E13/E14/E15/E16 ที่ระบุ "+ FE" แล้ว โดยใช้ฐานจาก E17
+> FE ของแต่ละโดเมนรวมใน E6/E10/E11/E13/E14/E15/E20/E21/E16 (ที่ระบุ "+ FE") ใช้ฐานจาก E17
 
-**ลำดับแนะนำ**: E0 → E1 → (E19, E2) → (E3, E5, E7) → E4 → E6 → E8 → E9 → E10 → E11 →
-(E12, E13) → E14 → E15 → E16 ; E17 เริ่มขนานได้หลัง E2/E3
+**ลำดับแนะนำ**: E0 → E1 → (E19, E2) → (E3, E5, E7) → E4 → **E21** → E6 → E8 → E9 → E10 → E11 → (E12, E13) → E14 → E15 → **E20** → E16 ; E17 เริ่มขนานหลัง E2/E3
+(E21 ก่อน E15 เพราะ E15 ต้องอ่าน VATConfig; E20 หลัง E15)
 
 ---
 
-## B. Story → Task Coverage (ครบ ECP-001–036)
+## B. Story → Task Coverage (ครบ ECP-001–038)
 
 | Story | Engineer task | Story | Engineer task |
 |---|---|---|---|
-| ECP-001 | E6 | ECP-019 | E14 |
-| ECP-002 | E6 | ECP-020 | E15 |
-| ECP-003 | E6 | ECP-021 | E15 |
-| ECP-004 | E10 (+E9,E19) | ECP-022 | E15 |
-| ECP-005 | E10 | ECP-023 | E4 |
-| ECP-006 | E10 (+E13,E14,E15) | ECP-024 | E3 |
-| ECP-007 | E8 | ECP-025 | E2,E5 |
-| ECP-008 | E8 (+E19) | ECP-026 | E5 |
-| ECP-009 | E9 | ECP-027 | E16 |
-| ECP-010 | E8 | ECP-028 | E16 (+E8) |
-| ECP-011 | E11 | ECP-029 | E16 |
-| ECP-012 | E11 | ECP-030 | E16 |
-| ECP-013 | E11 (+E19) | ECP-031 | E16 |
-| ECP-014 | E12 | ECP-032 | E16 |
-| ECP-015 | E13 | ECP-033 | E16 |
-| ECP-016 | E13 | ECP-034 | E17 |
-| ECP-017 | E13 | ECP-035 | (UAT — QA, ดู C) |
-| ECP-018 | E14 | ECP-036 | E17 (+E2 error กลาง) |
+| ECP-001 | **E6 (+E19 auto-gen)** | ECP-020 | **E15 (VAT snapshot)** |
+| ECP-002 | E6 | ECP-021 | E15 |
+| ECP-003 | E6 | ECP-022 | E15 |
+| ECP-004 | E10 (+E9,E19) | ECP-023 | **E4 (+E19 auto-gen)** |
+| ECP-005 | E10 | ECP-024 | E3 |
+| ECP-006 | E10 (+E13,E14,E15) | ECP-025 | E2,E5 |
+| ECP-007 | E8 | ECP-026 | E5 |
+| ECP-008 | E8 (+E19) | ECP-027 | E16 |
+| ECP-009 | E9 | ECP-028 | E16 (+E8) |
+| ECP-010 | **E8 (AC4→E8 reconciliation, Q7)** | ECP-029 | E16 |
+| ECP-011 | E11 | ECP-030 | E16 |
+| ECP-012 | E11 | ECP-031 | E16 |
+| ECP-013 | E11 (+E19) | ECP-032 | E16 |
+| ECP-014 | E12 | ECP-033 | E16 |
+| ECP-015 | E13 | ECP-034 | E17 |
+| ECP-016 | E13 | ECP-035 | (UAT — QA, §C Q6) |
+| ECP-017 | E13 | ECP-036 | E17 (+E2 error กลาง) |
+| ECP-018 | E14 | **ECP-037** | **E20 [NEW]** |
+| ECP-019 | E14 | **ECP-038** | **E21 [NEW]** |
 
-ทุก story มี ≥1 engineer task รองรับ (ECP-035 = usability UAT ที่ QA รัน ไม่ใช่ feature โค้ด
-แต่ทุกหน้าจอที่ UAT ใช้มาจาก E6–E17)
+ทุก story ECP-001–038 มี ≥1 engineer task (ECP-035 = usability UAT ที่ QA รัน).
 
 ---
 
-## C. QA Tasks (ทำขนานกับ Engineer — เขียนจาก AC + API contract)
+## C. QA Tasks (ทำขนานกับ Engineer)
 
-รูปแบบ: **ระดับที่ automate | ขอบเขต | test data ที่ต้องใช้**
+**Q1 — Unit: business logic ล้วน** **[CHANGED]**
+- ครอบคลุม: BOM check (ECP-009), reservation/release math (ECP-010 AC1/AC2), **invoice subtotal/VAT snapshot math: vat=round(subtotal×rate/100,2), total (ECP-020 AC1)**, payment คงค้าง/เกิน (ECP-021), state transition ที่ห้าม (ECP-005/019/020 AC3), **invoice versioning rules: revise เฉพาะ version ล่าสุด, ≥1 line, parent chain (ECP-037 AC3/AC4)**, **VAT rate validate 0–100 (ECP-038 AC3)**, number format+padding (ADR-006 rev.2)
+- test data: material/BOM คงที่, invoice/payment ตัวอย่าง, ชุด VAT rate (7/10/0/-5/150)
 
-**Q1 — Unit: business logic ล้วน**
-- ระดับ: **unit** (service functions, ไม่แตะ DB จริงได้ด้วย mock/prisma test)
-- ครอบคลุม AC เชิงกฎ: BOM check คำนวณ need/ขาด (ECP-009 AC1/AC2), reservation/release math
-  (ECP-010 AC1/AC2), invoice amount=Σ(qty×price) (ECP-020), payment คงค้าง/เกิน (ECP-021 ทุก AC),
-  state machine transition ที่ห้าม (ECP-005 AC2, ECP-019 AC2, ECP-020 AC3), number format (ADR-006)
-- test data: ชุด material/BOM ตัวเลขคงที่, invoice/payment ตัวอย่าง
+**Q2 — Integration: API + DB (transaction/real-time correctness)** **[CHANGED]**
+- ครอบคลุม: goods receipt→balance/ledger atomic, confirm PO reserve+emit, cancel คืนครั้งเดียว, produce หัก physical+block เบิกเกิน, QC→shipment gate, **invoice issue v1 VAT snapshot (ECP-020)**, **revise→v2+Superseded+parent (ECP-037 AC1/AC2), block แก้ version เก่า (AC3)**, **payment reconciliation carry-over + overpaid flag (§5.5)**, **VATConfig PUT → invoice ใหม่ใช้ rate ใหม่, invoice เดิม snapshot ไม่เปลี่ยน (ECP-038 AC1/AC2)**, audit append-only (ECP-026 AC3), RBAC 403 (รวม `admin.manage_vat_config`, `invoice.revise`), guardrail lockout (ECP-024 AC2), traceability หลาย Lot/Batch (ECP-014)
+- test data: seed §8 + WebSocket test client
 
-**Q2 — Integration: API + DB (transaction/real-time correctness)**
-- ระดับ: **integration** (ยิง endpoint จริง + MySQL test schema + seed)
-- ครอบคลุม: goods receipt → balance/ledger atomic (ECP-008,007), confirm PO reserve +
-  emit event (ECP-004,010), cancel คืนครั้งเดียว (ECP-005 AC3), produce หัก physical + block
-  เบิกเกิน (ECP-013,010 AC3), QC approve/reject → shipment gate (ECP-015,018), invoice/payment
-  flow (ECP-020,021), audit append-only (ECP-026 AC3 ลอง DELETE/PUT → 403), RBAC 403 เมื่อเรียก
-  URL ตรง (ECP-016/022/027–033 AC3), guardrail lockout (ECP-024 AC2), traceability หลาย Lot/Batch
-  (ECP-014 AC1/AC2)
-- test data: seed §8 + ผูก WebSocket test client ฟัง `stock.changed`
-
-**Q3 — E2E: end-to-end demo flow (DoD หลัก)**
-- ระดับ: **e2e** (Playwright/Cypress ผ่าน UI)
-- ครอบคลุม: flow ECP-004→009→010→011→012→013→015→018→020→021 ครบไม่สะดุด (DoD ข้อ 1),
-  timeline PO 5 สถานะ (ECP-006 AC1), stock หน้าจอ update real-time หลังทำธุรกรรมโดยไม่ refresh
-  (ECP-007 AC1 / ECP-028 AC2), เมนูตาม role + onboarding (ECP-034)
+**Q3 — E2E: demo flow** **[CHANGED]**
+- ครอบคลุม: flow ECP-004→...→020→021 ครบ **รวม VAT ในยอด invoice**, **demo revise invoice → v2 timeline (ECP-037)**, **Admin ตั้งค่า VAT ในหน้าเดียวกับจัดการผู้ใช้ (ECP-038 AC1)**, timeline PO 5 สถานะ, stock update real-time ไม่ refresh, เมนูตาม role+onboarding
 - test data: seed reset ก่อนรัน
 
-**Q4 — Real-time & timing metrics (KPI)**
-- ระดับ: integration + e2e วัดเวลา
-- ครอบคลุม: stock update ≤1 นาที (KPI#1, ECP-007), traceability ≤5 นาที/ตอบเร็ว (KPI#2, ECP-014),
-  insufficient-stock alert 100% ของ test case (KPI#4, ECP-004 AC2/ECP-009) — ออกแบบชุด test case
-  ให้ครบทุก material-shortage pattern
-- test data: material ยอดต่ำ/เป็น 0/พอ (จาก seed §8)
+**Q4 — Real-time & timing metrics (KPI)** (คงเดิม)
+- stock update ≤1 นาที, traceability ≤5 นาที, insufficient-stock alert 100% ของ test case
 
-**Q5 — Error message audit (ECP-036)**
-- ระดับ: e2e/สแกน UI ทุกหน้าที่มี error case
-- ครอบคลุม: ทุก error case ใน AC ของ story อื่น แสดงข้อความไทยชัด ไม่มี null/undefined/stack/
-  ศัพท์เทคนิค (ECP-036 AC1/AC2/AC3 = 0 รายการหลุด)
+**Q5 — Error message audit (ECP-036)** (คงเดิม)
+- ทุก error case แสดงไทยชัด ไม่มี null/undefined/stack/ศัพท์เทคนิค (0 หลุด) — **รวมข้อความใหม่ของ ECP-037/038**
 
-**Q6 — Usability UAT (ECP-035, KPI#5)**
-- ระดับ: manual UAT (ไม่ automate) — QA ออกแบบ scenario task หลักต่อ role, วัด ≥80% ทำจบเอง
-  โดยไม่ training, บันทึกจุดติดขัดเป็น user journey data (ECP-035 AC2)
-- **Dependency (ECP-035 AC3)**: QA ต้องถามปอนด์ "จำนวนผู้ใช้ทดสอบต่อ role" ก่อนวางแผน UAT
-  — เป็น open item ของ QA ตอนใกล้ UAT **ไม่ block Gate 1 / ไม่ block เริ่มโค้ด**
+**Q6 — Usability UAT (ECP-035, KPI#5)** (คงเดิม)
+- manual UAT ≥80% ทำจบเอง; **Dependency (ECP-035 AC3): QA ถามปอนด์ "จำนวนผู้ใช้ทดสอบต่อ role" ก่อน UAT** — ไม่ block เริ่มโค้ด
+
+**Q7 — Concurrency, accuracy & permission-TTL** **[NEW]**
+- ระดับ: integration (+ script ยิงขนาน)
+- ครอบคลุม:
+  - **Stock ledger accuracy 100% (ECP-010 AC4):** ยิงธุรกรรมพร้อมกันจำนวนมาก (receipt/reserve/release/issue) หลายผู้ใช้ → `GET /stock/reconciliation` Σledger = physical **ตรง 100% ไม่มีส่วนต่าง** (ยืนยัน row-lock §NFR N1 ทำงาน)
+  - **NumberSequence concurrency (ADR-006 rev.2):** ยิงสร้างเอกสาร/customer/user พร้อมกัน → **ไม่มีเลขซ้ำ** ทุกชนิด
+  - **Permission TTL ≤5 นาที (ADR-005 rev.2, ECP-023 AC2/ECP-024):** เปลี่ยน role/permission ของ user ที่ login ค้าง → สิทธิ์ใหม่มีผล **ภายใน ≤ PERMISSION_CACHE_TTL (≤5 นาที) โดยไม่ re-login**; ยืนยัน invalidate เชิงรุกก็มีผลเกือบทันที
+  - **Reconciliation Payment↔version (§5.5):** revise invoice หลังชำระบางส่วน → payment คงอยู่, outstanding คำนวณจาก total ใหม่, overpaid flag เมื่อ total ใหม่ < ยอดจ่าย
+- test data: seed §8 + ชุด concurrency script; **⚠ ผล reconciliation Payment↔version ติดป้ายให้ปอนด์ยืนยัน default (allow-edit-after-payment) ช่วง UAT**
 
 ### AC → Test level (สรุป)
-- กฎ/คำนวณ/validation → **Q1 unit**
-- transaction, RBAC, audit, real-time correctness → **Q2 integration**
-- flow ผู้ใช้จริง + timeline + menu → **Q3 e2e**
-- KPI ตัวเลข (≤1 นาที/≤5 นาที/100%) → **Q4**
-- ข้อความ error → **Q5** ; usability → **Q6 UAT**
+- กฎ/คำนวณ/validation (รวม VAT, versioning rules) → **Q1** ; transaction/RBAC/audit/real-time/reconciliation → **Q2**
+- flow ผู้ใช้ + timeline + menu + revise + VAT config → **Q3** ; KPI ตัวเลข → **Q4**
+- error → **Q5** ; usability → **Q6** ; **concurrency/accuracy/permission-TTL → Q7**
 
-ทุก AC ของ ECP-001–036 ถูก assign อย่างน้อย 1 ระดับ (happy→Q1/Q2/Q3, edge→Q1/Q2, error→Q2/Q5).
+ทุก AC ของ ECP-001–038 ถูก assign ≥1 ระดับ (happy→Q1/Q2/Q3, edge→Q1/Q2/Q7, error→Q2/Q5; accuracy/concurrency/TTL→Q7).
 
 ---
 
-## D. DevOps Tasks (สภาพแวดล้อม/ config — Phase 2 local, ไม่ปิดทาง Phase 3)
+## D. DevOps Tasks
 
-**D1 — Local dev environment (Docker Compose)**
-- Node.js LTS + MySQL 8 ผ่าน `docker-compose.yml`, volume สำหรับ MySQL, hot-reload backend/frontend
-- DoD: `docker compose up` แล้วเข้าใช้งานได้ครบ
+**D1 — Local dev environment (Docker Compose)** (คงเดิม) — Node LTS + MySQL 8, volume, hot-reload
 
-**D2 — Config & secrets (.env)**
-- ตัวแปร: `DATABASE_URL`, `JWT_SECRET`, `PORT`, `NODE_ENV`, `CORS_ORIGIN`, (เผื่อ) `SEQ_*` format
-- DoD: `.env.example` ครบทุกตัว, ไม่มี secret hardcode (ADR-001)
+**D2 — Config & secrets (.env)** **[CHANGED]**
+- ตัวแปร: `DATABASE_URL`, `JWT_SECRET`, `PORT`, `NODE_ENV`, `CORS_ORIGIN`, **`SESSION_TTL` (default 8h)**, **`PERMISSION_CACHE_TTL` (default 60s, clamp ≤300s — ADR-005 rev.2)**, **`VAT_DEFAULT_RATE` (default 7.00 สำหรับ seed — ADR/ECP-038)**, **`INVOICE_EDIT_AFTER_PAYMENT` (default allow — §5.5)**, (เผื่อ) `SEQ_*` format
+- DoD: `.env.example` ครบทุกตัว, ไม่มี secret hardcode; config loader **clamp PERMISSION_CACHE_TTL ≤300s**
 
-**D3 — DB migration & seed automation**
-- รัน `prisma migrate deploy` + `prisma db seed` ใน entrypoint/สคริปต์ setup
-- DoD: เครื่องใหม่ setup ครบใน 1 คำสั่ง, seed reset ได้สำหรับ demo/UAT รอบใหม่
+**D3 — DB migration & seed automation** (คงเดิม) — `prisma migrate deploy` + `db seed` ใน entrypoint; seed reset ได้ (รวม VATConfig=7)
 
-**D4 — Build/run scripts**
-- scripts: dev, build (tsc + vite build + prisma generate), start
-- DoD: build ผ่าน, frontend เป็น static build เสิร์ฟได้
+**D4 — Build/run scripts** (คงเดิม) — dev/build(tsc+vite+prisma generate)/start; **lint (ESLint no-restricted-imports antd) เป็นส่วนของ CI/build (ADR-008 rev.2)**
 
-**D5 — Phase 3 readiness note (ไม่ลงมือ ทำแค่บันทึก)**
-- ระบุ mapping: local MySQL → Cloud SQL, container → Cloud Run, Socket.IO → +Redis adapter
-  (ADR-004), audit DB-immutability hardening (ADR-007) — เป็น backlog Phase 3 ไม่ทำใน prototype
+**D5 — Phase 3 readiness note** **[CHANGED]** (บันทึกอย่างเดียว)
+- mapping: local MySQL → Cloud SQL, container → Cloud Run, Socket.IO → +Redis adapter, audit DB-immutability,
+  **permission cache → shared cache/pub-sub invalidation (ถ้าต้องการทันทีข้าม instance; ปัจจุบัน TTL ≤5 นาที converge อยู่แล้ว)**,
+  **NumberSequence → sharded/hi-lo ถ้า throughput สูงมาก** — เป็น backlog Phase 3 ไม่ทำในรอบนี้
 
 ---
 
-## E. หมายเหตุ open items (ไม่ block Gate 1)
-1. **ADR-006 number format** — ต้องให้ปอนด์ยืนยัน/ปรับที่ Gate 1; ถ้าไม่ระบุ ใช้ default
-   (Engineer ไม่ต้องเดา — มี default ชัดใน ADR-006)
-2. **QA/QC ต้อง Approve ก่อน Shipment เสมอ** — ออกแบบตามนี้ (default GMP), ปอนด์ยืนยันช่วง UAT
-3. **จำนวนผู้ใช้ทดสอบ UAT ต่อ role** (ECP-035 AC3) — QA ถามปอนด์ตอนวางแผน UAT
+## E. หมายเหตุ open items (ไม่ block เริ่มโค้ด — มี default ชัด)
+1. **QA/QC ต้อง Approve ก่อน Shipment เสมอ** — default GMP, ปอนด์ยืนยันช่วง UAT
+2. **จำนวนผู้ใช้ทดสอบ UAT ต่อ role** (ECP-035 AC3) — QA ถามปอนด์ตอนวางแผน UAT
+3. **⚠ Payment↔invoice-version: แก้ไข invoice ที่ชำระแล้วได้หรือไม่** — default = allow (BA/§5.5), เปลี่ยนได้ด้วย config
+   `INVOICE_EDIT_AFTER_PAYMENT`; **ติดป้ายให้ปอนด์ยืนยันช่วง UAT** (Q7). Engineer ไม่ต้องเดา — implement ตาม default
+4. **format Customer/User/เอกสาร** — กำหนดชัดใน ADR-006 rev.2 แล้ว (ปอนด์ยืนยันได้ที่ UAT, บันทึกลง CLAUDE.md เมื่อ final)
