@@ -4,7 +4,7 @@
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
       "current_agent": "ba",
-      "status": "IN_PROGRESS",
+      "status": "READY_FOR_TECHLEAD",
       "human_gates": {
         "gate1_architecture": {"approved": true, "approved_at": "2026-07-06T21:30:00+07:00", "note": "Approved with conditions by Pond: (1) เลขเอกสารทุก format ต้องรองรับปริมาณ/การทำงานพร้อมกันสูง (running number เผื่อหลัก), เพิ่ม format Customer ID และ User ID, Invoice ต้องมี version number และ reference ถึง parent invoice เมื่อมีการแก้ไข (2) GMP rule: OK ตามที่เสนอ (3) role change ไม่ revoke ทันทีได้ แต่ permission ต้องมีผลภายใน TTL ไม่เกิน 5 นาที (4) Ant Design OK แต่ต้องออกแบบเผื่อเปลี่ยน UI library ภายหลัง — เพิ่มเติม: ระบบเน้นความเร็วและความแม่นยำสูง, VAT 7% ต้อง configurable ใน admin portal (ที่เดียวกับหน้า manage user) — เงื่อนไขต้องถูกปรับใน stories/ADR/design ก่อน Engineer เริ่ม"},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
@@ -142,6 +142,26 @@
           "summary": "ออกแบบสถาปัตยกรรม modular monolith (Express+TS / Prisma+MySQL / React+Vite+antd+React Query) บน stack ADR-000 โดยไม่ปิดทาง Phase 3 GCP (stateless, env-config, containerized). กลไก real-time stock = transactional ledger (StockTransaction append-only + StockBalance) เขียนใน $transaction เดียว + push ผ่าน Socket.IO (+fallback polling) ตอบ pain หลักของปอนด์. ออก ADR ใหม่ 8 ฉบับ (001-008), architecture.md (ER 16+ entity, state machines, API surface, permission matrix เต็ม 7 roles, seed strategy), tasks.md (Engineer E0-E19 + QA Q1-Q6 unit/integration/e2e/UAT + DevOps D1-D5) พร้อม story->task table ครบ ECP-001-036. เหลือ 1 จุดให้ปอนด์ยืนยันที่ Gate 1: format เลข Lot/Batch/เอกสาร (ADR-006) — มี default ไม่ block Engineer. ตั้ง WAITING_HUMAN_GATE (Human Gate 1).",
           "overridden_by": null,
           "updated_at": "2026-07-06T21:40:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "status": "READY_FOR_TECHLEAD",
+          "gate_checklist": [
+            {"item": "เงื่อนไข Gate 1 #1 (Invoice versioning + reference parent invoice) ถูกปรับใน story พร้อม AC Given/When/Then ครบ (audit ย้อนกลับได้ว่าแก้จาก version ไหน)", "pass": true, "missing": null},
+            {"item": "เงื่อนไข Gate 1 #2 (VAT 7% configurable ใน Admin Portal เดียวกับหน้า manage user, ไม่กระทบ invoice เดิม) มี story+AC ครบ", "pass": true, "missing": null},
+            {"item": "เงื่อนไข Gate 1 #3 (Customer ID/User ID ระบบ gen อัตโนมัติ ห้าม user กรอกเอง) ถูกปรับใน AC ของ story สร้างลูกค้า/สร้าง user", "pass": true, "missing": null},
+            {"item": "เงื่อนไข Gate 1 #4 (NFR ความเร็ว+ความแม่นยำสูง โดยเฉพาะ stock ledger แม่นยำ 100%) มีหัวข้อ/AC ครอบคลุม โดยอ้างอิงตัวเลข Business Key Value เดิมจาก brief ไม่ตั้งใหม่ขัดกัน", "pass": true, "missing": null},
+            {"item": "story ใหม่/ที่แก้ไขทั้งหมดมี ≥3 AC แบบ Given/When/Then ที่ทดสอบได้ (happy/edge/error)", "pass": true, "missing": null},
+            {"item": "Mapping tables (scope→story, DoD→AC) อัปเดตครอบคลุมของใหม่ทั้งหมด", "pass": true, "missing": null},
+            {"item": "ไม่มี story ใดต้องเดา business rule ใหม่โดยไม่มีที่มา (จุดที่เป็นข้อสมมติถูกทำเครื่องหมาย ⚠ ชัดเจน ไม่ block)", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-core-prototype/user-stories.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "รอบ amendment หลัง Gate 1 approved-with-conditions: เพิ่ม ECP-037 (แก้ไข invoice → สร้าง version ใหม่ + parent_invoice_id, 4 AC) และ ECP-038 (Admin ตั้งค่า VAT rate default 7% ใน Admin Portal เดียวกับหน้า manage user, 3 AC ครอบคลุมว่าแก้ rate แล้วกระทบเฉพาะ invoice ใหม่) เป็น Epic 11 ใหม่; แก้ไข ECP-020 AC1/AC2 ให้คำนวณ VAT และชี้ทางไปฟังก์ชันแก้ไข version แทนการ block ซ้ำแบบเดิม; แก้ไข ECP-001 (AC1 + เพิ่ม AC4) และ ECP-023 (AC1 + เพิ่ม AC4) ให้ customer_id/user_id เป็น auto-generate ห้าม client กำหนดเอง; เพิ่ม ECP-010 AC4 (accuracy 100% ของ stock ledger) และหัวข้อ NFR ใหม่ที่ผูกตัวเลข BKV เดิมจาก brief (ไม่ตั้งใหม่ขัดกัน) ตอบเงื่อนไข 'เร็ว+แม่นยำ' ของปอนด์; ปรับ Data Rules (entity Invoice โครงสร้างใหม่ทั้ง version/parent/vat, entity VATConfig ใหม่, Customer/User เพิ่มหมายเหตุ auto-gen); อัปเดต mapping tables (scope + DoD) ให้ครอบคลุม ECP-037/038; เพิ่มหัวข้อ Changelog รอบ Gate 1 ต้นเอกสารให้ Tech-Lead เห็นชัดว่าอะไรเปลี่ยน มีข้อสมมติใหม่ 1 จุดที่ไม่ block (ห้ามแก้ไข invoice ที่ชำระเงินแล้วหรือไม่ — BA ออกแบบ default อนุญาตแก้ไขได้เสมอถ้าเป็น version ล่าสุด ทำเครื่องหมาย ⚠ ให้ยืนยันก่อน UAT) ครบทั้ง 4 เงื่อนไข ไม่มีคำถาม block ส่งต่อ Tech-Lead ให้ปรับ ADR/design ต่อ",
+          "overridden_by": null,
+          "updated_at": "2026-07-06T23:50:00+07:00"
         }
       ]
     }
