@@ -192,6 +192,66 @@
           "summary": "รอบ revision หลัง Gate 1 approved-with-conditions: แก้ ADR-005 (permission cache TTL ≤5 นาที แทน token snapshot), ADR-006 (เผื่อหลัก running number + NumberSequence concurrency-safe ใน tx + row-lock, เพิ่ม Customer/User ID auto-gen, Invoice version chain = invoice_no คงที่+version+parent self-FK พร้อมเหตุผล), ADR-008 (ui/ wrapper layer + ESLint ห้าม import antd นอก ui/ ลด lock-in). แก้ architecture.md: ER Invoice (version/parent/subtotal/vat_rate_applied/vat_amount/total/Superseded) + VATConfig ใหม่ + Customer/User auto-gen, state machine §5.4 invoice versioning, §5.5 Payment↔version reconciliation (default allow-edit-after-payment, payment ผูก chain, overpaid flag, config เปลี่ยนได้), หัวข้อ NFR ใหม่ (isolation+row-lock+reconciliation+indexing), API (revise/versions/vat-config/reconciliation, strip customer_id/user_id), permission matrix (+admin.manage_vat_config, +invoice.revise), seed (+VATConfig 7% + demo revise). แก้ tasks.md: เพิ่ม E20 (invoice versioning+reconciliation ECP-037), E21 (VATConfig admin ECP-038), Q7 (concurrency/accuracy/permission-TTL); แก้ E1/E2/E3/E4/E6/E8/E15/E17/E19 + Q1/Q2/Q3/Q4/Q5 + D2/D4/D5; story→task ครบ ECP-001–038. ครบทั้ง 6 เงื่อนไขปอนด์ + stories ใหม่ map เข้า task ครบ ไม่มีจุดที่ Engineer ต้องเดา (open items มี default ชัด + ป้าย UAT). Gate 1 ถูก approve แล้ว → ตั้ง READY_FOR_ENGINEER ให้ Engineer กับ QA เริ่มขนานกัน",
           "overridden_by": null,
           "updated_at": "2026-07-06T23:58:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "test-plan",
+          "status": "IN_PROGRESS",
+          "gate_checklist": [
+            {"item": "ทุก story มี test case map ครบ", "pass": true, "missing": null},
+            {"item": "เคส NFR/concurrency ครอบคลุม", "pass": true, "missing": null},
+            {"item": "automated spec พร้อมรัน", "pass": true, "missing": "ยังรันจริงไม่ได้จนกว่า Engineer ทำ E0 (package.json/tsconfig/scaffolding) เสร็จ และเพิ่ม devDependency ทดสอบ (jest/ts-jest/supertest/socket.io-client/@playwright/test) — ระบุไว้ชัดใน test-plan.md §0/§7 ไม่ใช่ gap ที่ QA ละเลย"}
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/test-plan.md",
+            "tests/unit/bomCheck.spec.ts",
+            "tests/unit/stockReservation.spec.ts",
+            "tests/unit/invoiceVat.spec.ts",
+            "tests/unit/paymentOutstanding.spec.ts",
+            "tests/unit/invoiceVersioning.spec.ts",
+            "tests/unit/vatConfigValidation.spec.ts",
+            "tests/unit/numberSequenceFormat.spec.ts",
+            "tests/unit/stateTransitions.spec.ts",
+            "tests/integration/customer.spec.ts",
+            "tests/integration/po.spec.ts",
+            "tests/integration/stock.spec.ts",
+            "tests/integration/production.spec.ts",
+            "tests/integration/traceability.spec.ts",
+            "tests/integration/qc.spec.ts",
+            "tests/integration/shipping.spec.ts",
+            "tests/integration/invoice.spec.ts",
+            "tests/integration/invoiceVersioningReconciliation.spec.ts",
+            "tests/integration/vatConfigAdmin.spec.ts",
+            "tests/integration/userRbac.spec.ts",
+            "tests/integration/auditLog.spec.ts",
+            "tests/integration/dashboard.spec.ts",
+            "tests/integration/concurrency/stockLedgerAccuracy.spec.ts",
+            "tests/integration/concurrency/numberSequence.spec.ts",
+            "tests/integration/concurrency/permissionTtl.spec.ts",
+            "tests/integration/concurrency/paymentVersionReconciliation.spec.ts",
+            "tests/e2e/demoFlow.spec.ts",
+            "tests/e2e/invoiceRevisionTimeline.spec.ts",
+            "tests/e2e/adminVatConfig.spec.ts",
+            "tests/e2e/roleMenuOnboarding.spec.ts",
+            "tests/e2e/realtimeStock.spec.ts",
+            "tests/e2e/errorMessageAudit.spec.ts",
+            "tests/helpers/testClient.ts",
+            "tests/helpers/fixtures.ts"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "แผน UAT (ECP-035 AC3, KPI#5): ต้องการผู้ทดสอบใหม่กี่คนต่อ role? QA ตั้ง default = 1 คน/role (7 คนรวม) ตามถ้อยคำ AC1 เป๊ะ แต่ sample size ขนาดนี้อาจไม่พอให้ตัวเลข '≥80% ของ scenario' น่าเชื่อถือทางสถิติ (ผลอาจสะท้อนแค่คนคนเดียวเก่ง/ไม่เก่ง ไม่ใช่ตัวแทนของ role จริง)",
+              "options": [
+                "A) 1 คน/role (7 คนรวม) ตาม default ของ AC1 แม้ sample size เล็ก — ยอมรับความเสี่ยงนี้สำหรับ prototype",
+                "B) 2-3 คน/role (14-21 คนรวม) เพื่อความน่าเชื่อถือของตัวเลข 80% มากขึ้น",
+                "C) อื่นๆ (โปรดระบุจำนวน)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "เขียน test-plan.md ครบ: traceability matrix ทุก AC (119 ACs จาก ECP-001–038) → TC ID/level/automatable พร้อมเหตุผลของส่วนที่ไม่ automate ได้ (ECP-035 usability UAT ต้องใช้มนุษย์จริง ~3%), automation coverage ~91% เต็ม + ~6% บางส่วน, ออกแบบเคสวิกฤต 4 จุดตามที่ Gate 1 เน้นย้ำ (stock ledger accuracy 100% concurrency, NumberSequence ไม่ซ้ำ, permission TTL ≤5 นาทีไม่ re-login รวมทดสอบ clamp ≤300s, payment↔invoice-version reconciliation รวม overpaid flag) และเพิ่ม exploratory case 7 ข้อนอกเหนือ AC เดิม (double-submit, clock skew, boundary ตัวเลข, VAT rounding, PO cancel หลัง invoiced, concurrent revise, audit ของ action ที่ fail) เขียน automated spec จริง 27 ไฟล์ (unit 8 + integration 13 + concurrency 4 + e2e 6, ระบุ import path/endpoint ตาม architecture.md §6 พร้อม TODO ให้ Engineer ยืนยัน signature จริง) ยังรันไม่ได้จนกว่า Engineer ทำ E0 เสร็จ (ระบุชัดใน §0/§7 ไม่ block). มี 1 คำถามใหม่ถึงปอนด์เรื่องจำนวนผู้ทดสอบ UAT ต่อ role (ไม่ block เริ่มโค้ด Engineer). ไม่แก้ feature-level current_agent/status (ยังเป็นของ Engineer ในเฟสนี้).",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T10:30:00+07:00"
         }
       ]
     }
