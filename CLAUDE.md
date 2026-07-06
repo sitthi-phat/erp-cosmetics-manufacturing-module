@@ -68,6 +68,8 @@ Hard rules:
 
 - Cosmetics manufacturing → GMP compliance and full traceability
   (raw-material Lot → production Batch → finished goods) is an implicit requirement in every feature.
+- **Tech stack (decided by Pond, 2026-07-06)**: React (web frontend) + Node.js (backend) + MySQL (database).
+  See [ADR-000](docs/adr/000-tech-stack.md). Tech-Lead must design on this stack — do not propose alternatives.
 - <!-- Add rules Pond answers repeatedly here: e.g. Lot number format, units of measure, timezone -->
 
 ## Retro Gate (after every feature)
