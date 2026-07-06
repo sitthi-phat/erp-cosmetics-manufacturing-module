@@ -1,6 +1,8 @@
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import { config } from "./config";
 import { requestId } from "./middleware/requestId";
 import { auth } from "./middleware/auth";
@@ -20,6 +22,8 @@ import { invoiceRouter, poInvoiceRouter } from "./modules/invoice/invoice.routes
 import { vatConfigRouter } from "./modules/vatConfig/vatConfig.routes";
 import { auditRouter } from "./modules/audit/audit.routes";
 import { dashboardRouter } from "./modules/dashboard/dashboard.routes";
+
+const execFileAsync = promisify(execFile);
 
 /**
  * Middleware pipeline per architecture.md §1/§6:
@@ -41,6 +45,26 @@ export function createApp(): Express {
 
   const api = express.Router();
   api.use("/auth", authRouter);
+
+  /**
+   * QA test-only seed-reset hook (tests/helpers/testClient.ts#resetSeed, DEF-02 reconciliation).
+   * Never mounted in production. Re-runs prisma/seed.ts (idempotent full reset+reseed) as a
+   * child process so integration/e2e specs can start every suite from the known seed state
+   * without the test runner needing its own Prisma/DB wiring.
+   */
+  if (config.nodeEnv !== "production") {
+    api.post("/test/seed-reset", async (_req, res, next) => {
+      try {
+        await execFileAsync("npx", ["tsx", "prisma/seed.ts"], {
+          cwd: process.cwd(),
+          shell: true
+        });
+        res.status(200).json({ data: { ok: true } });
+      } catch (err) {
+        next(err);
+      }
+    });
+  }
 
   // Everything below requires a valid session + resolved (fresh, TTL-bounded) permissions.
   api.use(auth, resolvePermission);
@@ -66,3 +90,10 @@ export function createApp(): Express {
 
   return app;
 }
+
+/**
+ * Ready-made instance (architecture.md §2 assumption, reconciled with QA's
+ * tests/helpers/testClient.ts which imports a named `app` export directly for supertest).
+ * `server.ts` still uses `createApp()` directly; this singleton exists purely for test wiring.
+ */
+export const app: Express = createApp();

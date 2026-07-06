@@ -40,10 +40,19 @@ export function ShippingPage() {
           rows={eligible ?? []}
           rowKey={(b: any) => b.id}
           emptyText="ไม่มี Batch ที่พร้อมจัดส่งในขณะนี้"
+          getRowTestId={(b: any) => `selectable-batch-${b.batchNumber}`}
           columns={[
             { key: "batchNumber", title: "เลข Batch", dataIndex: "batchNumber" },
             { key: "product", title: "สินค้า", render: (b: any) => b.product?.name },
-            { key: "actions", title: "", render: (b: any) => <Button onClick={() => setCreateTarget(b.id)}>สร้างบันทึกจัดส่ง</Button> }
+            {
+              key: "actions",
+              title: "",
+              render: (b: any) => (
+                <Button onClick={() => setCreateTarget(b.id)} testId="nav-shipping-create-row">
+                  สร้างบันทึกจัดส่ง
+                </Button>
+              )
+            }
           ]}
         />
       </Card>
@@ -53,18 +62,23 @@ export function ShippingPage() {
         rowKey={(s: any) => s.id}
         columns={[
           { key: "shipmentNumber", title: "เลขที่จัดส่ง", dataIndex: "shipmentNumber" },
-          { key: "status", title: "สถานะ", render: (s: any) => <StatusTag status={s.status} /> },
+          { key: "status", title: "สถานะ", render: (s: any) => <StatusTag status={s.status} testId="shipment-status-badge" /> },
           {
             key: "actions",
             title: "",
-            render: (s: any) => (s.status === "Shipped" ? <Button onClick={() => setDeliverTarget(s.id)}>บันทึกส่งถึงลูกค้า</Button> : null)
+            render: (s: any) =>
+              s.status === "Shipped" ? (
+                <Button onClick={() => setDeliverTarget(s.id)}>บันทึกส่งถึงลูกค้า</Button>
+              ) : null
           }
         ]}
       />
       <Modal open={createTarget !== null} title="สร้างบันทึกการจัดส่ง" onCancel={() => setCreateTarget(null)}>
         <Form onSubmit={handleCreate}>
-          <DateField name="shippedDate" label="วันที่จัดส่ง" required />
-          <SubmitButton loading={createShipment.isPending}>บันทึก</SubmitButton>
+          <DateField name="shippedDate" label="วันที่จัดส่ง" required testId="shipment-date" />
+          <SubmitButton loading={createShipment.isPending} testId="shipment-submit">
+            บันทึก
+          </SubmitButton>
         </Form>
       </Modal>
       <Modal open={deliverTarget !== null} title="บันทึกวันที่ส่งถึงลูกค้า" onCancel={() => setDeliverTarget(null)}>

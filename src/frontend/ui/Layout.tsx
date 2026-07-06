@@ -7,6 +7,8 @@ export interface MenuItem {
   key: string;
   label: string;
   onClick: () => void;
+  /** Forwarded as `data-testid` on the menu item's label span (QA DEF-03). */
+  testId?: string;
 }
 
 export interface AppShellProps {
@@ -25,7 +27,11 @@ export function AppShell({ menuItems, selectedKey, headerRight, children }: AppS
         <AntMenu
           mode="inline"
           selectedKeys={[selectedKey]}
-          items={menuItems.map((m) => ({ key: m.key, label: m.label, onClick: m.onClick }))}
+          items={menuItems.map((m) => ({
+            key: m.key,
+            label: <span data-testid={m.testId ?? `nav-${m.key}`}>{m.label}</span>,
+            onClick: m.onClick
+          }))}
         />
       </Sider>
       <AntLayout>

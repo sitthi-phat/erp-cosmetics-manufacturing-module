@@ -31,9 +31,11 @@ export function LoginPage() {
       <Card title="เข้าสู่ระบบ ERP Cosmetics Factory">
         <div style={{ width: 320 }}>
           <Form onSubmit={handleSubmit}>
-            <TextField name="username" label="ชื่อผู้ใช้ (username)" required />
-            <PasswordField name="password" label="รหัสผ่าน" required />
-            <SubmitButton loading={loading}>เข้าสู่ระบบ</SubmitButton>
+            <TextField name="username" label="ชื่อผู้ใช้ (username)" required testId="login-username" />
+            <PasswordField name="password" label="รหัสผ่าน" required testId="login-password" />
+            <SubmitButton loading={loading} testId="login-submit">
+              เข้าสู่ระบบ
+            </SubmitButton>
           </Form>
         </div>
       </Card>

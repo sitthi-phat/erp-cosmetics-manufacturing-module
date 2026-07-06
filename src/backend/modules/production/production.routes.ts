@@ -89,6 +89,9 @@ productionRouter.post(
         });
 
     await prisma.purchaseOrder.update({ where: { id: poLine.poId }, data: { status: "InProduction" } });
+    // ECP-006 AC1: PO timeline must show all 5 steps (Confirmed/InProduction/QC Approved/
+    // Shipped/Invoiced) with a timestamp each - record the InProduction transition explicitly.
+    await prisma.pOStatusEvent.create({ data: { poId: poLine.poId, status: "InProduction" } });
 
     return {
       status: 201,

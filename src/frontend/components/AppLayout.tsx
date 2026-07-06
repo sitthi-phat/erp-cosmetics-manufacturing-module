@@ -26,7 +26,9 @@ export function AppLayout() {
           <span>
             {me?.fullName} ({me?.role})
           </span>
-          <Button onClick={handleLogout}>ออกจากระบบ</Button>
+          <Button onClick={handleLogout} testId="logout-button">
+            ออกจากระบบ
+          </Button>
         </div>
       }
     >

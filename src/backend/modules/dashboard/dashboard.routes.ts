@@ -21,10 +21,13 @@ dashboardRouter.get("/:role", async (req, res, next) => {
     switch (role) {
       case "sales": {
         const grouped = await prisma.purchaseOrder.groupBy({ by: ["status"], _count: true });
+        const isEmpty = grouped.length === 0;
         res.json({
           data: {
             byStatus: grouped.map((g) => ({ status: g.status, count: g._count })),
-            isEmpty: grouped.length === 0
+            isEmpty,
+            // ECP-027 AC2: exact Thai message shown when there are zero POs in the system yet.
+            emptyStateMessage: isEmpty ? "เริ่มต้นสร้าง PO แรกของคุณ" : null
           }
         });
         return;
@@ -39,7 +42,18 @@ dashboardRouter.get("/:role", async (req, res, next) => {
             physicalQty: m.stockBalance ? Number(m.stockBalance.physicalQty) : 0
           }))
           .filter((m) => m.physicalQty < lowStockThreshold);
-        res.json({ data: { lowStock } });
+
+        // ECP-028 AC3: products missing a BOM must not crash the dashboard - surface a separate warning instead.
+        const productsMissingBom = await prisma.product.count({ where: { bom: null } });
+
+        res.json({
+          data: {
+            lowStock,
+            productsMissingBomCount: productsMissingBom,
+            missingBomWarning:
+              productsMissingBom > 0 ? `มีสินค้า ${productsMissingBom} รายการที่ยังไม่มีสูตรในระบบ` : null
+          }
+        });
         return;
       }
       case "production": {
@@ -48,7 +62,14 @@ dashboardRouter.get("/:role", async (req, res, next) => {
           where: { status: "Assigned" },
           include: { po: true, poLine: { include: { product: true } } }
         });
-        res.json({ data: { pendingCount: pending, orders } });
+        res.json({
+          data: {
+            pendingCount: pending,
+            orders,
+            // ECP-029 AC2: exact Thai message when there is nothing pending, instead of a bare 0.
+            emptyStateMessage: pending === 0 ? "ไม่มีงานผลิตค้างในขณะนี้" : null
+          }
+        });
         return;
       }
       case "qc": {
@@ -57,14 +78,26 @@ dashboardRouter.get("/:role", async (req, res, next) => {
           prisma.batch.count({ where: { status: "QCApproved" } }),
           prisma.batch.count({ where: { status: "QCRejected" } })
         ]);
-        res.json({ data: { pending, approved, rejected } });
+        res.json({
+          data: {
+            pending,
+            approved,
+            rejected,
+            emptyStateMessage: pending === 0 && approved === 0 && rejected === 0 ? "ยังไม่มี Batch ในระบบ" : null
+          }
+        });
         return;
       }
       case "logistics": {
         const readyToShip = await prisma.batch.count({
           where: { status: "QCApproved", shipments: { none: {} } }
         });
-        res.json({ data: { readyToShip } });
+        res.json({
+          data: {
+            readyToShip,
+            emptyStateMessage: readyToShip === 0 ? "ไม่มีรายการรอจัดส่งในขณะนี้" : null
+          }
+        });
         return;
       }
       case "finance": {
@@ -77,7 +110,8 @@ dashboardRouter.get("/:role", async (req, res, next) => {
         res.json({
           data: {
             totalOutstanding: Number(totalOutstanding.toFixed(2)),
-            countOutstanding: outstanding.length
+            countOutstanding: outstanding.length,
+            emptyStateMessage: outstanding.length === 0 ? "ไม่มี invoice ค้างชำระในขณะนี้" : null
           }
         });
         return;

@@ -91,6 +91,10 @@ enum InvoiceStatus {
   Issued
   PartiallyPaid
   Paid
+  // Distinct from "Paid" on purpose (QA DEF-01, §5.5): set when a revise() drops the active
+  // version's total below what was already paid on the chain. Must never be reported as "Paid"
+  // (which implies "fully and correctly settled") - Finance needs a clear signal to refund/adjust.
+  Overpaid
   Superseded
 }
 

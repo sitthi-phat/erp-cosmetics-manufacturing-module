@@ -277,7 +277,7 @@ CREATE TABLE `invoice` (
     `vat_rate_applied` DECIMAL(5, 2) NOT NULL,
     `vat_amount` DECIMAL(12, 2) NOT NULL,
     `total_amount` DECIMAL(12, 2) NOT NULL,
-    `status` ENUM('Issued', 'PartiallyPaid', 'Paid', 'Superseded') NOT NULL DEFAULT 'Issued',
+    `status` ENUM('Issued', 'PartiallyPaid', 'Paid', 'Overpaid', 'Superseded') NOT NULL DEFAULT 'Issued',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 

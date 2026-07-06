@@ -69,11 +69,18 @@ describe("computeReconciliation (§5.5, ECP-021)", () => {
     expect(r.outstanding).toBe(0);
   });
 
-  it("flags overpaid without wrongly marking Paid when a revise drops total below paid (§5.5)", () => {
+  it("flags overpaid with a distinct status (never 'Paid') when a revise drops total below paid (§5.5, QA DEF-01 fix)", () => {
     // paid 30,000 against an old version; new version total is only 25,000
     const r = computeReconciliation(25000, 30000);
     expect(r.overpaid).toBe(true);
     expect(r.outstanding).toBe(-5000);
-    expect(r.status).toBe("Paid"); // paid >= total, but overpaid flag signals it needs review
+    expect(r.status).not.toBe("Paid"); // must never be reported as "fully and correctly settled"
+    expect(r.status).toBe("Overpaid");
+  });
+
+  it("stays PartiallyPaid (not rounded up to Paid) when outstanding is a tiny positive amount", () => {
+    const r = computeReconciliation(100.0, 99.99);
+    expect(r.status).toBe("PartiallyPaid");
+    expect(r.outstanding).toBeCloseTo(0.01, 2);
   });
 });

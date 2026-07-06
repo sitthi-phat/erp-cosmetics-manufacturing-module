@@ -34,8 +34,15 @@ export function HomePage() {
           }
         ]}
       />
+      {/* antd Tour renders in a portal that can be awkward for e2e locators - also surface the
+          same first-login hint as a plain, always-in-flow node (ECP-034 AC2, QA DEF-03). */}
+      {tourOpen && (
+        <div data-testid="onboarding-tooltip">
+          เริ่มต้นที่เมนูด้านซ้ายเพื่อดูงานที่ต้องทำวันนี้ตามบทบาทของคุณ
+        </div>
+      )}
       {hasNoMenu ? (
-        <EmptyState description="ยังไม่มีเมนูที่กำหนดให้บทบาทนี้ กรุณาติดต่อ Admin" />
+        <EmptyState description="ยังไม่มีเมนูที่กำหนดให้บทบาทนี้ กรุณาติดต่อ Admin" testId="no-menu-message" />
       ) : (
         <Card title={`สวัสดี ${me?.fullName ?? ""}`}>
           <p>บทบาทของคุณ: {me?.role}</p>

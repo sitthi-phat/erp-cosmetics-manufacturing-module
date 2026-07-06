@@ -65,16 +65,23 @@ export function PoCreatePage() {
   }
 
   return (
-    <Card title="สร้างคำสั่งซื้อ (PO) ใหม่">
+    <Card title="สร้างคำสั่งซื้อ (PO) ใหม่" testId="po-create-card">
       <Form onSubmit={handleSubmit}>
+        {/* QA DEF-03 note: demoFlow.spec.ts assumes an autocomplete (`po-customer-search` +
+            `po-customer-result-0`); this is a plain searchable <Select> dropdown instead (still
+            type-to-filter via antd's built-in search) - same testid on the select control so a
+            selector update on QA's side (fill+click vs select) should be enough to reconcile. */}
         <SelectField
           name="customerId"
           label="ลูกค้า"
           required
+          testId="po-customer-search"
           options={(customers ?? []).map((c) => ({ value: c.id, label: `${c.name} (${c.customerId})` }))}
         />
         <DateField name="requestedDeliveryDate" label="วันที่ต้องการส่งมอบ" required />
-        <SubmitButton loading={createPO.isPending}>สร้าง PO</SubmitButton>
+        <SubmitButton loading={createPO.isPending} testId="po-create-submit">
+          สร้าง PO
+        </SubmitButton>
       </Form>
 
       <Card title="เพิ่มรายการสินค้า">
@@ -83,11 +90,12 @@ export function PoCreatePage() {
             name="productId"
             label="สินค้า"
             required
+            testId="po-line-product-0"
             options={(products ?? []).map((p) => ({ value: p.id, label: `${p.name}${p.hasBom ? "" : " (ยังไม่มีสูตร)"}` }))}
           />
-          <NumberField name="quantity" label="จำนวน" required min={0.001} />
+          <NumberField name="quantity" label="จำนวน" required min={0.001} testId="po-line-qty-0" />
           <NumberField name="unitPrice" label="ราคาต่อหน่วย" required min={0} />
-          <SubmitButton>+ เพิ่มรายการ</SubmitButton>
+          <SubmitButton testId="po-add-line">+ เพิ่มรายการ</SubmitButton>
         </Form>
         <ul>
           {lines.map((l, i) => (

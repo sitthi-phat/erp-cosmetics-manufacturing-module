@@ -7,6 +7,7 @@ export * from "./Form";
 export * from "./Modal";
 export * from "./StatusTag";
 export { Notify } from "./Notify";
+export * from "./NotifyHost";
 export * from "./Tooltip";
 export * from "./OnboardingTour";
 export * from "./Steps";

@@ -6,9 +6,9 @@ export interface DescriptionItem {
   value: ReactNode;
 }
 
-export function Descriptions({ items, title }: { items: DescriptionItem[]; title?: string }) {
+export function Descriptions({ items, title, testId }: { items: DescriptionItem[]; title?: string; testId?: string }) {
   return (
-    <AntDescriptions title={title} column={2} bordered size="small">
+    <AntDescriptions title={title} column={2} bordered size="small" data-testid={testId}>
       {items.map((item) => (
         <AntDescriptions.Item key={item.label} label={item.label}>
           {item.value}
@@ -18,9 +18,20 @@ export function Descriptions({ items, title }: { items: DescriptionItem[]; title
   );
 }
 
-export function Card({ title, children, extra }: { title?: string; children: ReactNode; extra?: ReactNode }) {
+export function Card({
+  title,
+  children,
+  extra,
+  testId
+}: {
+  title?: string;
+  children: ReactNode;
+  extra?: ReactNode;
+  /** Forwarded as `data-testid` on the card's outer DOM node (QA DEF-03). */
+  testId?: string;
+}) {
   return (
-    <AntCard title={title} extra={extra} style={{ marginBottom: 16 }}>
+    <AntCard title={title} extra={extra} style={{ marginBottom: 16 }} data-testid={testId}>
       {children}
     </AntCard>
   );

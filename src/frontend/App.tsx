@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
-import { AppThemeProvider } from "./ui";
+import { AppThemeProvider, NotifyHost } from "./ui";
 import { AuthProvider } from "./lib/authContext";
 import { router } from "./router";
 
@@ -13,6 +13,7 @@ export function App() {
     <AppThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
+          <NotifyHost />
           <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>

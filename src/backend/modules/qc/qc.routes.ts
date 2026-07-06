@@ -36,7 +36,10 @@ qcRouter.post(
 
     const batch = await prisma.batch.findUnique({
       where: { id: batchId },
-      include: { qcInspections: { include: { inspector: true }, orderBy: { inspectedAt: "desc" } } }
+      include: {
+        qcInspections: { include: { inspector: true }, orderBy: { inspectedAt: "desc" } },
+        productionOrder: true
+      }
     });
     if (!batch) throw AppError.notFound("ไม่พบ Batch นี้ในระบบ");
 
@@ -66,6 +69,14 @@ qcRouter.post(
         data: { status: input.result === "Approved" ? "QCApproved" : "QCRejected" }
       })
     ]);
+
+    // ECP-006 AC1: PO timeline needs a "QC Approved" step; AC2 (rejected -> "รอผลิตใหม่") is
+    // already derived from Batch status in po.routes.ts#GET /:id (derivedStatusLabel).
+    if (input.result === "Approved") {
+      await prisma.pOStatusEvent.create({
+        data: { poId: batch.productionOrder.poId, status: "QC Approved" }
+      });
+    }
 
     return {
       status: 201,

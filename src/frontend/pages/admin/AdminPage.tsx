@@ -107,6 +107,8 @@ export function AdminPage() {
   const { data: vatConfig } = useVatConfig();
   const updateVat = useUpdateVatConfig();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [vatError, setVatError] = useState<string | null>(null);
+  const [vatSaved, setVatSaved] = useState(false);
 
   async function handleCreateUser(values: Record<string, unknown>) {
     try {
@@ -133,17 +135,24 @@ export function AdminPage() {
   }
 
   async function handleUpdateVat(values: Record<string, unknown>) {
+    setVatError(null);
+    setVatSaved(false);
     try {
       await updateVat.mutateAsync(Number(values.rate));
       Notify.success("บันทึกอัตรา VAT สำเร็จ");
+      setVatSaved(true);
     } catch (err) {
-      if (err instanceof ApiError) Notify.error(err.message);
+      if (err instanceof ApiError) setVatError(err.message);
     }
   }
 
   return (
     <div>
-      <Card title="จัดการผู้ใช้งาน" extra={<Button variant="primary" onClick={() => setCreateModalOpen(true)}>+ สร้างผู้ใช้ใหม่</Button>}>
+      <Card
+        title="จัดการผู้ใช้งาน"
+        testId="admin-section-manage-users"
+        extra={<Button variant="primary" onClick={() => setCreateModalOpen(true)}>+ สร้างผู้ใช้ใหม่</Button>}
+      >
         <DataTable
           loading={usersLoading}
           rows={users ?? []}
@@ -187,12 +196,20 @@ export function AdminPage() {
 
       {roles && roles.length > 0 && <RolePermissionEditor roles={roles} />}
 
-      <Card title="ตั้งค่า VAT (ECP-038)">
+      <Card title="ตั้งค่า VAT (ECP-038)" testId="admin-section-vat-config">
         <p>อัตรา VAT ปัจจุบัน: {vatConfig?.rate}%</p>
         <Form onSubmit={handleUpdateVat} initialValues={{ rate: vatConfig?.rate }}>
-          <NumberField name="rate" label="อัตรา VAT ใหม่ (%)" required min={0} max={100} step={0.01} />
-          <SubmitButton loading={updateVat.isPending}>บันทึก</SubmitButton>
+          <NumberField name="rate" label="อัตรา VAT ใหม่ (%)" required min={0} max={100} step={0.01} testId="vat-rate-input" />
+          <SubmitButton loading={updateVat.isPending} testId="vat-rate-save">
+            บันทึก
+          </SubmitButton>
         </Form>
+        {vatError && (
+          <p data-testid="vat-rate-error" style={{ color: "red" }}>
+            {vatError}
+          </p>
+        )}
+        {vatSaved && <p data-testid="vat-rate-save-confirmation">บันทึกอัตรา VAT สำเร็จ</p>}
         <p style={{ color: "#888" }}>ค่าใหม่มีผลกับ invoice ที่ออกใหม่เท่านั้น - invoice เดิมยังคง snapshot อัตราเดิมไว้เสมอ</p>
       </Card>
     </div>

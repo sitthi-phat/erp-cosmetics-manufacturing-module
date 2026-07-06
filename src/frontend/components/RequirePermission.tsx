@@ -21,7 +21,7 @@ export function RequirePermission({
   if (isLoading) return <Spin spinning>{null}</Spin>;
   if (isError || !me) return <Navigate to="/login" replace />;
   if (!hasPermission(resource, action)) {
-    return <EmptyState description="คุณไม่มีสิทธิ์เข้าถึงหน้านี้" />;
+    return <EmptyState description="คุณไม่มีสิทธิ์เข้าถึงหน้านี้" testId="access-denied-message" />;
   }
   return <>{children}</>;
 }

@@ -12,10 +12,13 @@
 
 import request from "supertest";
 
-// TODO(Engineer): confirm this import path once src/backend/app.ts exists (E0).
-// import { app } from "../../src/backend/app";
-type ExpressApp = any; // placeholder until app.ts exists — keeps this file type-checkable pre-E0
-export const app: ExpressApp = undefined as any;
+// RECONCILED by Engineer 2026-07-07 (QA verify DEF-02): src/backend/app.ts now exists and
+// exports a ready-made `app` singleton (see src/backend/app.ts bottom for the reconciliation
+// note) alongside the `createApp()` factory used by server.ts. This is the one line in this
+// file the Engineer changed - everything else in tests/helpers and tests/*.spec.ts is
+// untouched, per the QA hand-off boundary.
+import { app } from "../../src/backend/app";
+export { app };
 
 export const agent = () => request(app);
 

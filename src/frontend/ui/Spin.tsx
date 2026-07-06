@@ -5,10 +5,19 @@ export function Spin({ spinning, children }: { spinning: boolean; children: Reac
   return <AntSpin spinning={spinning}>{children}</AntSpin>;
 }
 
-export function ErrorBanner({ message, action }: { message: string; action?: ReactNode }) {
-  return <AntAlert type="error" showIcon message={message} action={action} style={{ marginBottom: 16 }} />;
+export function ErrorBanner({ message, action, testId }: { message: string; action?: ReactNode; testId?: string }) {
+  return (
+    <AntAlert
+      type="error"
+      showIcon
+      message={message}
+      action={action}
+      style={{ marginBottom: 16 }}
+      data-testid={testId}
+    />
+  );
 }
 
-export function EmptyState({ description }: { description: string }) {
-  return <AntEmpty description={description} />;
+export function EmptyState({ description, testId }: { description: string; testId?: string }) {
+  return <AntEmpty description={<span data-testid={testId}>{description}</span>} />;
 }

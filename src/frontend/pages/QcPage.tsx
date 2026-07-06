@@ -46,38 +46,53 @@ export function QcPage() {
           <SubmitButton loading={inspectLot.isPending}>บันทึกผลตรวจ</SubmitButton>
         </Form>
       </Card>
-    <Card title="ตรวจสอบคุณภาพ (QC) - รายการ Batch">
-      <DataTable
-        loading={isLoading}
-        rows={batches ?? []}
-        rowKey={(b: any) => b.id}
-        emptyText="ไม่มีงานตรวจสอบที่ค้างอยู่ในขณะนี้"
-        columns={[
-          { key: "batchNumber", title: "เลข Batch", dataIndex: "batchNumber" },
-          { key: "status", title: "สถานะ", render: (b: any) => <StatusTag status={b.status} /> },
-          {
-            key: "actions",
-            title: "",
-            render: (b: any) =>
-              b.status === "QCPending" ? <Button onClick={() => setTarget(b.id)}>บันทึกผลตรวจ</Button> : null
-          }
-        ]}
-      />
-      <Modal open={target !== null} title="บันทึกผลตรวจสอบคุณภาพ" onCancel={() => setTarget(null)}>
-        <Form onSubmit={handleInspect}>
-          <SelectField
-            name="result"
-            label="ผลตรวจ"
-            required
-            options={[
-              { value: "Approved", label: "ผ่าน (Approved)" },
-              { value: "Rejected", label: "ไม่ผ่าน (Rejected)" }
-            ]}
-          />
-          <TextField name="remarks" label="หมายเหตุ" />
-          <SubmitButton loading={inspect.isPending}>บันทึก</SubmitButton>
-        </Form>
-      </Modal>
+      <Card title="ตรวจสอบคุณภาพ (QC) - รายการ Batch">
+        <DataTable
+          loading={isLoading}
+          rows={batches ?? []}
+          rowKey={(b: any) => b.id}
+          emptyText="ไม่มีงานตรวจสอบที่ค้างอยู่ในขณะนี้"
+          getRowTestId={(b: any) => `batch-row-${b.batchNumber}`}
+          columns={[
+            { key: "batchNumber", title: "เลข Batch", dataIndex: "batchNumber" },
+            { key: "status", title: "สถานะ", render: (b: any) => <StatusTag status={b.status} testId="status-badge" /> },
+            {
+              key: "actions",
+              title: "",
+              render: (b: any) =>
+                b.status === "QCPending" ? (
+                  <Button onClick={() => setTarget(b.id)} testId="inspect-button">
+                    บันทึกผลตรวจ
+                  </Button>
+                ) : null
+            }
+          ]}
+        />
+        <Modal open={target !== null} title="บันทึกผลตรวจสอบคุณภาพ" onCancel={() => setTarget(null)}>
+          <Form onSubmit={handleInspect} initialValues={{ result: "Approved" }}>
+            {/*
+              QA DEF-03 note: demoFlow.spec.ts assumes two separate radio-style controls
+              (`qc-result-approved`/`qc-result-rejected`) it can `.check()`; this is a single
+              dropdown instead. `data-testid="qc-result-approved"` is still attached to the
+              control itself so a selector update (select-by-value vs check()) should reconcile
+              without any UI change on our side.
+            */}
+            <SelectField
+              name="result"
+              label="ผลตรวจ"
+              required
+              testId="qc-result-approved"
+              options={[
+                { value: "Approved", label: "ผ่าน (Approved)" },
+                { value: "Rejected", label: "ไม่ผ่าน (Rejected)" }
+              ]}
+            />
+            <TextField name="remarks" label="หมายเหตุ" testId="qc-remarks" />
+            <SubmitButton loading={inspect.isPending} testId="qc-submit">
+              บันทึก
+            </SubmitButton>
+          </Form>
+        </Modal>
       </Card>
     </div>
   );

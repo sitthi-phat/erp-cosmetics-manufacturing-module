@@ -224,7 +224,7 @@ describe("InvoiceService.reviseInvoice (ECP-037)", () => {
     expect(result.hadExistingPayments).toBe(true);
   });
 
-  it("flags overpaid when a revise drops the total below already-paid amount (§5.5)", async () => {
+  it("flags overpaid (and never mislabels it 'Paid') when a revise drops the total below already-paid amount (§5.5, QA DEF-01)", async () => {
     const { service } = makeService();
     const v1 = await service.issueInvoice({ poId: 1, poStatus: "Shipped", lines: oneLine, issuedById: 9 });
     // subtotal 50,000 + 7% = 53,500; pay in full
@@ -244,6 +244,8 @@ describe("InvoiceService.reviseInvoice (ECP-037)", () => {
     });
 
     expect(result.overpaid).toBe(true);
+    expect(result.invoice.status).not.toBe("Paid");
+    expect(result.invoice.status).toBe("Overpaid");
   });
 });
 

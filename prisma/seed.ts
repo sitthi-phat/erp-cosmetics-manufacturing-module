@@ -5,7 +5,10 @@ import { nextNumberInTx } from "../src/backend/lib/numberSequence";
 
 const prisma = new PrismaClient();
 
-const SEED_PASSWORD = "Passw0rd!"; // demo credential only, documented in the handoff notes for DevOps/QA
+// Demo credential only. Username/password below intentionally match QA's
+// tests/helpers/fixtures.ts (SEED_USERS/DEFAULT_PASSWORD) reconciled during QA verify phase
+// (defects.md DEF-02) so integration/e2e specs can log in against the real seeded users.
+const SEED_PASSWORD = "Password123!";
 
 /**
  * Seed strategy (architecture.md §8). Fully idempotent: every run wipes and recreates the
@@ -167,6 +170,16 @@ async function main(): Promise<void> {
   }
 
   console.log("[seed] users (1 per role)...");
+  // Usernames match tests/helpers/fixtures.ts#SEED_USERS exactly (QA verify reconciliation, DEF-02).
+  const USERNAME_BY_CODE: Record<string, string> = {
+    SA: "sales_demo",
+    WH: "warehouse_demo",
+    PR: "production_demo",
+    QA: "qc_demo",
+    LO: "logistics_demo",
+    FI: "finance_demo",
+    AD: "admin"
+  };
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
   const userByCode = new Map<string, { id: number }>();
   for (const def of ROLE_DEFS) {
@@ -174,7 +187,7 @@ async function main(): Promise<void> {
     const user = await prisma.user.create({
       data: {
         userId,
-        username: def.code.toLowerCase(),
+        username: USERNAME_BY_CODE[def.code],
         fullName: `${def.name} Demo`,
         passwordHash,
         roleId: roleByCode.get(def.code)!.id,
@@ -406,7 +419,9 @@ async function main(): Promise<void> {
   });
 
   console.log("[seed] done.");
-  console.log(`[seed] demo login: username=<sa|wh|pr|qa|lo|fi|ad>  password=${SEED_PASSWORD}`);
+  console.log(
+    `[seed] demo login: username=<sales_demo|warehouse_demo|production_demo|qc_demo|logistics_demo|finance_demo|admin>  password=${SEED_PASSWORD}`
+  );
 }
 
 main()

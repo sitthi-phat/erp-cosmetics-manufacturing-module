@@ -46,7 +46,7 @@ export function validateVatRate(rate: number): void {
 
 export interface ReconciliationResult {
   outstanding: number;
-  status: "Issued" | "PartiallyPaid" | "Paid";
+  status: "Issued" | "PartiallyPaid" | "Paid" | "Overpaid";
   overpaid: boolean;
 }
 
@@ -54,12 +54,19 @@ export interface ReconciliationResult {
  * Payment <-> invoice-version reconciliation (§5.5). Payments are attached to the CHAIN (not a
  * version row), so this recomputes status purely from `total_amount` of the ACTIVE (latest)
  * version vs the sum of all payments ever recorded against the chain.
+ *
+ * QA DEF-01 (Critical, Gate 1 condition): when a revise() drops the new total BELOW what was
+ * already paid, this must NEVER report "Paid" - that would tell Finance the invoice is "fully and
+ * correctly settled" when in fact money needs to be refunded/adjusted. Status is "Overpaid"
+ * (distinct 4th state) whenever paidAmount exceeds totalAmount; `overpaid` stays as a convenience
+ * boolean flag for callers that only care about the binary condition.
  */
 export function computeReconciliation(totalAmount: number, paidAmount: number): ReconciliationResult {
   const outstanding = roundMoney(totalAmount - paidAmount);
   let status: ReconciliationResult["status"];
-  if (paidAmount <= 0) status = "Issued";
-  else if (paidAmount >= totalAmount) status = "Paid";
+  if (outstanding < 0) status = "Overpaid";
+  else if (paidAmount <= 0) status = "Issued";
+  else if (outstanding === 0) status = "Paid";
   else status = "PartiallyPaid";
   return { outstanding, status, overpaid: outstanding < 0 };
 }

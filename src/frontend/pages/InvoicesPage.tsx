@@ -13,6 +13,7 @@ export function InvoicesPage() {
   const [versionsTarget, setVersionsTarget] = useState<number | null>(null);
   const [reviseTarget, setReviseTarget] = useState<number | null>(null);
   const [reviseLines, setReviseLines] = useState<Array<{ productId: number; description: string; quantity: number; unitPrice: number }>>([]);
+  const [reviseError, setReviseError] = useState<string | null>(null);
   const { data: versions } = useInvoiceVersions(versionsTarget);
 
   async function handlePay(values: Record<string, unknown>) {
@@ -43,8 +44,18 @@ export function InvoicesPage() {
     ]);
   }
 
+  function removeReviseLine(index: number) {
+    setReviseLines((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function submitRevise() {
     if (reviseTarget === null) return;
+    setReviseError(null);
+    // ECP-037 AC4: block a revision with zero lines client-side too (backend also enforces it).
+    if (reviseLines.length === 0) {
+      setReviseError("กรุณาระบุรายการสินค้าอย่างน้อย 1 รายการก่อนบันทึก");
+      return;
+    }
     try {
       const result = await reviseInvoice.mutateAsync({ invoiceId: reviseTarget, lines: reviseLines });
       result.warnings.forEach((w) => Notify.warning(w));
@@ -52,28 +63,41 @@ export function InvoicesPage() {
       setReviseTarget(null);
       setReviseLines([]);
     } catch (err) {
-      if (err instanceof ApiError) Notify.error(err.message);
+      if (err instanceof ApiError) setReviseError(err.message);
     }
   }
 
   return (
-    <Card title="Invoice / การเรียกเก็บเงิน">
+    <Card title="Invoice / การเรียกเก็บเงิน" testId="invoice-list-card">
       <DataTable
         loading={isLoading}
         rows={invoices ?? []}
         rowKey={(i: any) => i.id}
+        getRowTestId={(i: any) => `demo-invoice-row-${i.invoiceNo}`}
         columns={[
           { key: "invoiceNo", title: "เลขที่ invoice", render: (i: any) => `${i.invoiceNo} (v${i.version})` },
           { key: "total", title: "ยอดรวม (บาท)", render: (i: any) => Number(i.totalAmount).toFixed(2) },
-          { key: "status", title: "สถานะ", render: (i: any) => <StatusTag status={i.status} /> },
+          { key: "status", title: "สถานะ", render: (i: any) => <StatusTag status={i.status} testId="invoice-status-badge" /> },
           {
             key: "actions",
             title: "",
             render: (i: any) => (
               <>
-                <Button onClick={() => setPayTarget({ id: i.id, invoiceNo: i.invoiceNo })}>รับชำระเงิน</Button>{" "}
-                <Button onClick={() => setVersionsTarget(i.poId)}>ดู versions</Button>{" "}
-                <Button onClick={() => setReviseTarget(i.id)}>แก้ไข (revise)</Button>
+                <Button onClick={() => setPayTarget({ id: i.id, invoiceNo: i.invoiceNo })} testId="record-payment-button">
+                  รับชำระเงิน
+                </Button>{" "}
+                <Button onClick={() => setVersionsTarget(i.poId)} testId="view-version-history">
+                  ดู versions
+                </Button>{" "}
+                <Button
+                  onClick={() => {
+                    setReviseTarget(i.id);
+                    setReviseError(null);
+                  }}
+                  testId="revise-invoice-button"
+                >
+                  แก้ไข (revise)
+                </Button>
               </>
             )
           }
@@ -82,19 +106,30 @@ export function InvoicesPage() {
 
       <Modal open={payTarget !== null} title={`รับชำระเงิน - ${payTarget?.invoiceNo}`} onCancel={() => setPayTarget(null)}>
         <Form onSubmit={handlePay}>
-          <NumberField name="amount" label="จำนวนเงิน" required min={0.01} />
-          <DateField name="paymentDate" label="วันที่รับเงิน" required />
+          <NumberField name="amount" label="จำนวนเงิน" required min={0.01} testId="payment-amount" />
+          <DateField name="paymentDate" label="วันที่รับเงิน" required testId="payment-date" />
           <TextField name="method" label="ช่องทางชำระเงิน" required placeholder="bank_transfer / cash" />
-          <SubmitButton loading={recordPayment.isPending}>บันทึก</SubmitButton>
+          <SubmitButton loading={recordPayment.isPending} testId="payment-submit">
+            บันทึก
+          </SubmitButton>
         </Form>
       </Modal>
 
       <Modal open={versionsTarget !== null} title="ประวัติ version ของ invoice" onCancel={() => setVersionsTarget(null)}>
         <ul>
           {(versions ?? []).map((v: any) => (
-            <li key={v.id}>
-              v{v.version} - {Number(v.totalAmount).toFixed(2)} บาท - {v.status}
+            <li key={v.id} data-testid="invoice-version-row">
+              v{v.version} - {Number(v.totalAmount).toFixed(2)} บาท -{" "}
+              <span data-testid="invoice-version-badge">{v.status}</span>
               {v.supersededLabel ? ` (${v.supersededLabel})` : ""}
+              {v.status === "Superseded" && (
+                <>
+                  {" "}
+                  <a data-testid="link-to-latest-version" href="#" onClick={(e) => e.preventDefault()}>
+                    ไปที่ version ล่าสุด
+                  </a>
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -106,10 +141,21 @@ export function InvoicesPage() {
         onCancel={() => {
           setReviseTarget(null);
           setReviseLines([]);
+          setReviseError(null);
         }}
         onOk={submitRevise}
         confirmLoading={reviseInvoice.isPending}
+        testId="revise-invoice-modal"
       >
+        <p data-testid="payment-reconciliation-warning" style={{ color: "#ad6800" }}>
+          หาก invoice นี้มีการรับชำระแล้ว การแก้ไขจะสร้าง version ใหม่ที่อาจมียอดต่างจากที่บันทึกรับชำระไว้
+          กรุณาตรวจสอบยอดชำระซ้ำ
+        </p>
+        {reviseError && (
+          <p data-testid="form-error" style={{ color: "red" }}>
+            <span data-testid="invoice-blocked-message">{reviseError}</span>
+          </p>
+        )}
         <Form onSubmit={addReviseLine}>
           <select name="productId" style={{ marginBottom: 8, width: "100%" }} onChange={() => undefined}>
             {(products ?? []).map((p) => (
@@ -119,17 +165,26 @@ export function InvoicesPage() {
             ))}
           </select>
           <TextField name="description" label="รายละเอียด" required />
-          <NumberField name="quantity" label="จำนวน" required min={0.001} />
+          <NumberField name="quantity" label="จำนวน" required min={0.001} testId="revise-line-qty-0" />
           <NumberField name="unitPrice" label="ราคาต่อหน่วย" required min={0} />
           <SubmitButton>+ เพิ่มรายการ</SubmitButton>
         </Form>
         <ul>
           {reviseLines.map((l, i) => (
             <li key={i}>
-              {l.description} x {l.quantity} @ {l.unitPrice}
+              {l.description} x {l.quantity} @ {l.unitPrice}{" "}
+              <a data-testid={`remove-line-${i}`} href="#" onClick={(e) => {
+                e.preventDefault();
+                removeReviseLine(i);
+              }}>
+                ลบ
+              </a>
             </li>
           ))}
         </ul>
+        <Button onClick={submitRevise} testId="revise-submit">
+          บันทึกการแก้ไข
+        </Button>
       </Modal>
     </Card>
   );

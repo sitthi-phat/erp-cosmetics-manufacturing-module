@@ -16,6 +16,7 @@ export function ProductionPage() {
   const [assignTarget, setAssignTarget] = useState<number | null>(null);
   const [produceTarget, setProduceTarget] = useState<number | null>(null);
   const [lotSelections, setLotSelections] = useState<Array<{ materialId: number; lotId: number; qtyUsed: number }>>([]);
+  const [lastBatchNumber, setLastBatchNumber] = useState<string | null>(null);
 
   async function handleAssign(values: Record<string, unknown>) {
     if (assignTarget === null) return;
@@ -42,12 +43,13 @@ export function ProductionPage() {
       return;
     }
     try {
-      await produce.mutateAsync({
+      const result: any = await produce.mutateAsync({
         productionOrderId: produceTarget,
         producedQty: Number(values.producedQty),
         lotSelections
       });
       Notify.success("บันทึกผลิตสำเร็จ - สร้าง Batch แล้ว");
+      setLastBatchNumber(result?.data?.batchNumber ?? null);
       setProduceTarget(null);
       setLotSelections([]);
     } catch (err) {
@@ -57,12 +59,18 @@ export function ProductionPage() {
 
   return (
     <div>
+      {lastBatchNumber && (
+        <p>
+          สร้าง Batch สำเร็จ: <strong data-testid="batch-number">{lastBatchNumber}</strong>
+        </p>
+      )}
       <Card title="คิวงานผลิตที่รอ assign (PO Confirmed, เรียงตามวันที่ต้องการส่งมอบ)">
         <DataTable
           loading={isLoading}
           rows={queue ?? []}
           rowKey={(p: any) => p.id}
           emptyText="ไม่มีงานผลิตที่รอดำเนินการในขณะนี้"
+          getRowTestId={(p: any) => `queue-row-${p.poNumber}`}
           columns={[
             { key: "poNumber", title: "เลขที่ PO", dataIndex: "poNumber" },
             { key: "customer", title: "ลูกค้า", render: (p: any) => p.customer?.name },
@@ -74,7 +82,11 @@ export function ProductionPage() {
             {
               key: "actions",
               title: "",
-              render: (p: any) => <Button onClick={() => setAssignTarget(p.lines?.[0]?.id)}>มอบหมายงาน</Button>
+              render: (p: any) => (
+                <Button onClick={() => setAssignTarget(p.lines?.[0]?.id)} testId="assign-button">
+                  มอบหมายงาน
+                </Button>
+              )
             }
           ]}
         />
@@ -93,7 +105,11 @@ export function ProductionPage() {
             {
               key: "actions",
               title: "",
-              render: (o: any) => <Button onClick={() => setProduceTarget(o.id)}>บันทึกผลิต</Button>
+              render: (o: any) => (
+                <Button onClick={() => setProduceTarget(o.id)} testId="produce-button">
+                  บันทึกผลิต
+                </Button>
+              )
             }
           ]}
         />
@@ -105,9 +121,12 @@ export function ProductionPage() {
             name="assignedTo"
             label="ผู้ปฏิบัติงาน"
             required
+            testId="assign-worker-select"
             options={(users ?? []).map((u: any) => ({ value: u.id, label: u.fullName }))}
           />
-          <SubmitButton loading={assign.isPending}>มอบหมาย</SubmitButton>
+          <SubmitButton loading={assign.isPending} testId="assign-confirm">
+            มอบหมาย
+          </SubmitButton>
         </Form>
       </Modal>
 
@@ -119,20 +138,17 @@ export function ProductionPage() {
           setLotSelections([]);
         }}
       >
-        <Form onSubmit={handleProduce}>
-          <NumberField name="producedQty" label="จำนวนสินค้าสำเร็จรูปที่ได้" required min={0.001} />
-          <SubmitButton loading={produce.isPending}>บันทึกผลิตเสร็จสิ้น</SubmitButton>
-        </Form>
         <Card title="เลือก Lot วัตถุดิบที่ใช้">
           <Form onSubmit={addLotSelection}>
             <SelectField
               name="materialId"
               label="วัตถุดิบ"
               required
+              testId="produce-lot-select-0"
               options={(materials ?? []).map((m: any) => ({ value: m.id, label: m.name }))}
             />
             <NumberField name="lotId" label="Lot ID" required min={1} />
-            <NumberField name="qtyUsed" label="จำนวนที่ใช้" required min={0.001} />
+            <NumberField name="qtyUsed" label="จำนวนที่ใช้" required min={0.001} testId="produce-lot-qty-0" />
             <SubmitButton>+ เพิ่ม Lot</SubmitButton>
           </Form>
           <ul>
@@ -143,6 +159,12 @@ export function ProductionPage() {
             ))}
           </ul>
         </Card>
+        <Form onSubmit={handleProduce}>
+          <NumberField name="producedQty" label="จำนวนสินค้าสำเร็จรูปที่ได้" required min={0.001} testId="produce-output-qty" />
+          <SubmitButton loading={produce.isPending} testId="produce-submit">
+            บันทึกผลิตเสร็จสิ้น
+          </SubmitButton>
+        </Form>
       </Modal>
     </div>
   );
