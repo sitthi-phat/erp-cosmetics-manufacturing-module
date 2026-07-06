@@ -36,7 +36,13 @@ const integrationProject = {
   moduleNameMapper: {
     "^@backend/(.*)$": "<rootDir>/src/backend/$1",
     "^@shared/(.*)$": "<rootDir>/src/shared/$1"
-  }
+  },
+  // DevOps: resetSeed() spawns `npx tsx prisma/seed.ts` as a child process per beforeAll
+  // (see src/backend/app.ts `/test/seed-reset`). On real hardware this reliably takes longer
+  // than Jest's 5s default (tsx cold-start + full reseed), which QA's re-verify report flagged
+  // as spurious `beforeAll`/`resetSeed()` timeouts once a real DB was available. 30s gives real
+  // failures room to surface without masking actual bugs.
+  testTimeout: 30000
 };
 
 const projects = process.env.RUN_DB_TESTS === "1" ? [unitProject, integrationProject] : [unitProject];

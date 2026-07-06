@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "qa",
-      "status": "READY_FOR_DEVOPS",
+      "current_agent": "devops",
+      "status": "FAILED",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -731,6 +731,60 @@
           "summary": "Re-verify หลัง Engineer แก้ defect ครบ 5 ตัว (entry engineer/defect-fix). ยืนยันตัวเลขตรงเป๊ะกับที่ Engineer อ้าง: npx jest (unit, default) = 170 passed/12 skipped/0 failed/28-30 suites; spot-check DEF-01 โดยรัน tests/unit/paymentOutstanding.spec.ts ที่เคย FAIL 1 test ตอน verify รอบแรก -> ผ่านแล้วจริง (computeReconciliation คืน status=\"Overpaid\" แยกจาก \"Paid\" เมื่อ outstanding<0, ยืนยันด้วย prisma schema enum + migration SQL + FE StatusTag + Engineer เพิ่ม assertion ใน invoice.service.test.ts เองแล้ว). ยืนยัน DEF-02 ด้วย RUN_DB_TESTS=1 npx jest --selectProjects integration: collect ครบ 17/17 ไฟล์จริง (เดิม \"No tests found\" ทั้งหมด), 153/154 test fail ที่ beforeAll/resetSeed() timeout 5000ms เพราะไม่มี MySQL ให้ subprocess seed ต่อได้ - ถือเป็นพฤติกรรมถูกต้องแล้วสำหรับสภาพแวดล้อมไม่มี DB (ENV-01) ไม่ใช่ error ของ config อีกต่อไป; npx playwright test --list collect ครบ 19 test/6 ไฟล์ (ยืนยัน @playwright/test ติดตั้งและ config ใช้ได้). ตรวจ DEF-03 เชิง static: grep data-testid src/frontend = 51 matches/17 ไฟล์ (เดิม 0), ui/ wrapper ทุกตัวรับ testId prop แล้ว, เพิ่ม NotifyHost mirror toast เป็น DOM ถาวรที่ query ได้ (notify-error ฯลฯ). ปรับ tests/e2e/demoFlow.spec.ts ตาม 4 flow divergence ที่ Engineer บันทึก (PO create 2 หน้าแยก, customer/product/worker/material picker เป็น antd <Select> ไม่ใช่ native -> เขียน helper selectAntdOption() คลิกเปิด+เลือก option แทน .selectOption() ทุกจุดไม่ใช่แค่ 1 จุดที่ Engineer เตือน, QC result เป็น dropdown เดียวไม่ใช่ 2 radio, login redirect ไป \"/\" เป๊ะ) เพิ่มแก้ po-number (display:none) ต้องใช้ .textContent() แทน .innerText(); ตรวจอีก 5 ไฟล์ e2e แล้วไม่พบ pattern ที่ต้องแก้ตาม 4 ข้อนี้ ไม่ได้แก้เพิ่ม ยืนยันด้วย npx playwright test --list หลังแก้ = ยัง collect ครบ 19/6 (compile ผ่าน) แต่ยังไม่เคยรันจริงเพราะไม่มี browser binaries+DB (ENV-01/02) จึงตั้งเป็น Partially Fixed ไม่ใช่ Fixed เต็ม. ตรวจ DEF-04/DEF-05 เชิง static ยืนยัน Fixed ตรงตามที่ Engineer อ้าง (โค้ดจริงตรงกับคำอธิบาย). พบ defect ใหม่ Minor 3 ตัวระหว่าง re-verify (MIN-04 SelectField comment ไม่ตรง showSearch จริง, MIN-05 ปุ่ม submit ไม่ตั้ง testId ชนกันที่ \"form-submit\" ต้อง scope ด้วย parent locator, MIN-06 finance dashboard นับ invoice Overpaid ปนใน \"ยอดค้างชำระ\") ทั้งหมดไม่ block. tsc backend/frontend/eslint/vite build/health endpoint รันซ้ำครบ ผลตรงกับที่ Engineer อ้างทุกจุด. สรุป: ไม่มี Critical/Major defect ที่เป็นความผิดของโค้ด/config เหลืออยู่แล้ว เหลือ Minor 6 + Environment-blocked 2 (ENV-01 ไม่มี Docker/MySQL daemon, ENV-02 @playwright/test ติดตั้งแล้วแต่ยังไม่มี browser binaries) ตั้งสถานะ READY_FOR_DEVOPS พร้อมรายการที่ DevOps ต้องเตรียม (MySQL container+migrate+seed จริงครั้งแรก, npx playwright install, รัน integration/concurrency/e2e ให้ครบผ่านจริง, แล้ว QA re-verify อีกรอบก่อนปิด gate สมบูรณ์ ก่อนเริ่มนัดหมาย UAT จริง).",
           "overridden_by": null,
           "updated_at": "2026-07-07T22:30:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "status": "FAILED",
+          "gate_checklist": [
+            {
+              "item": "Environment ครบ: Docker Desktop daemon ใช้งานได้จริง, docker compose up -d mysql healthy, 2 schema แยก dev/test (docker/mysql/init/), .env/.env.test/.env.example ครบไม่มี secret จริง",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "prisma migrate deploy + npm run db:seed สำเร็จกับ MySQL จริงเป็นครั้งแรก (first-ever live verification)",
+              "pass": true,
+              "missing": "สำเร็จรอบแรก แต่การรันซ้ำ (idempotency ที่ E1 DoD อ้างไว้) fail 100% (3/3) ด้วย unique-constraint บน customer_id จนกว่าจะใส่ workaround connection_limit=1 ใน DATABASE_URL — พบบั๊ก root cause จริงใน numberSequence.ts (DEF-06, Critical), ยืนยันด้วย raw SQL reproduction บันทึกใน devops-verify-report.md"
+            },
+            {
+              "item": "npx playwright install chromium สำเร็จ",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration ผ่านครบ 17 ไฟล์ (เคสวิกฤต Q7)",
+              "pass": false,
+              "missing": "collect+รันได้ครบ 17/17 ไฟล์จริง (ตัวเลข: 71 passed, 82 failed, 1 skipped จาก 154 tests) แต่ไม่ผ่านตามเป้า — สาเหตุหลัก: DEF-06 (NumberSequence, Critical, ยืนยันเป็น root cause ของเคส Q7 ที่ Gate 1 เน้นย้ำโดยตรง: tests/integration/concurrency/numberSequence.spec.ts TC-NFR-N4 Expected 99 Received 1) และ DEF-08 (response envelope mismatch ระหว่าง QA spec กับ Engineer implementation, ใหม่ พบโดย DevOps, ต้อง QA+Engineer sync กัน) — รายละเอียดเต็มที่ docs/infra/erp-core-prototype/devops-verify-report.md"
+            },
+            {
+              "item": "npx playwright test ผ่านครบ 6 ไฟล์ e2e (เต็ม stack backend+frontend+MySQL+browser จริง)",
+              "pass": false,
+              "missing": "รันได้ครบ 19 test ผ่าน browser จริงเป็นครั้งแรกในประวัติโปรเจกต์ (1 ผ่าน, 18 ไม่ผ่าน) — สาเหตุหลัก: DEF-07 (ใหม่, Major, พบโดย DevOps ผ่าน Playwright จริง: onboarding tour overlay ค้าง บังปุ่มกดเมนู ทำให้ demoFlow.spec.ts ทั้งไฟล์ timeout 30s ที่ nav-po-list) + testid/flow บางจุดยังไม่ตรงกับหน้าจอจริง 100%"
+            },
+            {
+              "item": "runbook.md พร้อมให้ปอนด์ทำตามได้เองตั้งแต่ศูนย์ (setup/run/reset/troubleshoot/บัญชีทดสอบ/flow แนะนำ)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี secret จริงถูก commit",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docker-compose.yml",
+            "docker/mysql/init/01-create-test-db.sql",
+            ".env.test",
+            "jest.config.js",
+            "package.json",
+            "docs/infra/erp-core-prototype/runbook.md",
+            "docs/infra/erp-core-prototype/devops-verify-report.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Docker Desktop daemon ใช้งานได้จริงในเครื่องนี้ (ต่างจาก sandbox ของ QA ก่อนหน้า) — ทำ from-scratch setup จริง (docker compose down -v ล้าง state เก่า -> up -d mysql -> prisma migrate deploy -> npm run db:seed -> npx playwright install chromium) สำเร็จทุกขั้นตอนเป็นครั้งแรกในประวัติโปรเจกต์ เพิ่ม docker/mysql/init/ ให้สร้าง schema แยก erp_core_prototype_test อัตโนมัติ, เพิ่ม .env.test (PERMISSION_CACHE_TTL=2 ตาม QA ขอ) + dotenv-cli + script ใหม่ (setup/reset/db:migrate:test/db:seed:test), เพิ่ม npm run test:e2e ให้ตั้ง E2E_API_BASE_URL ให้ตรง backend จริง (:4000, เดิม spec default :3000 ผิด). ผลการรันจริงเปิดโปงบั๊กที่ไม่เคยถูกจับได้มาก่อนเพราะไม่เคยมีใครรันกับ MySQL/browser จริง: DEF-06 (Critical, ใหม่) - numberSequence.ts ใช้ MySQL LAST_INSERT_ID() idiom ผิด ทำให้ npm run db:seed รันซ้ำ fail 100% (3/3) ด้วย unique constraint, ยืนยัน root cause ด้วย raw SQL reproduction ตรงๆ (ไม่ผ่าน Prisma) และยืนยันเป็นสาเหตุของ NumberSequence concurrency test ที่ Gate 1 เน้นย้ำ (Expected 99 Received 1) ใส่ workaround ระดับ infra (?connection_limit=1 ใน DATABASE_URL ของ .env/.env.test/docker-compose.yml, ยืนยันด้วยรัน db:seed ซ้ำ 3 ครั้งสำเร็จหลังใส่) แต่ไม่ใช่การแก้ root cause และใช้ไม่ได้กับ Phase 3 multi-instance - ต้อง Engineer แก้จริง. DEF-07 (Major, ใหม่, พบผ่าน Playwright จริง) - onboarding tour overlay ค้างบังปุ่มกดเมนูหลัง login ครั้งแรก บล็อก demoFlow.spec.ts (brief.md DoD#1) ทั้งไฟล์จน timeout. DEF-08 (Major, ใหม่) - response envelope ของ API จริง ({data:{...}}) ไม่ตรงกับที่ QA spec คาดหวัง (flat field) ทำให้ integration test จำนวนมากอ่านค่าผิดตำแหน่ง ต้อง QA+Engineer sync contract กันในรอบถัดไป (ไม่ใช่ business logic bug ล้วนๆ). ตัวเลขจริง: unit 170/12/0 (28/30 suites, ไม่กระทบ), integration 71 passed/82 failed/1 skipped จาก 154 (17/17 suites collect+รันได้ครบ), e2e 1 passed/18 failed จาก 19 (ผ่าน browser จริงครบ 6 ไฟล์). เขียน docs/infra/erp-core-prototype/runbook.md (ไทย, setup/run/reset/troubleshoot/7 บัญชีทดสอบ/flow แนะนำ/คำเตือน DEF-06 ชัดเจน) + devops-verify-report.md (หลักฐานเต็มทุกจุด). ไม่มี secret จริงถูก commit (.env อยู่ .gitignore, .env.test เป็น local dummy values ปลอดภัยที่จะ commit). สถานะ FAILED ตามกติกา (พบบั๊กโค้ดที่ทำให้เทสต์ตก) - ส่งกลับ Engineer พร้อม defect list ครบ (DEF-06 ต้องแก้ก่อนสุดเพราะเป็น Critical/data-integrity ตรงเงื่อนไข Gate 1; DEF-07 กระทบ demo flow หลัก; DEF-08 ต้อง QA+Engineer คุยกัน) environment/infra เองพร้อมสมบูรณ์แล้วให้ Engineer debug ต่อได้ทันทีโดยไม่ต้องเตรียมอะไรเพิ่ม.",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T23:50:00+07:00"
         }
       ]
     }

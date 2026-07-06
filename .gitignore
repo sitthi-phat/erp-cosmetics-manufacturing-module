@@ -7,3 +7,7 @@ coverage/
 src/frontend/node_modules/
 src/frontend/dist/
 .DS_Store
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

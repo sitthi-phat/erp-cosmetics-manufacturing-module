@@ -1,6 +1,5 @@
 # Local dev environment (DevOps owns tuning of this file - D1/D3). Baseline provided by
 # Engineer so `docker compose up` already boots backend + frontend + MySQL for local dev.
-version: "3.9"
 
 services:
   mysql:
@@ -15,6 +14,10 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      # DevOps: creates the isolated `erp_core_prototype_test` schema on first init only
+      # (see docker/mysql/init/01-create-test-db.sql) so `npm run test:integration` never
+      # touches the same data an operator is browsing manually.
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uerp", "-perp"]
       interval: 5s
@@ -28,7 +31,8 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: "mysql://erp:erp@mysql:3306/erp_core_prototype"
+      # connection_limit=1: temporary workaround for DEF-06 (NumberSequence bug), see .env
+      DATABASE_URL: "mysql://erp:erp@mysql:3306/erp_core_prototype?connection_limit=1"
     ports:
       - "4000:4000"
     depends_on:
