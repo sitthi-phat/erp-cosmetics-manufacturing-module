@@ -7,7 +7,7 @@ import { auditableRoute } from "../../middleware/audit";
 import { nextNumberInTx } from "../../lib/numberSequence";
 import { realtimeGateway } from "../../lib/realtimeGateway";
 import { assertHasBom, checkBomStock } from "../product/bom.service";
-import { assertCanCancel, assertCanConfirm, assertHasLines } from "./po.rules";
+import { assertCanCancel, assertCanConfirm, assertCanDeleteLine, assertHasLines } from "./po.rules";
 import { aggregateMaterialNeed, BomLookup } from "./po.aggregate";
 import { PrismaStockLedgerStore } from "../stock/stock.repository";
 import { StockService } from "../stock/stock.service";
@@ -108,6 +108,32 @@ poRouter.post(
       return created;
     });
     return { status: 201, body: { data: po }, entityId: po.poNumber, detail: input };
+  })
+);
+
+/**
+ * DELETE /pos/:id/lines/:lineId (Gate 2 rework, E24, ECP-004 AC2/AC5): remove a line from a
+ * still-Draft PO before it's confirmed. Once Confirmed (stock already reserved against these
+ * lines), deletion is rejected with a clear message (AC5) - use edit/cancel instead.
+ */
+poRouter.delete(
+  "/:id/lines/:lineId",
+  requirePermission("po", "create"),
+  auditableRoute("DeletePOLine", "PurchaseOrder", async (req) => {
+    const poId = Number(req.params.id);
+    const lineId = Number(req.params.lineId);
+
+    const po = await prisma.purchaseOrder.findUnique({ where: { id: poId }, include: { lines: true } });
+    if (!po) throw AppError.notFound("ไม่พบคำสั่งซื้อนี้ในระบบ");
+
+    assertCanDeleteLine(po.status);
+
+    const line = po.lines.find((l) => l.id === lineId);
+    if (!line) throw AppError.notFound("ไม่พบรายการสินค้านี้ในคำสั่งซื้อ");
+
+    await prisma.pOLine.delete({ where: { id: lineId } });
+
+    return { body: { data: { ok: true } }, entityId: po.poNumber, detail: { lineId } };
   })
 );
 

@@ -20,9 +20,32 @@ export function useInspectBatch() {
   });
 }
 
+export interface IncomingLot {
+  id: number;
+  lotNumber: string;
+  materialId: number;
+  materialName: string;
+  receivedQty: number;
+  uom: string;
+  supplierName: string;
+  incomingQcStatus: string;
+  receivedDate: string;
+}
+
+/** ECP-017 AC1 (E29): lots awaiting incoming QC, with qty/lot-number/supplier already captured
+ * at goods-receipt time - QA/QC reviews this list instead of typing/guessing a raw Lot id. */
+export function useIncomingLots(status = "Pending") {
+  return useQuery({
+    queryKey: ["incoming-lots", status],
+    queryFn: () => apiClient.get<{ data: IncomingLot[] }>(`/qc/lots?status=${status}`).then((r) => r.data)
+  });
+}
+
 export function useInspectLot() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ lotId, result }: { lotId: number; result: "Passed" | "Failed" }) =>
-      apiClient.post(`/qc/lots/${lotId}/inspect`, { result })
+      apiClient.post(`/qc/lots/${lotId}/inspect`, { result }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["incoming-lots"] })
   });
 }

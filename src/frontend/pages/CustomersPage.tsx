@@ -2,6 +2,16 @@ import { useState } from "react";
 import { Card, DataTable, Button, Modal, Form, TextField, SubmitButton, StatusTag, Notify, EmptyState } from "../ui";
 import { useCreateCustomer, useCustomers, useUpdateCustomer, useCustomerPOs, Customer } from "../hooks/useCustomers";
 
+/** ECP-001 AC5/AC7: a customer with no tax_id yet cannot be used to print a tax invoice later. */
+function TaxIdWarning({ customer }: { customer: Customer }) {
+  if (customer.taxId) return null;
+  return (
+    <span data-testid="no-tax-id-warning" style={{ color: "#ad6800" }}>
+      ยังไม่มีเลขประจำตัวผู้เสียภาษี (จะออกใบกำกับภาษีไม่ได้จนกว่าจะเพิ่มข้อมูลนี้)
+    </span>
+  );
+}
+
 export function CustomersPage() {
   const [q, setQ] = useState("");
   const { data: customers, isLoading } = useCustomers(q);
@@ -49,6 +59,7 @@ export function CustomersPage() {
           { key: "name", title: "ชื่อลูกค้า", dataIndex: "name" },
           { key: "phone", title: "เบอร์โทร", dataIndex: "phone" },
           { key: "email", title: "อีเมล", dataIndex: "email" },
+          { key: "taxId", title: "เลขผู้เสียภาษี", render: (c) => c.taxId ?? <TaxIdWarning customer={c} /> },
           { key: "status", title: "สถานะ", render: (c) => <StatusTag status={c.status} /> },
           {
             key: "actions",
@@ -69,6 +80,17 @@ export function CustomersPage() {
           <TextField name="phone" label="เบอร์โทร" />
           <TextField name="email" label="อีเมล" />
           <TextField name="contactPerson" label="ผู้ติดต่อ" />
+          <TextField
+            name="taxId"
+            label="เลขประจำตัวผู้เสียภาษี (13 หลัก, ไม่บังคับตอนสร้าง)"
+            placeholder="0105558000001"
+            testId="customer-tax-id"
+          />
+          <TextField
+            name="registeredAddress"
+            label="ที่อยู่จดทะเบียน (สำหรับใบกำกับภาษี - ถ้าไม่กรอกจะใช้ที่อยู่หลัก)"
+            testId="customer-registered-address"
+          />
           <SubmitButton loading={createCustomer.isPending}>บันทึก</SubmitButton>
         </Form>
       </Modal>

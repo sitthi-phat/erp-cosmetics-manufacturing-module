@@ -6,25 +6,45 @@ import { useCustomers } from "../hooks/useCustomers";
 import { useProducts } from "../hooks/useProducts";
 import { ApiError } from "../lib/apiClient";
 
+interface DraftLine {
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  uom: string;
+}
+
 export function PoCreatePage() {
   const navigate = useNavigate();
   const { data: customers } = useCustomers();
   const { data: products } = useProducts();
   const createPO = useCreatePO();
   const bomCheck = useBomCheck();
-  const [lines, setLines] = useState<Array<{ productId: number; quantity: number; unitPrice: number; uom: string }>>([]);
+  const [lines, setLines] = useState<DraftLine[]>([]);
 
+  // ECP-004 AC1 (root cause fix, feedback item 1): keep the product NAME alongside its id when a
+  // line is added, so the table can render "ชื่อสินค้า / จำนวน / ราคา / ยอดรวม" instead of the raw
+  // `Product #<id> x <qty> @ <price>` string pond reported as unreadable.
   function addLine(rawValues: Record<string, unknown>) {
     const values = normalizeSelectValues(rawValues);
+    const productId = Number(values.productId);
+    const product = (products ?? []).find((p) => p.id === productId);
     setLines((prev) => [
       ...prev,
       {
-        productId: Number(values.productId),
+        productId,
+        productName: product?.name ?? `สินค้า #${productId}`,
         quantity: Number(values.quantity),
         unitPrice: Number(values.unitPrice),
         uom: "unit"
       }
     ]);
+  }
+
+  // ECP-004 AC2: remove a line from this NOT-YET-SUBMITTED draft before "สร้าง PO" is clicked -
+  // purely local state, no API call needed since the PO doesn't exist yet at this point.
+  function removeLine(index: number) {
+    setLines((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function checkStock() {
@@ -57,7 +77,8 @@ export function PoCreatePage() {
       const result = await createPO.mutateAsync({
         customerId: Number(values.customerId),
         requestedDeliveryDate: String(values.requestedDeliveryDate),
-        lines
+        // Only send the fields the API actually expects - `productName` is FE-only display state.
+        lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity, unitPrice: l.unitPrice, uom: l.uom }))
       });
       Notify.success("สร้าง PO สำเร็จ (สถานะ Draft)");
       navigate(`/pos/${(result as any).data.id}`);
@@ -99,13 +120,36 @@ export function PoCreatePage() {
           <NumberField name="unitPrice" label="ราคาต่อหน่วย" required min={0} />
           <SubmitButton testId="po-add-line">+ เพิ่มรายการ</SubmitButton>
         </Form>
-        <ul>
-          {lines.map((l, i) => (
-            <li key={i}>
-              product #{l.productId} x {l.quantity} @ {l.unitPrice}
-            </li>
-          ))}
-        </ul>
+        {/* ECP-004 AC1 (regression guard): render ชื่อสินค้า/จำนวน/ราคา/ยอดรวม - never a raw
+            `Product #<id> x <qty> @ <price>` string or any internal id on screen. */}
+        {lines.length > 0 && (
+          <table style={{ width: "100%", marginBottom: 12 }} data-testid="po-draft-lines-table">
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left" }}>ชื่อสินค้า</th>
+                <th style={{ textAlign: "right" }}>จำนวน</th>
+                <th style={{ textAlign: "right" }}>ราคาต่อหน่วย (บาท)</th>
+                <th style={{ textAlign: "right" }}>ยอดรวมบรรทัด (บาท)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {lines.map((l, i) => (
+                <tr key={i} data-testid={`po-draft-line-${i}`}>
+                  <td data-testid={`po-draft-line-name-${i}`}>{l.productName}</td>
+                  <td style={{ textAlign: "right" }}>{l.quantity}</td>
+                  <td style={{ textAlign: "right" }}>{l.unitPrice.toFixed(2)}</td>
+                  <td style={{ textAlign: "right" }}>{(l.quantity * l.unitPrice).toFixed(2)}</td>
+                  <td>
+                    <Button variant="danger" onClick={() => removeLine(i)} testId={`po-draft-line-remove-${i}`}>
+                      ลบ
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
         <Button onClick={checkStock}>ตรวจสอบ stock ก่อนยืนยัน</Button>
       </Card>
     </Card>

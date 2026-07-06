@@ -14,7 +14,7 @@ import {
   Notify,
   StatusTag
 } from "../ui";
-import { usePO, usePOTimeline, useConfirmPO, useCancelPO } from "../hooks/usePo";
+import { usePO, usePOTimeline, useConfirmPO, useCancelPO, useDeletePOLine } from "../hooks/usePo";
 import { useIssueInvoice, useRecordPayment } from "../hooks/useInvoices";
 import { ApiError } from "../lib/apiClient";
 
@@ -28,11 +28,13 @@ export function PoDetailPage() {
   const { data: timeline } = usePOTimeline(poId);
   const confirmPO = useConfirmPO();
   const cancelPO = useCancelPO();
+  const deletePOLine = useDeletePOLine();
   const issueInvoice = useIssueInvoice();
   const recordPayment = useRecordPayment();
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [issuedInvoice, setIssuedInvoice] = useState<any>(null);
   const [payModalOpen, setPayModalOpen] = useState(false);
+  const [invoiceDiscount, setInvoiceDiscount] = useState(0);
 
   // QA DEF-05 fix: invoice lines are derived directly from the PO's OWN lines (each keeping its
   // real productId/quantity/unitPrice) instead of a free-text form that used to hardcode
@@ -72,12 +74,23 @@ export function PoDetailPage() {
     }
   }
 
+  // ECP-004 AC2/AC5: delete a line from an already-created (still Draft) PO before confirming.
+  async function handleDeleteLine(lineId: number) {
+    try {
+      await deletePOLine.mutateAsync({ poId: po.id, lineId });
+      Notify.success("ลบบรรทัดสินค้าสำเร็จ");
+    } catch (err) {
+      if (err instanceof ApiError) Notify.error(err.message);
+    }
+  }
+
   async function handleIssueInvoice() {
     try {
-      const result: any = await issueInvoice.mutateAsync({ poId: po.id, lines: invoiceLines });
+      const result: any = await issueInvoice.mutateAsync({ poId: po.id, lines: invoiceLines, discountAmount: invoiceDiscount });
       Notify.success("ออก invoice สำเร็จ (version 1)");
       setIssuedInvoice(result.data);
       setInvoiceModalOpen(false);
+      setInvoiceDiscount(0);
     } catch (err) {
       if (err instanceof ApiError) Notify.error(err.message);
     }
@@ -115,6 +128,39 @@ export function PoDetailPage() {
       />
       {po.derivedStatusLabel ? <p>{po.derivedStatusLabel}</p> : null}
       <StatusTag status={po.status} testId="po-status-badge" />
+
+      {/* ECP-004 AC1/AC5: readable line table (ชื่อสินค้า/จำนวน/ราคา/ยอดรวม) + delete-line
+          (only while still Draft - Confirmed PO already reserved stock against these lines). */}
+      <Card title="รายการสินค้า" testId="po-lines-card">
+        <table style={{ width: "100%" }} data-testid="po-lines-table">
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left" }}>ชื่อสินค้า</th>
+              <th style={{ textAlign: "right" }}>จำนวน</th>
+              <th style={{ textAlign: "right" }}>ราคาต่อหน่วย (บาท)</th>
+              <th style={{ textAlign: "right" }}>ยอดรวมบรรทัด (บาท)</th>
+              {po.status === "Draft" && <th></th>}
+            </tr>
+          </thead>
+          <tbody>
+            {(po.lines ?? []).map((l: any) => (
+              <tr key={l.id} data-testid={`po-line-${l.id}`}>
+                <td>{l.product?.name ?? `สินค้า #${l.productId}`}</td>
+                <td style={{ textAlign: "right" }}>{Number(l.quantity)}</td>
+                <td style={{ textAlign: "right" }}>{Number(l.unitPrice).toFixed(2)}</td>
+                <td style={{ textAlign: "right" }}>{(Number(l.quantity) * Number(l.unitPrice)).toFixed(2)}</td>
+                {po.status === "Draft" && (
+                  <td>
+                    <Button variant="danger" onClick={() => handleDeleteLine(l.id)} testId={`po-line-delete-${l.id}`}>
+                      ลบ
+                    </Button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
       <div style={{ margin: "24px 0" }}>
         <Steps
           current={currentStepIndex < 0 ? 0 : currentStepIndex}
@@ -140,6 +186,7 @@ export function PoDetailPage() {
       {issuedInvoice && (
         <Card title={`Invoice ${issuedInvoice.invoiceNo} (v${issuedInvoice.version})`}>
           <p>Subtotal: {Number(issuedInvoice.subtotal).toFixed(2)} บาท</p>
+          <p data-testid="invoice-discount-amount">หักส่วนลด: {Number(issuedInvoice.discountAmount ?? 0).toFixed(2)} บาท</p>
           <p data-testid="invoice-vat-amount">VAT: {Number(issuedInvoice.vatAmount).toFixed(2)} บาท</p>
           <p data-testid="invoice-total-amount">รวมทั้งสิ้น: {Number(issuedInvoice.totalAmount).toFixed(2)} บาท</p>
           <StatusTag status={issuedInvoice.status} testId="invoice-status-badge" />
@@ -193,6 +240,18 @@ export function PoDetailPage() {
           <strong data-testid="invoice-subtotal-preview">Subtotal: {invoiceSubtotal.toFixed(2)} บาท</strong> (VAT
           จะคำนวณจากอัตราปัจจุบันตอนออกเอกสารจริง)
         </p>
+        <div>
+          <label htmlFor="issue-invoice-discount">ส่วนลด (บาท, ไม่บังคับ): </label>
+          <input
+            id="issue-invoice-discount"
+            type="number"
+            min={0}
+            step="0.01"
+            defaultValue={0}
+            data-testid="issue-invoice-discount"
+            onChange={(e) => setInvoiceDiscount(Number(e.target.value) || 0)}
+          />
+        </div>
       </Modal>
 
       <Modal open={payModalOpen} title="บันทึกรับชำระเงิน" onCancel={() => setPayModalOpen(false)} testId="payment-modal">

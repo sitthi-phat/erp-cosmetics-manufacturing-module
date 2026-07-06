@@ -21,6 +21,12 @@ class InMemoryInvoiceRepository implements InvoiceRepository {
     return this.invoices.find((i) => i.id === id) ?? null;
   }
 
+  async findByIdWithCustomer(id: number): Promise<InvoiceRecord | null> {
+    // Fake repo doesn't model a separate Customer entity - detail-view tests for the customer
+    // join live at the integration level (tests/integration/invoiceDiscountDetail.spec.ts).
+    return this.findById(id);
+  }
+
   async findLatestByPoId(poId: number): Promise<InvoiceRecord | null> {
     const rows = this.invoices
       .filter((i) => i.poId === poId && i.status !== "Superseded")
@@ -53,10 +59,12 @@ class InMemoryInvoiceRepository implements InvoiceRepository {
       issuedByName: "Finance User",
       issueDate: new Date(),
       subtotal: input.subtotal,
+      discountAmount: input.discountAmount ?? 0,
       vatRateApplied: input.vatRateApplied,
       vatAmount: input.vatAmount,
       totalAmount: input.totalAmount,
       status: "Issued" as InvoiceStatus,
+      documentSnapshot: input.documentSnapshot ?? null,
       lines: input.lines
     };
     this.invoices.push(record);
@@ -75,10 +83,12 @@ class InMemoryInvoiceRepository implements InvoiceRepository {
       issuedByName: "Finance User 2",
       issueDate: new Date(),
       subtotal: input.subtotal,
+      discountAmount: input.discountAmount ?? 0,
       vatRateApplied: input.vatRateApplied,
       vatAmount: input.vatAmount,
       totalAmount: input.totalAmount,
       status: input.status,
+      documentSnapshot: input.documentSnapshot ?? null,
       lines: input.lines
     };
     this.invoices.push(record);

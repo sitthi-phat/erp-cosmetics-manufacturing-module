@@ -10,6 +10,21 @@ export interface InvoiceLineRecord {
   lineTotal: number;
 }
 
+export interface DocumentSnapshot {
+  issuer: { companyName: string; address: string; taxId: string; phone: string; logoUrl?: string | null };
+  customer: { name: string; address: string; taxId: string | null; phone: string | null };
+}
+
+export interface CustomerSummary {
+  id: number;
+  customerId: string;
+  name: string;
+  address: string | null;
+  phone: string | null;
+  taxId: string | null;
+  registeredAddress: string | null;
+}
+
 export interface InvoiceRecord {
   id: number;
   invoiceNo: string;
@@ -20,11 +35,19 @@ export interface InvoiceRecord {
   issuedByName?: string;
   issueDate: Date;
   subtotal: number;
+  /** Gate 2 rework (E30, ECP-020 AC4/AC5): fixed baht-amount discount, defaults to 0 for every
+   * pre-Gate-2 row/caller. */
+  discountAmount: number;
   vatRateApplied: number;
   vatAmount: number;
   totalAmount: number;
   status: InvoiceStatus;
+  /** Gate 2 rework (E32, ADR-009 §2): issuer/customer data frozen at issue/revise time so a
+   * later CompanyProfile/Customer edit never changes an already-printed document. */
+  documentSnapshot?: DocumentSnapshot | null;
   lines: InvoiceLineRecord[];
+  /** Populated only by findByIdWithCustomer (ECP-040 AC1 detail view). */
+  customer?: CustomerSummary;
 }
 
 export interface PaymentRecord {
@@ -40,9 +63,11 @@ export interface CreateInvoiceInput {
   poId: number;
   issuedById: number;
   subtotal: number;
+  discountAmount?: number;
   vatRateApplied: number;
   vatAmount: number;
   totalAmount: number;
+  documentSnapshot?: DocumentSnapshot | null;
   lines: InvoiceLineRecord[];
 }
 
@@ -63,6 +88,8 @@ export interface RecordPaymentInput {
 
 export interface InvoiceRepository {
   findById(id: number): Promise<InvoiceRecord | null>;
+  /** ECP-040 AC1: detail view needs the customer row alongside the invoice. */
+  findByIdWithCustomer(id: number): Promise<InvoiceRecord | null>;
   findLatestByPoId(poId: number): Promise<InvoiceRecord | null>;
   findLatestByInvoiceNo(invoiceNo: string): Promise<InvoiceRecord | null>;
   findChainByInvoiceNo(invoiceNo: string): Promise<InvoiceRecord[]>;
@@ -84,17 +111,30 @@ function toRecord(row: any): InvoiceRecord {
     issuedByName: row.issuedBy?.fullName,
     issueDate: row.issueDate,
     subtotal: Number(row.subtotal),
+    discountAmount: Number(row.discountAmount ?? 0),
     vatRateApplied: Number(row.vatRateApplied),
     vatAmount: Number(row.vatAmount),
     totalAmount: Number(row.totalAmount),
     status: row.status,
+    documentSnapshot: (row.documentSnapshot as DocumentSnapshot | null | undefined) ?? null,
     lines: (row.lines ?? []).map((l: any) => ({
       productId: l.productId,
       description: l.description,
       quantity: Number(l.quantity),
       unitPrice: Number(l.unitPrice),
       lineTotal: Number(l.lineTotal)
-    }))
+    })),
+    customer: row.po?.customer
+      ? {
+          id: row.po.customer.id,
+          customerId: row.po.customer.customerId,
+          name: row.po.customer.name,
+          address: row.po.customer.address,
+          phone: row.po.customer.phone,
+          taxId: row.po.customer.taxId,
+          registeredAddress: row.po.customer.registeredAddress
+        }
+      : undefined
   };
 }
 
@@ -103,6 +143,14 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const row = await prisma.invoice.findUnique({
       where: { id },
       include: { lines: true, issuedBy: true }
+    });
+    return row ? toRecord(row) : null;
+  }
+
+  async findByIdWithCustomer(id: number): Promise<InvoiceRecord | null> {
+    const row = await prisma.invoice.findUnique({
+      where: { id },
+      include: { lines: true, issuedBy: true, po: { include: { customer: true } } }
     });
     return row ? toRecord(row) : null;
   }
@@ -145,9 +193,11 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
           poId: input.poId,
           issuedById: input.issuedById,
           subtotal: input.subtotal,
+          discountAmount: input.discountAmount ?? 0,
           vatRateApplied: input.vatRateApplied,
           vatAmount: input.vatAmount,
           totalAmount: input.totalAmount,
+          documentSnapshot: (input.documentSnapshot ?? undefined) as any,
           status: "Issued",
           lines: { create: input.lines }
         },
@@ -171,9 +221,11 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
           poId: input.poId,
           issuedById: input.issuedById,
           subtotal: input.subtotal,
+          discountAmount: input.discountAmount ?? 0,
           vatRateApplied: input.vatRateApplied,
           vatAmount: input.vatAmount,
           totalAmount: input.totalAmount,
+          documentSnapshot: (input.documentSnapshot ?? undefined) as any,
           status: input.status,
           lines: { create: input.lines }
         },

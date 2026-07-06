@@ -44,3 +44,16 @@ export function assertShippedForInvoice(status: POStatus): void {
     throw AppError.validation("ไม่สามารถออก invoice ได้ PO นี้ยังไม่ถูกจัดส่ง");
   }
 }
+
+/**
+ * Gate 2 rework (E24, ECP-004 AC5): a PO line can only be deleted while the PO is still Draft -
+ * once Confirmed (stock already reserved against these exact lines), deleting a line would
+ * desync the reservation from what's actually on the PO.
+ */
+export function assertCanDeleteLine(status: POStatus): void {
+  if (status !== "Draft") {
+    throw AppError.conflict(
+      "PO นี้ถูกยืนยันแล้ว ไม่สามารถลบบรรทัดสินค้าได้อีก กรุณาใช้ฟังก์ชันแก้ไข/ยกเลิก PO แทน"
+    );
+  }
+}

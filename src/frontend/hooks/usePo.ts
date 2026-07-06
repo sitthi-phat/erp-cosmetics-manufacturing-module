@@ -64,6 +64,19 @@ export function useCancelPO() {
   });
 }
 
+/** ECP-004 AC2/AC5: delete a line from a still-Draft PO (post-create, pre-confirm). */
+export function useDeletePOLine() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ poId, lineId }: { poId: number; lineId: number }) =>
+      apiClient.delete(`/pos/${poId}/lines/${lineId}`),
+    onSuccess: (_d, { poId }) => {
+      queryClient.invalidateQueries({ queryKey: ["po", poId] });
+      queryClient.invalidateQueries({ queryKey: ["pos"] });
+    }
+  });
+}
+
 export function useBomCheck() {
   return useMutation({
     mutationFn: (input: { productId: number; orderQty: number }) =>

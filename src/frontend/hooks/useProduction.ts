@@ -15,6 +15,27 @@ export function useAssignedProductionOrders() {
   });
 }
 
+export interface MaterialPlanLine {
+  materialId: number;
+  materialName: string;
+  requiredQty: number;
+  proposedLots: Array<{ lotId: number; lotNumber: string; allocQty: number }>;
+  shortfall: number;
+}
+
+/**
+ * ECP-013 AC1: auto-calculated material requirement + FIFO lot proposal for a production order -
+ * root-cause fix for defect D (Production no longer types/guesses an internal Lot id).
+ */
+export function useMaterialPlan(productionOrderId: number | null) {
+  return useQuery({
+    queryKey: ["material-plan", productionOrderId],
+    queryFn: () =>
+      apiClient.get<{ data: MaterialPlanLine[] }>(`/production/${productionOrderId}/material-plan`).then((r) => r.data),
+    enabled: productionOrderId !== null
+  });
+}
+
 export function useAssignProduction() {
   const queryClient = useQueryClient();
   return useMutation({

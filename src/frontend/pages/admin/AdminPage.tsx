@@ -9,6 +9,7 @@ import {
   useUpdateVatConfig,
   useUpdateRolePermissions
 } from "../../hooks/useAdmin";
+import { useCompanyProfile, useUpdateCompanyProfile } from "../../hooks/useCompanyProfile";
 import { ApiError } from "../../lib/apiClient";
 
 interface PermissionTuple {
@@ -106,9 +107,12 @@ export function AdminPage() {
   const updateUser = useUpdateUser();
   const { data: vatConfig } = useVatConfig();
   const updateVat = useUpdateVatConfig();
+  const { data: companyProfile } = useCompanyProfile();
+  const updateCompanyProfile = useUpdateCompanyProfile();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [vatError, setVatError] = useState<string | null>(null);
   const [vatSaved, setVatSaved] = useState(false);
+  const [companyProfileError, setCompanyProfileError] = useState<string | null>(null);
 
   async function handleCreateUser(rawValues: Record<string, unknown>) {
     const values = normalizeSelectValues(rawValues);
@@ -144,6 +148,23 @@ export function AdminPage() {
       setVatSaved(true);
     } catch (err) {
       if (err instanceof ApiError) setVatError(err.message);
+    }
+  }
+
+  /** ECP-041: CompanyProfile is the "issuer" used on every printed tax invoice (ADR-009). */
+  async function handleUpdateCompanyProfile(values: Record<string, unknown>) {
+    setCompanyProfileError(null);
+    try {
+      await updateCompanyProfile.mutateAsync({
+        companyName: String(values.companyName),
+        address: String(values.address),
+        taxId: String(values.taxId),
+        phone: String(values.phone),
+        logoUrl: values.logoUrl ? String(values.logoUrl) : undefined
+      });
+      Notify.success("บันทึกข้อมูลบริษัทสำเร็จ");
+    } catch (err) {
+      if (err instanceof ApiError) setCompanyProfileError(err.message);
     }
   }
 
@@ -228,6 +249,44 @@ export function AdminPage() {
         )}
         {vatSaved && <p data-testid="vat-rate-save-confirmation">บันทึกอัตรา VAT สำเร็จ</p>}
         <p style={{ color: "#888" }}>ค่าใหม่มีผลกับ invoice ที่ออกใหม่เท่านั้น - invoice เดิมยังคง snapshot อัตราเดิมไว้เสมอ</p>
+      </Card>
+
+      <Card title="ข้อมูลบริษัท (สำหรับออกเอกสาร, ECP-041)" testId="admin-section-company-profile">
+        {!companyProfile && (
+          <p style={{ color: "#ad6800" }}>
+            ยังไม่ได้ตั้งค่าข้อมูลบริษัท - จะไม่สามารถออก/พิมพ์ใบกำกับภาษีได้จนกว่าจะตั้งค่านี้ก่อน
+          </p>
+        )}
+        <Form
+          onSubmit={handleUpdateCompanyProfile}
+          initialValues={{
+            companyName: companyProfile?.companyName,
+            address: companyProfile?.address,
+            taxId: companyProfile?.taxId,
+            phone: companyProfile?.phone,
+            logoUrl: companyProfile?.logoUrl ?? undefined
+          }}
+        >
+          <TextField name="companyName" label="ชื่อบริษัท" required testId="company-profile-name" />
+          <TextField name="address" label="ที่อยู่เต็ม" required testId="company-profile-address" />
+          <TextField
+            name="taxId"
+            label="เลขประจำตัวผู้เสียภาษี (13 หลัก)"
+            required
+            testId="company-profile-tax-id"
+            placeholder="0105558000001"
+          />
+          <TextField name="phone" label="เบอร์โทร" required testId="company-profile-phone" />
+          <TextField name="logoUrl" label="URL โลโก้บริษัท (ไม่บังคับ)" testId="company-profile-logo-url" />
+          <SubmitButton loading={updateCompanyProfile.isPending} testId="company-profile-save">
+            บันทึกข้อมูลบริษัท
+          </SubmitButton>
+        </Form>
+        {companyProfileError && (
+          <p data-testid="company-profile-error" style={{ color: "red" }}>
+            {companyProfileError}
+          </p>
+        )}
       </Card>
     </div>
   );

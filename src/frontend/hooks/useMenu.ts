@@ -34,6 +34,7 @@ const MENU_DEFS: MenuDef[] = [
     testId: "nav-production-queue"
   },
   { key: "qc", label: "ตรวจสอบคุณภาพ (QC)", path: "/qc", resource: "qc", action: "view_batches", testId: "nav-qc-batches" },
+  { key: "bom", label: "จัดการ BOM", path: "/bom", resource: "bom", action: "view", testId: "nav-bom" },
   {
     key: "shipping",
     label: "จัดส่งสินค้า",

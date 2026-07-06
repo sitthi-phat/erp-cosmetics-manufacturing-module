@@ -1,18 +1,25 @@
 import { AppError } from "../../lib/errors";
 import { computeInvoiceAmounts, computeReconciliation, InvoiceLineInput } from "./invoice.calc";
-import { InvoiceRecord, InvoiceRepository, PaymentRecord } from "./invoice.repository";
+import { DocumentSnapshot, InvoiceRecord, InvoiceRepository, PaymentRecord } from "./invoice.repository";
 
 export interface IssueInvoiceInput {
   poId: number;
   poStatus: string;
   lines: (InvoiceLineInput & { productId: number; description: string })[];
   issuedById: number;
+  /** Gate 2 rework (ECP-020 AC4/AC5): fixed baht-amount discount, defaults to 0. */
+  discountAmount?: number;
+  /** Gate 2 rework (E32, ADR-009 §2): frozen issuer/customer snapshot, assembled by the route
+   * handler (which has direct DB access to CompanyProfile/Customer) and passed through here. */
+  documentSnapshot?: DocumentSnapshot | null;
 }
 
 export interface ReviseInvoiceInput {
   invoiceId: number;
   lines: (InvoiceLineInput & { productId: number; description: string })[];
   actorId: number;
+  discountAmount?: number;
+  documentSnapshot?: DocumentSnapshot | null;
 }
 
 export interface RecordPaymentInput {
@@ -51,7 +58,7 @@ export class InvoiceService {
       throw AppError.validation("ไม่สามารถออก invoice ได้ PO นี้ยังไม่ถูกจัดส่ง");
     }
     const rate = await this.getCurrentVatRate();
-    const amounts = computeInvoiceAmounts(input.lines, rate);
+    const amounts = computeInvoiceAmounts(input.lines, rate, input.discountAmount ?? 0);
     const lines = input.lines.map((l) => ({
       productId: l.productId,
       description: l.description,
@@ -63,6 +70,7 @@ export class InvoiceService {
       poId: input.poId,
       issuedById: input.issuedById,
       ...amounts,
+      documentSnapshot: input.documentSnapshot ?? null,
       lines
     });
   }
@@ -96,7 +104,7 @@ export class InvoiceService {
     }
 
     const rate = await this.getCurrentVatRate();
-    const amounts = computeInvoiceAmounts(input.lines, rate); // throws on empty lines (AC4)
+    const amounts = computeInvoiceAmounts(input.lines, rate, input.discountAmount ?? 0); // throws on empty lines (AC4)
 
     const paidSum = existingPaidSum;
     const recon = computeReconciliation(amounts.totalAmount, paidSum);
@@ -116,6 +124,7 @@ export class InvoiceService {
       poId: latest.poId,
       issuedById: input.actorId,
       ...amounts,
+      documentSnapshot: input.documentSnapshot ?? null,
       status: recon.status,
       lines
     });
@@ -137,6 +146,21 @@ export class InvoiceService {
         : null;
       return { ...row, supersededLabel };
     });
+  }
+
+  /**
+   * GET /invoices/:id detail view (ECP-040 AC1/AC2/AC3): full invoice (customer, all line
+   * items, subtotal/discount/vat/total, status) + payment history for the chain. Version-aware
+   * by construction - reads whichever specific version id was requested, never mixes numbers
+   * across versions (AC2).
+   */
+  async getDetail(invoiceId: number): Promise<InvoiceRecord & { payments: PaymentRecord[] }> {
+    const invoice = await this.repo.findByIdWithCustomer(invoiceId);
+    if (!invoice) {
+      throw AppError.notFound("ไม่พบ invoice นี้ในระบบ");
+    }
+    const payments = await this.repo.getPaymentsByChainKey(invoice.invoiceNo);
+    return { ...invoice, payments };
   }
 
   /** Payment reconciliation read model (§5.5). */

@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Card, DataTable, Button, Modal, Form, TextField, NumberField, SelectField, SubmitButton, StatusTag, Notify, normalizeSelectValues } from "../ui";
-import { useQcBatches, useInspectBatch, useInspectLot } from "../hooks/useQc";
+import { Card, DataTable, Button, Modal, Form, TextField, SelectField, SubmitButton, StatusTag, Notify, normalizeSelectValues } from "../ui";
+import { useQcBatches, useInspectBatch, useInspectLot, useIncomingLots } from "../hooks/useQc";
 import { ApiError } from "../lib/apiClient";
 
 export function QcPage() {
   const { data: batches, isLoading } = useQcBatches();
+  const { data: incomingLots, isLoading: incomingLoading } = useIncomingLots();
   const inspect = useInspectBatch();
   const inspectLot = useInspectLot();
   const [target, setTarget] = useState<number | null>(null);
+  const [incomingTarget, setIncomingTarget] = useState<number | null>(null);
 
   async function handleInspect(rawValues: Record<string, unknown>) {
     const values = normalizeSelectValues(rawValues);
@@ -21,32 +23,76 @@ export function QcPage() {
     }
   }
 
+  // ECP-017 AC1 (E29, root cause: form used to be a raw "Lot ID" NumberField with zero context) -
+  // the lot to inspect is now chosen from a real list the system already knows (qty/lot number/
+  // supplier all pre-filled), not typed/guessed.
   async function handleInspectLot(rawValues: Record<string, unknown>) {
     const values = normalizeSelectValues(rawValues);
+    if (incomingTarget === null) return;
     try {
-      await inspectLot.mutateAsync({ lotId: Number(values.lotId), result: values.result as "Passed" | "Failed" });
+      await inspectLot.mutateAsync({ lotId: incomingTarget, result: values.result as "Passed" | "Failed" });
       Notify.success("บันทึกผลตรวจสอบวัตถุดิบขาเข้าสำเร็จ");
+      setIncomingTarget(null);
     } catch (err) {
       if (err instanceof ApiError) Notify.error(err.message);
     }
   }
 
+  const incomingLotTarget = (incomingLots ?? []).find((l) => l.id === incomingTarget);
+
   return (
     <div>
-      <Card title="ตรวจสอบวัตถุดิบขาเข้า (Incoming QC, ECP-017)">
-        <Form onSubmit={handleInspectLot}>
-          <NumberField name="lotId" label="Lot ID" required min={1} />
-          <SelectField
-            name="result"
-            label="ผลตรวจ"
-            required
-            options={[
-              { value: "Passed", label: "ผ่าน (Passed)" },
-              { value: "Failed", label: "ไม่ผ่าน (Failed)" }
-            ]}
-          />
-          <SubmitButton loading={inspectLot.isPending}>บันทึกผลตรวจ</SubmitButton>
-        </Form>
+      <Card title="ตรวจสอบวัตถุดิบขาเข้า (Incoming QC, ECP-017)" testId="incoming-qc-card">
+        <DataTable
+          loading={incomingLoading}
+          rows={incomingLots ?? []}
+          rowKey={(l: any) => l.id}
+          emptyText="ไม่มี Lot ที่รอตรวจสอบขาเข้าในขณะนี้"
+          getRowTestId={(l: any) => `incoming-lot-row-${l.lotNumber}`}
+          columns={[
+            { key: "lotNumber", title: "เลข Lot", dataIndex: "lotNumber" },
+            { key: "materialName", title: "วัตถุดิบ", dataIndex: "materialName" },
+            { key: "receivedQty", title: "จำนวนที่รับเข้า", render: (l: any) => `${l.receivedQty} ${l.uom}` },
+            { key: "supplierName", title: "ผู้จำหน่าย", dataIndex: "supplierName" },
+            {
+              key: "actions",
+              title: "",
+              render: (l: any) => (
+                <Button onClick={() => setIncomingTarget(l.id)} testId="incoming-inspect-button">
+                  บันทึกผลตรวจ
+                </Button>
+              )
+            }
+          ]}
+        />
+        <Modal
+          open={incomingTarget !== null}
+          title={`บันทึกผลตรวจสอบวัตถุดิบขาเข้า - Lot ${incomingLotTarget?.lotNumber ?? ""}`}
+          onCancel={() => setIncomingTarget(null)}
+          testId="incoming-inspect-modal"
+        >
+          {incomingLotTarget && (
+            <p>
+              วัตถุดิบ: {incomingLotTarget.materialName} · จำนวน: {incomingLotTarget.receivedQty} {incomingLotTarget.uom} · ผู้จำหน่าย:{" "}
+              {incomingLotTarget.supplierName}
+            </p>
+          )}
+          <Form onSubmit={handleInspectLot}>
+            <SelectField
+              name="result"
+              label="ผลตรวจ"
+              required
+              testId="incoming-result-select"
+              options={[
+                { value: "Passed", label: "ผ่าน (Passed)" },
+                { value: "Failed", label: "ไม่ผ่าน (Failed)" }
+              ]}
+            />
+            <SubmitButton loading={inspectLot.isPending} testId="incoming-inspect-submit">
+              บันทึกผลตรวจ
+            </SubmitButton>
+          </Form>
+        </Modal>
       </Card>
       <Card title="ตรวจสอบคุณภาพ (QC) - รายการ Batch">
         <DataTable

@@ -12,19 +12,23 @@ export interface InvoiceLineInput {
 
 export interface InvoiceAmounts {
   subtotal: number;
+  discountAmount: number;
   vatRateApplied: number;
   vatAmount: number;
   totalAmount: number;
 }
 
 /**
- * subtotal = Sum(qty x unit_price); vat_amount = round(subtotal x rate/100, 2);
- * total = subtotal + vat_amount (architecture.md §3.2, ECP-020 AC1). Computed once at
- * issue/revise time and stored as an immutable snapshot - never recomputed on the fly.
+ * subtotal = Sum(qty x unit_price); vat_amount = round((subtotal - discount_amount) x
+ * rate/100, 2); total = subtotal - discount_amount + vat_amount (architecture.md §13.2, ECP-020
+ * AC1/AC4). `discountAmount` defaults to 0 so every pre-Gate-2 caller (2-arg call) keeps
+ * working unchanged. Computed once at issue/revise time and stored as an immutable snapshot -
+ * never recomputed on the fly.
  */
 export function computeInvoiceAmounts(
   lines: InvoiceLineInput[],
-  vatRatePercent: number
+  vatRatePercent: number,
+  discountAmount = 0
 ): InvoiceAmounts {
   if (lines.length === 0) {
     throw AppError.validation(
@@ -32,9 +36,31 @@ export function computeInvoiceAmounts(
     );
   }
   const subtotal = roundMoney(lines.reduce((sum, l) => sum + l.quantity * l.unitPrice, 0));
-  const vatAmount = roundMoney(subtotal * (vatRatePercent / 100));
-  const totalAmount = roundMoney(subtotal + vatAmount);
-  return { subtotal, vatRateApplied: vatRatePercent, vatAmount, totalAmount };
+  // Only validate when an actual (non-zero) discount is requested - preserves the pre-Gate-2
+  // behavior that computeInvoiceAmounts([...], rate) alone never rejects a line-level negative
+  // unit_price/subtotal itself (that guard lives at the HTTP/Zod layer, not here); a genuine
+  // discount>subtotal check only ever makes business sense once a discount is actually being
+  // applied. TC-Q8-DISC-03 (discountAmount explicitly 0) and every un-discounted invoice keep
+  // working exactly as before.
+  if (discountAmount !== 0) {
+    validateDiscount(subtotal, discountAmount);
+  }
+  const afterDiscount = roundMoney(subtotal - discountAmount);
+  const vatAmount = roundMoney(afterDiscount * (vatRatePercent / 100));
+  const totalAmount = roundMoney(afterDiscount + vatAmount);
+  return { subtotal, discountAmount, vatRateApplied: vatRatePercent, vatAmount, totalAmount };
+}
+
+/**
+ * ECP-020 AC5: discount_amount must never exceed subtotal (boundary is strictly ">" - discount
+ * exactly equal to subtotal is a valid, deliberate "zero net" invoice, ECP-042 AC5).
+ */
+export function validateDiscount(subtotal: number, discountAmount: number): void {
+  if (discountAmount > subtotal) {
+    throw AppError.validation(
+      `ส่วนลดต้องไม่เกินยอดรวมก่อนหักส่วนลด (subtotal ${subtotal.toFixed(2)} บาท)`
+    );
+  }
 }
 
 /** ECP-038 AC3: rate must be within [0, 100]. */

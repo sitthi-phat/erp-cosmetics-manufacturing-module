@@ -10,8 +10,11 @@ import { PoCreatePage } from "./pages/PoCreatePage";
 import { PoDetailPage } from "./pages/PoDetailPage";
 import { ProductionPage } from "./pages/ProductionPage";
 import { QcPage } from "./pages/QcPage";
+import { BomManagementPage } from "./pages/BomManagementPage";
 import { ShippingPage } from "./pages/ShippingPage";
 import { InvoicesPage } from "./pages/InvoicesPage";
+import { InvoiceDetailPage } from "./pages/InvoiceDetailPage";
+import { InvoiceDocumentPage } from "./pages/invoice/InvoiceDocument";
 import { TracePage } from "./pages/TracePage";
 import { AdminPage } from "./pages/admin/AdminPage";
 import { AuditPage } from "./pages/AuditPage";
@@ -89,6 +92,14 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: "bom",
+        element: (
+          <RequirePermission resource="bom" action="view">
+            <BomManagementPage />
+          </RequirePermission>
+        )
+      },
+      {
         path: "shipping",
         element: (
           <RequirePermission resource="shipping" action="view">
@@ -101,6 +112,22 @@ export const router = createBrowserRouter([
         element: (
           <RequirePermission resource="invoice" action="view">
             <InvoicesPage />
+          </RequirePermission>
+        )
+      },
+      {
+        path: "invoices/:id",
+        element: (
+          <RequirePermission resource="invoice" action="view">
+            <InvoiceDetailPage />
+          </RequirePermission>
+        )
+      },
+      {
+        path: "invoices/:id/print",
+        element: (
+          <RequirePermission resource="invoice" action="print">
+            <InvoiceDocumentPage />
           </RequirePermission>
         )
       },

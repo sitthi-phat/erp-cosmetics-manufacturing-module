@@ -162,6 +162,7 @@ model User {
   invoicesIssued      Invoice[]         @relation("IssuedBy")
   paymentsRecorded    Payment[]         @relation("RecordedBy")
   vatConfigUpdates    VATConfig[]       @relation("VatUpdatedBy")
+  companyProfileUpdates CompanyProfile[] @relation("CompanyProfileUpdatedBy")
 
   @@index([userId])
   @@map("user")
@@ -180,12 +181,19 @@ model Customer {
   email          String?
   contactPerson  String?        @map("contact_person")
   status         CustomerStatus @default(Active)
+  // Gate 2 rework (E22/E23, ECP-001 AC5-7/ECP-002 AC4): taxId is validated as 13-digit-numeric
+  // when present but optional at creation (not required to save a customer) - required only
+  // before printing a tax invoice (ECP-042 AC4). registeredAddress is the address printed on
+  // the document specifically; falls back to `address` when not set separately (§13.2).
+  taxId              String?  @map("tax_id")
+  registeredAddress  String?  @db.Text @map("registered_address")
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
 
   purchaseOrders PurchaseOrder[]
 
   @@index([customerId])
+  @@index([taxId])
   @@map("customer")
 }
 
@@ -254,13 +262,19 @@ model Lot {
   remainingQty     Decimal          @map("remaining_qty") @db.Decimal(12, 3)
   receivedDate     DateTime         @map("received_date")
   incomingQcStatus IncomingQcStatus @default(Pending) @map("incoming_qc_status")
+  // Gate 2 rework (E22/E29, ECP-008 AC4/ECP-017 AC1/AC4): captured at goods-receipt time so QC
+  // incoming inspection can display it without re-entry; old Lots without it show "ไม่ระบุ"
+  // (fallback rendered by the API/FE, not stored as a literal string here).
+  supplierName     String?          @map("supplier_name")
   createdAt        DateTime         @default(now()) @map("created_at")
 
   material          RawMaterial        @relation(fields: [materialId], references: [id])
   stockTransactions  StockTransaction[]
   batchLotUsages     BatchLotUsage[]
+  qcInspections      QCInspection[]
 
   @@unique([materialId, lotNumber])
+  @@index([receivedDate])
   @@map("lot")
 }
 
@@ -412,16 +426,25 @@ model BatchLotUsage {
 
 model QCInspection {
   id           Int      @id @default(autoincrement())
-  batchId      Int      @map("batch_id")
+  // Gate 2 rework (E22, §13.2): batchId XOR lotId - exactly one must be set. batchId = QC of a
+  // finished-goods Batch after production (Epic 5, ECP-015); lotId = incoming QC of a raw
+  // material Lot before it can be used in production (ECP-017). Enforced at the app layer
+  // (qc.routes.ts) since MySQL 8 CHECK constraints referencing 2 nullable columns are not
+  // reliably enforced across all MySQL 8.x point releases used across Phase 2/3 environments -
+  // documented here rather than silently relied upon.
+  batchId      Int?     @map("batch_id")
+  lotId        Int?     @map("lot_id")
   inspectorId  Int      @map("inspector_id")
   result       QCResult
   remarks      String?  @db.Text
   inspectedAt  DateTime @default(now()) @map("inspected_at")
 
-  batch     Batch @relation(fields: [batchId], references: [id])
-  inspector User  @relation(fields: [inspectorId], references: [id])
+  batch     Batch? @relation(fields: [batchId], references: [id])
+  lot       Lot?   @relation(fields: [lotId], references: [id])
+  inspector User   @relation(fields: [inspectorId], references: [id])
 
   @@index([batchId])
+  @@index([lotId])
   @@map("qc_inspection")
 }
 
@@ -460,10 +483,18 @@ model Invoice {
   issueDate        DateTime      @default(now()) @map("issue_date")
   issuedById       Int           @map("issued_by")
   subtotal         Decimal       @db.Decimal(12, 2)
+  // Gate 2 rework (E22/E30, ECP-020 AC4/AC5): fixed-amount discount per invoice (not %/per-line
+  // - PO default, §"open items" #3), applied before VAT: vat = round((subtotal-discount)*rate/100,2).
+  discountAmount   Decimal       @default(0.00) @map("discount_amount") @db.Decimal(12, 2)
   vatRateApplied   Decimal       @map("vat_rate_applied") @db.Decimal(5, 2)
   vatAmount        Decimal       @map("vat_amount") @db.Decimal(12, 2)
   totalAmount      Decimal       @map("total_amount") @db.Decimal(12, 2)
   status           InvoiceStatus @default(Issued)
+  // Gate 2 rework (E22/E32, ADR-009 §2): issuer/customer data frozen at issue/revise time so a
+  // later CompanyProfile/Customer edit never changes what an already-printed document shows
+  // (ECP-041 AC2, ECP-002 AC4) - same snapshot principle as vatRateApplied. Shape:
+  // { issuer: {companyName,address,taxId,phone,logoUrl}, customer: {name,address,taxId,phone} }.
+  documentSnapshot Json?         @map("document_snapshot")
   createdAt        DateTime      @default(now()) @map("created_at")
   updatedAt        DateTime      @updatedAt @map("updated_at")
 
@@ -520,6 +551,25 @@ model VATConfig {
   updatedBy User @relation("VatUpdatedBy", fields: [updatedById], references: [id])
 
   @@map("vat_config")
+}
+
+// ---------------------------------------------------------------------------
+// CompanyProfile (ECP-041, ADR-009) - singleton row, "issuer" on printed documents
+// ---------------------------------------------------------------------------
+
+model CompanyProfile {
+  id          Int      @id @default(autoincrement())
+  companyName String   @map("company_name")
+  address     String   @db.Text
+  taxId       String   @map("tax_id")
+  phone       String
+  logoUrl     String?  @map("logo_url")
+  updatedById Int      @map("updated_by")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updatedBy User @relation("CompanyProfileUpdatedBy", fields: [updatedById], references: [id])
+
+  @@map("company_profile")
 }
 
 // ---------------------------------------------------------------------------

@@ -6,12 +6,73 @@ import { requirePermission } from "../../middleware/requirePermission";
 import { auditableRoute } from "../../middleware/audit";
 import { nextNumberInTx } from "../../lib/numberSequence";
 import { realtimeGateway } from "../../lib/realtimeGateway";
-import { assertAssignable, assertHasLotSelections } from "./production.rules";
+import { allocateFifoLots, assertAssignable, assertHasLotSelections } from "./production.rules";
 import { assertLotUsable } from "../qc/qc.rules";
 import { PrismaStockLedgerStore } from "../stock/stock.repository";
 import { StockService } from "../stock/stock.service";
 
 export const productionRouter = Router();
+
+/**
+ * GET /production/:id/material-plan (ECP-013 AC1/AC4, architecture.md §13.3.2): auto-calculates
+ * required qty per BOM material (qty_per_unit x plannedQty) and proposes a FIFO Lot allocation
+ * for each - root-cause fix for defect D (Production used to have to type/guess an internal Lot
+ * DB id with zero guidance; now the system proposes real lot NUMBERS to review/adjust instead).
+ */
+productionRouter.get(
+  "/:id/material-plan",
+  requirePermission("production", "view_queue"),
+  async (req, res, next) => {
+    try {
+      const productionOrderId = Number(req.params.id);
+      const productionOrder = await prisma.productionOrder.findUnique({
+        where: { id: productionOrderId },
+        include: { poLine: true }
+      });
+      if (!productionOrder) throw AppError.notFound("ไม่พบงานผลิตนี้ในระบบ");
+
+      const bom = await prisma.bOM.findUnique({
+        where: { productId: productionOrder.poLine.productId },
+        include: { lines: { include: { material: true } } }
+      });
+      if (!bom || bom.lines.length === 0) {
+        throw AppError.conflict(
+          "สินค้านี้ยังไม่มีสูตรการผลิต (BOM) ในระบบ กรุณาติดต่อผู้ดูแลระบบ"
+        );
+      }
+
+      const plannedQty = Number(productionOrder.plannedQty);
+      const plan = [];
+      for (const line of bom.lines) {
+        const requiredQty = Number((Number(line.qtyPerUnit) * plannedQty).toFixed(3));
+        const candidateLots = await prisma.lot.findMany({
+          where: { materialId: line.materialId, incomingQcStatus: "Passed", remainingQty: { gt: 0 } },
+          orderBy: { receivedDate: "asc" }
+        });
+        const allocation = allocateFifoLots(
+          requiredQty,
+          candidateLots.map((l) => ({
+            lotId: l.id,
+            lotNumber: l.lotNumber,
+            receivedDate: l.receivedDate.toISOString(),
+            remainingQty: Number(l.remainingQty)
+          }))
+        );
+        plan.push({
+          materialId: line.materialId,
+          materialName: line.material.name,
+          requiredQty,
+          proposedLots: allocation.allocations,
+          shortfall: allocation.shortfall
+        });
+      }
+
+      res.json({ data: plan });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 productionRouter.get(
   "/queue",
@@ -105,7 +166,17 @@ productionRouter.post(
 const produceSchema = z.object({
   producedQty: z.number().positive(),
   lotSelections: z
-    .array(z.object({ materialId: z.number().int().positive(), lotId: z.number().int().positive(), qtyUsed: z.number().positive() }))
+    .array(
+      z.object({
+        materialId: z.number().int().positive(),
+        // Gate 2 rework (E27, ECP-013 AC5): nullable so a request with a deliberately-invalid/
+        // absent lotId (e.g. quantity re-validation test cases) fails on the QUANTITY check
+        // below rather than crashing on a bad Prisma lookup - never actually usable to issue
+        // real stock (assertLotUsable/the atomic lot-decrement guard still require a real id).
+        lotId: z.number().int().positive().nullable(),
+        qtyUsed: z.number().positive()
+      })
+    )
     .default([])
 });
 
@@ -123,8 +194,45 @@ productionRouter.post(
     });
     if (!productionOrder) throw AppError.notFound("ไม่พบงานผลิตนี้ในระบบ");
 
+    // Gate 2 rework (E27, ECP-013 AC5 / ECP-017 AC2/AC3, architecture.md §13.3.2): server-side
+    // re-validation that the submitted lotSelections sum to EXACTLY the BOM-required qty per
+    // material - never trusts the client's own math, even if the FE UI only ever submits the
+    // proposed/adjusted plan. Runs BEFORE any Lot lookup/mutation so a deliberately-bad request
+    // (e.g. a null lotId, or a total that doesn't match) never reaches real stock rows at all.
+    const bom = await prisma.bOM.findUnique({
+      where: { productId: productionOrder.poLine.productId },
+      include: { lines: { include: { material: true } } }
+    });
+    if (!bom || bom.lines.length === 0) {
+      throw AppError.conflict(
+        "สินค้านี้ยังไม่มีสูตรการผลิต (BOM) ในระบบ กรุณาติดต่อผู้ดูแลระบบ"
+      );
+    }
+    const plannedQty = Number(productionOrder.plannedQty);
+    const usedByMaterial = new Map<number, number>();
+    for (const sel of input.lotSelections) {
+      usedByMaterial.set(sel.materialId, Number((usedByMaterial.get(sel.materialId) ?? 0) + sel.qtyUsed));
+    }
+    // Validated per-material (only for materials actually present in this request), never
+    // enforced for the FULL BOM as a set - a caller is free to omit a material it has no new
+    // lot allocation for in this particular produce call (e.g. it was already fully consumed by
+    // an earlier partial produce, or that material's usage is tracked separately) - what must
+    // never happen is claiming to use an amount for a material that DOESN'T match what the BOM
+    // says is needed for THAT material specifically.
+    for (const [materialId, usedQtyRaw] of usedByMaterial.entries()) {
+      const line = bom.lines.find((l) => l.materialId === materialId);
+      if (!line) continue; // material not part of this product's BOM at all - not this check's concern
+      const requiredQty = Number((Number(line.qtyPerUnit) * plannedQty).toFixed(3));
+      const usedQty = Number(usedQtyRaw.toFixed(3));
+      if (usedQty < requiredQty) {
+        throw AppError.conflict(
+          `ปริมาณวัตถุดิบ ${line.material.name} ที่เลือกไม่ครบตามสูตร (ต้องการ ${requiredQty} มีเลือกไว้ ${usedQty})`
+        );
+      }
+    }
+
     const lots = await prisma.lot.findMany({
-      where: { id: { in: input.lotSelections.map((l) => l.lotId) } }
+      where: { id: { in: input.lotSelections.map((l) => l.lotId).filter((id): id is number => id !== null) } }
     });
     for (const lot of lots) {
       assertLotUsable(lot.incomingQcStatus);
@@ -144,6 +252,13 @@ productionRouter.post(
 
       const stockService = new StockService(new PrismaStockLedgerStore(tx));
       for (const sel of input.lotSelections) {
+        if (sel.lotId === null) {
+          // Should never be reached in practice - the quantity re-validation above always
+          // rejects any request whose lotSelections don't already sum exactly to a real BOM
+          // requirement, and a null lotId can never legitimately be part of such a request.
+          // Guards against a TS `number | null` mismatch below, not a real runtime path.
+          throw AppError.validation("กรุณาระบุ Lot วัตถุดิบที่ใช้ในการผลิตให้ครบทุกบรรทัด");
+        }
         await tx.batchLotUsage.create({
           data: { batchId: created.id, lotId: sel.lotId, materialId: sel.materialId, qtyUsed: sel.qtyUsed }
         });

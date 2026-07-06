@@ -10,6 +10,9 @@ export interface Customer {
   email?: string;
   contactPerson?: string;
   status: "Active" | "Inactive";
+  /** Gate 2 rework (E23, ECP-001 AC5-7): optional at creation, required before printing (ECP-042 AC4). */
+  taxId?: string | null;
+  registeredAddress?: string | null;
 }
 
 export function useCustomers(q = "") {
@@ -30,8 +33,15 @@ export function useCustomerPOs(customerId: number | null) {
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { name: string; address?: string; phone?: string; email?: string; contactPerson?: string }) =>
-      apiClient.post<{ data: Customer; warning: string | null }>("/customers", input),
+    mutationFn: (input: {
+      name: string;
+      address?: string;
+      phone?: string;
+      email?: string;
+      contactPerson?: string;
+      taxId?: string;
+      registeredAddress?: string;
+    }) => apiClient.post<{ data: Customer; warning: string | null }>("/customers", input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["customers"] })
   });
 }

@@ -5,6 +5,9 @@ export interface CustomerRecord {
   customerId: string;
   name: string;
   status: "Active" | "Inactive";
+  /** Gate 2 rework (E23, ECP-001 AC5-7): nullable, optional at creation. */
+  taxId?: string | null;
+  registeredAddress?: string | null;
 }
 
 export interface CustomerRepository {
@@ -16,6 +19,8 @@ export interface CustomerRepository {
     phone?: string;
     email?: string;
     contactPerson?: string;
+    taxId?: string;
+    registeredAddress?: string;
   }): Promise<CustomerRecord>;
   countOpenPOs(customerId: number): Promise<number>;
 }
@@ -42,7 +47,9 @@ export async function createCustomer(
     address: input.address,
     phone: input.phone,
     email: input.email,
-    contactPerson: input.contactPerson
+    contactPerson: input.contactPerson,
+    taxId: input.taxId,
+    registeredAddress: input.registeredAddress
   });
   return {
     customer,

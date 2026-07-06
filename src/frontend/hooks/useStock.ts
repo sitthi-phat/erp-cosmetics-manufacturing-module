@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../lib/apiClient";
 import { getSocket, STOCK_POLL_FALLBACK_MS } from "../lib/socket";
 
@@ -40,6 +40,19 @@ export function useStock() {
     // since a background/non-focused page is exactly when a dropped socket would otherwise
     // leave stock silently stale. Force polling to keep running regardless of focus.
     refetchIntervalInBackground: true
+  });
+}
+
+/** ECP-008/ECP-008 AC4 (E29): goods receipt, now capturing supplier_name alongside Lot/qty. */
+export function useReceiveStock() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { materialId: number; lotNumber: string; quantity: number; supplierName?: string }) =>
+      apiClient.post<{ data: { lotId: number } }>("/stock/receipts", input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["stock"] });
+      queryClient.invalidateQueries({ queryKey: ["incoming-lots"] });
+    }
   });
 }
 

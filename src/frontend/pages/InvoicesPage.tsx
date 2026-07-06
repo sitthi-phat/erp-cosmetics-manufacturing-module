@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   DataTable,
@@ -19,6 +20,7 @@ import { useProducts } from "../hooks/useProducts";
 import { ApiError } from "../lib/apiClient";
 
 export function InvoicesPage() {
+  const navigate = useNavigate();
   const { data: invoices, isLoading } = useInvoices();
   const { data: products } = useProducts();
   const recordPayment = useRecordPayment();
@@ -27,6 +29,7 @@ export function InvoicesPage() {
   const [versionsTarget, setVersionsTarget] = useState<number | null>(null);
   const [reviseTarget, setReviseTarget] = useState<number | null>(null);
   const [reviseLines, setReviseLines] = useState<Array<{ productId: number; description: string; quantity: number; unitPrice: number }>>([]);
+  const [reviseDiscount, setReviseDiscount] = useState<number>(0);
   const [reviseError, setReviseError] = useState<string | null>(null);
   const { data: versions } = useInvoiceVersions(versionsTarget);
 
@@ -72,11 +75,12 @@ export function InvoicesPage() {
       return;
     }
     try {
-      const result = await reviseInvoice.mutateAsync({ invoiceId: reviseTarget, lines: reviseLines });
+      const result = await reviseInvoice.mutateAsync({ invoiceId: reviseTarget, lines: reviseLines, discountAmount: reviseDiscount });
       result.warnings.forEach((w) => Notify.warning(w));
       Notify.success("แก้ไข invoice สำเร็จ (สร้าง version ใหม่)");
       setReviseTarget(null);
       setReviseLines([]);
+      setReviseDiscount(0);
     } catch (err) {
       if (err instanceof ApiError) setReviseError(err.message);
     }
@@ -98,6 +102,9 @@ export function InvoicesPage() {
             title: "",
             render: (i: any) => (
               <>
+                <Button onClick={() => navigate(`/invoices/${i.id}`)} testId="view-invoice-detail">
+                  ดูรายละเอียด
+                </Button>{" "}
                 <Button onClick={() => setPayTarget({ id: i.id, invoiceNo: i.invoiceNo })} testId="record-payment-button">
                   รับชำระเงิน
                 </Button>{" "}
@@ -196,6 +203,18 @@ export function InvoicesPage() {
             </li>
           ))}
         </ul>
+        <div style={{ marginBottom: 12 }}>
+          <label htmlFor="revise-discount-amount">ส่วนลด (บาท): </label>
+          <input
+            id="revise-discount-amount"
+            type="number"
+            min={0}
+            step="0.01"
+            defaultValue={0}
+            data-testid="revise-discount-amount"
+            onChange={(e) => setReviseDiscount(Number(e.target.value) || 0)}
+          />
+        </div>
         <Button onClick={submitRevise} testId="revise-submit">
           บันทึกการแก้ไข
         </Button>

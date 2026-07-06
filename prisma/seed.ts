@@ -38,6 +38,7 @@ async function reset(): Promise<void> {
     prisma.product.deleteMany(),
     prisma.customer.deleteMany(),
     prisma.vATConfig.deleteMany(),
+    prisma.companyProfile.deleteMany(),
     prisma.user.deleteMany(),
     prisma.permission.deleteMany(),
     prisma.role.deleteMany(),
@@ -96,6 +97,7 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "WH", resource: "product", action: "view" },
   { role: "WH", resource: "traceability", action: "view" },
   { role: "WH", resource: "dashboard", action: "warehouse" },
+  { role: "WH", resource: "bom", action: "view" },
 
   { role: "PR", resource: "po", action: "view" },
   { role: "PR", resource: "stock", action: "view" },
@@ -108,6 +110,10 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "PR", resource: "qc", action: "view_batches" },
   { role: "PR", resource: "dashboard", action: "production" },
   { role: "PR", resource: "user", action: "view_basic" },
+  // Gate 2 rework (E26, ECP-039, §13.4): BOM ownership = Production + Admin (⚠ BA default,
+  // not yet confirmed by Pond - Production is the natural owner of recipe data).
+  { role: "PR", resource: "bom", action: "view" },
+  { role: "PR", resource: "bom", action: "manage" },
 
   { role: "QA", resource: "traceability", action: "view" },
   { role: "QA", resource: "qc", action: "inspect_batch" },
@@ -126,6 +132,7 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "FI", resource: "invoice", action: "create" },
   { role: "FI", resource: "invoice", action: "revise" },
   { role: "FI", resource: "invoice", action: "record_payment" },
+  { role: "FI", resource: "invoice", action: "print" },
   { role: "FI", resource: "dashboard", action: "finance" }
 ];
 
@@ -162,6 +169,10 @@ const AD_EXTRA: Array<{ resource: string; action: string }> = [
   { resource: "user_management", action: "manage_permission" },
   { resource: "user", action: "view_basic" },
   { resource: "admin", action: "manage_vat_config" },
+  { resource: "bom", action: "view" },
+  { resource: "bom", action: "manage" },
+  { resource: "company_profile", action: "manage" },
+  { resource: "invoice", action: "print" },
   { resource: "audit", action: "view" },
   { resource: "dashboard", action: "sales" },
   { resource: "dashboard", action: "warehouse" },
@@ -247,7 +258,19 @@ async function main(): Promise<void> {
   console.log("[seed] VATConfig (7.00%)...");
   await prisma.vATConfig.create({ data: { rate: 7.0, updatedById: adminUser.id } });
 
-  console.log("[seed] customers...");
+  console.log("[seed] CompanyProfile (ECP-041, ADR-009 - issuer on printed documents)...");
+  await prisma.companyProfile.create({
+    data: {
+      companyName: "บริษัท คอสเมติกส์ แฟกทอรี จำกัด",
+      address: "999 ถนนพระราม 4 แขวงคลองตัน เขตคลองเตย กรุงเทพฯ 10110",
+      taxId: "0105558000123",
+      phone: "021234567",
+      logoUrl: null,
+      updatedById: adminUser.id
+    }
+  });
+
+  console.log("[seed] customers (Gate 2: tax_id/registered_address - 1 customer intentionally left without tax_id, ECP-042 AC4)...");
   const customerNames = [
     "บริษัท ABC จำกัด",
     "บริษัท Beauty Plus จำกัด",
@@ -256,10 +279,22 @@ async function main(): Promise<void> {
     "บริษัท Fresh Skin Trading จำกัด"
   ];
   const customers = [];
-  for (const name of customerNames) {
+  for (let i = 0; i < customerNames.length; i += 1) {
+    const name = customerNames[i];
     const customerId = await prisma.$transaction((tx) => nextNumberInTx(tx, "CUSTOMER"));
+    // Last customer intentionally has no tax_id (ECP-001 AC7 / ECP-042 AC4 test fixture).
+    const hasTaxId = i < customerNames.length - 1;
     const customer = await prisma.customer.create({
-      data: { customerId, name, address: "123 ถนนสุขุมวิท กรุงเทพฯ", phone: "0812345678", email: `contact@${name.length}.example.com`, status: "Active" }
+      data: {
+        customerId,
+        name,
+        address: "123 ถนนสุขุมวิท กรุงเทพฯ",
+        phone: "0812345678",
+        email: `contact@${name.length}.example.com`,
+        status: "Active",
+        taxId: hasTaxId ? `010555800000${i + 1}` : null,
+        registeredAddress: hasTaxId ? `456 ที่อยู่จดทะเบียน เลขที่ ${i + 1} กรุงเทพฯ` : null
+      }
     });
     customers.push(customer);
   }
@@ -284,6 +319,12 @@ async function main(): Promise<void> {
   }
 
   // Goods receipt for every material - happy flow amounts, except 1 low-stock and 1 zero-stock (ECP-004/007/028).
+  // [DEFECT C fix, E22] lot_number is now the 1-based LOOP INDEX (`L-SEED-1..N`), never
+  // `material.id` (the old bug): MySQL AUTO_INCREMENT does NOT reset on DELETE (only TRUNCATE),
+  // so after any reseed the real material.id keeps growing (e.g. 261, 271, ...) - `L-SEED-1`
+  // (the exact value pond typed and got "not found" on) would then never actually exist. A
+  // loop-index-based name is deterministic across every reseed, forever, regardless of how many
+  // times `npm run db:seed`/resetSeed() has run before.
   for (let i = 0; i < materials.length; i += 1) {
     const material = materials[i];
     let qty = 1000;
@@ -294,11 +335,12 @@ async function main(): Promise<void> {
       await prisma.lot.create({
         data: {
           materialId: material.id,
-          lotNumber: `L-SEED-${material.id}`,
+          lotNumber: `L-SEED-${i + 1}`,
           receivedQty: qty,
           remainingQty: qty,
           receivedDate: new Date(),
-          incomingQcStatus: "Passed"
+          incomingQcStatus: "Passed",
+          supplierName: `ผู้จำหน่าย ${i + 1}`
         }
       });
       await prisma.stockBalance.create({ data: { materialId: material.id, physicalQty: qty, reservedQty: 0 } });

@@ -20,6 +20,8 @@ import { qcRouter } from "./modules/qc/qc.routes";
 import { shippingRouter } from "./modules/shipping/shipping.routes";
 import { invoiceRouter, poInvoiceRouter } from "./modules/invoice/invoice.routes";
 import { vatConfigRouter } from "./modules/vatConfig/vatConfig.routes";
+import { companyProfileRouter } from "./modules/companyProfile/companyProfile.routes";
+import { bomRouter } from "./modules/bom/bom.routes";
 import { auditRouter } from "./modules/audit/audit.routes";
 import { dashboardRouter } from "./modules/dashboard/dashboard.routes";
 
@@ -81,6 +83,8 @@ export function createApp(): Express {
   api.use("/shipments", shippingRouter);
   api.use("/invoices", invoiceRouter);
   api.use("/admin/vat-config", vatConfigRouter);
+  api.use("/admin/company-profile", companyProfileRouter);
+  api.use("/boms", bomRouter);
   api.use("/audit-logs", auditRouter);
   api.use("/dashboard", dashboardRouter);
 

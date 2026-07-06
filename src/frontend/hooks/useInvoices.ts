@@ -16,11 +16,29 @@ export function useInvoiceVersions(poId: number | null) {
   });
 }
 
+/** ECP-040: full detail (customer, lines, subtotal/discount/vat/total, payments) for one invoice. */
+export function useInvoiceDetail(invoiceId: number | null) {
+  return useQuery({
+    queryKey: ["invoice-detail", invoiceId],
+    queryFn: () => apiClient.get<{ data: any }>(`/invoices/${invoiceId}`).then((r) => r.data),
+    enabled: invoiceId !== null
+  });
+}
+
+/** ECP-042: assembled print-view data (issuer/customer snapshot, Thai baht text, etc). */
+export function useInvoiceDocument(invoiceId: number | null) {
+  return useQuery({
+    queryKey: ["invoice-document", invoiceId],
+    queryFn: () => apiClient.get<{ data: any }>(`/invoices/${invoiceId}/document`).then((r) => r.data),
+    enabled: invoiceId !== null
+  });
+}
+
 export function useIssueInvoice() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ poId, lines }: { poId: number; lines: any[] }) =>
-      apiClient.post(`/pos/${poId}/invoice`, { lines }),
+    mutationFn: ({ poId, lines, discountAmount }: { poId: number; lines: any[]; discountAmount?: number }) =>
+      apiClient.post(`/pos/${poId}/invoice`, { lines, discountAmount }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["pos"] });
@@ -31,8 +49,8 @@ export function useIssueInvoice() {
 export function useReviseInvoice() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ invoiceId, lines }: { invoiceId: number; lines: any[] }) =>
-      apiClient.post<{ data: any; warnings: string[] }>(`/invoices/${invoiceId}/revise`, { lines }),
+    mutationFn: ({ invoiceId, lines, discountAmount }: { invoiceId: number; lines: any[]; discountAmount?: number }) =>
+      apiClient.post<{ data: any; warnings: string[] }>(`/invoices/${invoiceId}/revise`, { lines, discountAmount }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["invoice-versions"] });

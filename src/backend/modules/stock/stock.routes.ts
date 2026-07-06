@@ -69,7 +69,10 @@ const receiptSchema = z.object({
   materialId: z.number().int().positive(),
   lotNumber: z.string().min(1, "กรุณากรอกเลข Lot"),
   quantity: z.number(),
-  confirmMergeExistingLot: z.boolean().optional()
+  confirmMergeExistingLot: z.boolean().optional(),
+  // Gate 2 rework (E29, ECP-008 AC4): captured alongside the Lot so QA/QC's incoming inspection
+  // form can display it without re-entry (ECP-017 AC1).
+  supplierName: z.string().optional()
 });
 
 stockRouter.post(
@@ -114,7 +117,8 @@ stockRouter.post(
             receivedQty: input.quantity,
             remainingQty: input.quantity,
             receivedDate: new Date(),
-            incomingQcStatus: "Pending"
+            incomingQcStatus: "Pending",
+            supplierName: input.supplierName
           }
         });
 
@@ -126,7 +130,7 @@ stockRouter.post(
 
     return {
       status: 201,
-      body: { data: { lotId: lot.id } },
+      body: { data: { lotId: lot.id, supplierName: lot.supplierName ?? "ไม่ระบุ" } },
       entityId: String(lot.id),
       detail: input
     };
