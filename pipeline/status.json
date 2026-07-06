@@ -32,7 +32,7 @@
                 "C) ยังไม่มีระบบเลย เป็นระบบ ERP ตัวแรกของโรงงาน",
                 "D) อื่นๆ (โปรดระบุ)"
               ],
-              "answer": null
+              "answer": "A + C — ปัจจุบันใช้ Excel/เอกสารกระดาษแยกส่วนแต่ละแผนก และยังไม่เคยมีระบบ ERP มาก่อน (เป็นระบบตัวแรก) หมายเหตุจากปอนด์: User ไม่มีความชำนาญเรื่อง User Journey — ระบบต้องออกแบบให้ใช้ง่าย นำทางผู้ใช้ได้เอง"
             },
             {
               "q": "Business Key Value (ตัวชี้วัดความสำเร็จที่วัดผลได้) ของ prototype นี้คืออะไร พร้อมตัวเลข baseline/target?",
@@ -42,7 +42,7 @@
                 "C) ลดปัญหา stock วัตถุดิบไม่พอสำหรับสูตร (stock-out) จาก X% เป็น Y%",
                 "D) อื่นๆ (โปรดระบุ metric และตัวเลข target)"
               ],
-              "answer": null
+              "answer": "A + B + C + D — เอาทุกด้าน โดยเน้นหนักที่ปัญหา Stock: ระบบ stock ปัจจุบันมีปัญหามาก user ไม่สามารถรู้ได้เลยว่าวัตถุดิบอะไรเหลือ/ขาด หรือรู้แต่ข้อมูลไม่ update (real-time stock visibility คือ pain หลัก) — ปอนด์ยังไม่ระบุตัวเลข baseline/target ให้ PO เสนอ target เริ่มต้นที่สมเหตุสมผลสำหรับ prototype และระบุเป็นข้อสมมติให้ปอนด์ยืนยันภายหลัง"
             },
             {
               "q": "ขอบเขต prototype ต้องการแค่ demo flow ด้วยข้อมูลจำลอง (mock/seed data) โดยไม่ต้องเชื่อมระบบจริง (เช่น payment gateway, ระบบบัญชี) ใช่หรือไม่?",
@@ -51,7 +51,7 @@
                 "B) ต้องการเชื่อมต่อระบบบัญชี/payment จริงด้วย (โปรดระบุระบบที่ต้องเชื่อม)",
                 "C) อื่นๆ (โปรดระบุ)"
               ],
-              "answer": null
+              "answer": "A — mock/seed data พอ ไม่ต้องเชื่อมระบบ payment/บัญชีจริง"
             },
             {
               "q": "บทบาทผู้ใช้งานหลัก (roles) ที่ต้องมีใน User Management ของ prototype มีอะไรบ้าง?",
@@ -60,7 +60,7 @@
                 "B) เหมือน A แต่เพิ่ม role QA/QC ตรวจสอบคุณภาพแยกต่างหาก (สำคัญต่อ GMP)",
                 "C) อื่นๆ (โปรดระบุ role ที่ต้องการทั้งหมด)"
               ],
-              "answer": null
+              "answer": "C — เอาครบทุก role เลย (รวม QA/QC ตาม GMP): Sales/CS, คลังสินค้า, ฝ่ายผลิต, QA/QC, ฝ่ายจัดส่ง, บัญชี/การเงิน, Admin — แต่ต้อง config role ได้ง่าย เพราะ prototype นี้จะใช้เป็นจุดตั้งต้นสำรวจ user journey ของแต่ละส่วนงาน"
             },
             {
               "q": "prototype ต้องรองรับกี่บริษัท/สาขา และกี่สกุลเงิน?",
@@ -68,7 +68,7 @@
                 "A) Single company, สกุลเงินเดียว (THB) เท่านั้น (เหมาะกับ prototype)",
                 "B) Multi-company และ/หรือ multi-currency ต้องรองรับตั้งแต่ prototype (โปรดระบุรายละเอียด)"
               ],
-              "answer": null
+              "answer": "A — Single company, รองรับ THB สกุลเดียวก่อน"
             }
           ],
           "summary": "อ่าน raw requirement แล้ว flow หลัก (ลูกค้า→PO→stock→ผลิต→จัดส่ง→invoice + User Mgmt/audit log/dashboard) ชัดเจนในระดับภาพกว้าง แต่ยังขาดปัญหา/pain point ปัจจุบัน, ตัวเลข Business Key Value, และรายละเอียดขอบเขต (integration, roles, multi-company) จึงเขียน brief แบบร่างพร้อมข้อสมมติที่ระบุชัด และตั้ง BLOCKED_NEED_INPUT รอคำตอบปอนด์ 5 ข้อก่อนส่งต่อ BA",
