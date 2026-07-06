@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, DataTable, Button, Modal, Form, SelectField, NumberField, SubmitButton, Notify } from "../ui";
+import { Card, DataTable, Button, Modal, Form, SelectField, NumberField, SubmitButton, Notify, normalizeSelectValues } from "../ui";
 import { useProductionQueue, useAssignedProductionOrders, useAssignProduction, useProduceBatch } from "../hooks/useProduction";
 import { useUsers } from "../hooks/useAdmin";
 import { useMaterials } from "../hooks/useProducts";
@@ -18,7 +18,8 @@ export function ProductionPage() {
   const [lotSelections, setLotSelections] = useState<Array<{ materialId: number; lotId: number; qtyUsed: number }>>([]);
   const [lastBatchNumber, setLastBatchNumber] = useState<string | null>(null);
 
-  async function handleAssign(values: Record<string, unknown>) {
+  async function handleAssign(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     if (assignTarget === null) return;
     try {
       await assign.mutateAsync({ poLineId: assignTarget, assignedTo: Number(values.assignedTo) });
@@ -29,7 +30,8 @@ export function ProductionPage() {
     }
   }
 
-  function addLotSelection(values: Record<string, unknown>) {
+  function addLotSelection(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     setLotSelections((prev) => [
       ...prev,
       { materialId: Number(values.materialId), lotId: Number(values.lotId), qtyUsed: Number(values.qtyUsed) }

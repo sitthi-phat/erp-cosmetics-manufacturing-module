@@ -61,6 +61,12 @@ const ROLE_DEFS = [
 ] as const;
 
 // Permission matrix (architecture.md §7). AD gets every tuple below implicitly (added separately).
+// DEF-12 fix (QA verify-3, Major): added `product.view` as a dedicated, read-only permission
+// (distinct from `stock.view`) so Finance can load the product picker in the "revise invoice"
+// modal WITHOUT also getting `stock.view` (which would additionally expose the raw-material
+// stock list/dashboard that Finance has no business need for - see product.routes.ts comment).
+// Granted to every role that already had `stock.view` too (SA/WH/PR) so their behavior is
+// unchanged, plus FI (Finance) as the actual fix.
 const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "SA", resource: "customer", action: "view" },
   { role: "SA", resource: "customer", action: "create" },
@@ -71,6 +77,7 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "SA", resource: "po", action: "cancel" },
   { role: "SA", resource: "stock", action: "view" },
   { role: "SA", resource: "stock", action: "check_bom" },
+  { role: "SA", resource: "product", action: "view" },
   { role: "SA", resource: "shipping", action: "view" },
   { role: "SA", resource: "invoice", action: "view" },
   { role: "SA", resource: "dashboard", action: "sales" },
@@ -80,12 +87,14 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "WH", resource: "stock", action: "goods_receipt" },
   { role: "WH", resource: "stock", action: "adjust" },
   { role: "WH", resource: "stock", action: "view_reconciliation" },
+  { role: "WH", resource: "product", action: "view" },
   { role: "WH", resource: "traceability", action: "view" },
   { role: "WH", resource: "dashboard", action: "warehouse" },
 
   { role: "PR", resource: "po", action: "view" },
   { role: "PR", resource: "stock", action: "view" },
   { role: "PR", resource: "stock", action: "check_bom" },
+  { role: "PR", resource: "product", action: "view" },
   { role: "PR", resource: "traceability", action: "view" },
   { role: "PR", resource: "production", action: "view_queue" },
   { role: "PR", resource: "production", action: "assign" },
@@ -105,6 +114,7 @@ const MATRIX: Array<{ role: string; resource: string; action: string }> = [
   { role: "LO", resource: "dashboard", action: "logistics" },
 
   { role: "FI", resource: "po", action: "view" },
+  { role: "FI", resource: "product", action: "view" },
   { role: "FI", resource: "invoice", action: "view" },
   { role: "FI", resource: "invoice", action: "create" },
   { role: "FI", resource: "invoice", action: "revise" },
@@ -125,6 +135,7 @@ const AD_EXTRA: Array<{ resource: string; action: string }> = [
   { resource: "stock", action: "goods_receipt" },
   { resource: "stock", action: "adjust" },
   { resource: "stock", action: "view_reconciliation" },
+  { resource: "product", action: "view" },
   { resource: "traceability", action: "view" },
   { resource: "production", action: "view_queue" },
   { resource: "production", action: "assign" },

@@ -35,14 +35,20 @@ export class InvoiceService {
 
   /** POST /pos/:id/invoice - issue version 1 (ECP-020). */
   async issueInvoice(input: IssueInvoiceInput): Promise<InvoiceRecord> {
-    if (input.poStatus !== "Shipped") {
-      throw AppError.validation("ไม่สามารถออก invoice ได้ PO นี้ยังไม่ถูกจัดส่ง");
-    }
+    // DEF-10 side-effect fix: PO now genuinely transitions to "Invoiced" once an invoice chain
+    // exists (see invoice.routes.ts), so on a SECOND issue attempt `poStatus` is "Invoiced", not
+    // "Shipped" - the "already has an invoice, use revise instead" check must run BEFORE the
+    // generic "not shipped yet" check, otherwise the more specific/helpful 409 message
+    // (ECP-020 AC2) would be masked by a misleading 400 "not shipped yet" (ECP-020 AC3) for a
+    // PO that has, in fact, already been shipped and invoiced.
     const existing = await this.repo.findLatestByPoId(input.poId);
     if (existing) {
       throw AppError.conflict(
         `PO นี้มี invoice เลขที่ ${existing.invoiceNo} (version ${existing.version}) ออกไปแล้วเมื่อ ${existing.issueDate.toISOString()} หากต้องการแก้ไขกรุณาใช้ฟังก์ชันแก้ไข invoice แทน`
       );
+    }
+    if (input.poStatus !== "Shipped") {
+      throw AppError.validation("ไม่สามารถออก invoice ได้ PO นี้ยังไม่ถูกจัดส่ง");
     }
     const rate = await this.getCurrentVatRate();
     const amounts = computeInvoiceAmounts(input.lines, rate);

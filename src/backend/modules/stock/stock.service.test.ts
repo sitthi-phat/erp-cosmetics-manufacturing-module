@@ -1,13 +1,16 @@
 import { StockService } from "./stock.service";
-import { ApplyTransactionInput, StockBalanceSnapshot, StockLedgerStore } from "./stock.repository";
+import { ApplyTransactionInput, InsufficientStockError, StockBalanceSnapshot, StockLedgerStore } from "./stock.repository";
 
 /**
- * In-memory store that simulates the row-lock behaviour of
- * `SELECT ... FOR UPDATE` + a single DB transaction per material_id: concurrent
- * `applyTransaction` calls for the SAME material are serialized through a per-key async mutex,
- * exactly like MySQL serializes concurrent UPDATEs on the same locked row (NFR N1). This lets
- * the business rules (including lost-update prevention under concurrency) be unit tested
- * without a live MySQL instance; the real row-lock SQL is exercised by QA against MySQL (Q7).
+ * In-memory store that simulates the row-lock behaviour of a single atomic conditional
+ * `UPDATE ... WHERE material_id = ? AND <guard>` (see stock.repository.ts, DEF-09 fix): the
+ * guard check AND the delta application happen inside the SAME per-material critical section,
+ * with no separate/earlier "pre-check" read - exactly matching the real store's contract after
+ * the DEF-09 fix. Concurrent `applyTransaction` calls for the SAME material are serialized
+ * through a per-key async mutex, like MySQL serializes concurrent UPDATEs on the same locked
+ * row (NFR N1). This lets the business rules (including lost-update/TOCTOU prevention under
+ * concurrency) be unit tested without a live MySQL instance; the real row-lock SQL is exercised
+ * by QA against MySQL (Q7).
  */
 class InMemoryStockLedgerStore implements StockLedgerStore {
   private balances = new Map<number, StockBalanceSnapshot>();
@@ -38,6 +41,17 @@ class InMemoryStockLedgerStore implements StockLedgerStore {
         physicalQty: 0,
         reservedQty: 0
       };
+
+      // DEF-09 fix: guard is checked HERE, atomically, using the value held under this same
+      // per-material critical section - never a separate, earlier, un-locked read.
+      const available = current.physicalQty - current.reservedQty;
+      if (input.minAvailable !== undefined && available < input.minAvailable) {
+        throw new InsufficientStockError(input.materialId, current.physicalQty, current.reservedQty);
+      }
+      if (input.minPhysical !== undefined && current.physicalQty < input.minPhysical) {
+        throw new InsufficientStockError(input.materialId, current.physicalQty, current.reservedQty);
+      }
+
       const updated: StockBalanceSnapshot = {
         materialId: input.materialId,
         physicalQty: current.physicalQty + input.physicalDelta,
@@ -150,5 +164,50 @@ describe("StockService (ADR-004, NFR N1, ECP-007..010)", () => {
     const result = await service.reconcile(1);
     expect(result.matches).toBe(true);
     expect(result.diff).toBe(0);
+  });
+
+  it("DEF-09 regression: two concurrent issues that together exceed physical stock - exactly one must win, never both", async () => {
+    await service.receive(1, 100, null);
+    await service.reserve(1, 100);
+
+    const results = await Promise.allSettled([
+      service.issue(1, 60, null, 60),
+      service.issue(1, 60, null, 60)
+    ]);
+
+    const fulfilled = results.filter((r) => r.status === "fulfilled");
+    const rejected = results.filter((r) => r.status === "rejected");
+    expect(fulfilled).toHaveLength(1); // exactly one must succeed, not both, not neither
+    expect(rejected).toHaveLength(1);
+
+    const balance = await service.getBalance(1);
+    expect(balance.physicalQty).toBe(40); // only the winning issue actually applied (100 - 60)
+
+    const reconciliation = await service.reconcile(1);
+    expect(reconciliation.matches).toBe(true);
+    expect(reconciliation.diff).toBe(0); // ledger must exactly equal physical, no discrepancy
+  });
+
+  it("DEF-09 regression: many concurrent receipt+reserve+issue ops on one material never lose an update (ledger === physical exactly)", async () => {
+    await service.receive(1, 1000, null);
+
+    const ops: Array<() => Promise<unknown>> = [];
+    for (let i = 0; i < 100; i += 1) {
+      ops.push(() => service.receive(1, 10, null));
+    }
+    for (let i = 0; i < 50; i += 1) {
+      ops.push(() =>
+        service
+          .reserve(1, 20)
+          .then(() => service.issue(1, 20, null, 20))
+          .catch(() => undefined)
+      );
+    }
+
+    await Promise.all(ops.map((op) => op()));
+
+    const reconciliation = await service.reconcile(1);
+    expect(reconciliation.diff).toBe(0);
+    expect(reconciliation.matches).toBe(true);
   });
 });

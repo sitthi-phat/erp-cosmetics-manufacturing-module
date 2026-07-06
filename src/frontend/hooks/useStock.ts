@@ -33,7 +33,13 @@ export function useStock() {
   return useQuery({
     queryKey: ["stock"],
     queryFn: () => apiClient.get<{ data: StockRow[] }>("/stock").then((r) => r.data),
-    refetchInterval: STOCK_POLL_FALLBACK_MS
+    refetchInterval: STOCK_POLL_FALLBACK_MS,
+    // OPEN-2 fix (QA verify-3): React Query pauses `refetchInterval` while the tab/page is not
+    // considered focused/visible by default (`refetchIntervalInBackground` defaults to false) -
+    // that defeats the whole point of a "fallback poll in case the socket drops" (ADR-004 §4),
+    // since a background/non-focused page is exactly when a dropped socket would otherwise
+    // leave stock silently stale. Force polling to keep running regardless of focus.
+    refetchIntervalInBackground: true
   });
 }
 

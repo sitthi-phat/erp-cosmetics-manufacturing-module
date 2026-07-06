@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, DataTable, Button, Modal, Form, TextField, NumberField, SelectField, SubmitButton, StatusTag, Notify } from "../ui";
+import { Card, DataTable, Button, Modal, Form, TextField, NumberField, SelectField, SubmitButton, StatusTag, Notify, normalizeSelectValues } from "../ui";
 import { useQcBatches, useInspectBatch, useInspectLot } from "../hooks/useQc";
 import { ApiError } from "../lib/apiClient";
 
@@ -9,7 +9,8 @@ export function QcPage() {
   const inspectLot = useInspectLot();
   const [target, setTarget] = useState<number | null>(null);
 
-  async function handleInspect(values: Record<string, unknown>) {
+  async function handleInspect(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     if (target === null) return;
     try {
       await inspect.mutateAsync({ batchId: target, result: values.result as "Approved" | "Rejected", remarks: String(values.remarks ?? "") });
@@ -20,7 +21,8 @@ export function QcPage() {
     }
   }
 
-  async function handleInspectLot(values: Record<string, unknown>) {
+  async function handleInspectLot(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     try {
       await inspectLot.mutateAsync({ lotId: Number(values.lotId), result: values.result as "Passed" | "Failed" });
       Notify.success("บันทึกผลตรวจสอบวัตถุดิบขาเข้าสำเร็จ");
@@ -69,7 +71,7 @@ export function QcPage() {
           ]}
         />
         <Modal open={target !== null} title="บันทึกผลตรวจสอบคุณภาพ" onCancel={() => setTarget(null)}>
-          <Form onSubmit={handleInspect} initialValues={{ result: "Approved" }}>
+          <Form onSubmit={handleInspect} initialValues={{ result: { value: "Approved", label: "ผ่าน (Approved)" } }}>
             {/*
               QA DEF-03 note: demoFlow.spec.ts assumes two separate radio-style controls
               (`qc-result-approved`/`qc-result-rejected`) it can `.check()`; this is a single

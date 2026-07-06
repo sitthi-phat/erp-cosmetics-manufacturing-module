@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, DataTable, Button, Modal, Form, TextField, PasswordField, SelectField, NumberField, SubmitButton, StatusTag, Notify } from "../../ui";
+import { Card, DataTable, Button, Modal, Form, TextField, PasswordField, SelectField, NumberField, SubmitButton, StatusTag, Notify, normalizeSelectValues } from "../../ui";
 import {
   useUsers,
   useRoles,
@@ -110,7 +110,8 @@ export function AdminPage() {
   const [vatError, setVatError] = useState<string | null>(null);
   const [vatSaved, setVatSaved] = useState(false);
 
-  async function handleCreateUser(values: Record<string, unknown>) {
+  async function handleCreateUser(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     try {
       await createUser.mutateAsync({
         username: String(values.username),
@@ -198,8 +199,24 @@ export function AdminPage() {
 
       <Card title="ตั้งค่า VAT (ECP-038)" testId="admin-section-vat-config">
         <p>อัตรา VAT ปัจจุบัน: {vatConfig?.rate}%</p>
-        <Form onSubmit={handleUpdateVat} initialValues={{ rate: vatConfig?.rate }}>
-          <NumberField name="rate" label="อัตรา VAT ใหม่ (%)" required min={0} max={100} step={0.01} testId="vat-rate-input" />
+        <Form
+          onSubmit={handleUpdateVat}
+          initialValues={{ rate: vatConfig?.rate }}
+          onValidationError={(message) => {
+            setVatSaved(false);
+            setVatError(message);
+          }}
+        >
+          <NumberField
+            name="rate"
+            label="อัตรา VAT ใหม่ (%)"
+            required
+            min={0}
+            max={100}
+            step={0.01}
+            testId="vat-rate-input"
+            rangeErrorMessage="อัตรา VAT ต้องอยู่ระหว่าง 0% ถึง 100%"
+          />
           <SubmitButton loading={updateVat.isPending} testId="vat-rate-save">
             บันทึก
           </SubmitButton>

@@ -53,6 +53,13 @@ poInvoiceRouter.post(
       issuedById: req.userId!
     });
 
+    // DEF-10 fix (QA verify-3): PO never transitioned to "Invoiced" anywhere in the codebase,
+    // so ECP-006 AC1's 5-step timeline (Confirmed/InProduction/QC Approved/Shipped/Invoiced)
+    // could never actually complete. Mirrors the same pattern already used for the
+    // InProduction (production.routes.ts) and QC Approved (qc.routes.ts) timeline steps.
+    await prisma.purchaseOrder.update({ where: { id: poId }, data: { status: "Invoiced" } });
+    await prisma.pOStatusEvent.create({ data: { poId, status: "Invoiced" } });
+
     return {
       status: 201,
       body: { data: invoice },

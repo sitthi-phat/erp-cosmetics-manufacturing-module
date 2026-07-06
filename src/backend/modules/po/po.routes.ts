@@ -172,11 +172,26 @@ poRouter.post(
     }
 
     await prisma.$transaction(async (tx) => {
+      // DEF-09 fix (QA verify-3): the PO status transition itself must be atomic too, not just
+      // the stock guard - otherwise two concurrent "confirm" requests can both read status
+      // "Draft" (via the plain findUnique above, outside this transaction) before either
+      // commits, and both proceed to reserve stock a SECOND time for the same PO. A single
+      // conditional UPDATE (guarded by `status = 'Draft'`) takes MySQL's row lock atomically:
+      // whichever request's UPDATE runs first wins and flips the status; the loser's own
+      // conditional UPDATE then affects 0 rows (status is no longer 'Draft') and is rejected
+      // BEFORE it ever reserves anything - no double-reservation possible.
+      const confirmedRows = await tx.$executeRawUnsafe(
+        "UPDATE purchase_order SET status = 'Confirmed' WHERE id = ? AND status = 'Draft'",
+        po.id
+      );
+      if (confirmedRows === 0) {
+        throw AppError.conflict("PO นี้ไม่อยู่ในสถานะที่สามารถยืนยันได้ อาจถูกยืนยันไปแล้วหรือถูกยกเลิกแล้ว");
+      }
+
       const stockService = new StockService(new PrismaStockLedgerStore(tx));
       for (const [materialId, v] of need.entries()) {
         await stockService.reserve(materialId, v.qty, { refDocType: "PurchaseOrder", refDocId: po.id });
       }
-      await tx.purchaseOrder.update({ where: { id: po.id }, data: { status: "Confirmed" } });
       await tx.pOStatusEvent.create({ data: { poId: po.id, status: "Confirmed" } });
     });
 
@@ -196,10 +211,12 @@ poRouter.post(
     const po = await prisma.purchaseOrder.findUnique({ where: { id }, include: { lines: true } });
     if (!po) throw AppError.notFound("ไม่พบคำสั่งซื้อนี้ในระบบ");
 
-    const cancelEvent = await prisma.pOStatusEvent.findFirst({
+    const cancelEventBeforeCheck = await prisma.pOStatusEvent.findFirst({
       where: { poId: id, status: "Cancelled" }
     });
-    assertCanCancel(po.status, cancelEvent?.createdAt ?? null);
+    // Advisory pre-check for a fast, specific error message in the common (non-racing) case -
+    // the REAL enforcement (race-proof) happens inside the transaction below (DEF-09 fix).
+    assertCanCancel(po.status, cancelEventBeforeCheck?.createdAt ?? null);
 
     const bomLookup = await loadBomLookup(po.lines.map((l) => l.productId));
     const need = aggregateMaterialNeed(
@@ -208,8 +225,30 @@ poRouter.post(
     );
 
     await prisma.$transaction(async (tx) => {
+      // DEF-09 fix (QA verify-3): re-read the PO's status via a LOCKING read (`FOR UPDATE`)
+      // as the very FIRST read in this transaction, so it always reflects the true current
+      // value (never a stale snapshot) and holds the row lock until commit - a concurrent
+      // "cancel" request for the same PO blocks here until this one finishes, then sees the
+      // real post-cancel status and is rejected cleanly instead of double-releasing stock
+      // (ECP-005 AC3: "ไม่คืนสต็อกซ้ำสอง").
+      const rows = await tx.$queryRawUnsafe<Array<{ status: string }>>(
+        "SELECT status FROM purchase_order WHERE id = ? FOR UPDATE",
+        po.id
+      );
+      const currentStatus = rows[0]?.status;
+      if (!currentStatus) throw AppError.notFound("ไม่พบคำสั่งซื้อนี้ในระบบ");
+      if (currentStatus === "Cancelled") {
+        const cancelEvent = await tx.pOStatusEvent.findFirst({ where: { poId: id, status: "Cancelled" } });
+        throw AppError.conflict(
+          `PO นี้ถูกยกเลิกไปแล้วเมื่อ ${cancelEvent ? cancelEvent.createdAt.toISOString() : "-"}`
+        );
+      }
+      if (currentStatus !== "Draft" && currentStatus !== "Confirmed") {
+        throw AppError.conflict("ไม่สามารถยกเลิก PO นี้ได้ เนื่องจากเริ่มกระบวนการผลิตแล้ว");
+      }
+
       const stockService = new StockService(new PrismaStockLedgerStore(tx));
-      if (po.status === "Confirmed") {
+      if (currentStatus === "Confirmed") {
         for (const [materialId, v] of need.entries()) {
           await stockService.release(materialId, v.qty, { refDocType: "PurchaseOrder", refDocId: po.id });
         }

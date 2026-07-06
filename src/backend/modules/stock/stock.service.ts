@@ -1,5 +1,5 @@
 import { AppError } from "../../lib/errors";
-import { StockBalanceSnapshot, StockLedgerStore } from "./stock.repository";
+import { InsufficientStockError, StockBalanceSnapshot, StockLedgerStore } from "./stock.repository";
 
 export interface RefDoc {
   refDocType?: string;
@@ -18,6 +18,13 @@ export interface ReconciliationResult {
  * Business rules for the real-time stock ledger (ADR-004, NFR N1/N2, ECP-007..010).
  * Store-agnostic: works against the Prisma-backed store in production and an in-memory fake
  * in unit tests, so the rules below are verified without needing a live MySQL instance.
+ *
+ * DEF-09 fix (QA verify-3, Critical): `reserve()`/`issue()` used to pre-check availability via
+ * a separate `getBalance()` read BEFORE calling `applyTransaction()` - a classic TOCTOU race
+ * (and, under MySQL REPEATABLE READ, that extra read could also poison the whole transaction's
+ * snapshot for later reads). The availability/physical guard is now passed straight into
+ * `applyTransaction` and enforced atomically by the store (see stock.repository.ts) - there is
+ * no pre-check read here anymore at all.
  */
 export class StockService {
   constructor(private readonly store: StockLedgerStore) {}
@@ -42,25 +49,29 @@ export class StockService {
     });
   }
 
-  /** Reserve stock at PO confirm (ECP-010 AC1). Rejects if available < qty. */
+  /** Reserve stock at PO confirm (ECP-010 AC1). Rejects if available < qty - guard is atomic (DEF-09). */
   async reserve(materialId: number, qty: number, ref: RefDoc = {}) {
     if (!(qty > 0)) {
       throw AppError.validation("จำนวนที่ต้องการจองต้องมากกว่า 0");
     }
-    const balance = await this.store.getBalance(materialId);
-    const available = balance.physicalQty - balance.reservedQty;
-    if (available < qty) {
-      throw AppError.conflict(
-        `วัตถุดิบไม่เพียงพอ ขาดอยู่ ${(qty - available).toFixed(3)} หน่วย`
-      );
+    try {
+      return await this.store.applyTransaction({
+        materialId,
+        type: "Reservation",
+        physicalDelta: 0,
+        reservedDelta: qty,
+        minAvailable: qty,
+        ...ref
+      });
+    } catch (err) {
+      if (err instanceof InsufficientStockError) {
+        const available = err.physicalQty - err.reservedQty;
+        throw AppError.conflict(
+          `วัตถุดิบไม่เพียงพอ ขาดอยู่ ${(qty - available).toFixed(3)} หน่วย`
+        );
+      }
+      throw err;
     }
-    return this.store.applyTransaction({
-      materialId,
-      type: "Reservation",
-      physicalDelta: 0,
-      reservedDelta: qty,
-      ...ref
-    });
   }
 
   /** Release a reservation exactly once (ECP-005/010 AC2: cancel PO before production). */
@@ -79,7 +90,8 @@ export class StockService {
 
   /**
    * Issue stock for production (ECP-013). Rejects if physical < qty even if reserved allows it
-   * (ECP-010 AC3: real physical stock is the hard limit). Also releases the matching reservation.
+   * (ECP-010 AC3: real physical stock is the hard limit) - guard is atomic (DEF-09). Also
+   * releases the matching reservation.
    */
   async issue(
     materialId: number,
@@ -91,20 +103,24 @@ export class StockService {
     if (!(qty > 0)) {
       throw AppError.validation("จำนวนที่เบิกต้องมากกว่า 0");
     }
-    const balance = await this.store.getBalance(materialId);
-    if (balance.physicalQty < qty) {
-      throw AppError.conflict(
-        `วัตถุดิบคงเหลือจริงไม่พอ (มี ${balance.physicalQty} ต้องการ ${qty})`
-      );
+    try {
+      return await this.store.applyTransaction({
+        materialId,
+        lotId,
+        type: "Issue",
+        physicalDelta: -qty,
+        reservedDelta: -releaseReservedQty,
+        minPhysical: qty,
+        ...ref
+      });
+    } catch (err) {
+      if (err instanceof InsufficientStockError) {
+        throw AppError.conflict(
+          `วัตถุดิบคงเหลือจริงไม่พอ (มี ${err.physicalQty} ต้องการ ${qty})`
+        );
+      }
+      throw err;
     }
-    return this.store.applyTransaction({
-      materialId,
-      lotId,
-      type: "Issue",
-      physicalDelta: -qty,
-      reservedDelta: -releaseReservedQty,
-      ...ref
-    });
   }
 
   /** Manual adjustment (+/-). */

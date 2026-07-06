@@ -134,6 +134,18 @@ describe("InvoiceService.issueInvoice (ECP-020)", () => {
     ).rejects.toThrow(/ใช้ฟังก์ชันแก้ไข invoice แทน/);
   });
 
+  it("DEF-10 regression: still gives the specific 'already issued' message even once the PO has genuinely moved to Invoiced status (not just Shipped)", async () => {
+    const { service } = makeService();
+    await service.issueInvoice({ poId: 1, poStatus: "Shipped", lines: oneLine, issuedById: 9 });
+    // Real flow after DEF-10's fix: invoice.routes.ts flips the PO to "Invoiced" right after the
+    // first issue succeeds, so a second attempt's poStatus is realistically "Invoiced", not
+    // "Shipped" - this must still be reported as "already issued, use revise", NOT the generic
+    // "not shipped yet" message (which would be misleading and wrong here).
+    await expect(
+      service.issueInvoice({ poId: 1, poStatus: "Invoiced", lines: oneLine, issuedById: 9 })
+    ).rejects.toThrow(/ใช้ฟังก์ชันแก้ไข invoice แทน/);
+  });
+
   it("blocks issuing when PO has not shipped yet (AC3)", async () => {
     const { service } = makeService();
     await expect(

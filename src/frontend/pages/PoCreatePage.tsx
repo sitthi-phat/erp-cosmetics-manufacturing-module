@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Form, SelectField, NumberField, DateField, SubmitButton, Button, Notify } from "../ui";
+import { Card, Form, SelectField, NumberField, DateField, SubmitButton, Button, Notify, normalizeSelectValues } from "../ui";
 import { useCreatePO, useBomCheck } from "../hooks/usePo";
 import { useCustomers } from "../hooks/useCustomers";
 import { useProducts } from "../hooks/useProducts";
@@ -14,7 +14,8 @@ export function PoCreatePage() {
   const bomCheck = useBomCheck();
   const [lines, setLines] = useState<Array<{ productId: number; quantity: number; unitPrice: number; uom: string }>>([]);
 
-  function addLine(values: Record<string, unknown>) {
+  function addLine(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     setLines((prev) => [
       ...prev,
       {
@@ -46,7 +47,8 @@ export function PoCreatePage() {
     }
   }
 
-  async function handleSubmit(values: Record<string, unknown>) {
+  async function handleSubmit(rawValues: Record<string, unknown>) {
+    const values = normalizeSelectValues(rawValues);
     if (lines.length === 0) {
       Notify.error("กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการก่อนยืนยัน");
       return;

@@ -147,7 +147,27 @@ productionRouter.post(
         await tx.batchLotUsage.create({
           data: { batchId: created.id, lotId: sel.lotId, materialId: sel.materialId, qtyUsed: sel.qtyUsed }
         });
-        await tx.lot.update({ where: { id: sel.lotId }, data: { remainingQty: { decrement: sel.qtyUsed } } });
+        // DEF-09 fix (QA verify-3, boundary-race variant): the MATERIAL-level physical-stock
+        // guard in stockService.issue() below only checks the aggregate StockBalance across
+        // ALL lots of that material - it does NOT prevent oversubscribing one SPECIFIC lot
+        // when the material's total stock (across other lots) is otherwise plentiful. The old
+        // `tx.lot.update({ data: { remainingQty: { decrement } } })` had no guard at all, so two
+        // concurrent "produce" requests drawing from the SAME lot could both succeed even when
+        // their combined qtyUsed exceeded that lot's own remaining_qty. Same atomic
+        // conditional-UPDATE pattern as stock.repository.ts: the guard and the decrement happen
+        // in ONE statement, evaluated against the row's live value under its lock - not a
+        // separate pre-check read.
+        const lotAffected = await tx.$executeRawUnsafe(
+          "UPDATE lot SET remaining_qty = remaining_qty - ? WHERE id = ? AND remaining_qty >= ?",
+          sel.qtyUsed,
+          sel.lotId,
+          sel.qtyUsed
+        );
+        if (lotAffected === 0) {
+          throw AppError.conflict(
+            `Lot ที่เลือกมีวัตถุดิบคงเหลือไม่พอสำหรับจำนวนที่ต้องการเบิก (${sel.qtyUsed})`
+          );
+        }
         await stockService.issue(sel.materialId, sel.qtyUsed, sel.lotId, sel.qtyUsed, {
           refDocType: "Batch",
           refDocId: created.id

@@ -37,7 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: () => apiClient.get<{ data: MeResponse }>("/auth/me").then((r) => r.data),
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
-    retry: false
+    retry: false,
+    // OPEN-3 / App.tsx's global QueryCache.onError: a 401 here before login is expected/normal
+    // (handled gracefully by RequirePermission's redirect-to-login), not a real error - never
+    // worth a "notify-error" toast.
+    meta: { silent: true }
   });
 
   const value = useMemo<AuthContextValue>(
