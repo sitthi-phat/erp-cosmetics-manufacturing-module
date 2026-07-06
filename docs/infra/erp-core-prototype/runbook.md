@@ -2,14 +2,12 @@
 
 - **slug**: `erp-core-prototype`
 - **เขียนโดย**: DevOps
-- **อัปเดตล่าสุด**: 2026-07-07
+- **อัปเดตล่าสุด**: 2026-07-08 (หลัง final smoke ก่อน Human Gate 2 — QA verify-5 เขียวทั้งหมด, defect 15/15 ปิด)
 - **เป้าหมาย**: ให้ปอนด์ (หรือใครก็ตาม) รันระบบนี้บนเครื่องตัวเองได้ "จากศูนย์" โดยไม่ต้องถามใคร
 
-> ⚠ **อ่านก่อนเริ่ม**: ระบบนี้พบบั๊กจริงระดับ Critical ระหว่างการทดสอบกับ MySQL จริงเป็นครั้งแรก (ดู
-> §6 "ปัญหาที่รู้อยู่แล้ว" ด้านล่าง) ทำให้ `npm run db:seed` **อาจ fail แบบสุ่มถ้าไม่มี workaround** —
-> runbook นี้ใส่ workaround ไว้ให้แล้วใน `.env`/`.env.test`/`docker-compose.yml` (parameter
-> `connection_limit=1` ใน `DATABASE_URL`) ดังนั้นทำตามขั้นตอนด้านล่างตรงๆ จะไม่เจอปัญหานี้ แต่ถ้าไปแก้ค่า
-> `DATABASE_URL` เองแล้วลบ `connection_limit=1` ออก อาจเจอ seed พังอีกครั้ง
+> ✅ **สถานะล่าสุด**: DEF-01 ถึง DEF-15 ปิดครบทั้งหมดแล้ว (QA verify-5, 2026-07-08) — unit 175/175, integration
+> 152/154 (2 documented skip), e2e 18/19 (1 documented skip) เขียวทั้งหมด. DevOps ทำ **final smoke จากศูนย์จริง**
+> (ล้าง Docker volume ทั้งหมด แล้วตั้งใหม่ตาม runbook นี้ทีละบรรทัด) ยืนยันว่าใช้งานได้จริง — รายละเอียดที่ §5.1
 
 ---
 
@@ -35,12 +33,29 @@ npm run setup
 1. `docker compose up -d mysql` — ยก MySQL container (สร้าง 2 schema: `erp_core_prototype` สำหรับ
    dev/ใช้งานจริง และ `erp_core_prototype_test` สำหรับรัน automated integration tests แยกกัน ไม่ปนข้อมูล)
 2. `prisma migrate deploy` กับ dev schema
-3. `npm run db:seed` — ใส่ข้อมูลตัวอย่าง (7 users/roles, ลูกค้า, วัตถุดิบ, สินค้า, PO→ผลิต→QC→จัดส่ง→invoice
-   ตัวอย่างครบสาย)
+3. `npm run db:seed` — ใส่ข้อมูลตัวอย่าง (9 users ครอบคลุม 8 roles, ลูกค้า, วัตถุดิบ, สินค้า, PO→ผลิต→QC→
+   จัดส่ง→invoice ตัวอย่างครบสาย)
 4. migrate + seed schema สำหรับเทสต์ (`erp_core_prototype_test`) เช่นกัน
 5. `npx playwright install chromium` — ติดตั้ง browser สำหรับรัน e2e test
 
 **ใช้เวลาประมาณ 2-5 นาที** (ส่วนใหญ่คือดาวน์โหลด MySQL image + Chromium ครั้งแรก)
+
+### ⚠ ปัญหาที่รู้อยู่แล้ว (infra-level, ไม่ใช่บั๊กโค้ด): MySQL healthcheck race บน volume ใหม่ล้วนๆ
+
+ยืนยันซ้ำแล้วหลายรอบ (รวมรอบ final smoke ล่าสุด): เมื่อรัน `npm run setup`/`npm run reset` บน Docker volume
+ที่**เพิ่งสร้างใหม่ล้วนๆ** (ไม่เคยมีมาก่อน) บางครั้ง `prisma migrate deploy` จะ error
+`P1017: Server has closed the connection.` แม้ Docker Compose จะรายงานว่า `mysql` container "healthy" แล้ว —
+สาเหตุคือ MySQL ต้องรัน `docker/mysql/init/01-create-test-db.sql` (สร้าง schema ที่ 2) ตอน initialize
+data directory ครั้งแรก ซึ่งใช้เวลานานกว่า healthcheck รอบแรกเล็กน้อย
+
+**วิธีแก้ (ทำตามนี้ถ้าเจอ error นี้)**:
+```bash
+# รอให้ container ขึ้นสถานะ healthy จริงๆ ก่อน (ไม่ใช่แค่ "Up")
+docker inspect --format='{{.State.Health.Status}}' <container-name-mysql>
+# พอเห็นคำว่า healthy แล้ว รอเพิ่มอีก ~5 วินาที แล้วรันคำสั่งที่ fail ซ้ำ (ไม่ต้อง down -v ใหม่):
+npm run prisma:migrate && npm run db:seed && npm run db:migrate:test && npm run db:seed:test
+```
+ปกติจะผ่านทันทีในการลองครั้งที่ 2 — นี่คือ timing race ระดับ infra ไม่ใช่บั๊ก schema/seed
 
 ### ตรวจว่า setup สำเร็จ
 ```bash
@@ -65,21 +80,35 @@ docker compose up -d
 ใช้ทางนี้ถ้าต้องการจำลองสภาพแวดล้อมที่ใกล้เคียง production/Phase 3 มากที่สุด (ไม่มี hot-reload เร็วเท่า
 `npm run dev` แต่ปิดโอกาสที่ "รันได้ในเครื่องฉันแต่พังในเครื่องอื่น")
 
+### ⚠ ถ้าเคยรัน `npm run dev` ค้างไว้จากรอบก่อน (stale server)
+
+ถ้าเปิด `npm run dev` ใหม่แล้วเจอ error ว่า port ถูกใช้อยู่ (`EADDRINUSE`) แปลว่ามี process เก่าจากรอบก่อนค้าง
+port `4000`/`5173` อยู่ — ปิดก่อนด้วย:
+```bash
+# หา PID ที่จับ port ค้างอยู่ แล้วปิด (Windows PowerShell/Git Bash)
+netstat -ano | findstr ":4000"
+netstat -ano | findstr ":5173"
+taskkill /F /PID <PID ที่เจอ>
+```
+แล้วค่อยรัน `npm run dev` ใหม่
+
 ---
 
-## 4. บัญชีทดสอบ (จาก seed data) — ครบ 7 roles
+## 4. บัญชีทดสอบ (จาก seed data) — ครบ 8 roles + 2 บัญชีสาธิตพิเศษ (รวม 9 users)
 
 รหัสผ่านเดียวกันทุกบัญชี: **`Password123!`**
 
 | Username | บทบาท (role) | หน้าที่หลักที่ทดสอบได้ |
 |---|---|---|
-| `sales_demo` | Sales/CS | สร้าง/ดู PO, ลูกค้า |
-| `warehouse_demo` | คลังสินค้า | รับของเข้า (goods receipt), ดู stock real-time |
-| `production_demo` | ฝ่ายผลิต | คิวผลิต, assign, ผลิต batch |
-| `qc_demo` | QA/QC | ตรวจ batch/lot |
-| `logistics_demo` | ฝ่ายจัดส่ง | สร้าง/อัปเดตสถานะ shipment |
-| `finance_demo` | บัญชี/การเงิน | ออก invoice, บันทึกชำระเงิน |
-| `admin` | Admin | จัดการผู้ใช้/สิทธิ์, ตั้งค่า VAT |
+| `sales_demo` | Sales/CS (SA) | สร้าง/ดู PO, ลูกค้า |
+| `warehouse_demo` | คลังสินค้า (WH) | รับของเข้า (goods receipt), ดู stock real-time |
+| `production_demo` | ฝ่ายผลิต (PR) | คิวผลิต, assign, ผลิต batch |
+| `qc_demo` | QA/QC (QA) | ตรวจ batch/lot |
+| `logistics_demo` | ฝ่ายจัดส่ง (LO) | สร้าง/อัปเดตสถานะ shipment |
+| `finance_demo` | บัญชี/การเงิน (FI) | ออก invoice, บันทึกชำระเงิน, ดูตัวเลือกสินค้าตอน revise invoice (`product.view`) |
+| `admin` | Admin (AD) | จัดการผู้ใช้/สิทธิ์ (`user.view_basic` ให้ role อื่นดูรายชื่อผู้ใช้แบบจำกัดได้), ตั้งค่า VAT |
+| `role_with_no_menu_demo` | No Menu (NM, ไม่มี permission ใดๆ เลยโดยตั้งใจ) | ทดสอบเคส "role ไม่มีเมนูที่กำหนด → ต้องเห็นข้อความ 'ติดต่อ Admin' ไม่ใช่หน้าว่างเปล่า" (ECP-034 AC3) |
+| `brand_new_user_demo` | Sales (SA, บัญชีแยกจาก `sales_demo`) | ทดสอบเคส "login ครั้งแรกสุด → ต้องเห็น onboarding tooltip อย่างน้อย 1 จุด" (ECP-034 AC2) — แยกบัญชีจาก `sales_demo` เพื่อไม่ให้ onboarding state (เก็บใน browser ผ่าน localStorage) ปนกัน |
 
 ---
 
@@ -96,28 +125,70 @@ docker compose up -d
 7. เปิด 2 แท็บพร้อมกัน (คนละ role) เพื่อดู real-time: รับของเข้าคลังในแท็บหนึ่ง แล้วดู stock อัปเดตในอีกแท็บ
    โดยไม่ต้อง refresh
 
-> ⚠ **หมายเหตุจากการทดสอบจริง**: ตอนนี้ยังมีบั๊กที่ทำให้ flow ข้อ 1 (คลิก "คำสั่งซื้อ (PO)" ทันทีหลัง login
-> ครั้งแรก) ค้างได้ เพราะ onboarding tour overlay ไม่ยอมหายไปและบังปุ่มกด — ถ้าเจอปัญหานี้ให้กด Escape หรือ
-> คลิกที่พื้นที่ว่างก่อน แล้วค่อยคลิกเมนู (ดู §6 DEF-07)
+### 5.1 ผลการทำ Final Smoke จากศูนย์ (2026-07-08, ยืนยันจริงก่อนเปิด Human Gate 2)
+
+ทำตาม runbook นี้ทีละขั้นเหมือนคนที่ไม่เคยเห็นระบบมาก่อน (`npm run reset` → `npm run setup` → `npm run dev`):
+
+| ขั้นตอน | ผล |
+|---|---|
+| `npm run reset` (ล้าง Docker volume ทั้งหมดจริง) → `npm run setup` | เจอ timing race ที่ §2 ระบุไว้ 1 ครั้ง (`P1017` ตอน migrate) — แก้ตามขั้นตอนใน §2 แล้วผ่านทันทีในรอบถัดไป ไม่ต้อง `down -v` ซ้ำ |
+| `docker compose ps` | `mysql` container `Up (healthy)` |
+| `npm run dev` → `curl http://localhost:4000/health` | `{"status":"ok"}` |
+| `curl http://localhost:5173/` | HTTP 200 |
+| Login จริงผ่าน HTTP (`POST /api/v1/auth/login`) ด้วย `admin` + `sales_demo` | ทั้งคู่ 200 OK, คุกกี้ set ถูกต้อง, `GET /auth/me` คืน role/permissions ตรง (เห็น `product.view`/`user.view_basic` ใน payload ของ admin) |
+| Login `brand_new_user_demo` + `role_with_no_menu_demo` ผ่าน HTTP | ทั้งคู่ 200 OK — `role_with_no_menu_demo` คืน `"permissions": []` ตรงตามที่ตั้งใจ |
+| เปิดหน้าเว็บจริงผ่าน browser (Playwright, chromium) — login ครบทั้ง 7 role หลัก | ทุก role โหลดหน้าแรกสำเร็จ, เมนูซ้ายตรงกับสิทธิ์ของแต่ละ role (admin เห็นครบ, sales เห็นเฉพาะที่เกี่ยวข้อง) |
+| คลิกเมนู "คำสั่งซื้อ (PO)" ทันทีหลัง login (`sales_demo`) | **คลิกได้ทันที ไม่มี overlay บัง** (ยืนยันว่า DEF-07 onboarding-tour-block fix ยังอยู่ ไม่ regress) → navigate ไป `/pos` สำเร็จ |
+| Console error บนหน้าแรกหลัง login | พบ 1 รายการที่ไม่ block (`Failed to load resource: 401`) เกิดจาก request แรกสุดก่อนคุกกี้ auth ถูกตั้งค่าเสร็จ (retry ตามมาสำเร็จ, หน้าโหลด/render ถูกต้อง 100% ไม่กระทบการใช้งาน) — ไม่ยกเป็น defect ใหม่ เป็นแค่ observation |
+| ปิด background process (backend/frontend) ที่ smoke test เปิดไว้ | ปิดเรียบร้อยผ่าน `taskkill` ตาม PID, ตรวจซ้ำด้วย `netstat` ว่า port 4000/5173 ว่างแล้ว |
+| MySQL container | **คงไว้ให้ปอนด์ใช้ต่อ** (`docker compose ps` ยังเห็น `Up (healthy)`) พร้อมข้อมูล seed สดใหม่ (reseed ล่าสุดหลัง smoke) |
+
+**สรุป**: runbook นี้ทำตามได้จริงตั้งแต่ศูนย์ (fresh Docker volume) จนถึงเปิดเว็บ+login ได้ครบทุก role — พร้อม
+ให้ปอนด์ทดสอบเองได้ทันที
+
+### 5.2 สิ่งที่ปอนด์ควรลองกด (ครอบคลุม flow เด่นทั้งหมดของ prototype นี้)
+
+ลำดับแนะนำสำหรับปอนด์ทดสอบเอง (ใช้เวลาประมาณ 15-20 นาที ถ้าไล่ครบทุกข้อ):
+
+1. **สร้างลูกค้าใหม่** — login `sales_demo` → เมนู "ลูกค้า" → เพิ่มลูกค้าใหม่ (สังเกตว่า customer_id
+   สร้างอัตโนมัติ ไม่มีช่องให้กรอกเอง)
+2. **สร้าง PO** — จากลูกค้าที่เพิ่งสร้าง (หรือลูกค้าเดิมจาก seed) → เพิ่มสินค้า → ยืนยัน PO → สังเกตว่า
+   ระบบเช็ค stock วัตถุดิบตาม BOM ให้อัตโนมัติก่อนอนุมัติ
+3. **ดู stock real-time** — เปิดอีกแท็บ login `warehouse_demo` → หน้า "สต็อกวัตถุดิบ" เปิดค้างไว้ → กลับไป
+   ทำ goods receipt (รับวัตถุดิบเข้า) ในแท็บเดิมหรือแท็บใหม่ → สังเกตว่าตัวเลขในแท็บ "สต็อกวัตถุดิบ" อัปเดต
+   เองโดยไม่ต้อง refresh หน้า (ภายใน 1 นาที)
+4. **Assign งานผลิต** — login `production_demo` → "งานผลิต" → คิวงาน → assign PO ที่ยืนยันแล้วเข้าคิว →
+   ผลิต (เลือก Lot วัตถุดิบที่จะใช้) → ได้เลข Batch ใหม่
+5. **QC Approve** — login `qc_demo` → "ตรวจสอบคุณภาพ (QC)" → หา batch ที่เพิ่งผลิต → Approve
+6. **สร้าง Shipment** — login `logistics_demo` → "จัดส่งสินค้า" → สร้าง shipment จาก batch ที่ QC
+   Approved แล้ว (batch ที่ยังไม่ผ่าน QC จะไม่ปรากฏให้เลือก) → อัปเดตสถานะจนถึง Delivered
+7. **ออก Invoice + ดู VAT** — login `finance_demo` → "Invoice / การเงิน" → ออก invoice จาก PO ที่ Shipped
+   แล้ว → สังเกตว่า VAT (7% ค่าเริ่มต้น) คำนวณให้อัตโนมัติในยอดรวม → บันทึกการชำระเงิน
+8. **Revise Invoice** — จาก invoice ที่เพิ่งออก → กด "แก้ไข/revise" → ปรับจำนวน/ราคา → ยืนยัน → สังเกตว่า
+   ระบบสร้างเป็น version ใหม่ (v2) โดยที่ v1 ยังดูย้อนหลังได้ (ไม่ถูกเขียนทับ) พร้อม timeline แสดงว่า v1 ถูก
+   แทนที่โดย v2 เมื่อไหร่/โดยใคร
+9. **ดู Dashboard** — สลับ login ไปแต่ละ role แล้วดูหน้า "หน้าแรก" ของแต่ละคน (ตัวเลขสรุปของแต่ละแผนก
+   ตรงกับข้อมูลที่เพิ่งทำไปในข้อ 1-8 หรือไม่)
+10. **ดู Audit Log** — login `admin` → "Audit Log" → ค้นหา action ที่เพิ่งทำไปทั้งหมด (สร้าง PO, ผลิต,
+    QC approve, ออก invoice, revise invoice ฯลฯ) ต้องเห็นครบทุก action พร้อมชื่อผู้ทำ+เวลา
+11. **ทดสอบ role ที่ไม่มีเมนู** — login `role_with_no_menu_demo` → ต้องเห็นข้อความชัดเจนว่า "ยังไม่มีเมนูที่
+    กำหนดให้บทบาทนี้ กรุณาติดต่อ Admin" ไม่ใช่หน้าว่างเปล่า
+12. **ทดสอบ onboarding ผู้ใช้ใหม่** — login `brand_new_user_demo` (ครั้งแรกในเบราว์เซอร์/โหมดไม่ระบุตัวตน
+    ที่ยังไม่เคย login มาก่อน) → ต้องเห็น onboarding tooltip แนะนำอย่างน้อย 1 จุด และคลิกเมนูต่อได้ทันที
+    ไม่มี overlay ค้างบัง
 
 ---
 
-## 6. ปัญหาที่รู้อยู่แล้ว (Known Issues) — พบจากการทดสอบกับ MySQL/browser จริงเป็นครั้งแรก
+## 6. ปัญหาที่รู้อยู่แล้ว (Known Issues)
 
-รายละเอียดเต็มอยู่ที่ `docs/infra/erp-core-prototype/devops-verify-report.md`. สรุปสั้นๆ:
+รายละเอียดเต็มอยู่ที่ `docs/infra/erp-core-prototype/devops-verify-report.md` และ
+`docs/test-plans/erp-core-prototype/defects.md` (DEF-01 ถึง DEF-15, ปิดครบทั้งหมดแล้ว ณ verify-5)
 
-- **DEF-06 (Critical)**: `npm run db:seed` อาจ fail แบบสุ่มด้วย "Unique constraint failed on customer_id"
-  (หรือ user_id/PO number ฯลฯ) — เกิดจากบั๊กจริงใน `src/backend/lib/numberSequence.ts` (MySQL
-  `LAST_INSERT_ID()` ไม่ถูกตั้งค่าตอน insert แถวใหม่ครั้งแรกของแต่ละ prefix) **มี workaround ใส่ไว้แล้ว**
-  ใน `.env`/`.env.test`/`docker-compose.yml` (`?connection_limit=1` ใน `DATABASE_URL`) ทำให้
-  `npm run setup`/`npm run db:seed` ปกติไม่เจอปัญหานี้ — **ถ้าเจอ error นี้อยู่ดี ให้รัน `npm run db:seed`
-  ซ้ำอีกครั้ง** (มักจะผ่านในการรันครั้งถัดไป) แล้วแจ้ง Engineer ให้แก้ root cause
-- **DEF-07 (Major)**: onboarding tour (ECP-034 AC2) เปิดครั้งแรกหลัง login แล้ว overlay ค้างบังปุ่มกดเมนู
-  จนคลิกไม่ได้ — ทดสอบจริงด้วย browser (Playwright) แล้วพบว่า demo flow หลักค้างที่ขั้นตอนนี้จริง
-- **DEF-08 (Major, ต้อง QA/Engineer คุยกันเพื่อ sync)**: automated integration test หลายไฟล์คาดหวังว่า
-  response body จะเป็น field แบนๆ (เช่น `res.body.customer_id`) แต่ API จริงห่อด้วย
-  `{ data: {...}, warning: ... }` (เช่น `res.body.data.customerId`) ทำให้เทสต์จำนวนมากอ่านค่าไม่ตรง
-  ไม่ใช่บั๊ก business logic แต่เป็นความไม่ตรงกันระหว่าง test spec กับ implementation ที่ต้อง reconcile
+- **ปัญหาเดียวที่ยังพบระหว่าง final smoke**: MySQL healthcheck race ตอน setup จาก Docker volume ใหม่ล้วนๆ
+  (§2) — เป็นเรื่อง timing ของ infra ล้วนๆ ไม่ใช่บั๊ก schema/seed/business logic, แก้ได้ด้วยการรันคำสั่งที่
+  fail ซ้ำอีกครั้งโดยไม่ต้องล้างอะไรเพิ่ม
+- ไม่พบบั๊ก Critical/Major ใหม่ระหว่าง final smoke (console error 401 ที่พบเป็นแค่ observation ไม่กระทบ
+  การใช้งานจริง — ดู §5.1)
 
 ### วิธี Reset ระบบ (ล้างข้อมูล กลับไปเป็น seed เริ่มต้น)
 
@@ -131,19 +202,18 @@ npm run db:seed          # รันซ้ำได้ทุกเมื่อ (
 npm run reset             # = docker compose down -v && npm run setup
 ```
 ใช้เมื่อสงสัยว่า schema/ข้อมูลเพี้ยนไปไกลเกินจะ `db:seed` แก้ได้ (เช่น เปลี่ยน `prisma/schema.prisma` แล้ว
-migration ชนกัน)
+migration ชนกัน) — **ถ้าเจอ `P1017` ตอน migrate หลังคำสั่งนี้ ดู §2 สำหรับวิธีแก้ (ปกติ)**
 
 ### ปัญหาที่พบบ่อย (Troubleshooting)
 
 | อาการ | สาเหตุที่เป็นไปได้ | วิธีแก้ |
 |---|---|---|
 | `docker info` บอกว่า `Server:` ต่อไม่ได้ | Docker Desktop ยังไม่เปิด/ยังไม่พร้อม | เปิด Docker Desktop รอจนไอคอนขึ้นสถานะ running แล้วลองใหม่ |
-| `npm run db:seed` ล้ม ด้วย `Unique constraint failed` | DEF-06 (ดูด้านบน) | รันคำสั่งเดิมซ้ำอีกครั้ง 1-2 รอบ |
-| Port 3306/4000/5173 ชนกับโปรแกรมอื่นที่รันอยู่ | มีโปรแกรมอื่นใช้ port เดียวกัน | ปิดโปรแกรมนั้น หรือแก้ port mapping ใน `docker-compose.yml`/`.env`/`src/frontend/vite.config.ts` ให้ตรงกันทั้ง 3 จุด |
+| `prisma migrate deploy` error `P1017: Server has closed the connection` (เฉพาะตอน setup จาก volume ใหม่) | MySQL healthcheck race (§2) | รอ container ขึ้น `healthy` จริง +5 วินาที แล้วรันคำสั่งที่ fail ซ้ำ ไม่ต้อง `down -v` ใหม่ |
+| Port 3306/4000/5173 ชนกับโปรแกรมอื่นที่รันอยู่ (รวมถึง `npm run dev` ค้างจากรอบก่อน) | มีโปรแกรม/process อื่นใช้ port เดียวกัน | ดู §3 "ถ้าเคยรัน npm run dev ค้างไว้จากรอบก่อน" |
 | Login ไม่ได้ทั้งที่รหัสผ่านถูก | ยังไม่ได้ seed หรือ seed พังกลางทาง | รัน `npm run db:seed` แล้วเช็ค log ว่าจบด้วย `[seed] done.` |
 | หน้าเว็บขึ้น error แต่ backend log ปกติ | frontend proxy (vite) ชี้ผิด port | เช็คว่า backend รันที่ `:4000` จริง (`curl http://localhost:4000/health`) |
 | Integration test (`npm run test:integration`) ค้างนาน/timeout | seed-reset endpoint สร้าง reseed ทุกไฟล์ ใช้เวลาสะสม | ปกติ (30s timeout ต่อไฟล์ตั้งไว้แล้วใน jest.config.js) รอจนจบ |
-| e2e test หา element ไม่เจอ/ค้าง | DEF-07 (onboarding tour บัง) หรือ testid ไม่ตรงกับหน้าจอปัจจุบัน | ดู `docs/infra/erp-core-prototype/devops-verify-report.md` สำหรับรายละเอียด |
 
 ---
 
@@ -184,6 +254,8 @@ migration ชนกัน)
 - MySQL local → Cloud SQL (เปลี่ยน `DATABASE_URL` เท่านั้น)
 - container → Cloud Run
 - Socket.IO ต้องเพิ่ม Redis adapter ถ้ามีมากกว่า 1 instance
-- **สำคัญ**: ต้องแก้ DEF-06 (NumberSequence bug) ก่อนขึ้น production จริงที่มีมากกว่า 1 connection/instance
-  — workaround `connection_limit=1` ใช้ได้เฉพาะ local single-instance เท่านั้น จะ**ใช้ไม่ได้จริง**ใน
-  Cloud Run แบบ multi-instance (ทำให้ NumberSequence ชนกันข้าม instance รุนแรงกว่าเดิม)
+- DEF-06 (NumberSequence bug) ถูกแก้ที่ root cause แล้วจริง (`LAST_INSERT_ID(1)` ใน VALUES clause ของ
+  `src/backend/lib/numberSequence.ts`) และ workaround ชั่วคราว (`?connection_limit=1`) ที่ DevOps เคยใส่ไว้
+  ใน `DATABASE_URL` **ถูกเอาออกแล้ว** (ยืนยันจาก `.env`/`.env.test`/`docker-compose.yml` ปัจจุบัน ไม่มี
+  parameter นี้อีกต่อไป) — ยืนยันด้วย concurrency test เขียวทั้งหมด (verify-3 เป็นต้นมา) ปลอดภัยสำหรับ
+  multi-connection/multi-instance บน Phase 3 แล้ว ไม่ต้องทำอะไรเพิ่มในจุดนี้
