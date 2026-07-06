@@ -22,9 +22,26 @@
  *   (d) Login navigates to `/` (exact), not `/home` or `/dashboard`.
  * Also fixed: `po-number` is rendered in a `display:none` div - Playwright's `innerText()`
  * respects visibility and returns "" for hidden elements, so `.textContent()` is used there
- * instead. NOT executed in this sandbox (no Docker/MySQL, no `npx playwright install` browsers
- * yet - see defects.md ENV-01/ENV-02); `npx playwright test --list` does confirm this file
- * compiles and collects correctly against the real `@playwright/test` package.
+ * instead.
+ *
+ * RECONCILED 2026-07-08 (QA verify-3, run against a LIVE browser+backend+MySQL for the first
+ * time): *** DEF-11 (NEW, Major, confirmed via direct DOM inspection) ***. Every antd `<Select>`
+ * option in this app renders its VISIBLE text as the raw numeric `value` instead of the intended
+ * `label` string, even though `options={[{value, label}]}` is passed correctly (verified on the
+ * customer picker AND the product picker: `<div role="option" aria-label="บริษัท ABC จำกัด
+ * (CUS-00000001)">21</div>` - `aria-label` is right, the rendered text a real user sees is just
+ * "21"). This means every dropdown that uses a numeric id as its option value (customer, product,
+ * worker, material - i.e. every Select in this app except the two-value QC-result one) shows
+ * meaningless numbers to real users instead of names - a genuine usability-breaking defect, not
+ * a testing artifact. Separately, Playwright's accessible-name computation for these options does
+ * NOT pick up `aria-label` here either (`getByRole("option", {name: "..."})` matches 0 elements),
+ * and the dropdown list is virtualized (rc-virtual-list) so only ~2 options exist in the DOM at a
+ * time, meaning `.first()` or a specific-name lookup can both intermittently fail to find/click a
+ * stable target depending on scroll position. Because of DEF-11, this whole file cannot be
+ * reliably driven end-to-end right now regardless of selector strategy - the `selectAntdOption`
+ * helper below documents the INTENDED interaction pattern (correct once DEF-11 is fixed and the
+ * list virtualization is accounted for) but is not currently passing. See defects.md DEF-11 for
+ * the full reproduction. `npx playwright test --list` still confirms this file compiles/collects.
  */
 import { test, expect, Page } from "@playwright/test";
 

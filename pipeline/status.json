@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "engineer",
-      "status": "READY_FOR_QA_VERIFY",
+      "current_agent": "qa",
+      "status": "FAILED",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -875,6 +875,74 @@
           "summary": "แก้ DEF-06/07 ที่ root cause จริง และตัดสินใจ DEF-08 ตามเงื่อนไขที่กำหนด (architecture ไม่ได้ระบุ envelope). DEF-06: root cause คือ `VALUES (?, ?, 1)` เป็น literal ธรรมดา ไม่ใช่ LAST_INSERT_ID(...) จึงไม่ถูก evaluate ตอน INSERT branch จริง (MySQL evaluate VALUES(...) เสมอไม่ว่าจะ insert จริงหรือชน ON DUPLICATE KEY - แต่เฉพาะ expression ที่เป็น LAST_INSERT_ID() call เท่านั้นที่ set session variable ได้ literal ธรรมดาไม่ set อะไรเลย) แก้เป็น `VALUES (?, ?, LAST_INSERT_ID(1))` ตามคำแนะนำของ DevOps ตรงตัว ยืนยันด้วย 4 ชั้นหลักฐานจริง: (1) raw SQL reproduction ตรงกับสคริปต์ของ DevOps เป๊ะผ่าน `docker exec mysql` - after_first_insert คืนค่า 1 แล้ว (เดิม 0) (2) `npm run reset && npm run setup` สำเร็จบน Docker volume ใหม่ล้วนๆ (3) `npm run db:seed` รันซ้ำสำเร็จหลายรอบติดต่อกันโดยไม่มี unique-constraint error แม้แต่ครั้งเดียว หลังเอา `?connection_limit=1` ออกจาก .env/.env.test/docker-compose.yml ครบทั้ง 3 จุดแล้ว (4) `tests/integration/concurrency/numberSequence.spec.ts` User-ID/PO-number/cross-period sub-tests ผ่านแล้ว (3/5, ที่เหลือ 2 ตัวติด DEF-08 การอ่าน field ผิดชื่อ ไม่ใช่เลขซ้ำ) เพิ่ม unit regression test ใหม่ที่จำลอง MySQL LAST_INSERT_ID() session semantics ตรงๆ (ไม่ต้องมี DB จริง) ยืนยันว่า SQL ที่ส่งจริงเป็นเวอร์ชันแก้แล้วและถ้าเป็นเวอร์ชันเดิมจะได้ค่าเก่าที่ค้างมาจริง. DEF-07: ความพยายามแรก (`mask={false}` อย่างเดียว) **ไม่พอ** - ยืนยันด้วยการรัน `npx playwright test` ซ้ำแล้วยังเจอ `.ant-tour-mask` บล็อกอยู่ ไปอ่าน source ของ `@rc-component/tour` (`Mask.js`) ตรงๆ พบว่า `pointerEvents` ของ wrapper div ทั้งหน้าถูกตั้งเป็น `'auto'` (บล็อกทุกจุด) ทุกครั้งที่ step ไม่มี `target` เลย ไม่เกี่ยวกับค่า `mask` prop - root cause จริงคือ tour ของเราไม่เคยส่ง target มาตั้งแต่แรก (HomePage ไม่ได้ผูก targetRef ใดๆ) แก้โดยให้ `OnboardingTour` fallback ไปที่ `document.body` เป็น target เสมอเมื่อ caller ไม่ได้ระบุ (ผสมกับ `mask={false}` ที่มีอยู่แล้ว) ทำให้ wrapper ได้ `pointer-events:none` เต็มหน้าจอจริง - ยืนยันด้วย `npx playwright test tests/e2e/roleMenuOnboarding.spec.ts` ผ่านครบ 3/3 (เดิม 1/3) และ `demoFlow.spec.ts` ไม่ timeout ที่ `nav-po-list` อีกต่อไป (เดินหน้าไปติด flow-mismatch จุดอื่นแทน ซึ่งเป็นคนละปัญหา) เพิ่มบัญชี demo 2 บัญชีใน seed.ts (`brand_new_user_demo` role SA, `role_with_no_menu_demo` role ใหม่ 'NM' ที่ตั้งใจไม่ผูก permission แถวใดเลย) ให้ตรงกับ username ที่ QA's roleMenuOnboarding.spec.ts ใช้จริง เพื่อให้ ECP-034 AC2/AC3 มี fixture ทดสอบได้จริง. DEF-08: อ่าน architecture.md §6 ซ้ำทั้งหมด ไม่พบการระบุ response envelope ของ success response ที่ไหนเลย (ระบุแค่ error envelope `{error:{code,message,fields}}`) - ตามเงื่อนไขที่กำหนด ('ถ้า architecture กำหนด envelope → โค้ดคุณถูก') และเนื่องจาก architecture ไม่ได้ระบุอะไรที่ขัดกับโค้ดปัจจุบัน จึงตัดสินใจคงโค้ดเดิม (`{data:...}` camelCase envelope ที่สอดคล้องกันทั้ง ~40 endpoint และทั้ง FE hooks ทุกจุดอยู่แล้ว) เป็น convention ที่ตั้งใจและสอดคล้องภายในของทั้งระบบ ไม่ใช่ความผิดพลาด - สุ่มตรวจ failure จริงกว่า 15 จุดกระจายทุกโมดูล (customer/po/qc/invoice/audit/vatConfig/permissionTtl/traceability/stock) ยืนยันว่า **100% ของ 82 test ที่ fail ใน integration suite เป็นกลุ่มเดียวกับ DEF-08** ไม่ใช่บั๊ก logic ที่ซ่อนอยู่ ครอบคลุม 3 รูปแบบ: (ก) response envelope/casing (`res.body.customer_id` ควรเป็น `res.body.data.customerId`, `res.body.items` ควรเป็น `res.body.data`) (ข) request field-name/ID-type ที่ QA เดาไว้ก่อนเห็น API จริงไม่ตรงกับ Zod schema จริง (เช่น `roleId:'WH'` ที่จริงต้องเป็นเลข role id ไม่ใช่ role code, `workerUsername`/`lotsUsed` ที่จริงคือ `assignedTo`/`lotSelections`, `grants` ที่จริงคือ `permissions`, `materialName`/`customerSearch` ที่จริงต้องเป็น `materialId`/`customerId` เชิงตัวเลข) (ค) placeholder seeded-ID string เช่น `SEEDED_PO_SHIPPED_50000` ที่ QA เขียนไว้เองว่า 'ไม่รู้ Prisma-generated ID ล่วงหน้า' (fixtures.ts) ทำให้ path param กลายเป็น NaN แล้ว Prisma throw 'Argument id is missing' -> 500 (ไม่ใช่บั๊ก แต่เป็นผลจาก fixture ที่ยังไม่ resolve ID จริงผ่าน API ก่อนใช้). **ไม่ได้แก้ tests/ ของ QA แม้แต่ไฟล์เดียว** (ตามกติกา) ยกเว้น 1 บรรทัดเดิมที่ reconcile ไปแล้วในรอบก่อน (`tests/helpers/testClient.ts` import app - ไม่เกี่ยวกับ DEF-08). ตัวเลขจริงทั้งหมดหลังแก้: unit `npm run test:unit` = 172 passed / 12 skipped / 0 failed (28/30 suites, +2 จากการเพิ่ม DEF-06 regression test); `npx tsc -p tsconfig.backend.json --noEmit` = 0 error; `cd src/frontend && npx tsc --noEmit` = 0 error; `npx eslint` = 0 error/0 warning; `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 71 passed / 82 failed / 1 skipped จาก 154 (ตัวเลขเท่าเดิมกับ DevOps ตามที่วิเคราะห์แล้วว่าเป็น DEF-08 ล้วนๆ ไม่ใช่ DEF-06/07 ที่ยังไม่แก้); `npx playwright test` = 3 passed / 16 failed จาก 19 (ดีขึ้นจาก 1/19 - เพิ่มขึ้น 2 จาก DEF-07 ที่แก้แล้วบวก seed fixture 2 บัญชีใหม่). สิ่งที่ต้อง follow-up: QA ต้องแก้ integration/e2e spec ให้อ่าน `res.body.data.xxx` (camelCase) แทน `res.body.xxx` (snake_case แบน) ทุกจุด และปรับ request field name/type ให้ตรง Zod schema จริงของแต่ละ endpoint (ดู src/backend/modules/*/​*.schema.ts และ *.routes.ts เป็น source of truth) รวมถึง resolve seeded-ID จริงผ่าน API ก่อนใช้แทน placeholder string ตามที่ fixtures.ts เขียนหมายเหตุไว้เองแล้ว - เมื่อ QA sync แล้วคาดว่า integration/e2e จำนวนมากจะผ่านทันทีโดยไม่ต้องแก้โค้ด Engineer เพิ่มอีก.",
           "overridden_by": null,
           "updated_at": "2026-07-08T02:30:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "verify-3",
+          "status": "FAILED",
+          "gate_checklist": [
+            {
+              "item": "ยืนยัน DEF-06 (Critical) fixed จริงด้วยตัวเอง ไม่ใช่แค่เชื่อรายงาน Engineer: npm run reset+setup บน Docker volume ใหม่ + reseed ซ้ำ 3 รอบไม่มี unique-constraint error + raw SQL reproduction ผ่าน docker exec mysql เอง (SELECT LAST_INSERT_ID()=1 หลัง INSERT แรก) + concurrency 100-way (numberSequence.spec.ts): Customer/PO number 100/100 unique",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ยืนยัน DEF-07 (Major) fixed จริงด้วย e2e: npx playwright test roleMenuOnboarding.spec.ts ผ่าน 3/3, demoFlow.spec.ts ไม่ timeout ที่ nav-po-list อีกต่อไป",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DEF-08 (envelope contract): แก้ spec ทั้งหมด 17/17 ไฟล์ integration/concurrency + 5/6 ไฟล์ e2e ให้ตรง response envelope {data:...}/request field-name-type ตาม *.routes.ts/*.schema.ts จริง (ไม่เดา)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "รันครบตามที่สั่ง: npm run reset&&setup, RUN_DB_TESTS=1 npx jest --selectProjects integration, backend+frontend ขึ้นจริง, npx playwright test, npx jest unit",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี Critical/Major defect ใหม่ที่เป็นความผิดของโค้ด",
+              "pass": false,
+              "missing": "พบ 5 ตัวใหม่ระหว่างแก้ spec ให้ตรง contract: DEF-09 (Critical) stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง (ledgerSum 1480 vs physicalQty 1500 ใน 1 เคส, 2 concurrent issue เกิน lot capacity ผ่านทั้งคู่ในอีกเคส, ยืนยันซ้ำหลายรอบไม่ flaky) - ละเมิด NFR N1 ที่เป็นเงื่อนไข Gate 1 สำคัญที่สุดตรงๆ; DEF-10 (Major) PO ไม่เคย transition เป็น status Invoiced หลังออก invoice เลย (grep ยืนยันไม่มี code path ใดตั้งค่านี้) ทำให้ timeline ECP-006 AC1 5 ขั้นไม่มีวันครบ; DEF-11 (Major) antd Select ทุกจุดที่ใช้ numeric value แสดงเลขดิบเป็น visible text แทน label (aria-label ถูกแต่ข้อความที่ผู้ใช้เห็นผิด) ยืนยันด้วย DOM inspection ตรงทั้ง customer/product picker; DEF-12 (Major) Finance role (role เดียวที่มี invoice.revise) เรียก GET /products ไม่ได้ (403, ไม่มี stock.view) ทำให้ revise-invoice modal ของ Finance ว่างเปล่าเสมอ ยืนยันด้วย curl ตรง; DEF-13 (Major) VAT rate input (max=100) clamp ค่าที่เกินเงียบๆแล้ว save สำเร็จโดยไม่แจ้งเตือน (พิมพ์ 150 ถูก save เป็น 100 จริงตาม GET /admin/vat-config ยืนยัน) ไม่ตรง ECP-038 AC3"
+            },
+            {
+              "item": "อัปเดต verify-report.md/defects.md พร้อมสถานะ DEF ทุกตัว (06-13) + MIN-07/08 + OPEN-1/2/3 ที่ยังสอบสวนไม่เสร็จ",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/defects.md",
+            "docs/test-plans/erp-core-prototype/verify-report.md",
+            "tests/helpers/testClient.ts",
+            "tests/integration/customer.spec.ts",
+            "tests/integration/po.spec.ts",
+            "tests/integration/stock.spec.ts",
+            "tests/integration/production.spec.ts",
+            "tests/integration/traceability.spec.ts",
+            "tests/integration/qc.spec.ts",
+            "tests/integration/shipping.spec.ts",
+            "tests/integration/invoice.spec.ts",
+            "tests/integration/invoiceVersioningReconciliation.spec.ts",
+            "tests/integration/vatConfigAdmin.spec.ts",
+            "tests/integration/userRbac.spec.ts",
+            "tests/integration/auditLog.spec.ts",
+            "tests/integration/dashboard.spec.ts",
+            "tests/integration/concurrency/numberSequence.spec.ts",
+            "tests/integration/concurrency/stockLedgerAccuracy.spec.ts",
+            "tests/integration/concurrency/permissionTtl.spec.ts",
+            "tests/integration/concurrency/paymentVersionReconciliation.spec.ts",
+            "tests/e2e/demoFlow.spec.ts",
+            "tests/e2e/adminVatConfig.spec.ts",
+            "tests/e2e/errorMessageAudit.spec.ts",
+            "tests/e2e/invoiceRevisionTimeline.spec.ts",
+            "tests/e2e/realtimeStock.spec.ts"
+          ],
+          "questions_for_pond": [],
+          "summary": "Verify-3: ยืนยัน DEF-06 (Critical, NumberSequence idempotency) และ DEF-07 (Major, onboarding tour) fixed จริงด้วยการทดสอบอิสระของ QA เอง (raw SQL ผ่าน docker exec, reseed x3, concurrency 100-way, e2e 3/3) ไม่ใช่แค่เชื่อรายงาน Engineer/DevOps. DEF-08 (response envelope ไม่ตรงกันระหว่าง QA spec เดิมกับโค้ดจริง) ตัดสินแล้วว่าโค้ด Engineer ถูก (architecture.md §6 ไม่ได้กำหนด success envelope) - QA แก้ spec integration/concurrency ครบ 17/17 ไฟล์ + e2e 5/6 ไฟล์ให้ตรง contract จริง (response {data:...}, request field name/type ตาม Zod schema จริง, resolve seeded-ID ผ่าน API แทน placeholder string) เพิ่ม helper resolveCustomer/resolveProductWithBom/resolveMaterials ใน tests/helpers/testClient.ts. ตัวเลขจริงสุดท้าย: unit 172/172 (0 failed, 12 skip, ตรงกับ Engineer), integration+concurrency 148/154 (4 failed, 2 skip - เป้า 154/154 ไม่ถึง), e2e 12/19 (6 failed, 1 skip - เป้า 19/19 ไม่ถึง แต่ขึ้นจาก 3/19 เดิมมาก). ระหว่างแก้ spec ให้ตรง contract พบบั๊กโค้ดจริงใหม่ 5 ตัวที่ไม่เคยถูกจับได้มาก่อน: DEF-09 (Critical) stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง (ledger vs balance discrepancy 20 หน่วยใน 1 เคส, 2 concurrent issue เกิน lot capacity ผ่านทั้งคู่ในอีกเคส) ยืนยันด้วย docker exec mysql โดยตรง ตั้ง root cause hypothesis ไว้ชัดเจน (mixing locking raw SELECT FOR UPDATE กับ non-locking Prisma ORM read ใน transaction เดียวกัน) - ละเมิด NFR N1 เงื่อนไข Gate 1 ที่สำคัญที่สุดตรงๆ ภายใต้สถานการณ์สมจริง (double-click/ผู้ใช้ 2 คนพร้อมกัน); DEF-10 (Major) PO ไม่เคย transition เป็น Invoiced เลย (grep ยืนยันไม่มี code path ตั้งค่านี้ที่ไหน) ทำให้ timeline ECP-006 AC1 ไม่ครบ 5 ขั้นตลอดกาล; DEF-11 (Major) antd Select ทุก dropdown ที่ใช้ numeric value แสดงเลขดิบแทน label ที่อ่านได้ (aria-label ถูกต้องแต่ visible text ผิด) ยืนยันด้วย DOM inspection จริงทั้ง customer/product picker กระทบ usability ทั้งระบบ; DEF-12 (Major) Finance role (role เดียวที่มี invoice.revise) ไม่มี stock.view permission ทำให้ GET /products 403 เสมอ revise-invoice modal จึงว่างเปล่าใช้งานไม่ได้จริงสำหรับ Finance; DEF-13 (Major) VAT rate input client-side max=100 clamp ค่าที่พิมพ์เกินเงียบๆ (150->100) แล้ว save สำเร็จโดยไม่แจ้งเตือนผู้ใช้เลย ไม่ตรง ECP-038 AC3 (server-side validation เองถูกต้องอยู่แล้ว ยืนยันแยกจาก integration test). พบ Minor เพิ่ม 2 ตัว (MIN-07 user creation concurrency ~19% timeout เพราะ bcrypt+connection pool ไม่ใช่ duplicate-ID bug, MIN-08 concurrent revise race ฝ่ายแพ้ได้ 500 แทน 409 ที่ชัดเจนกว่า) และ 3 รายการเปิดสอบสวนต่อยังสรุปไม่ได้ (OPEN-1/2/3: warehouse dashboard/fallback-polling ไม่อัปเดตภายใน 60s ในการรัน e2e จริงทั้งที่ polling mechanism ยืนยันทำงานถูกต้องแยกต่างหาก, errorMessageAudit UI test notify-error ว่างเปล่า - ต้องสอบสวนเพิ่มเติมรอบถัดไปไม่ด่วนสรุปเป็น defect). สถานะ FAILED ตามกติกา Exit Gate (พบ Critical/Major defect ใหม่) - ส่งกลับ Engineer พร้อม defect list เต็ม เน้น DEF-09 เร่งด่วนที่สุดเพราะเป็นเงื่อนไข Gate 1 โดยตรง ตามด้วย DEF-10/11/12/13; ไม่ต้องแก้ DEF-06/07/08 ซ้ำ (ปิดแล้ว).",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T10:00:00+07:00"
         }
       ]
     }

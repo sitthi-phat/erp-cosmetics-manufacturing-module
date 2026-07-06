@@ -61,3 +61,51 @@ export async function fireConcurrently<T>(factories: Array<() => Promise<T>>): P
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+// --- DEF-08 reconciliation helpers (QA verify-3) -----------------------------------------
+// Seed data does not expose Prisma-generated primary keys ahead of time (fixtures.ts always
+// said so). These resolve real IDs through the actual API instead of guessing/hardcoding a
+// placeholder string, per src/backend/modules/product/product.routes.ts and
+// src/backend/modules/customer/customer.routes.ts (ground truth for response shape).
+
+type Agent = ReturnType<typeof request.agent>;
+
+/** First customer whose name matches `q` (default: the seeded "บริษัท ABC จำกัด"). */
+export async function resolveCustomer(agent: Agent, q = "ABC"): Promise<{ id: number; customerId: string; name: string }> {
+  const res = await agent.get("/api/v1/customers").query({ q });
+  const match = res.body.data?.[0];
+  if (!match) throw new Error(`resolveCustomer("${q}") - no seeded customer matched (status ${res.status})`);
+  return match;
+}
+
+/** The one seeded product that DOES have an active BOM (prisma/seed.ts: all but the last product). */
+export async function resolveProductWithBom(agent: Agent): Promise<{ id: number; name: string; uom: string; hasBom: boolean }> {
+  const res = await agent.get("/api/v1/products");
+  const match = (res.body.data ?? []).find((p: any) => p.hasBom);
+  if (!match) throw new Error(`resolveProductWithBom() - no seeded product has hasBom=true (status ${res.status})`);
+  return match;
+}
+
+/** The one seeded product that intentionally has NO BOM (ECP-009 AC3, prisma/seed.ts last product). */
+export async function resolveProductWithoutBom(agent: Agent): Promise<{ id: number; name: string; uom: string; hasBom: boolean }> {
+  const res = await agent.get("/api/v1/products");
+  const match = (res.body.data ?? []).find((p: any) => !p.hasBom);
+  if (!match) throw new Error(`resolveProductWithoutBom() - every seeded product has a BOM (status ${res.status})`);
+  return match;
+}
+
+/** All seeded raw materials with their current physical/reserved stock (prisma/seed.ts §8). */
+export async function resolveMaterials(
+  agent: Agent
+): Promise<Array<{ id: number; name: string; uom: string; physicalQty: number; reservedQty: number }>> {
+  const res = await agent.get("/api/v1/materials");
+  return res.body.data ?? [];
+}
+
+/** The material seeded with physicalQty === 0 (last material, ECP-007 AC2). */
+export async function resolveZeroStockMaterial(agent: Agent) {
+  const materials = await resolveMaterials(agent);
+  const match = materials.find((m) => m.physicalQty === 0);
+  if (!match) throw new Error("resolveZeroStockMaterial() - no seeded material has physicalQty=0");
+  return match;
+}

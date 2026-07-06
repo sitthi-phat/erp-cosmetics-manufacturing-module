@@ -1,16 +1,73 @@
-# Verify Report — ERP Core Prototype — QA Phase 2 (Verify + Re-verify)
+# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3)
 
 - **slug**: `erp-core-prototype`
-- **วันที่**: เขียน 2026-07-07 (verify รอบแรก) — อัปเดต 2026-07-07 (re-verify หลัง Engineer แก้ defect ครบ 5 ตัว)
-- **เขียนโดย**: QA — Phase 2 (Verify + Re-verify)
+- **วันที่**: เขียน 2026-07-07 (verify รอบแรก) — อัปเดต 2026-07-07 (re-verify) — อัปเดต 2026-07-08 (verify-3,
+  รันกับ Docker/MySQL/browser จริงครบเป็นครั้งแรกในฐานะ QA)
+- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3)
 - **อ้างอิง**: `docs/test-plans/erp-core-prototype/test-plan.md` (§9 มีสรุปย่อ), `docs/test-plans/erp-core-prototype/defects.md`
-  (defect list เต็ม พร้อมสถานะ Fixed/Partially Fixed ต่อ defect), `pipeline/status.json`
-  (entry `engineer` (defect-fix) ล่าสุด + entry `qa`/`phase: verify` + entry `qa`/`phase: re-verify`)
+  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัวรวม DEF-06..13), `pipeline/status.json`
+  (entry `devops` + entry `engineer` (`defect-fix-2`) ล่าสุด + entry `qa`/`phase: verify-3`)
 
 > จุดยืน: รายงานนี้บันทึกเฉพาะสิ่งที่ **รันจริง** ในสภาพแวดล้อมนี้เท่านั้น อะไรที่รันไม่ได้ (ไม่ว่าเพราะขาด
 > tooling หรือขาด environment) จะระบุไว้ชัดเจนว่า "ไม่ verify" ไม่ใช่ "ผ่าน"
-> **หมวด 0 ด้านล่างคือผล re-verify ล่าสุด (รอบสอง) — หมวด 1-6 ที่เหลือคือรายงานรอบแรกที่ยังเก็บไว้เพื่อ
-> traceability ว่าอะไรเปลี่ยนไปบ้าง**
+> **หมวด -1 ด้านล่างคือผล verify-3 ล่าสุด (รอบสาม, รันกับ MySQL/browser จริงครบเป็นครั้งแรก) — หมวด 0-6
+> ที่เหลือคือรายงานรอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับเวลา**
+
+---
+
+## -1. ผล Verify-3 (2026-07-08) — สถานะล่าสุด, รันกับ Docker/MySQL/browser จริงครบเป็นครั้งแรก
+
+### -1.1 บริบท
+DevOps มี environment จริงบนเครื่องนี้ (Docker Desktop ใช้งานได้จริง ต่างจาก sandbox ของ verify/re-verify
+รอบก่อน) ทำ setup จาก scratch สำเร็จ พบ 3 ประเด็นจากการรันจริงครั้งแรก: **DEF-06 (Critical, NumberSequence
+idempotency พัง), DEF-07 (Major, onboarding tour บังปุ่ม), DEF-08 (envelope contract ไม่ตรงกันระหว่าง spec
+ของ QA กับโค้ดจริง)**. Engineer แก้ DEF-06/07 ที่ root cause และตัดสิน DEF-08 (โค้ด Engineer ถูก ตาม
+architecture.md §6 ไม่ได้กำหนด success envelope) ส่งกลับให้ QA แก้ spec ทั้งหมดให้ตรง contract จริง
+
+### -1.2 งานที่ QA ทำรอบนี้ (verify-3)
+1. ยืนยัน DEF-06 อิสระด้วยตัวเอง: `npm run reset && npm run setup` บน Docker volume ใหม่ + reseed ซ้ำ 3
+   รอบ + raw SQL reproduction ผ่าน `docker exec mysql` เอง (ไม่ใช่แค่เชื่อรายงาน)
+2. ยืนยัน DEF-07 ผ่าน `npx playwright test roleMenuOnboarding.spec.ts` (3/3 ผ่าน)
+3. แก้ integration + concurrency spec **ทั้งหมด 17/17 ไฟล์** ให้ตรง response envelope/request field
+   name-type/seeded-ID resolution จริง (อ่าน `*.routes.ts`/`*.schema.ts` เป็น source of truth) เพิ่ม helper
+   resolve* ใน `tests/helpers/testClient.ts`
+4. แก้ e2e spec **5/6 ไฟล์** (roleMenuOnboarding ไม่ต้องแตะ) ให้ตรง flow จริง
+5. **พบ defect โค้ดจริงใหม่ 5 ตัวระหว่างแก้ spec** (ไม่ใช่แค่ spec เขียนผิด) — 1 Critical (DEF-09, stock
+   ledger ไม่ accuracy 100% ภายใต้ concurrency จริง — ตรงเงื่อนไข Gate 1 ที่สำคัญที่สุด) + 4 Major (DEF-10
+   PO ไม่เคย transition เป็น "Invoiced", DEF-11 antd Select แสดงเลขดิบแทน label ทุกจุดในระบบ, DEF-12
+   Finance เรียก GET /products ไม่ได้ทำให้ revise-invoice UI ใช้งานไม่ได้, DEF-13 VAT rate เกิน max ถูก
+   clamp เงียบๆ ไม่แจ้งเตือน)
+
+### -1.3 ตัวเลขรันจริงสุดท้าย
+
+| Suite | ผลลัพธ์ |
+|---|---|
+| `npm run test:unit` | **172 passed, 12 skipped, 0 failed, 28/30 suites** (ตรงกับที่ Engineer อ้าง) |
+| `RUN_DB_TESTS=1 npx jest --selectProjects integration` (17 ไฟล์, MySQL จริง) | **148 passed, 4 failed, 2 skipped, 154 total** (เป้า 154/154 ไม่ถึง — 4 failed = defect จริงใหม่ DEF-09/DEF-10) |
+| `npx playwright test` (19 test, 6 ไฟล์, browser+backend+MySQL จริงครบ) | **12 passed, 6 failed, 1 skipped, 19 total** (เป้า 19/19 ไม่ถึง — ขึ้นจาก 3/19 เดิม; 6 failed = DEF-11/12/13 + 3 รายการเปิดสอบสวนต่อ (OPEN-1/2/3) แต่นับเป็น fail ในรอบนี้) |
+| `tsc`/`eslint`/`vite build` | สะอาดหมด (ตรง) |
+
+### -1.4 สถานะ defect ล่าสุด (ดูรายละเอียดเต็มที่ defects.md)
+
+| ID | Severity | สถานะ |
+|---|---|---|
+| DEF-06 | Critical | **Fixed** — ยืนยันอิสระโดย QA (raw SQL, reseed x3, concurrency 100-way) |
+| DEF-07 | Major | **Fixed** — ยืนยันด้วย e2e จริง (roleMenuOnboarding 3/3) |
+| DEF-08 | Contract decision | **Resolved** — QA แก้ spec ครบ 17/17 integration + 5/6 e2e |
+| DEF-09 | **Critical (ใหม่)** | **Open** — stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง (ละเมิด NFR N1) |
+| DEF-10 | **Major (ใหม่)** | **Open** — PO ไม่เคย transition เป็น "Invoiced" |
+| DEF-11 | **Major (ใหม่)** | **Open** — antd Select แสดงเลขดิบแทน label ทุก dropdown |
+| DEF-12 | **Major (ใหม่)** | **Open** — Finance เรียก GET /products ไม่ได้ (revise-invoice ใช้งานไม่ได้จริง) |
+| DEF-13 | **Major (ใหม่)** | **Open** — VAT rate เกิน max ถูก clamp เงียบๆ ไม่แจ้งเตือน |
+| MIN-07/08 | Minor (ใหม่) | บันทึกไว้ ไม่ block |
+| OPEN-1/2/3 | ยังสรุปไม่ได้ | ต้องสอบสวนเพิ่มเติมรอบถัดไป |
+
+### -1.5 สถานะที่ตั้ง
+
+**FAILED** — พบ Critical defect ใหม่ 1 ตัว (DEF-09) และ Major defect ใหม่ 4 ตัว (DEF-10..13) จากการรันกับ
+MySQL/browser จริงแบบเจาะลึกเป็นครั้งแรก ตามกติกา Exit Gate ("เจอบั๊กโค้ดจริงใหม่ → FAILED") ส่งกลับ Engineer
+พร้อม defect list เต็มชุด — **ไม่ต้องแก้ DEF-06/07/08 ซ้ำ (ปิดแล้ว)** เน้นที่ DEF-09 (Critical, เร่งด่วนที่สุด
+เพราะเป็นเงื่อนไข Gate 1 โดยตรง) ตามด้วย DEF-10/11/12/13 (Major)
 
 ---
 
