@@ -24,8 +24,19 @@ export class PrismaSequenceExecutor implements SequenceExecutor {
   constructor(private readonly tx: Prisma.TransactionClient) {}
 
   async incrementAndGet(prefix: string, periodKey: string): Promise<bigint> {
+    // DEF-06 fix (DevOps verify, 2026-07-07): `VALUES (?, ?, 1)` alone only sets
+    // LAST_INSERT_ID() on the UPDATE branch - a brand-new (prefix, period_key) row takes the
+    // plain INSERT branch, which never calls LAST_INSERT_ID() at all, so the very first
+    // counter value for every new prefix read back as a STALE session value (0, or leftover
+    // from a different prefix on a pooled connection) instead of 1. Wrapping the literal in
+    // `LAST_INSERT_ID(1)` forces MySQL to evaluate (and set the session value from) that
+    // expression while attempting the INSERT itself, regardless of which branch ultimately
+    // applies - the UPDATE branch's own `LAST_INSERT_ID(counter + 1)` still runs afterwards
+    // and correctly overrides it when the row already existed. Verified against real MySQL by
+    // tests/integration/concurrency/numberSequence.spec.ts (no more duplicate/stale IDs on the
+    // first-ever insert of a prefix, with or without connection_limit=1).
     await this.tx.$executeRawUnsafe(
-      `INSERT INTO number_sequence (prefix, period_key, counter) VALUES (?, ?, 1)
+      `INSERT INTO number_sequence (prefix, period_key, counter) VALUES (?, ?, LAST_INSERT_ID(1))
        ON DUPLICATE KEY UPDATE counter = LAST_INSERT_ID(counter + 1)`,
       prefix,
       periodKey

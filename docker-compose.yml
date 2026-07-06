@@ -31,8 +31,8 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      # connection_limit=1: temporary workaround for DEF-06 (NumberSequence bug), see .env
-      DATABASE_URL: "mysql://erp:erp@mysql:3306/erp_core_prototype?connection_limit=1"
+      # DEF-06 resolved - no connection_limit workaround needed anymore, see .env
+      DATABASE_URL: "mysql://erp:erp@mysql:3306/erp_core_prototype"
     ports:
       - "4000:4000"
     depends_on:

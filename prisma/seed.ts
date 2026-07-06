@@ -52,7 +52,12 @@ const ROLE_DEFS = [
   { code: "QA", name: "QA/QC" },
   { code: "LO", name: "Logistics" },
   { code: "FI", name: "Finance" },
-  { code: "AD", name: "Admin" }
+  { code: "AD", name: "Admin" },
+  // ECP-034 AC3 demo fixture: a role that is intentionally left with ZERO permission rows
+  // (never appears in MATRIX/AD_EXTRA below) so the "role has no configured menu -> show a
+  // clear contact-Admin message, not a blank page" scenario has a real seeded account to log
+  // into (also referenced by tests/e2e/roleMenuOnboarding.spec.ts as `role_with_no_menu_demo`).
+  { code: "NM", name: "No Menu (demo)" }
 ] as const;
 
 // Permission matrix (architecture.md §7). AD gets every tuple below implicitly (added separately).
@@ -178,7 +183,8 @@ async function main(): Promise<void> {
     QA: "qc_demo",
     LO: "logistics_demo",
     FI: "finance_demo",
-    AD: "admin"
+    AD: "admin",
+    NM: "role_with_no_menu_demo"
   };
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
   const userByCode = new Map<string, { id: number }>();
@@ -198,6 +204,25 @@ async function main(): Promise<void> {
   }
   const adminUser = userByCode.get("AD")!;
   const financeUser = userByCode.get("FI")!;
+
+  // ECP-034 AC2 demo fixture: a plain Sales-role account that has never logged in before, for
+  // the "first-ever login shows an onboarding tooltip" scenario (referenced by
+  // tests/e2e/roleMenuOnboarding.spec.ts as `brand_new_user_demo`). Onboarding is actually
+  // triggered client-side per browser (localStorage), not per-account, but a dedicated account
+  // keeps the demo/test scenario self-explanatory and independent from the main sales_demo user.
+  {
+    const userId = await prisma.$transaction((tx) => nextNumberInTx(tx, "USER"));
+    await prisma.user.create({
+      data: {
+        userId,
+        username: "brand_new_user_demo",
+        fullName: "Brand New User Demo",
+        passwordHash,
+        roleId: roleByCode.get("SA")!.id,
+        status: "Active"
+      }
+    });
+  }
   const qcUser = userByCode.get("QA")!;
 
   console.log("[seed] VATConfig (7.00%)...");
