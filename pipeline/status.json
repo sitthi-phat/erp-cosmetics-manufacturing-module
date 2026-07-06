@@ -1424,6 +1424,78 @@
           "summary": "Gate 2 rework (rev.3) ภายใต้ architecture เดิม (ไม่ขอ Gate 1 ใหม่ - ปอนด์รอดูผลที่ Gate 2): สอบสวน root cause ของ 5 defect เดิมจากโค้ดจริงและระบุ task เจาะจง: A(ECP-004) PoCreatePage.tsx render 'product #{id} x {qty} @ {price}' + lines state เก็บแค่ productId ไม่มีปุ่มลบ->E24; B(ECP-007) StockPage.tsx ไม่มีช่องค้นหาเลย->E25; C(ECP-014) seed.ts ใช้ lotNumber=L-SEED-${material.id} (auto-increment id drift ข้าม reseed จึงไม่มี L-SEED-1 จริง) + trace.routes.ts exact-match ไม่มี fallback->E22(seed index 1-based)+E28(auto-detect); D(ECP-013) ProductionPage.tsx NumberField lotId ต้องพิมพ์ internal DB id ปอนด์พิมพ์ lot-number string จึง error->E27(auto-calc BOM+FIFO proposal); E(ECP-040) ไม่มี GET /invoices/:id/หน้า detail->E30. เพิ่ม scope ใหม่: CompanyProfile singleton, Customer tax_id/registered_address, Invoice discount_amount+document_snapshot, Lot supplier_name, QCInspection.lot_id XOR batch_id (ER delta §13.2); BOM Management CRUD in-place (E26); production material-plan FIFO endpoint (§13.3.2); trace single-search auto-detect Lot/Batch/PO/Invoice + legend (§13.3.1); Thai tax-invoice print. การตัดสินใจสำคัญ->ADR-009: print = React print view + CSS @media print (browser print->Save as PDF) ไม่ใช่ server PDF (กัน puppeteer/chromium dependency หนัก + คง GCP portability), snapshot ผู้ออก/ลูกค้าลง Invoice.document_snapshot (เอกสารเก่าไม่เปลี่ยนย้อนหลัง), thaiBahtText pure fn ใน src/shared (unit test อิสระ 0->ศูนย์บาทถ้วน). แก้ architecture.md (§13 delta: ER/API/permission/seed/print/responsive), tasks.md (E22-E33 Engineer + Q8-Q11 QA, ระบุชัด task ไหน DEFECT/NEW + Story->Task table). ทุก story map เข้า task, ทุก AC assign test level, ทุกการตัดสินใจสำคัญมี ADR, DevOps ได้ภาพ (D6/D7), ไม่ขัด ADR เดิม, ไม่มีจุดที่ Engineer ต้องเดา. Gate 1 approve แล้ว (ยังมีผล) -> ตั้ง READY_FOR_ENGINEER ให้ Engineer/QA เริ่มขนานกัน",
           "overridden_by": null,
           "updated_at": "2026-07-07T13:30:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "gate2-test-plan",
+          "status": "READY_FOR_ENGINEER",
+          "gate_checklist": [
+            {
+              "item": "Traceability matrix for all Gate 2 Round 2 AC (new/changed: ECP-001/002/004/007/008/013/014/017/020/039/040/041/042/043/044) -> TC IDs, level (U/I/E/M), automatable Y/P/N with reasons, added to test-plan.md section 10",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Q8 unit specs written (6 files): thaiBahtText, invoice discount math, trace auto-detect, FIFO allocation, BOM validation, tax_id validation - all written against architecture.md rev.3 §13 / ADR-009 contract since E22-E33 code was in progress at write time",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Q9 integration specs written (9 files): customer tax fields + snapshot, BOM CRUD, production material-plan + FIFO + re-validation, trace auto-detect across all 4 entry points, invoice discount + detail view, CompanyProfile admin, invoice document assembly + snapshot immutability, goods-receipt supplier_name, RBAC delta matrix sweep",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Q10 e2e regression guard written (1 file, gate2RegressionGuard.spec.ts) covering all 5 of pond's reported defects (A: PO line display+delete, B: stock search, C: trace L-SEED-1 + legend, D: production auto-calc+FIFO no manual lot typing, E: invoice detail+print preview) plus a BOM management smoke flow",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Q11 automated responsive e2e written (1 file, responsiveGate2.spec.ts: desktop/tablet portrait+landscape/rotation-preserves-form-state/min-safety-under-768) + Q11 manual Thai UAT script written for pond to run at Gate 2 (print fidelity side-by-side comparison, tablet finger-usability, UI-consistency visual review - explicitly marked non-automatable with reasons in test-plan.md §10.1/§10.2)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Sanity-verified new unit specs actually execute against real code where it already exists (not just written blind): thaiBahtText.spec.ts (13 tests), invoiceDiscount.spec.ts (8 tests), taxIdValidation.spec.ts (8 tests) all PASS against Engineer's already-landed E23/E30/E32 partial work - confirms contract assumptions were accurate for those 3; bomValidation/traceAutoDetect/fifoAllocation correctly fail with module-not-found (expected, E26/E27/E28 not landed yet)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Known gaps documented transparently in test-plan.md §10.4 rather than hidden: ECP-004 AC5 (delete-line-after-confirm guard) has no dedicated integration test yet, ECP-039 AC3 confirm-dialog UX not e2e-tested, customerTaxFields.spec.ts snapshot test is a structural placeholder (full proof lives in invoiceDocument.spec.ts instead)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No production code under src/ modified; no git commands used; existing Q1-Q7 spec files and pipeline history entries left untouched (Engineer's entry for this phase preserved, only appended after it)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/test-plan.md",
+            "docs/test-plans/erp-core-prototype/uat-print-responsive-script.md",
+            "tests/unit/thaiBahtText.spec.ts",
+            "tests/unit/invoiceDiscount.spec.ts",
+            "tests/unit/traceAutoDetect.spec.ts",
+            "tests/unit/fifoAllocation.spec.ts",
+            "tests/unit/bomValidation.spec.ts",
+            "tests/unit/taxIdValidation.spec.ts",
+            "tests/integration/customerTaxFields.spec.ts",
+            "tests/integration/bom.spec.ts",
+            "tests/integration/productionMaterialPlan.spec.ts",
+            "tests/integration/traceAutoDetect.spec.ts",
+            "tests/integration/invoiceDiscountDetail.spec.ts",
+            "tests/integration/companyProfile.spec.ts",
+            "tests/integration/invoiceDocument.spec.ts",
+            "tests/integration/goodsReceiptSupplier.spec.ts",
+            "tests/integration/rbacGate2.spec.ts",
+            "tests/e2e/gate2RegressionGuard.spec.ts",
+            "tests/e2e/responsiveGate2.spec.ts"
+          ],
+          "questions_for_pond": [],
+          "summary": "เขียน test-plan Gate 2 Round 2 ครบ Q8-Q11: traceability matrix สำหรับ AC ใหม่/แก้ทั้งหมด, unit spec 6 ไฟล์ + integration spec 9 ไฟล์ + e2e spec 2 ไฟล์ (regression guard 5 defect + responsive) + manual UAT script ภาษาไทย 1 ไฟล์สำหรับปอนด์ (print fidelity/responsive/UI consistency ที่ automate ไม่ได้). ยืนยันแล้วว่า spec 3 ไฟล์ (thaiBahtText/invoiceDiscount/taxIdValidation) รันผ่านจริงกับโค้ดที่ Engineer ทำเสร็จไปแล้วบางส่วน (E23/E30/E32) ยืนยันว่า contract ที่เขียนตรงกับ implementation จริง. ระบุ gap ที่ยังไม่ได้เขียนไว้ตรงๆ ใน §10.4. พบ observation ระหว่างทาง (ไม่ใช่ defect, เพราะ Engineer ยังทำงานไม่เสร็จ): tests/unit/invoiceVat.spec.ts (ไฟล์เดิมจาก Q1) เริ่ม fail เพราะ computeInvoiceAmounts เรียก validateDiscount ภายในแล้วตอนนี้ (WIP ของ E30) ทำให้ observation-test เดิมเกี่ยวกับ negative unit_price พังไปด้วย - ไม่ได้แก้เพราะไม่ใช่ของฉันจะแตะ src/ และ Engineer ยังไม่ประกาศเสร็จ แจ้งไว้เป็นสัญญาณเริ่มต้นให้ verify-phase ระวัง ไม่ block งานเขียน test-plan รอบนี้.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T23:00:00+07:00"
         }
       ]
     }

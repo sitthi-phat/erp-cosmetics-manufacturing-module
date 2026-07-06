@@ -1,0 +1,142 @@
+/**
+ * Q9 — Integration: Trace auto-detect via the single new `GET /trace?q=<term>` endpoint
+ * (ECP-014 AC1/AC2/AC4/AC5, architecture.md §13.3.1). Additive to the existing
+ * `tests/integration/traceability.spec.ts` (already green, tests the pre-Gate-2 `?lot=` param
+ * specifically) — this file is Gate 2 ONLY: the new single-box `?q=` param that must
+ * auto-detect Lot/Batch/PO/Invoice from the SAME free-text input, per feedback item 3.
+ *
+ * IMPORTANT KNOWN RISK FLAGGED FOR VERIFY (see test-plan.md Gate 2 Round 2 section): the existing
+ * traceability.spec.ts computes its lot number as `L-SEED-${materialId}` (the OLD, pre-fix seed
+ * naming convention). Once E22 lands (seed lot_number becomes the 1-based loop index
+ * `L-SEED-1..N`, the actual root-cause fix for defect C), that OLD test's hardcoded
+ * reconstruction may no longer match a real lot for every materialId. QA does not modify that
+ * file preemptively (parallel-phase policy: don't guess/rewrite code that isn't confirmed broken
+ * yet) — flagging here so verify-phase QA checks it first, alongside this new file.
+ *
+ * CONTRACT ASSUMPTION (E28 not implemented yet at spec-writing time): `GET /trace?q=<term>`
+ * returns the same response envelope shape as the existing `?lot=` endpoint
+ * (`{data:[{lotId, lotNumber, materialName, batches:[...]}]}`), auto-detecting entry type
+ * per §13.3.1, and resolving to the SAME full chain regardless of which node you searched from.
+ * The legacy `?lot=` param must keep working unchanged (explicit backward-compat requirement).
+ */
+import {
+  loginAs,
+  resetSeed,
+  resolveCustomer,
+  resolveProductWithBom,
+} from "../helpers/testClient";
+import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
+
+describe("Trace auto-detect via ?q= (ECP-014 AC1/AC2/AC4/AC5)", () => {
+  let poNumber: string;
+  let batchNumber: string;
+  let invoiceNumber: string;
+  let lotNumber: string;
+
+  beforeAll(async () => {
+    await resetSeed();
+    const sales = await loginAs(SEED_USERS.sales.username, DEFAULT_PASSWORD);
+    const production = await loginAs(SEED_USERS.production.username, DEFAULT_PASSWORD);
+    const warehouse = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const qc = await loginAs(SEED_USERS.qc.username, DEFAULT_PASSWORD);
+    const logistics = await loginAs(SEED_USERS.logistics.username, DEFAULT_PASSWORD);
+    const finance = await loginAs(SEED_USERS.finance.username, DEFAULT_PASSWORD);
+    const me = await production.get("/api/v1/auth/me");
+    const productionUserId = me.body.data.id;
+    const customerId = (await resolveCustomer(sales)).id;
+    const productId = (await resolveProductWithBom(sales)).id;
+    const bom = await sales.get(`/api/v1/products/${productId}/bom`);
+    const bomMaterialId = bom.body.data.lines[0].materialId;
+
+    lotNumber = `L-QTRACE-TEST-${Date.now()}`;
+    const receipt = await warehouse
+      .post("/api/v1/stock/receipts")
+      .send({ materialId: bomMaterialId, quantity: 100, lotNumber });
+    const lotId = receipt.body.data.lotId;
+    await qc.post(`/api/v1/qc/lots/${lotId}/inspect`).send({ result: "Passed" });
+
+    const draft = await sales.post("/api/v1/pos").send({
+      customerId,
+      requestedDeliveryDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+      lines: [{ productId, quantity: 1, unitPrice: 100, uom: "unit" }],
+    });
+    poNumber = draft.body.data.poNumber;
+    await sales.post(`/api/v1/pos/${draft.body.data.id}/confirm`);
+    const poLineId = draft.body.data.lines[0].id;
+
+    const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
+    const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
+      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: 5 }],
+      producedQty: 1,
+    });
+    batchNumber = produced.body.data.batchNumber;
+    await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved" });
+
+    await logistics.post("/api/v1/shipments").send({
+      batchId: produced.body.data.id,
+      shippedDate: new Date().toISOString().slice(0, 10),
+    });
+
+    const invoiceRes = await finance.post(`/api/v1/pos/${draft.body.data.id}/invoice`).send({
+      lines: [{ productId, description: "รายการสินค้า", quantity: 1, unitPrice: 100 }],
+    });
+    // Real field is `invoiceNo` (confirmed via src/backend/modules/invoice/invoice.routes.ts),
+    // NOT `invoiceNumber` - corrected from an earlier guess before checking ground truth.
+    invoiceNumber = invoiceRes.body.data.invoiceNo;
+  });
+
+  test("TC-Q9-TRACEQ-01 (ECP-014 AC1, regression guard defect C): searching the exact Lot number returns the full chain, not a not-found error", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: lotNumber });
+    expect(res.status).toBe(200);
+    const entry = res.body.data.find((l: any) => l.lotNumber === lotNumber);
+    expect(entry).toBeDefined();
+  });
+
+  test("TC-Q9-TRACEQ-02 (ECP-014 AC2, auto-detect from Batch number): searching by the Batch number resolves back to the SAME lot/chain", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: batchNumber });
+    expect(res.status).toBe(200);
+    const entry = res.body.data.find((l: any) => l.lotNumber === lotNumber);
+    expect(entry).toBeDefined();
+  });
+
+  test("TC-Q9-TRACEQ-03 (ECP-014 AC2, auto-detect from PO number): searching by the PO number resolves the SAME chain", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: poNumber });
+    expect(res.status).toBe(200);
+    const entry = res.body.data.find((l: any) => l.lotNumber === lotNumber);
+    expect(entry).toBeDefined();
+  });
+
+  test("TC-Q9-TRACEQ-04 (ECP-014 AC2, auto-detect from Invoice number): searching by the Invoice number resolves the SAME chain", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: invoiceNumber });
+    expect(res.status).toBe(200);
+    const entry = res.body.data.find((l: any) => l.lotNumber === lotNumber);
+    expect(entry).toBeDefined();
+  });
+
+  test("TC-Q9-TRACEQ-05 (ECP-014 AC5, exact message): a query matching no known type/record returns a friendly message, not a 500", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: "TOTALLY-UNRELATED-GARBAGE-999" });
+    expect([200, 404]).toContain(res.status);
+    if (res.status === 404) {
+      expect(res.body.error.message).toMatch(/ไม่พบข้อมูลที่ตรงกับคำค้นหา/);
+    } else {
+      expect(res.body.data).toEqual([]);
+    }
+  });
+
+  test("TC-Q9-TRACEQ-06 (backward compat, architecture.md §13.3.1 'คง ?lot= backward-compat'): the OLD ?lot= param still works after ?q= is added", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ lot: lotNumber });
+    expect(res.status).toBe(200);
+  });
+
+  test("exploratory: whitespace-padded query is trimmed before detection (architecture.md §13.3.1)", async () => {
+    const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
+    const res = await wh.get("/api/v1/trace").query({ q: `  ${lotNumber}  ` });
+    expect(res.status).toBe(200);
+  });
+});
