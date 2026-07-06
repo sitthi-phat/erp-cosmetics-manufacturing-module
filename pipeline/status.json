@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "po",
-      "status": "BLOCKED_NEED_INPUT",
+      "current_agent": "ba",
+      "status": "READY_FOR_BA",
       "human_gates": {
         "gate1_architecture": {"approved": false, "approved_at": null, "note": null},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
@@ -74,6 +74,24 @@
           "summary": "อ่าน raw requirement แล้ว flow หลัก (ลูกค้า→PO→stock→ผลิต→จัดส่ง→invoice + User Mgmt/audit log/dashboard) ชัดเจนในระดับภาพกว้าง แต่ยังขาดปัญหา/pain point ปัจจุบัน, ตัวเลข Business Key Value, และรายละเอียดขอบเขต (integration, roles, multi-company) จึงเขียน brief แบบร่างพร้อมข้อสมมติที่ระบุชัด และตั้ง BLOCKED_NEED_INPUT รอคำตอบปอนด์ 5 ข้อก่อนส่งต่อ BA",
           "overridden_by": null,
           "updated_at": "2026-07-06T16:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "status": "READY_FOR_BA",
+          "gate_checklist": [
+            {"item": "Business problem is concrete, not just 'we want system X'", "pass": true, "missing": null},
+            {"item": "At least 1 genuinely measurable Business Key Value", "pass": true, "missing": null},
+            {"item": "Definition of Done is complete, verifiable, unambiguous", "pass": true, "missing": null},
+            {"item": "Scope in/out both specified", "pass": true, "missing": null},
+            {"item": "บทบาทผู้ใช้หลักระบุครบ", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-core-prototype/brief.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "ปอนด์ตอบคำถามครบ 5 ข้อ (pain point = ไม่เคยมี ERP มาก่อน + ใช้ Excel/กระดาษแยกแผนก, เน้น stock real-time visibility เป็น value หลัก, mock data พอ ไม่เชื่อมระบบจริง, ครบ 7 roles รวม QA/QC พร้อม role config ง่าย, single company/THB) ปรับ brief เป็นฉบับสมบูรณ์: เพิ่มตาราง Business Key Value 5 ตัวชี้วัดพร้อม baseline/target ที่ PO เสนอ (ทำเครื่องหมาย ⚠ ข้อสมมติ รอปอนด์ยืนยัน), เติม role QA/QC และข้อกำหนด role config ได้ง่าย, เพิ่ม usability/self-navigation เป็นทั้ง Business Key Value และ DoD เนื่องจากผู้ใช้ไม่ชำนาญ user journey, ปรับ DoD ให้ verifiable ครบ gate ผ่านทุกข้อ ตั้งสถานะ READY_FOR_BA",
+          "overridden_by": null,
+          "updated_at": "2026-07-06T18:30:00+07:00"
         }
       ]
     }
