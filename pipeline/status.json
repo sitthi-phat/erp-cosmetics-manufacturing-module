@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "ba",
-      "status": "READY_FOR_TECHLEAD",
+      "current_agent": "tech-lead",
+      "status": "READY_FOR_ENGINEER",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -1353,6 +1353,77 @@
           "summary": "อัปเดต user-stories.md จาก 38 เป็น 44 stories (11 -> 14 epics) ตาม triage ของ PO ใน brief.md §'Gate 2 Feedback Round 1 — Scope Update' ครบทั้ง 10 feedback item: แก้ AC ของ 9 story เดิม (ECP-001 +AC5-7 tax fields, ECP-002 +AC4 tax_id snapshot, ECP-004 rewrite AC1+เพิ่ม AC2/AC5 line display/delete, ECP-007 +AC4-5 search, ECP-008 +AC4 supplier_name, ECP-013 rewrite ทั้ง story auto-calc จาก BOM+แก้ lot defect, ECP-014 rewrite ทั้ง story multi-type search+legend Lot vs Batch, ECP-017 ยกระดับ Could->Must +AC4, ECP-020 +AC4-5 discount_amount) และเพิ่ม 6 story ใหม่ (ECP-039 BOM Management UI CRUD in-place ไม่มี version history, ECP-040 ดูรายละเอียด invoice เดี่ยว แก้ defect 'เปิดดูไม่ได้', ECP-041 CompanyProfile Admin ตั้งค่าผู้ออกเอกสาร, ECP-042 พิมพ์เอกสารใบกำกับภาษีไทยเต็มรูปตามตัวอย่างที่ปอนด์แนบ incl. Thai baht text+ลายเซ็น 2 ช่อง, ECP-043 UI consistency scope-down เฉพาะ 8 หน้าที่แก้ไขรอบนี้, ECP-044 Responsive desktop/tablet scope-down) ทุก story ใหม่/แก้ไขมี ≥4 AC Given/When/Then ครอบคลุม happy/edge/error พร้อม priority+dependency ครบ อัปเดต mapping tables (scope->story เพิ่ม 6 แถวใหม่, DoD Round 2 ทั้ง 12 ข้อ->AC ใหม่) และ Data Rules (Customer tax_id/registered_address, Lot supplier_name, Invoice discount_amount, CompanyProfile entity ใหม่ singleton เหมือน VATConfig, QCInspection ขยายรองรับ lot_id สำหรับ incoming inspection แยกจาก batch_id) เพิ่ม section 'Changelog รอบ Gate 2 Round 1' พร้อมตาราง feedback->story mapping และจุดสังเกตสำหรับ Tech-Lead (ER ต้องเพิ่ม CompanyProfile, ขยาย Customer/Invoice/Lot, QCInspection รองรับ 2 ประเภท) มีข้อสมมติใหม่ 2 จุดที่ไม่ block (สิทธิ์แก้ไข BOM = ฝ่ายผลิต+Admin, tax_id ไม่บังคับตอนสร้างลูกค้าแต่บังคับก่อนพิมพ์ใบกำกับภาษี) ทำเครื่องหมาย ⚠ ชัดเจนในหัวข้อหมายเหตุเปิด ไม่มีคำถามใดต้อง block กลับปอนด์ในรอบนี้ (PO ตั้ง default ไว้ครบแล้วตาม brief) ตั้งสถานะ READY_FOR_TECHLEAD",
           "overridden_by": null,
           "updated_at": "2026-07-07T11:30:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "gate2-rework",
+          "status": "READY_FOR_ENGINEER",
+          "gate_checklist": [
+            {
+              "item": "ทุก story ใหม่/แก้รอบ Gate 2 (ECP-039-044 + ECP-001/002/004/007/008/013/014/017/020) map เข้า engineer task ครบ (story->task table §B)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "5 defect เดิมของปอนด์มี root-cause task เจาะจงจากโค้ดจริง: A=E24 (PoCreatePage render raw id), B=E25 (StockPage ไม่มี search), C=E22+E28 (seed L-SEED-${material.id} drift + trace exact-match), D=E27 (ProductionPage lotId=internal id), E=E30 (ไม่มี GET /invoices/:id)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ER delta ครบ: CompanyProfile (singleton), Customer.tax_id/registered_address, Invoice.discount_amount/document_snapshot, Lot.supplier_name, QCInspection.lot_id XOR batch_id (§13.2)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "print approach ตัดสินแล้ว: React print view + CSS @media print (browser print->PDF) ไม่ใช่ server PDF + snapshot document_snapshot + thaiBahtText pure fn -> ADR-009 ใหม่",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "trace auto-detect กติกา detect ชัด (regex ADR-006: Invoice/PO/Batch/Lot-fallback) + legend Lot vs Batch (§13.3.1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "production FIFO auto-calc ออกแบบ API + query (material-plan endpoint, received_date ASC, Passed-lot only, server re-validate Σ=required) (§13.3.2)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ทุก AC ใหม่/ที่แก้ถูก assign test approach (baht text/discount/FIFO/auto-detect/BOM->Q8, API/DB/RBAC/snapshot->Q9, regression 5 defect->Q10, print/responsive/UI consistency->Q11 + manual UAT)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "permission matrix delta ครบ (bom.view/manage, company_profile.manage, product.view, invoice.print, user.view_basic) + audit action ใหม่ (§13.4)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DevOps มีภาพ environment ครบ (D6/D7: migration E22 + seed rev.3 idempotent, ยืนยัน L-SEED-1 มีจริง, ไม่มี env ใหม่บังคับ เพราะ print เป็น client-side)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่ขัด ADR เดิม (ADR-009 ใหม่ต่อ ADR-008; ADR-006 นำมาใช้ไม่แก้; document_snapshot เดินตามหลัก vat_rate_applied) + ไม่ปิดทาง Phase 3 GCP (ไม่เพิ่ม server dependency หนัก)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี task ใดบังคับให้ Engineer เดา requirement (open items มี default ชัด + ป้าย UAT; ⚠ 2 ข้อสมมติ BOM permission/tax_id ระบุ default)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/adr/009-tax-invoice-printing.md",
+            "docs/design/erp-core-prototype/architecture.md",
+            "docs/design/erp-core-prototype/tasks.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Gate 2 rework (rev.3) ภายใต้ architecture เดิม (ไม่ขอ Gate 1 ใหม่ - ปอนด์รอดูผลที่ Gate 2): สอบสวน root cause ของ 5 defect เดิมจากโค้ดจริงและระบุ task เจาะจง: A(ECP-004) PoCreatePage.tsx render 'product #{id} x {qty} @ {price}' + lines state เก็บแค่ productId ไม่มีปุ่มลบ->E24; B(ECP-007) StockPage.tsx ไม่มีช่องค้นหาเลย->E25; C(ECP-014) seed.ts ใช้ lotNumber=L-SEED-${material.id} (auto-increment id drift ข้าม reseed จึงไม่มี L-SEED-1 จริง) + trace.routes.ts exact-match ไม่มี fallback->E22(seed index 1-based)+E28(auto-detect); D(ECP-013) ProductionPage.tsx NumberField lotId ต้องพิมพ์ internal DB id ปอนด์พิมพ์ lot-number string จึง error->E27(auto-calc BOM+FIFO proposal); E(ECP-040) ไม่มี GET /invoices/:id/หน้า detail->E30. เพิ่ม scope ใหม่: CompanyProfile singleton, Customer tax_id/registered_address, Invoice discount_amount+document_snapshot, Lot supplier_name, QCInspection.lot_id XOR batch_id (ER delta §13.2); BOM Management CRUD in-place (E26); production material-plan FIFO endpoint (§13.3.2); trace single-search auto-detect Lot/Batch/PO/Invoice + legend (§13.3.1); Thai tax-invoice print. การตัดสินใจสำคัญ->ADR-009: print = React print view + CSS @media print (browser print->Save as PDF) ไม่ใช่ server PDF (กัน puppeteer/chromium dependency หนัก + คง GCP portability), snapshot ผู้ออก/ลูกค้าลง Invoice.document_snapshot (เอกสารเก่าไม่เปลี่ยนย้อนหลัง), thaiBahtText pure fn ใน src/shared (unit test อิสระ 0->ศูนย์บาทถ้วน). แก้ architecture.md (§13 delta: ER/API/permission/seed/print/responsive), tasks.md (E22-E33 Engineer + Q8-Q11 QA, ระบุชัด task ไหน DEFECT/NEW + Story->Task table). ทุก story map เข้า task, ทุก AC assign test level, ทุกการตัดสินใจสำคัญมี ADR, DevOps ได้ภาพ (D6/D7), ไม่ขัด ADR เดิม, ไม่มีจุดที่ Engineer ต้องเดา. Gate 1 approve แล้ว (ยังมีผล) -> ตั้ง READY_FOR_ENGINEER ให้ Engineer/QA เริ่มขนานกัน",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T13:30:00+07:00"
         }
       ]
     }
