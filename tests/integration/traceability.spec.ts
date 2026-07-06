@@ -3,22 +3,29 @@
  * Endpoint per src/backend/modules/stock/trace.routes.ts (ground truth, DEF-08): GET /trace?lot=...
  * Response envelope: `{ data: [{lotId, lotNumber, materialName, batches: [...]}] }` (an array, one
  * entry per Lot row matching that lot number - NOT a flat `{batches, finishedGoods, relatedPOs}`
- * object). Seed lot numbers follow the pattern `L-SEED-<materialId>` (prisma/seed.ts), not
- * `L2026-001`/`L2026-REUSED`/etc placeholders which do not exist in the real seed data.
+ * object).
+ *
+ * RECONCILED (QA gate2-verify): the OLD `seedLotNumber = L-SEED-${materialId}` naming assumption
+ * is now STALE post-defect-C-fix (E22): seed lot_number is now a 1-based LOOP INDEX across all
+ * seeded lots (`L-SEED-1..N`), not tied to any specific material's own database id - this was
+ * flagged as a known risk in tests/integration/traceAutoDetect.spec.ts's own header comment before
+ * it was ever confirmed broken. `L-SEED-1` is guaranteed to exist deterministically after every
+ * reseed (E22 DoD, confirmed idempotent 3x by Engineer/DevOps) and corresponds to the first
+ * material seeded - hardcoded directly instead of reconstructing it from a materialId that may no
+ * longer line up with the loop index.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveMaterials, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveMaterials, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 
 describe("Traceability (Epic 4, ECP-014)", () => {
   let materialId: number;
-  let seedLotNumber: string;
+  const seedLotNumber = "L-SEED-1"; // deterministic per E22 (defect C root-cause fix)
 
   beforeAll(async () => {
     await resetSeed();
     const wh = await loginAs(SEED_USERS.warehouse.username, DEFAULT_PASSWORD);
     const materials = await resolveMaterials(wh);
     materialId = materials[0].id;
-    seedLotNumber = `L-SEED-${materialId}`; // matches prisma/seed.ts's naming convention exactly
   });
 
   test("TC-014-AC1: full chain lot -> batch -> finished goods -> PO resolves within 5 minutes (measured well under in an automated run)", async () => {
@@ -50,14 +57,22 @@ describe("Traceability (Epic 4, ECP-014)", () => {
     const productId = (await resolveProductWithBom(sales)).id;
     const bom = await sales.get(`/api/v1/products/${productId}/bom`);
     const bomMaterialId = bom.body.data.lines[0].materialId;
+    const bomQtyPerUnit = Number(bom.body.data.lines[0].qtyPerUnit);
 
     const reusedLotNumber = `L-REUSE-TEST-${Date.now()}`;
     const receipt = await warehouse
       .post("/api/v1/stock/receipts")
-      .send({ materialId: bomMaterialId, quantity: 100, lotNumber: reusedLotNumber });
+      .send({ materialId: bomMaterialId, quantity: 100000, lotNumber: reusedLotNumber }); // plenty for 2 draws
     const reusedLotId = receipt.body.data.lotId;
     await qc.post(`/api/v1/qc/lots/${reusedLotId}/inspect`).send({ result: "Passed" });
 
+    // RECONCILED (QA gate2-verify): using buildExactLotSelections() (the server's own FIFO
+    // proposal) here would be WRONG for this specific test - FIFO would draw from whatever OLDER
+    // lot the base seed already created for this material (received before this test even ran),
+    // never touching `reusedLotId` at all, defeating the entire point of this test (proving a
+    // SPECIFIC, KNOWN lot appears in multiple batches). Instead, explicitly force each produce()
+    // call to use `reusedLotId` with the EXACT BOM-required qty (qty_per_unit x plannedQty=1,
+    // since each PO line below orders quantity:1) so E27's re-validation still passes.
     async function produceOneBatch() {
       const draft = await sales.post("/api/v1/pos").send({
         customerId,
@@ -67,10 +82,13 @@ describe("Traceability (Epic 4, ECP-014)", () => {
       await sales.post(`/api/v1/pos/${draft.body.data.id}/confirm`);
       const poLineId = draft.body.data.lines[0].id;
       const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
-      await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-        lotSelections: [{ materialId: bomMaterialId, lotId: reusedLotId, qtyUsed: 5 }],
+      const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
+        lotSelections: [{ materialId: bomMaterialId, lotId: reusedLotId, qtyUsed: bomQtyPerUnit * 1 }],
         producedQty: 10,
       });
+      if (produced.status !== 201) {
+        throw new Error(`produceOneBatch() failed (status ${produced.status}): ${JSON.stringify(produced.body)}`);
+      }
     }
     await produceOneBatch();
     await produceOneBatch();

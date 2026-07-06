@@ -10,7 +10,7 @@
  * overpaid case reports `status: "Overpaid"` (a distinct 4th state), not a boolean `overpaid`
  * field in the response body (only the `warnings` array mentions it, in Thai text).
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, fireConcurrently } from "../../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, fireConcurrently, buildExactLotSelections } from "../../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../../helpers/fixtures";
 import request from "supertest";
 
@@ -59,8 +59,10 @@ describe("Payment <-> invoice-version reconciliation races (§5.5)", () => {
       lotNumber: `LOT-PAYVER-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     });
     await qc.post(`/api/v1/qc/lots/${receipt.body.data.lotId}/inspect`).send({ result: "Passed" });
+    // RECONCILED (QA gate2-verify): E27 quantity re-validation - use the server's own exact FIFO split.
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId: receipt.body.data.lotId, qtyUsed: 1 }],
+      lotSelections,
       producedQty: quantity,
     });
     await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved" });

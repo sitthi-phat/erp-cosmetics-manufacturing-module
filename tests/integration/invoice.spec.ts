@@ -11,7 +11,7 @@
  * No seeded PO/invoice fixtures exist under placeholder names - every scenario builds its own
  * real PO -> Confirm -> Assign -> Produce -> QC Approve -> Ship -> Invoice chain first.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
 
@@ -61,8 +61,12 @@ describe("Invoice & Payment module (Epic 7)", () => {
       lotNumber: `LOT-INV-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     });
     await qc.post(`/api/v1/qc/lots/${receipt.body.data.lotId}/inspect`).send({ result: "Passed" });
+    // RECONCILED (QA gate2-verify): E27 (ECP-013 AC5) added server-side re-validation on produce()
+    // that rejects a qtyUsed under-supplying the real BOM requirement - the old hardcoded
+    // qtyUsed:1 no longer passes. Use the server's own FIFO-computed exact split instead.
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId: receipt.body.data.lotId, qtyUsed: 1 }],
+      lotSelections,
       producedQty: quantity,
     });
     await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved" });

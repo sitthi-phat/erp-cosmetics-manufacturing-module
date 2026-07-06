@@ -78,8 +78,16 @@ async function buildInvoicedPo(api: APIRequestContext) {
   await api.post(`${API_BASE_URL}/api/v1/qc/lots/${receipt.data.lotId}/inspect`, { data: { result: "Passed" } });
 
   await loginAs("production_demo"); // switch back - produce needs production.produce, not qc's permissions
+  // RECONCILED (QA gate2-verify): E27's server-side re-validation (ECP-013 AC5) rejects a
+  // qtyUsed that doesn't cover the real BOM-required amount - the old hardcoded `qtyUsed: 1` is
+  // an under-supply for almost any real qty_per_unit x plannedQty(100). Pull the server's own
+  // FIFO-computed exact plan instead of guessing a placeholder number.
+  const planRes = await (await api.get(`${API_BASE_URL}/api/v1/production/${assigned.data.id}/material-plan`)).json();
+  const lotSelections = planRes.data.flatMap((line: any) =>
+    line.proposedLots.map((l: any) => ({ materialId: line.materialId, lotId: l.lotId, qtyUsed: l.allocQty }))
+  );
   const producedRes = await api.post(`${API_BASE_URL}/api/v1/production/${assigned.data.id}/produce`, {
-    data: { lotSelections: [{ materialId, lotId: receipt.data.lotId, qtyUsed: 1 }], producedQty: 100 },
+    data: { lotSelections, producedQty: 100 },
   });
   const produced = await producedRes.json();
 

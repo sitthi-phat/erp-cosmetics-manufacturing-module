@@ -12,7 +12,7 @@
  * to `lines`, and a new `GET /invoices/:id` returns `{data:{...invoice, discountAmount, lines:[...],
  * customer:{...}, payments:[...]}}`. TODO(verify, when E30 lands): reconcile field names/shape.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
 
@@ -63,8 +63,12 @@ describe("Invoice discount (ECP-020 AC4/AC5) + detail view (ECP-040)", () => {
       lotNumber: `LOT-DISC-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     });
     await qc.post(`/api/v1/qc/lots/${receipt.body.data.lotId}/inspect`).send({ result: "Passed" });
+    // RECONCILED (QA gate2-verify): E27 (ECP-013 AC5) added server-side re-validation on produce()
+    // that rejects a qtyUsed under-supplying the real BOM requirement - use the server's own
+    // FIFO-computed exact split instead of the old hardcoded qtyUsed:1.
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId: receipt.body.data.lotId, qtyUsed: 1 }],
+      lotSelections,
       producedQty: quantity,
     });
     await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved" });

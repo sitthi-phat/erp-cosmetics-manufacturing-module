@@ -5,19 +5,23 @@
  * specifically) — this file is Gate 2 ONLY: the new single-box `?q=` param that must
  * auto-detect Lot/Batch/PO/Invoice from the SAME free-text input, per feedback item 3.
  *
- * IMPORTANT KNOWN RISK FLAGGED FOR VERIFY (see test-plan.md Gate 2 Round 2 section): the existing
- * traceability.spec.ts computes its lot number as `L-SEED-${materialId}` (the OLD, pre-fix seed
- * naming convention). Once E22 lands (seed lot_number becomes the 1-based loop index
- * `L-SEED-1..N`, the actual root-cause fix for defect C), that OLD test's hardcoded
- * reconstruction may no longer match a real lot for every materialId. QA does not modify that
- * file preemptively (parallel-phase policy: don't guess/rewrite code that isn't confirmed broken
- * yet) — flagging here so verify-phase QA checks it first, alongside this new file.
+ * RESOLVED (QA gate2-verify): the risk flagged here about traceability.spec.ts's stale
+ * `L-SEED-${materialId}` pattern was confirmed real once E27/E28 landed - fixed directly in that
+ * file (hardcoded to the deterministic `L-SEED-1`, per E22's actual root-cause fix).
  *
  * CONTRACT ASSUMPTION (E28 not implemented yet at spec-writing time): `GET /trace?q=<term>`
  * returns the same response envelope shape as the existing `?lot=` endpoint
  * (`{data:[{lotId, lotNumber, materialName, batches:[...]}]}`), auto-detecting entry type
  * per §13.3.1, and resolving to the SAME full chain regardless of which node you searched from.
  * The legacy `?lot=` param must keep working unchanged (explicit backward-compat requirement).
+ *
+ * RECONCILED (QA gate2-verify, real-run bug found in this file's OWN setup): originally used
+ * buildExactLotSelections() (the server's FIFO proposal) to produce the batch in beforeAll - but
+ * FIFO can legitimately draw from an OLDER seed-created lot instead of THIS test's own freshly
+ * received lot, which then never appears in the resulting Batch/PO/Invoice's trace chain at all
+ * (breaking TC-Q9-TRACEQ-02/03/04, which all search BY that chain and expect to find `lotNumber`
+ * in it). Fixed by forcing produce() to use this specific lot explicitly, with its exact
+ * BOM-required qty, instead of leaving the choice to FIFO.
  */
 import {
   loginAs,
@@ -47,11 +51,12 @@ describe("Trace auto-detect via ?q= (ECP-014 AC1/AC2/AC4/AC5)", () => {
     const productId = (await resolveProductWithBom(sales)).id;
     const bom = await sales.get(`/api/v1/products/${productId}/bom`);
     const bomMaterialId = bom.body.data.lines[0].materialId;
+    const bomQtyPerUnit = Number(bom.body.data.lines[0].qtyPerUnit);
 
     lotNumber = `L-QTRACE-TEST-${Date.now()}`;
     const receipt = await warehouse
       .post("/api/v1/stock/receipts")
-      .send({ materialId: bomMaterialId, quantity: 100, lotNumber });
+      .send({ materialId: bomMaterialId, quantity: 100000, lotNumber });
     const lotId = receipt.body.data.lotId;
     await qc.post(`/api/v1/qc/lots/${lotId}/inspect`).send({ result: "Passed" });
 
@@ -65,10 +70,18 @@ describe("Trace auto-detect via ?q= (ECP-014 AC1/AC2/AC4/AC5)", () => {
     const poLineId = draft.body.data.lines[0].id;
 
     const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
+    // RECONCILED (QA gate2-verify): buildExactLotSelections() (server's own FIFO proposal) would
+    // be WRONG here - it could draw from an OLDER seed-created lot instead of the SPECIFIC lot
+    // this whole test needs to search for by number afterward, defeating the point. Force the
+    // produce() call to use THIS lot explicitly, with the exact BOM-required qty (qty_per_unit x
+    // plannedQty=1, matching this PO line's quantity:1) so E27's re-validation still passes.
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: 5 }],
+      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: bomQtyPerUnit * 1 }],
       producedQty: 1,
     });
+    if (produced.status !== 201) {
+      throw new Error(`beforeAll produce() failed (status ${produced.status}): ${JSON.stringify(produced.body)}`);
+    }
     batchNumber = produced.body.data.batchNumber;
     await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved" });
 

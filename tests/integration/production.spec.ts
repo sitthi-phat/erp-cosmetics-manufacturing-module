@@ -9,9 +9,17 @@
  *   "Passed" inspection in this file, since there is no `GET /lots` listing endpoint to discover
  *   seed-generated lot ids).
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
+
+// RECONCILED (QA gate2-verify): E27 (ECP-013 AC5) added server-side re-validation on produce()
+// that rejects a lotSelections total that doesn't cover the real BOM-required qty for that
+// material (currently under-only, see defects.md PENDING-POND-1). The old hardcoded
+// qtyUsed:50/30/20/10 values below no longer reliably match the real requiredQty (qtyPerUnit x
+// plannedQty) of whatever product/BOM the seed happens to have - tests now either derive the
+// exact figure from the BOM directly, or use buildExactLotSelections() (testClient.ts) to pull
+// the server's own FIFO-computed exact split.
 
 function tomorrow(offsetDays = 1) {
   return new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
@@ -48,14 +56,19 @@ describe("Production module (Epic 4)", () => {
     // Explicit empty-state COPY is a frontend concern (ProductionPage.tsx emptyText), not this API.
   });
 
-  async function createConfirmedPo(requestedDeliveryDate: string) {
+  async function createConfirmedPo(requestedDeliveryDate: string, quantity = 1) {
     const draft = await sales.post("/api/v1/pos").send({
       customerId,
       requestedDeliveryDate,
-      lines: [{ productId, quantity: 1, unitPrice: 100, uom: "unit" }],
+      lines: [{ productId, quantity, unitPrice: 100, uom: "unit" }],
     });
     await sales.post(`/api/v1/pos/${draft.body.data.id}/confirm`);
     return draft.body.data;
+  }
+
+  async function allBomLines() {
+    const bom = await sales.get(`/api/v1/products/${productId}/bom`);
+    return bom.body.data.lines as Array<{ materialId: number; qtyPerUnit: number }>;
   }
 
   /** Fresh, QC-Passed lot for `productId`'s first BOM material, via a real goods receipt + QC
@@ -110,10 +123,11 @@ describe("Production module (Epic 4)", () => {
     const poLineId = po.lines[0].id;
     const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
     const materialId = await firstBomMaterialId();
-    const lotId = await receiveUsableLot(materialId, 100);
+    await receiveUsableLot(materialId, 100000); // plenty - a single lot fully covers whatever the real BOM requires
 
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId, lotId, qtyUsed: 50 }],
+      lotSelections,
       producedQty: 500,
     });
     expect(produced.status).toBe(201);
@@ -121,18 +135,42 @@ describe("Production module (Epic 4)", () => {
   });
 
   test("TC-013-AC2: multiple lots of the same material can be recorded against a single batch", async () => {
-    const po = await createConfirmedPo(tomorrow());
+    // RECONCILED (QA gate2-verify, 2 real-run findings):
+    // (1) plannedQty must come from the PO line's own quantity (createConfirmedPo now takes an
+    //     explicit `quantity` param, default 1 for every OTHER test in this file) - `producedQty`
+    //     in the produce() request body is a SEPARATE, independent field never used by the
+    //     server's requiredQty check.
+    // (2) prisma/seed.ts gives EVERY raw material ~1000 units of default stock already sitting in
+    //     an OLDER seed lot, which still wins FIFO priority over any "small" lot this test creates
+    //     unless the real requirement genuinely EXCEEDS that ~1000 default - a large PLANNED_QTY
+    //     is required to force a real 2-lot split, and every OTHER BOM line's material must be
+    //     topped up too (ECP-009's confirm-time stock check spans the WHOLE BOM, not just this
+    //     one material).
+    const materialId = await firstBomMaterialId();
+    const bomLines = await allBomLines();
+    for (const line of bomLines) {
+      if (line.materialId !== materialId) {
+        await receiveUsableLot(line.materialId, 10_000_000);
+      }
+    }
+    const qtyPerUnit = Number(bomLines.find((l) => l.materialId === materialId)!.qtyPerUnit);
+    const PLANNED_QTY = 1_000_000; // large enough that requiredQty >> the seed's default ~1000 stock
+    const required = qtyPerUnit * PLANNED_QTY;
+    // Deliberately size the FIRST lot smaller than the full requirement so FIFO is forced to draw
+    // from a 2nd lot too (this is what TC-013-AC2 actually wants to prove - a single produce()
+    // call can span >1 lot) - a lot alone big enough to cover `required` would make Engineer's
+    // greedy-FIFO allocator stop after just 1 lot, defeating the point of this test.
+    await receiveUsableLot(materialId, Math.max(required / 3, 0.001));
+    await receiveUsableLot(materialId, required * 2);
+
+    const po = await createConfirmedPo(tomorrow(), PLANNED_QTY);
     const poLineId = po.lines[0].id;
     const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
-    const materialId = await firstBomMaterialId();
-    const lot1 = await receiveUsableLot(materialId, 100);
-    const lot2 = await receiveUsableLot(materialId, 100);
 
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
+    expect(new Set(lotSelections.map((l) => l.lotId)).size).toBeGreaterThanOrEqual(2); // sanity: really did span >1 lot
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [
-        { materialId, lotId: lot1, qtyUsed: 30 },
-        { materialId, lotId: lot2, qtyUsed: 20 },
-      ],
+      lotSelections,
       producedQty: 500,
     });
     expect(produced.status).toBe(201);
@@ -162,18 +200,26 @@ describe("Production module (Epic 4)", () => {
     const poLineId = po.lines[0].id;
     const assigned = await production.post(`/api/v1/production/${poLineId}/assign`).send({ assignedTo: productionUserId });
     const materialId = await firstBomMaterialId();
+    const bom = await sales.get(`/api/v1/products/${productId}/bom`);
+    const qtyPerUnit = Number(bom.body.data.lines.find((l: any) => l.materialId === materialId).qtyPerUnit);
+    const producedQty = 100;
+    const required = qtyPerUnit * producedQty;
 
-    // A lot that is still "Pending" incoming QC (never inspected) must be rejected.
+    // A lot that is still "Pending" incoming QC (never inspected) must be rejected - qtyUsed is
+    // set to EXACTLY `required` (not an arbitrary placeholder like the old hardcoded 10) so this
+    // request passes E27's quantity re-validation and genuinely isolates the QC-status check this
+    // test is actually about; an insufficient qtyUsed would incorrectly fail on the quantity
+    // check first, masking the intended assertion below.
     const receipt = await warehouse.post("/api/v1/stock/receipts").send({
       materialId,
-      quantity: 100,
+      quantity: Math.max(required, 1),
       lotNumber: `LOT-PENDING-QC-${Date.now()}`,
     });
     const pendingLotId = receipt.body.data.lotId;
 
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId, lotId: pendingLotId, qtyUsed: 10 }],
-      producedQty: 100,
+      lotSelections: [{ materialId, lotId: pendingLotId, qtyUsed: required }],
+      producedQty,
     });
     expect([400, 409]).toContain(produced.status);
     expect(produced.body.error.message).toMatch(/ยังไม่ผ่านการตรวจสอบคุณภาพขาเข้า/);

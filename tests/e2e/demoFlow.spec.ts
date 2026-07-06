@@ -111,18 +111,16 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     // DEF-14 (to be filed) for the full reproduction.
     await selectAntdOption(page, "assign-worker-select", "Production Demo");
     await page.getByTestId("assign-confirm").click();
-    // No per-PO testid exists on the "assigned, awaiting produce" table (ProductionPage.tsx does
-    // not pass getRowTestId there) - best-effort: click the first (only, in a fresh demo run) row.
-    await page.getByTestId("produce-button").first().click();
 
-    // ProductionPage.tsx's "Lot ID" is a raw numeric NumberField the user must type directly (no
-    // lot-lookup UI exists) - resolve a REAL, QC-passed lot via the API first (mirrors the
-    // fixture-building pattern used in the integration specs) rather than guessing a hardcoded id.
-    // Goods receipt needs `stock.goods_receipt` (Warehouse only) and lot inspection needs
-    // `qc.inspect_incoming_lot` (QC only) - neither belongs to Production, whose session is what
-    // `page` is logged into for the actual UI steps - so both side-effect calls run through a
-    // fresh, isolated API request context instead of `page.request` (which shares the browser's
-    // cookies and would otherwise clobber the production_demo session).
+    // RECONCILED (QA gate2-verify, defect D root-cause fix confirmed correct): Production's raw
+    // numeric "Lot ID" NumberField no longer exists at all - it was deliberately REMOVED per E27
+    // (ECP-013 AC2), replaced by an auto-calculated material-plan (FIFO-proposed lots by LOT
+    // NUMBER, not internal id) that Production reviews and accepts with one click. Receive+QC-pass
+    // stock via an isolated side-effect context (Warehouse/QC permissions, not Production's own
+    // session) BEFORE opening the produce modal this time, so the material-plan query - which
+    // fires once when the modal opens - actually has real stock to propose instead of showing a
+    // shortfall (the old flow could get away with doing this AFTER opening the modal because it
+    // never depended on the plan being fresh; the new accept-in-one-click flow does).
     const sideEffectContext = await page.context().browser()!.newContext();
     await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/auth/login`, {
       data: { username: "warehouse_demo", password: "Password123!" },
@@ -131,7 +129,7 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     const materialsBody = await materialsRes.json();
     const firstMaterial = materialsBody.data[0]; // "น้ำมันมะพร้าว" - always has an active BOM line
     const receiptRes = await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/stock/receipts`, {
-      data: { materialId: firstMaterial.id, quantity: 100, lotNumber: `E2E-DEMOFLOW-${Date.now()}` },
+      data: { materialId: firstMaterial.id, quantity: 100000, lotNumber: `E2E-DEMOFLOW-${Date.now()}` },
     });
     const receiptBody = await receiptRes.json();
     await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/auth/login`, {
@@ -142,13 +140,14 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     });
     await sideEffectContext.close();
 
-    await selectAntdOption(page, "produce-lot-select-0", firstMaterial.name);
-    await page.getByTestId("lotId").fill(String(receiptBody.data.lotId));
-    await page.getByTestId("produce-lot-qty-0").fill("50");
-    // NOTE: the "+ เพิ่ม Lot" button has no explicit testId, so it defaults to the SHARED
-    // "form-submit" id (SubmitButton's default) - scope by the currently-open modal to avoid
-    // matching an unrelated submit button elsewhere on the page.
-    await page.getByRole("dialog").getByTestId("form-submit").click();
+    // No per-PO testid exists on the "assigned, awaiting produce" table (ProductionPage.tsx does
+    // not pass getRowTestId there) - best-effort: click the first (only, in a fresh demo run) row.
+    await page.getByTestId("produce-button").first().click();
+    // Material plan is auto-calculated from the BOM (ECP-013 AC1) - wait for it, then accept the
+    // system's proposed FIFO lot(s) verbatim in one click (ECP-013 AC2's happy path: "ยืนยันใช้
+    // Lot ที่เสนอ โดยไม่แก้ไข"), instead of the old manual per-line lot-id typing.
+    await expect(page.getByTestId("material-plan-table")).toBeVisible();
+    await page.getByTestId("accept-material-plan").click();
     await page.getByTestId("produce-output-qty").fill("500");
     await page.getByTestId("produce-submit").click();
     await expect(page.getByTestId("batch-number")).toBeVisible();

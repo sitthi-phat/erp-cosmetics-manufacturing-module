@@ -16,9 +16,18 @@
 import { test, expect, Page } from "@playwright/test";
 
 const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:5173";
+const API_BASE_URL = process.env.E2E_API_BASE_URL ?? "http://localhost:4000";
 
 async function login(page: Page, username: string, password = "Password123!") {
   await page.goto(`${BASE_URL}/login`);
+  // RECONCILED (QA gate2-verify, real-run finding): HomePage.tsx's first-login onboarding Tour
+  // (ECP-034 AC2) is tracked via a LOCALSTORAGE flag (`erp_onboarding_seen`), not a server-side
+  // per-user flag - every fresh Playwright browser context (the default, one per test) sees it as
+  // a "first ever login" and the Tour's footer buttons can end up positioned over nav items,
+  // intercepting clicks (`.ant-tour-footer` blocking `nav-po-create`/`nav-stock`, observed
+  // directly in a real run). This file is testing RESPONSIVE LAYOUT, not onboarding (that's
+  // roleMenuOnboarding.spec.ts's job) - pre-seed the flag so the tour never opens here at all.
+  await page.evaluate(() => localStorage.setItem("erp_onboarding_seen", "1"));
   await page.getByTestId("login-username").fill(username);
   await page.getByTestId("login-password").fill(password);
   await page.getByTestId("login-submit").click();
@@ -35,23 +44,37 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1); // +1px rounding tolerance
 }
 
-const GATE2_PAGES: Array<{ nav: string; role: string; name: string }> = [
-  { nav: "nav-po-create", role: "sales_demo", name: "PO create" },
-  { nav: "nav-stock", role: "warehouse_demo", name: "Stock" },
-  { nav: "nav-trace", role: "warehouse_demo", name: "Trace" },
-  { nav: "nav-production-queue", role: "production_demo", name: "Production" },
-  { nav: "nav-qc-incoming", role: "qc_demo", name: "QC incoming" },
-  { nav: "nav-bom-management", role: "production_demo", name: "BOM management" },
-  { nav: "nav-customer-list", role: "sales_demo", name: "Customer form" },
-  { nav: "nav-invoice-list", role: "finance_demo", name: "Invoice detail+print" },
+// RECONCILED (QA gate2-verify): nav testids corrected against the real useMenu.ts definitions -
+// nav-trace -> nav-traceability, nav-bom-management -> nav-bom, nav-customer-list -> nav-customers.
+// QC incoming has NO separate nav item (incoming inspection is a card on the SAME /qc page as
+// batch approval, QcPage.tsx) - reuses nav-qc-batches.
+// ALSO RECONCILED: "PO create" is NOT a direct menu item at all (confirmed via a real page
+// snapshot after a failed click - the left menu only has "คำสั่งซื้อ (PO)" i.e. nav-po-list; "+
+// สร้าง PO" is a button INSIDE that list page, same 2-step navigation demoFlow.spec.ts and
+// gate2RegressionGuard.spec.ts already use) - `navSteps` supports this multi-click path generically.
+const GATE2_PAGES: Array<{ navSteps: string[]; role: string; name: string }> = [
+  { navSteps: ["nav-po-list", "nav-po-create"], role: "sales_demo", name: "PO create" },
+  { navSteps: ["nav-stock"], role: "warehouse_demo", name: "Stock" },
+  { navSteps: ["nav-traceability"], role: "warehouse_demo", name: "Trace" },
+  { navSteps: ["nav-production-queue"], role: "production_demo", name: "Production" },
+  { navSteps: ["nav-qc-batches"], role: "qc_demo", name: "QC incoming" },
+  { navSteps: ["nav-bom"], role: "production_demo", name: "BOM management" },
+  { navSteps: ["nav-customers"], role: "sales_demo", name: "Customer form" },
+  { navSteps: ["nav-invoice-list"], role: "finance_demo", name: "Invoice detail+print" },
 ];
+
+async function navigateTo(page: Page, navSteps: string[]) {
+  for (const step of navSteps) {
+    await page.getByTestId(step).click();
+  }
+}
 
 test.describe("Responsive — desktop >=1366 (ECP-044 AC1)", () => {
   test.use({ viewport: { width: 1366, height: 900 } });
   for (const p of GATE2_PAGES) {
     test(`TC-Q11-RESP-DESKTOP: ${p.name} renders with no horizontal overflow at 1366px`, async ({ page }) => {
       await login(page, p.role);
-      await page.getByTestId(p.nav).click();
+      await navigateTo(page, p.navSteps);
       await expectNoHorizontalOverflow(page);
     });
   }
@@ -64,19 +87,43 @@ test.describe("Responsive — tablet 768-1024 portrait/landscape (ECP-044 AC2/AC
     test(`TC-Q11-RESP-TABLET-PORTRAIT: ${p.name} usable at 768x1024 portrait, no horizontal scroll`, async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
       await login(page, p.role);
-      await page.getByTestId(p.nav).click();
+      await navigateTo(page, p.navSteps);
       await expectNoHorizontalOverflow(page);
     });
 
     test(`TC-Q11-RESP-TABLET-LANDSCAPE: ${p.name} usable at 1024x768 landscape, no horizontal scroll`, async ({ page }) => {
       await page.setViewportSize({ width: 1024, height: 768 });
       await login(page, p.role);
-      await page.getByTestId(p.nav).click();
+      await navigateTo(page, p.navSteps);
       await expectNoHorizontalOverflow(page);
     });
   }
 
   test("TC-Q11-RESP-ROTATE (ECP-044 AC3): form data typed on the production 'record production' form survives a portrait->landscape rotation mid-fill", async ({ page }) => {
+    // RECONCILED (QA gate2-verify): the original test clicked "produce-button" blindly, assuming
+    // SOME assigned production order already existed on the shared dev DB - not guaranteed when
+    // this file runs standalone. Set up a real Assigned order via an isolated API context first
+    // (same pattern as gate2RegressionGuard.spec.ts's defect-D test), so this test is
+    // self-contained regardless of run order/what other files left behind.
+    const setup = await page.context().browser()!.newContext();
+    await setup.request.post(`${API_BASE_URL}/api/v1/auth/login`, { data: { username: "sales_demo", password: "Password123!" } });
+    const customers = await (await setup.request.get(`${API_BASE_URL}/api/v1/customers`, { params: { q: "ABC" } })).json();
+    const products = await (await setup.request.get(`${API_BASE_URL}/api/v1/products`)).json();
+    const product = products.data.find((p: any) => p.hasBom);
+    const draftRes = await setup.request.post(`${API_BASE_URL}/api/v1/pos`, {
+      data: {
+        customerId: customers.data[0].id,
+        requestedDeliveryDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+        lines: [{ productId: product.id, quantity: 1, unitPrice: 100, uom: "unit" }],
+      },
+    });
+    const draft = await draftRes.json();
+    await setup.request.post(`${API_BASE_URL}/api/v1/pos/${draft.data.id}/confirm`);
+    await setup.request.post(`${API_BASE_URL}/api/v1/auth/login`, { data: { username: "production_demo", password: "Password123!" } });
+    const me = await (await setup.request.get(`${API_BASE_URL}/api/v1/auth/me`)).json();
+    await setup.request.post(`${API_BASE_URL}/api/v1/production/${draft.data.lines[0].id}/assign`, { data: { assignedTo: me.data.id } });
+    await setup.close();
+
     await page.setViewportSize({ width: 768, height: 1024 });
     await login(page, "production_demo");
     await page.getByTestId("nav-production-queue").click();
@@ -93,7 +140,7 @@ test.describe("Responsive — <768 minimum safety only (ECP-044 AC4)", () => {
   for (const p of GATE2_PAGES) {
     test(`TC-Q11-RESP-MINSAFETY: ${p.name} at 480px does not lose its primary action button (full fidelity NOT required, only 'not unusable')`, async ({ page }) => {
       await login(page, p.role);
-      await page.getByTestId(p.nav).click();
+      await navigateTo(page, p.navSteps);
       // Not asserting layout beauty (out of scope per AC4/§13.6) - only that navigation itself
       // still worked and the page didn't crash/blank-screen at this small width.
       await expect(page.locator("body")).toBeVisible();

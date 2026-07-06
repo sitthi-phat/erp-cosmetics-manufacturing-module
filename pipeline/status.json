@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "engineer",
-      "status": "READY_FOR_QA_VERIFY",
+      "current_agent": "qa",
+      "status": "READY_FOR_DEVOPS",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -1655,6 +1655,110 @@
           "summary": "Implement ครบทั้ง 12 task E22-E33 ตาม tasks.md rev.3 (Gate 2 rework) รวม 44 ไฟล์ที่แก้/สร้างใหม่. สรุปแต่ละ task: E22 - schema delta (CompanyProfile ใหม่, Customer +taxId/registeredAddress, Invoice +discountAmount/documentSnapshot, Lot +supplierName, QCInspection.lotId XOR batchId) + migration ใหม่ (ไม่แก้ของเดิม) + แก้ root cause defect C (seed lot_number = index วนลูป 1-based แทน material.id ที่ drift ทุก reseed) ยืนยัน L-SEED-1 มีจริงหลัง reset+reseed 3 รอบ. E23 - customer tax fields validate 13 หลักผ่าน shared validator (ใช้ร่วมกับ CompanyProfile). E24 - แก้ root cause PO line แสดงชื่อสินค้าจริง (เก็บ productName ตอน addLine) + ปุ่มลบก่อน submit (local state) + DELETE endpoint ใหม่สำหรับลบบรรทัดหลัง PO ถูกสร้างแล้วแต่ยัง Draft. E25 - เพิ่มช่องค้นหา client-side filter. E26 - BOM module ใหม่เต็มรูปแบบ (CRUD in-place, validation 2 กติกา, permission ใหม่). E27 - material-plan endpoint คำนวณ requiredQty+FIFO proposal ตรง contract ของ QA เป๊ะ (unit test อิสระผ่าน 100%) + FE เปลี่ยนจาก raw NumberField Lot ID เป็น picker เลือกจาก lot number ที่ระบบเสนอ - **แต่ server-side re-validation ที่ produce ถูกผ่อนจาก exact-match เป็น under-only เพราะ exact-match ชนกับ fixture helper เกือบทั้งชุดเทสต์ (ดูคำถามด้านบน)**. E28 - trace auto-detect ผ่าน pure fn ตรง contract เป๊ะ (unit test ผ่าน 100%) + ?q= endpoint + legend UI ตอบคำถามปอนด์ตรงๆ. E29 - supplier_name capture + incoming QC form ใหม่ (ดึงข้อมูลอัตโนมัติ ไม่ต้องพิมพ์ raw lot id) + เพิ่มฟอร์ม goods-receipt ใหม่บน StockPage (ไม่เคยมี UI มาก่อนเลย). E30 - discount math + GET /invoices/:id แก้ root cause 'เปิดดูไม่ได้' ตรงๆ. E31 - CompanyProfile admin section เต็มรูปแบบ. E32 - thaiBahtText ผ่านทุก exact-string assertion ของ QA รวม worked example จริง + print view ครบทุกส่วนตามตัวอย่างปอนด์ (หัวสองภาษา+โลโก้, ผู้ออก/ลูกค้าจาก snapshot, ตาราง, สรุปยอด, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง, ตรายาง) + superseded watermark + block เมื่อไม่มี CompanyProfile/ลูกค้าไม่มี tax_id. E33 - ทำแบบเบา (ใช้ ui/ wrapper สม่ำเสมอใน 8 หน้าที่แตะ) ไม่ได้ทำ responsive/grid tuning เฉพาะทาง เนื่องจากเวลาจำกัดมาก - บันทึกเป็น gap ตรงๆ ไม่ปิดบัง. ตัวเลขจริงทั้งหมด: unit 233 passed/12 skipped/0 failed (35/37 suites) เขียวหมดรวมทุก spec ใหม่ของ Q8 (thaiBahtText/invoiceDiscount/taxIdValidation/bomValidation/fifoAllocation/traceAutoDetect ผ่าน 100% ตรง exact contract ของ QA); tsc/eslint/build สะอาด; `npm run reset && npm run setup` ผ่านบน fresh volume จริง 3 รอบ idempotent; integration 182 passed/30 failed/2 skipped จาก 214 (18/26 suites); e2e 22 passed/23 failed/1 skipped จาก 46 (QA เพิ่มไฟล์ใหม่ 2 ไฟล์ + แก้ 2 ไฟล์เดิม). **ประเด็นสำคัญที่ต้องแจ้ง**: (1) พบ genuine design tension ระหว่าง ECP-013 AC5 (exact-match required) กับวิธีที่ fixture helper เกือบทั้งชุดเทสต์ (เก่า+ใหม่) ถูกเขียน (qtyUsed คงที่ ไม่คำนวณจากสูตรจริง) - แก้ปัญหาเฉพาะหน้าด้วยการผ่อนเป็น under-only validation (ยังคงหลัก GMP สำคัญสุด) และตั้งคำถามกลับให้ยืนยันแนวทาง (2) e2e ใหม่ 2 ไฟล์ (gate2RegressionGuard.spec.ts, responsiveGate2.spec.ts) ทุกเคส fail เพราะ QA เดา testid ก่อนเห็นโค้ดจริง (pattern เดียวกับทุกรอบที่ผ่านมา) - มี mapping ตารางเต็มให้ QA ปรับ (3) demoFlow.spec.ts's raw lot-id-typing step หายไปจริงตามที่ E27 สั่งให้แก้ root cause D - ไม่ใช่ regression (4) traceability.spec.ts เจอ conflict ที่ QA เองเตือนไว้ล่วงหน้าแล้วใน traceAutoDetect.spec.ts's header (5) bom.spec.ts มี test-ordering bug ในตัวเอง (ไม่ reset ระหว่างเทสต์) ไม่ได้แก้เพราะอยู่ใน tests/. ไม่ใช้ git ตลอดทั้งรอบ ไม่แก้ tests/ แม้แต่ไฟล์เดียว ปิด dev server ทุกตัวก่อนจบ (netstat ยืนยัน). seed ทั้ง dev/test DB สะอาดก่อนส่งต่อ QA. เก็บ entry ของ QA (ba/tech-lead/qa gate2-test-plan) ไว้ครบไม่ลบ.",
           "overridden_by": null,
           "updated_at": "2026-07-09T04:00:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "gate2-verify",
+          "status": "READY_FOR_DEVOPS",
+          "gate_checklist": [
+            {
+              "item": "Fixed all testid mismatches per Engineer's mapping in gate2RegressionGuard.spec.ts (6/6 previously failing) and responsiveGate2.spec.ts (12/12 previously failing) - nav-trace->nav-traceability, nav-bom-management->nav-bom, nav-customer-list->nav-customers, stock-search->stock-search-input, stock-clear-search->stock-search-clear, stock-empty-state->stock-search-empty, confirm-proposed-lots->accept-material-plan, invoice-row-0->per-row demo-invoice-row-<invoiceNo>, product name \"kremkandaad SPF50\" (not in seed) -> real 2nd seeded product",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Found and fixed additional real bugs beyond Engineer's mapping during actual test runs: nav-po-create is not a direct menu item (needs nav-po-list first), onboarding Tour tracked via localStorage (not server-side) causing every fresh Playwright context to see it as first-login and block nav clicks, PO line total text has no comma grouping, wrong-role permission query in one e2e test",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Fixed the shared qtyUsed fixture problem across the WHOLE suite (10 files, baseline + new) via a new buildExactLotSelections() helper (tests/helpers/testClient.ts) that pulls the exact FIFO split from the real GET /production/:id/material-plan endpoint - robust to either outcome of the pending AC5 decision",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Confirmed and fixed bom.spec.ts test-ordering bug (beforeEach reset+relogin instead of beforeAll), traceability.spec.ts stale L-SEED-materialId pattern (hardcoded deterministic L-SEED-1), productionMaterialPlan.spec.ts TC-Q9-PLAN-02 FIFO assumption (plus discovered the SAME root cause independently affected production.spec.ts TC-013-AC2, not flagged by Engineer) - seed gives every material ~1000 default stock in an older lot that still wins FIFO unless requiredQty genuinely exceeds it",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Verified TC-Q9-DOC-05 (no-CompanyProfile block) is genuinely unreachable via resetSeed()+API (seed always creates exactly 1 CompanyProfile row, no delete endpoint) by real run + confirmed the guard logic itself is correct via direct source read - skipped with full rationale, same precedent as TC-037-AC3",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ECP-013 AC5 pending-Pond design conflict (exact-match vs under-only server re-validation): verified against CURRENT (under-only) behavior per explicit instruction, marked TC-Q9-PLAN-06 as PENDING POND DECISION in defects.md (PENDING-POND-1) - NOT counted as a defect, NOT bounced back to Engineer",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Deep-dive verification per test-plan.md section 10 completed: 5-defect regression guard all green (gate2RegressionGuard.spec.ts A-E), tax-invoice document (snapshot immutability TC-Q9-DOC-07, thaiBahtText exact strings, discount->VAT->total math) all green, BOM CRUD+permission all green, trace 4-type auto-detect all green, production FIFO + server re-validation all green",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Found one confirmed-but-already-disclosed responsive gap (MIN-09): QC incoming DataTable can overflow on tablet portrait depending on data width (ui/DataTable.tsx never sets antd scroll.x) - this is a verified INSTANCE of the exact gap Engineer's own E33 gate_checklist already disclosed as unimplemented, not a hidden new defect - logged as Minor/Should backlog item, not blocking",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "unit tests: 233 passed, 12 skipped, 0 failed, 35/37 suites (unchanged, not touched)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "RUN_DB_TESTS=1 integration (26 files): 211 passed, 3 skipped, 0 failed, 214 total, 26/26 suites green (up from 18/26 with 30 failures)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "stockLedgerAccuracy.spec.ts (DEF-09 NFR N1 critical regression guard) re-confirmed green standalone",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npx playwright test (46 tests, 8 files): 45 passed, 1 skipped, 0 failed (up from 22 passed/23 failed)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No production code under src/ modified; no git commands used; stale dev servers killed before and after e2e runs (verified via netstat)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "defects.md and verify-report.md updated with full Gate 2 Rework Verify section; pipeline/status.json read fresh before this edit, no prior entries removed",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/defects.md",
+            "docs/test-plans/erp-core-prototype/verify-report.md",
+            "tests/helpers/testClient.ts",
+            "tests/e2e/gate2RegressionGuard.spec.ts",
+            "tests/e2e/responsiveGate2.spec.ts",
+            "tests/e2e/demoFlow.spec.ts",
+            "tests/e2e/invoiceRevisionTimeline.spec.ts",
+            "tests/integration/production.spec.ts",
+            "tests/integration/productionMaterialPlan.spec.ts",
+            "tests/integration/qc.spec.ts",
+            "tests/integration/shipping.spec.ts",
+            "tests/integration/traceability.spec.ts",
+            "tests/integration/traceAutoDetect.spec.ts",
+            "tests/integration/bom.spec.ts",
+            "tests/integration/invoice.spec.ts",
+            "tests/integration/invoiceVersioningReconciliation.spec.ts",
+            "tests/integration/invoiceDiscountDetail.spec.ts",
+            "tests/integration/invoiceDocument.spec.ts",
+            "tests/integration/vatConfigAdmin.spec.ts",
+            "tests/integration/auditLog.spec.ts",
+            "tests/integration/concurrency/paymentVersionReconciliation.spec.ts"
+          ],
+          "questions_for_pond": [],
+          "summary": "Verify รอบ Gate 2 Rework (E22-E33) เสร็จสมบูรณ์: แก้ testid mismatch ทั้งหมดตาม mapping ของ Engineer + พบบั๊กเพิ่มเติมเองอีกหลายจุด (nav-po-create ไม่ใช่ menu item, onboarding tour ใช้ localStorage, seed default stock ~1000 ทำให้ FIFO-split test ต้องปรับ requiredQty ให้ใหญ่กว่านั้นจริง). แก้ fixture qtyUsed ทั้ง suite (10 ไฟล์) ด้วย helper กลางที่ทนทานต่อการตัดสินใจ AC5 ในอนาคต. ตัดสินใจ ECP-013 AC5 ตาม under-only ปัจจุบัน mark เป็น pending Pond ไม่นับ defect. ไม่พบ defect โค้ดจริงใหม่เลย มีแค่ 1 responsive gap ที่ Engineer เปิดเผยเองแล้ว (MIN-09, ไม่ block). ตัวเลขสุดท้าย: unit 233/0 failed, integration 211/0 failed (26/26 suites, 3 documented skip), e2e 45/0 failed (1 documented skip) เขียวครบทุก suite.",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T02:00:00+07:00"
         }
       ]
     }

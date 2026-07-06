@@ -109,3 +109,43 @@ export async function resolveZeroStockMaterial(agent: Agent) {
   if (!match) throw new Error("resolveZeroStockMaterial() - no seeded material has physicalQty=0");
   return match;
 }
+
+// --- Gate 2 Round 2 reconciliation helper (QA gate2-verify) ------------------------------------
+// E27 (ECP-013 AC5, architecture.md §13.3.2) added server-side re-validation on POST
+// /production/:id/produce that rejects any `lotSelections` whose per-material total doesn't cover
+// the real BOM-required qty (currently enforced under-only, pending Pond's decision on whether
+// over-supply should ALSO be rejected - see defects.md "PENDING-POND-1"). Every produce() fixture
+// helper across the whole suite (baseline + Gate 2 new files alike) used to hardcode a placeholder
+// qtyUsed (e.g. 1) unrelated to the real BOM math, which now genuinely fails as an under-supply.
+// This helper builds an EXACT-match lotSelections array straight from the server's own FIFO
+// material-plan proposal - satisfies BOTH the current (under-only) and the stricter (exact-match)
+// interpretation of AC5, so it doesn't need to change again regardless of which way Pond decides.
+export interface ExactLotSelection {
+  materialId: number;
+  lotId: number;
+  qtyUsed: number;
+}
+
+export async function buildExactLotSelections(
+  agent: Agent,
+  productionOrderId: number
+): Promise<ExactLotSelection[]> {
+  const plan = await agent.get(`/api/v1/production/${productionOrderId}/material-plan`);
+  if (plan.status !== 200) {
+    throw new Error(
+      `buildExactLotSelections(${productionOrderId}) - GET material-plan failed (status ${plan.status}): ${JSON.stringify(plan.body)}`
+    );
+  }
+  const lotSelections: ExactLotSelection[] = [];
+  for (const line of plan.body.data as Array<{ materialId: number; materialName: string; shortfall: number; proposedLots: Array<{ lotId: number; allocQty: number }> }>) {
+    if (line.shortfall > 0) {
+      throw new Error(
+        `buildExactLotSelections(${productionOrderId}) - material "${line.materialName}" has a shortfall of ${line.shortfall}; the caller must receive+QC-pass enough stock BEFORE calling produce()`
+      );
+    }
+    for (const lot of line.proposedLots) {
+      lotSelections.push({ materialId: line.materialId, lotId: lot.lotId, qtyUsed: lot.allocQty });
+    }
+  }
+  return lotSelections;
+}

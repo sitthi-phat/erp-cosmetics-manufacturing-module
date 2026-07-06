@@ -6,7 +6,7 @@
  * No `quantity` field exists on POST /shipments (schema only has batchId/shippedDate). No seeded
  * batches/shipments exist under placeholder names - every scenario builds its own real chain.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
 
@@ -49,12 +49,13 @@ describe("Shipping module (Epic 6)", () => {
       .send({ assignedTo: productionUserId });
     const receipt = await warehouse.post("/api/v1/stock/receipts").send({
       materialId: bomMaterialId,
-      quantity: 50,
+      quantity: 100000, // plenty - RECONCILED (QA gate2-verify): exact split computed below via material-plan
       lotNumber: `LOT-SHIP-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     });
     await qc.post(`/api/v1/qc/lots/${receipt.body.data.lotId}/inspect`).send({ result: "Passed" });
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId: receipt.body.data.lotId, qtyUsed: 5 }],
+      lotSelections,
       producedQty: 10,
     });
     const batchId = produced.body.data.id;

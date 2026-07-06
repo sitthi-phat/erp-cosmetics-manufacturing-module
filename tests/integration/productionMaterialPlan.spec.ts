@@ -61,6 +61,17 @@ describe("Production material-plan auto-calc + FIFO + re-validation (ECP-013, EC
     return bom.body.data.lines[0] as { materialId: number; qtyPerUnit: number };
   }
 
+  /** A DIFFERENT BOM line (lines[1]) from firstBomLine()'s material - used by tests that need to
+   * control FIFO lot selection precisely (e.g. TC-Q9-PLAN-02 below), since every OTHER test in
+   * this file already dumps large stock quantities into firstBomLine()'s material earlier in the
+   * same file run (resetSeed() only happens once in beforeAll) - reusing that material would let
+   * an earlier test's already-abundant, older lot silently win FIFO priority over lots created
+   * specifically for THIS test, defeating the point. */
+  async function secondBomLine() {
+    const bom = await sales.get(`/api/v1/products/${productId}/bom`);
+    return bom.body.data.lines[1] as { materialId: number; qtyPerUnit: number };
+  }
+
   async function receivePassedLot(materialId: number, qty: number, receivedDaysAgo = 0) {
     const receipt = await warehouse.post("/api/v1/stock/receipts").send({
       materialId,
@@ -84,19 +95,53 @@ describe("Production material-plan auto-calc + FIFO + re-validation (ECP-013, EC
   });
 
   test("TC-Q9-PLAN-02 (ECP-013 AC1, FIFO proposal): proposed Lots are ordered oldest received_date first", async () => {
-    const bomLine = await firstBomLine();
-    const olderLot = await receivePassedLot(bomLine.materialId, 100);
-    // no direct way to backdate received_date via the API - documenting as an open item: this
-    // assertion relies on natural insertion order (older lot created first == earlier
-    // received_date under default `now()`), which is realistic for this integration test's
-    // execution order but NOT a rigorous FIFO-by-date proof (see tests/unit/fifoAllocation.spec.ts
-    // for the rigorous, date-controlled unit-level proof of the sort itself).
-    const newerLot = await receivePassedLot(bomLine.materialId, 100);
-    const po = await createAssignedProductionOrder(1);
+    // RECONCILED (QA gate2-verify): the original version of this test used 2 equally-sized lots
+    // (100 each) with a tiny plannedQty(1) - Engineer correctly pointed out the oldest lot ALONE
+    // already covers such a small requirement, so the "newer" lot never needs to appear in the
+    // proposal at all (indexOf returns -1, breaking the comparison) - that's correct, minimal-lots
+    // FIFO behavior, not a bug. Fixed by deliberately sizing the FIRST (older) lot smaller than the
+    // real requirement (computed from the BOM directly, not guessed), so the allocator is
+    // deterministically forced to draw from a 2nd (newer) lot too, regardless of the exact
+    // qty_per_unit the seed BOM happens to have.
+    // ALSO uses secondBomLine() (not firstBomLine()) - the first attempt at this fix still failed
+    // in a real run because TC-Q9-PLAN-01 (above) already dumped 10,000 units into
+    // firstBomLine()'s material with an OLDER received_date, which silently won FIFO priority over
+    // both lots created here, regardless of their relative sizing to each other.
+    //
+    // SECOND real-run finding (QA gate2-verify): even switching materials wasn't enough on its
+    // own - prisma/seed.ts gives EVERY raw material ~1000 units of stock by default (confirmed via
+    // direct inspection), already sitting in an OLDER seed-created lot (L-SEED-N) that still wins
+    // FIFO priority over any "small" lot this test creates, unless the real requirement actually
+    // EXCEEDS that ~1000 default. Fixed by using a large enough PLANNED_QTY that
+    // requiredQty for secondBomLine's material genuinely exceeds the seed's default stock (forcing
+    // FIFO to exhaust the seed lot and need a 2nd one) - and topping up the OTHER 2 BOM lines'
+    // materials generously first, since confirm() checks stock sufficiency across the WHOLE BOM
+    // (ECP-009), not just the one material this test cares about.
+    const bomLine = await secondBomLine();
+    const bom = await sales.get(`/api/v1/products/${productId}/bom`);
+    for (const line of bom.body.data.lines) {
+      // Top up every OTHER BOM line generously so confirm()'s whole-BOM stock check (ECP-009)
+      // never blocks on them - EXCLUDING bomLine.materialId itself, which needs its OWN precise
+      // tiny/big 2-lot split below, not a 3rd huge lot that would just win FIFO priority again.
+      if (line.materialId !== bomLine.materialId) {
+        await receivePassedLot(line.materialId, 10_000_000);
+      }
+    }
+    const PLANNED_QTY = 1_000_000; // large enough that requiredQty >> the seed's default ~1000 stock
+    const required = bomLine.qtyPerUnit * PLANNED_QTY;
+    const olderLot = await receivePassedLot(bomLine.materialId, 1); // deliberately tiny - insufficient alone
+    // no direct way to backdate received_date via the API - relies on natural insertion order
+    // (older lot created first == earlier received_date under default `now()`), which is realistic
+    // for this integration test's execution order but NOT a rigorous FIFO-by-date proof (see
+    // tests/unit/fifoAllocation.spec.ts for the rigorous, date-controlled unit-level proof).
+    const newerLot = await receivePassedLot(bomLine.materialId, required); // covers the remainder
+    const po = await createAssignedProductionOrder(PLANNED_QTY);
 
     const plan = await production.get(`/api/v1/production/${po.id}/material-plan`);
     const line = plan.body.data.find((l: any) => l.materialId === bomLine.materialId);
     const lotIds = line.proposedLots.map((l: any) => l.lotId);
+    expect(lotIds).toContain(olderLot);
+    expect(lotIds).toContain(newerLot);
     expect(lotIds.indexOf(olderLot)).toBeLessThan(lotIds.indexOf(newerLot));
   });
 
@@ -126,21 +171,39 @@ describe("Production material-plan auto-calc + FIFO + re-validation (ECP-013, EC
     expect(confirmRes.body.error.message).toMatch(/ยังไม่มีสูตรการผลิต \(BOM\)/);
   });
 
-  test("TC-Q9-PLAN-05 (ECP-013 AC5 / ECP-017 AC2/AC3, server re-validation): produce is rejected when Σ(qtyUsed) does not exactly equal requiredQty, even if the client claims otherwise", async () => {
+  test("TC-Q9-PLAN-05 (ECP-013 AC5 / ECP-017 AC2/AC3, server re-validation): produce is rejected when Σ(qtyUsed) under-supplies requiredQty, even if the client claims otherwise", async () => {
     const bomLine = await firstBomLine();
-    await receivePassedLot(bomLine.materialId, 10000);
+    const lotId = await receivePassedLot(bomLine.materialId, 10000);
     const po = await createAssignedProductionOrder(10); // requiredQty = qtyPerUnit * 10
 
     const required = bomLine.qtyPerUnit * 10;
+    // RECONCILED (QA gate2-verify): the original `required - 1` could go NEGATIVE when
+    // qty_per_unit is small (e.g. 0.05 x 10 = 0.5, minus 1 = -0.5) - a negative qtyUsed fails
+    // zod's `z.number().positive()` schema check BEFORE ever reaching the business-logic
+    // re-validation this test is actually about, producing the generic "ข้อมูลที่กรอกไม่ถูกต้อง"
+    // schema error instead of the expected domain message. Using a proportional 50% under-supply
+    // instead guarantees a value that is both positive AND strictly less than `required`
+    // regardless of the seed BOM's actual qty_per_unit. Also needs a real (non-null) lotId now,
+    // since the quantity check passing 0 qtyUsed previously also depended on lotId - use the real
+    // received lot instead of null to isolate purely the quantity re-validation.
     const under = await production.post(`/api/v1/production/${po.id}/produce`).send({
-      lotSelections: [{ materialId: bomLine.materialId, lotId: null, qtyUsed: required - 1 }], // 1 short
+      lotSelections: [{ materialId: bomLine.materialId, lotId, qtyUsed: required * 0.5 }],
       producedQty: 10,
     });
     expect([400, 409]).toContain(under.status);
     expect(under.body.error.message).toMatch(/ไม่ครบตามสูตร|ไม่ตรงกับที่ต้องใช้|required/i);
   });
 
-  test("TC-Q9-PLAN-06: produce is ALSO rejected when Σ(qtyUsed) exceeds requiredQty (over-count, not just under-count)", async () => {
+  test("TC-Q9-PLAN-06 (PENDING POND DECISION on AC5, see defects.md PENDING-POND-1): over-supply is CURRENTLY accepted (201), not rejected - documents Engineer's deliberate under-only softening of literal AC5, not a bug", async () => {
+    // RECONCILED (QA gate2-verify): ECP-013 AC5 literally specifies an EXACT match (reject both
+    // over AND under). Engineer intentionally softened this to under-only, because a literal
+    // exact-match would reject almost every produce() fixture helper across the whole suite
+    // (both pre-existing baseline files and QA's own new Gate-2 fixtures), which hardcode
+    // qtyUsed values unrelated to the real BOM math - see engineer/gate2-rework's
+    // questions_for_pond in pipeline/status.json for the 3 options awaiting Pond's decision.
+    // Per explicit instruction this round: verify against CURRENT (under-only) behavior and mark
+    // this as pending Pond's decision, NOT as an open defect. If Pond picks option B (exact-match,
+    // reject over too), this assertion must flip back to expecting [400, 409].
     const bomLine = await firstBomLine();
     const lotId = await receivePassedLot(bomLine.materialId, 10000);
     const po = await createAssignedProductionOrder(10);
@@ -150,7 +213,7 @@ describe("Production material-plan auto-calc + FIFO + re-validation (ECP-013, EC
       lotSelections: [{ materialId: bomLine.materialId, lotId, qtyUsed: required + 1 }],
       producedQty: 10,
     });
-    expect([400, 409]).toContain(over.status);
+    expect(over.status).toBe(201); // current (under-only) behavior - see comment above
   });
 
   test("TC-Q9-PLAN-07 (ECP-017 AC2/AC3, server-side re-check): a Lot that is NOT Passed cannot be forced through produce even if it happens to be included in lotSelections", async () => {

@@ -10,9 +10,14 @@
  * (SEEDED_BATCH_PENDING, etc.) - every scenario below builds its own real PO -> Confirm -> Assign
  * -> Produce chain first, exactly like production.spec.ts.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
+
+// RECONCILED (QA gate2-verify): E27 (ECP-013 AC5) added server-side produce() re-validation that
+// rejects an under-supplying qtyUsed. The old hardcoded qtyUsed:5 values below no longer reliably
+// match the real requiredQty (qtyPerUnit x plannedQty) - fixed by deriving the exact figure from
+// the BOM (bomQtyPerUnit, captured once in beforeAll) or via buildExactLotSelections().
 
 describe("QC module (Epic 5)", () => {
   let sales: ReturnType<typeof request.agent>;
@@ -23,6 +28,7 @@ describe("QC module (Epic 5)", () => {
   let customerId: number;
   let productId: number;
   let bomMaterialId: number;
+  let bomQtyPerUnit: number;
 
   beforeAll(async () => {
     await resetSeed();
@@ -36,6 +42,7 @@ describe("QC module (Epic 5)", () => {
     productId = (await resolveProductWithBom(sales)).id;
     const bom = await sales.get(`/api/v1/products/${productId}/bom`);
     bomMaterialId = bom.body.data.lines[0].materialId;
+    bomQtyPerUnit = Number(bom.body.data.lines[0].qtyPerUnit);
   });
 
   /** Full happy-path setup ending in a fresh Batch (status QCPending) - returns { poId, batchId }. */
@@ -52,14 +59,15 @@ describe("QC module (Epic 5)", () => {
 
     const receipt = await warehouse.post("/api/v1/stock/receipts").send({
       materialId: bomMaterialId,
-      quantity: 100,
+      quantity: 100000, // plenty - the exact split is computed below via the real material-plan
       lotNumber: `LOT-QC-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     });
     const lotId = receipt.body.data.lotId;
     await qc.post(`/api/v1/qc/lots/${lotId}/inspect`).send({ result: "Passed" });
 
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: 5 }],
+      lotSelections,
       producedQty: 10,
     });
     return { poId, batchId: produced.body.data.id as number };
@@ -148,8 +156,11 @@ describe("QC module (Epic 5)", () => {
     const lotId = receipt.body.data.lotId;
     await qc.post(`/api/v1/qc/lots/${lotId}/inspect`).send({ result: "Failed" });
 
+    // qtyUsed set to the EXACT BOM-required amount (not the old arbitrary placeholder 5) so this
+    // request passes E27's quantity re-validation and genuinely isolates the QC-status check this
+    // test is about - an under-supplying qtyUsed would fail on the quantity check first instead.
     const res = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: 5 }],
+      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: bomQtyPerUnit * 50 }],
       producedQty: 50,
     });
     expect([400, 409]).toContain(res.status);
@@ -174,8 +185,9 @@ describe("QC module (Epic 5)", () => {
     });
     const lotId = receipt.body.data.lotId; // never inspected -> incomingQcStatus stays "Pending"
 
+    // qtyUsed set to the EXACT BOM-required amount (see TC-017-AC2 above for why).
     const res = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: 5 }],
+      lotSelections: [{ materialId: bomMaterialId, lotId, qtyUsed: bomQtyPerUnit * 50 }],
       producedQty: 50,
     });
     expect([400, 409]).toContain(res.status);

@@ -1,22 +1,90 @@
-# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3 → Verify-4 → Verify-5)
+# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → ... → Verify-5 → Gate 2 Rework Verify)
 
 - **slug**: `erp-core-prototype`
 - **วันที่**: เขียน 2026-07-07 (verify รอบแรก) — อัปเดต 2026-07-07 (re-verify) — อัปเดต 2026-07-08 (verify-3,
-  verify-4) — อัปเดต 2026-07-08/09 (verify-5 — **รอบปิดงานจริง, ผลสุดท้าย**)
-- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3 → Verify-4 → Verify-5)
-- **อ้างอิง**: `docs/test-plans/erp-core-prototype/test-plan.md` (§9 มีสรุปย่อ), `docs/test-plans/erp-core-prototype/defects.md`
-  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัว DEF-01..15, ปิดครบทุกตัวแล้วในหมวด Verify-5), `pipeline/status.json`
-  (entry `engineer` (`defect-fix-4`) ล่าสุด + entry `qa`/`phase: verify-5`)
+  verify-4) — อัปเดต 2026-07-08/09 (verify-5 — รอบปิดงานของ scope เดิม) — อัปเดต 2026-07-09 (**Gate 2 Rework
+  Verify — รอบปิดงานของ Gate 2 Round 2 (E22-E33/Q8-Q11), ผลสุดท้ายล่าสุด**)
+- **เขียนโดย**: QA — Phase 2 (Verify ทุกรอบ รวม Gate 2 Rework Verify)
+- **อ้างอิง**: `docs/test-plans/erp-core-prototype/test-plan.md` (§9, §10 มีสรุปย่อ), `docs/test-plans/erp-core-prototype/defects.md`
+  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัว DEF-01..15 + PENDING-POND-1 + MIN-09), `pipeline/status.json`
+  (entry `engineer` (`gate2-rework`) ล่าสุด + entry `qa`/`phase: gate2-verify`)
 
 > จุดยืน: รายงานนี้บันทึกเฉพาะสิ่งที่ **รันจริง** ในสภาพแวดล้อมนี้เท่านั้น อะไรที่รันไม่ได้ (ไม่ว่าเพราะขาด
 > tooling หรือขาด environment) จะระบุไว้ชัดเจนว่า "ไม่ verify" ไม่ใช่ "ผ่าน"
-> **หมวด -3 ด้านล่างคือผล verify-5 ล่าสุด (รอบปิดงานจริง, สถานะสุดท้าย) — หมวด -2 คือ verify-4 — หมวด -1 คือ
-> verify-3 — หมวด 0-6 ที่เหลือคือรายงานรอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับ
-> เวลา**
+> **หมวด -4 ด้านล่างคือผล Gate 2 Rework Verify ล่าสุด (รอบปิดงานจริงของ Gate 2 Round 2, สถานะสุดท้าย) —
+> หมวด -3 คือ verify-5 (ปิดงาน scope เดิม) — หมวด -2 คือ verify-4 — หมวด -1 คือ verify-3 — หมวด 0-6 ที่เหลือ
+> คือรายงานรอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับเวลา**
 
 ---
 
-## -3. ผล Verify-5 (2026-07-08/09) — สถานะสุดท้าย, รอบปิดงานจริง
+## -4. ผล Gate 2 Rework Verify (2026-07-09) — สถานะสุดท้ายล่าสุด, รอบปิดงานของ Gate 2 Round 2
+
+### -4.1 บริบท
+Engineer ส่งมอบ E22-E33 ครบ (44 ไฟล์) ตั้ง `READY_FOR_QA_VERIFY` พร้อมตัวเลขเริ่มต้น: unit 233/0 failed,
+integration 182 passed/30 failed, e2e 22/46 พร้อม mapping/วิเคราะห์ root cause ของทุก failure ไว้ล่วงหน้า
+(ส่วนใหญ่เป็น testid mismatch + fixture qtyUsed ที่ QA ใช้ placeholder ไม่ตรง BOM จริง) และตั้งคำถามกลับ 1
+เรื่อง (ECP-013 AC5 exact-match vs under-only) รอปอนด์ตัดสิน
+
+### -4.2 สิ่งที่ QA ทำ (ดูรายละเอียดเต็มที่ defects.md §Gate 2 Rework — Verify)
+1. แก้ testid mismatch ครบตาม mapping ของ Engineer ใน `gate2RegressionGuard.spec.ts` (6 เคย fail) และ
+   `responsiveGate2.spec.ts` (12 เคย fail)
+2. พบ+แก้บั๊กเพิ่มเติมที่ Engineer ไม่ได้ระบุไว้เอง (ไม่ใช่แค่ mapping ที่ให้มา): `nav-po-create` ไม่ใช่ menu
+   item ต้องผ่าน `nav-po-list` ก่อน, onboarding Tour ใช้ localStorage ไม่ใช่ server-side flag ทำให้ทุก
+   Playwright context ใหม่เจอ tour บังปุ่ม nav, ตัวเลขไม่มี comma คั่นหลักพัน, permission ผิด role ตอน query
+   lot ใน test D
+3. แก้ fixture `qtyUsed` ทั้ง suite (10 ไฟล์) ด้วย helper กลาง `buildExactLotSelections()` ใหม่ที่ดึง exact
+   split จาก material-plan จริงของ server (ทนทานต่อการตัดสินใจ AC5 ในอนาคตทั้ง 2 ทาง)
+4. ยืนยัน + แก้ root cause เพิ่มเติมที่ Engineer ชี้ไว้ถูกแล้วแต่ QA ต้องขุดลึกกว่านั้นอีกชั้น: seed ให้ทุก
+   วัตถุดิบมี stock เริ่มต้น ~1000 หน่วยเสมอ ทำให้การบังคับ multi-lot split ต้องใช้ requiredQty ที่เกิน 1000
+   จริงๆ ไม่ใช่แค่เทียบกับ Lot อื่นในเทสต์เดียวกัน — พบปัญหาเดียวกันซ้ำใน `production.spec.ts` TC-013-AC2 ที่
+   ไม่ได้อยู่ใน mapping ของ Engineer เลย (QA พบเอง)
+5. skip 1 เคสใหม่ (`invoiceDocument.spec.ts` TC-Q9-DOC-05) พร้อมพิสูจน์ผ่านการรันจริงว่า unreachable
+   (resetSeed() ไม่เคยทำให้ CompanyProfile หายเลย) + ยืนยัน guard logic ถูกต้องด้วยการอ่าน source ตรง
+6. ตัดสินใจ ECP-013 AC5 ตามคำสั่ง dispatcher: verify ตาม behavior ปัจจุบัน (under-only), mark
+   TC-Q9-PLAN-06 เป็น "PENDING POND DECISION" ไม่นับเป็น defect
+
+### -4.3 ตัวเลขรันจริงสุดท้าย (Gate 2 Rework Verify, final)
+
+| Suite | ก่อนแก้ (Engineer ส่งมา) | หลังแก้ (QA ยืนยันจริง) |
+|---|---|---|
+| `npm run test:unit` | 233 passed / 12 skipped / 0 failed, 35/37 suites | **เหมือนเดิม (ไม่แตะ) — 233/0 failed** |
+| `RUN_DB_TESTS=1` integration (26 ไฟล์) | 182 passed / 30 failed / 2 skipped, 214 total, 18/26 suites | **211 passed / 0 failed / 3 skipped, 214 total, 26/26 suites เขียวครบ** |
+| `stockLedgerAccuracy.spec.ts` (DEF-09 guard) | — | **เขียว (2/2) ยืนยันซ้ำอิสระ** |
+| `npx playwright test` (46 test, ไฟล์เดิม 6 + ใหม่ 2) | 22 passed / 23 failed / 1 skipped | **45 passed / 0 failed / 1 skipped, 46 total เขียวครบ** |
+
+### -4.4 สถานะ defect สุดท้าย (ดูรายละเอียดเต็มที่ defects.md)
+
+| ID | สถานะ |
+|---|---|
+| DEF-01 ถึง DEF-15 | **Fixed ทั้งหมด** (ยืนยันตั้งแต่ verify-5, ไม่มีการ regress ในรอบนี้ — 211/211 integration รวม
+  regression guard ของ defect เดิมทั้งหมดยังเขียว) |
+| PENDING-POND-1 (ใหม่) | ECP-013 AC5 exact-match vs under-only — **ไม่ใช่ defect** รอปอนด์ตัดสิน 1 ใน 3
+  ทางเลือก (ดู questions_for_pond ใน pipeline/status.json entry engineer/gate2-rework) |
+| MIN-01..08 (เดิม) | ไม่เปลี่ยนแปลง ไม่ block |
+| MIN-09 (ใหม่) | QC incoming table อาจ overflow บน tablet portrait ขึ้นกับความกว้างข้อมูล (antd DataTable
+  ไม่ได้ตั้ง `scroll.x`) — **instance ที่ยืนยันแล้วของ gap ที่ Engineer เปิดเผยเองใน E33 gate_checklist** ไม่ใช่
+  บั๊กที่ซ่อนอยู่ Minor/Should ไม่ block |
+
+**สรุป: ไม่พบ defect โค้ดจริงใหม่แม้แต่ตัวเดียวรอบนี้** — failure ทั้งหมด (39 เคสตอนเริ่ม: integration 30 +
+e2e 23 - นับซ้อนกันบางส่วนจาก reconciliation เดียวกัน) เป็น test-authoring/fixture bug ในไฟล์ของ QA เอง
+(ยืนยันด้วยการรันจริงทุกจุด ไม่ใช่แค่เชื่อ mapping ของ Engineer เฉยๆ — พบเพิ่มอีกหลายจุดที่ Engineer ไม่ได้
+ระบุไว้ด้วยตัวเอง)
+
+### -4.5 Automation coverage (Gate 2 Round 2, สถานะ verify)
+ตรงตามที่ระบุไว้ใน test-plan.md §10.2 (เขียนไว้ตั้งแต่ Phase 1): ~80% automate ได้เต็ม, ~13% partial (ข้อมูล
+ครบแต่เชิงสายตาต้องมนุษย์), ~7% ไม่ automate ได้เลย (เชิงสุนทรียะล้วน) — ตอนนี้ทุกส่วนที่ automate ได้ (80%)
+ผ่านจริงครบแล้วหลัง reconciliation รอบนี้ ส่วนที่เหลือ (~20%) ส่งต่อ `uat-print-responsive-script.md` ให้
+ปอนด์ใช้ตอน Gate 2
+
+### -4.6 สถานะที่ตั้ง
+**READY_FOR_DEVOPS** — unit/integration/e2e เขียวครบทุก suite (233 unit, 211 integration ครบ 26/26 suites
+มี 3 documented skip, 45 e2e ครบมี 1 documented skip) ไม่มี Critical/Major defect ค้าง ไม่มี defect โค้ดจริง
+ใหม่เลย มีแค่ 1 รายการรอปอนด์ตัดสินใจเชิงธุรกิจ (ไม่ block, ไม่นับเป็น defect) และ 1 responsive gap ที่
+Engineer เปิดเผยเองแล้ว (ไม่ block, backlog item) — ผ่าน Exit Gate ทุกข้อ
+
+---
+
+## -3. ผล Verify-5 (2026-07-08/09) — รอบก่อนหน้า (ปิดงาน scope เดิม), เก็บไว้เพื่อ traceability
 
 ### -3.1 บริบท
 Engineer (`defect-fix-4`) แก้ DEF-14 (เพิ่ม permission `user.view_basic` + endpoint `GET /users/basic` คืน

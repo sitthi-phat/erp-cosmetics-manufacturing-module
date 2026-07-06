@@ -18,7 +18,14 @@ describe("BOM Management (ECP-039)", () => {
   let sales: ReturnType<typeof request.agent>;
   let warehouse: ReturnType<typeof request.agent>;
 
-  beforeAll(async () => {
+  // RECONCILED (QA gate2-verify): test-ordering bug Engineer flagged, confirmed by reading this
+  // file - the seed intentionally creates only ONE product without a BOM (prisma/seed.ts,
+  // resolveProductWithoutBom()'s own doc comment). The FIRST test to run gives that product a
+  // BOM, so every subsequent test's own call to resolveProductWithoutBom() found nothing left
+  // (or, worse, silently resolved a DIFFERENT already-BOM'd product depending on API ordering).
+  // Fixed by reseeding + relogging in before EVERY test (not just once in beforeAll), so each test
+  // always gets its own fresh "product with no BOM yet" to work with, independent of run order.
+  beforeEach(async () => {
     await resetSeed();
     production = await loginAs(SEED_USERS.production.username, DEFAULT_PASSWORD);
     sales = await loginAs(SEED_USERS.sales.username, DEFAULT_PASSWORD);

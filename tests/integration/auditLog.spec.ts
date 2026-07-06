@@ -4,7 +4,7 @@
  *   GET /audit-logs?userId=<number>&actionType=&from=&to=&page=&pageSize= -> { data: [...], meta:
  *   {total, page, pageSize} }. No `username`/`dateFrom`/`dateTo`/`totalCount` fields exist.
  */
-import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, app, sleep } from "../helpers/testClient";
+import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, app, sleep, buildExactLotSelections } from "../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../helpers/fixtures";
 import request from "supertest";
 
@@ -73,8 +73,13 @@ describe("Audit Log (Epic 8, ECP-025/026)", () => {
       lotNumber: `LOT-AUDIT-TEST-${Date.now()}`,
     });
     await qc.post(`/api/v1/qc/lots/${receipt.body.data.lotId}/inspect`).send({ result: "Passed" });
+    // RECONCILED (QA gate2-verify): use the server's own exact FIFO split for future-proofing
+    // against a stricter exact-match AC5 enforcement (see defects.md PENDING-POND-1) - the old
+    // hardcoded qtyUsed:1 happened to still pass today's under-only check (1 > tiny required), but
+    // would break if Pond picks the stricter exact-match option.
+    const lotSelections = await buildExactLotSelections(production, assigned.body.data.id);
     const produced = await production.post(`/api/v1/production/${assigned.body.data.id}/produce`).send({
-      lotSelections: [{ materialId: bomMaterialId, lotId: receipt.body.data.lotId, qtyUsed: 1 }],
+      lotSelections,
       producedQty: 1,
     });
     await qc.post(`/api/v1/qc/batches/${produced.body.data.id}/inspect`).send({ result: "Approved", remarks: "ok" });
