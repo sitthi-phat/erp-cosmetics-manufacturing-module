@@ -1,0 +1,15 @@
+{
+  "features": {
+    "erp-core-prototype": {
+      "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
+      "created_at": "2026-07-06T15:10:00+07:00",
+      "current_agent": "po",
+      "status": "IN_PROGRESS",
+      "human_gates": {
+        "gate1_architecture": {"approved": false, "approved_at": null, "note": null},
+        "gate2_release": {"approved": false, "approved_at": null, "note": null}
+      },
+      "history": []
+    }
+  }
+}
