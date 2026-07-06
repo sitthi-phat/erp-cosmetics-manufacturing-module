@@ -1,17 +1,78 @@
-# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3)
+# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3 → Verify-4)
 
 - **slug**: `erp-core-prototype`
 - **วันที่**: เขียน 2026-07-07 (verify รอบแรก) — อัปเดต 2026-07-07 (re-verify) — อัปเดต 2026-07-08 (verify-3,
-  รันกับ Docker/MySQL/browser จริงครบเป็นครั้งแรกในฐานะ QA)
-- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3)
+  verify-4 — รอบปิดงาน)
+- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3 → Verify-4)
 - **อ้างอิง**: `docs/test-plans/erp-core-prototype/test-plan.md` (§9 มีสรุปย่อ), `docs/test-plans/erp-core-prototype/defects.md`
-  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัวรวม DEF-06..13), `pipeline/status.json`
-  (entry `devops` + entry `engineer` (`defect-fix-2`) ล่าสุด + entry `qa`/`phase: verify-3`)
+  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัว DEF-01..15), `pipeline/status.json`
+  (entry `engineer` (`defect-fix-3`) ล่าสุด + entry `qa`/`phase: verify-4`)
 
 > จุดยืน: รายงานนี้บันทึกเฉพาะสิ่งที่ **รันจริง** ในสภาพแวดล้อมนี้เท่านั้น อะไรที่รันไม่ได้ (ไม่ว่าเพราะขาด
 > tooling หรือขาด environment) จะระบุไว้ชัดเจนว่า "ไม่ verify" ไม่ใช่ "ผ่าน"
-> **หมวด -1 ด้านล่างคือผล verify-3 ล่าสุด (รอบสาม, รันกับ MySQL/browser จริงครบเป็นครั้งแรก) — หมวด 0-6
-> ที่เหลือคือรายงานรอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับเวลา**
+> **หมวด -2 ด้านล่างคือผล verify-4 ล่าสุด (รอบปิดงาน) — หมวด -1 คือ verify-3 — หมวด 0-6 ที่เหลือคือรายงาน
+> รอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับเวลา**
+
+---
+
+## -2. ผล Verify-4 (2026-07-08) — สถานะล่าสุด, รอบปิดงาน
+
+### -2.1 บริบท
+Engineer (`defect-fix-3`) แก้ DEF-09 (Critical)/DEF-10/11/12/13 (Major) ครบ + ปิด OPEN-1/2/3 ส่งกลับพร้อม
+อ้างว่า integration เขียวหมด (152/154, 2 documented skip) และ e2e เหลือ 2 เคสที่เป็น "บั๊กใน spec ของ QA เอง"
+(selector strategy)
+
+### -2.2 สิ่งที่ QA ทำ + ผลยืนยัน
+1. `npm run test:unit` = 175/175 ตรงกับที่ Engineer อ้าง
+2. `npm run reset && npm run setup` บน Docker volume ใหม่สำเร็จ
+3. `RUN_DB_TESTS=1 npx jest --selectProjects integration` = **152 passed, 2 skipped, 0 failed, 17/17
+   suites** ตรงเป๊ะ
+4. ยืนยัน DEF-09 อิสระ: รัน `stockLedgerAccuracy.spec.ts` แยก **3 รอบติดกัน — เขียวทั้ง 3 รอบ**
+5. ตรวจสอบ 2 จุด selector ที่ Engineer ชี้ด้วย DOM probe จริง — ยืนยันว่า Engineer วิเคราะห์ถูกทั้งคู่ (เป็น
+   bug ใน spec ของ QA เอง) แก้ทั้งสองจุดตามที่ชี้แนะ
+6. **ระหว่างแก้ 2 จุดนี้ให้ผ่านจริง กลับพบ defect โค้ดจริงใหม่อีก 2 ตัว** (ไม่ใช่แค่ selector): **DEF-14**
+   (Production role เรียก `GET /users` ไม่ได้ — assign-worker dropdown ว่างเปล่าเสมอ, รูปแบบเดียวกับ DEF-12
+   แต่คนละ endpoint/role) และ **DEF-15** (revise-invoice modal's product `<select>` ไม่ผูกกับ antd Form
+   state เลย — DEF-12 permission fix ทำให้ dropdown มีตัวเลือกแล้วจริง แต่การเลือกไม่มีผลใดๆ ต่อข้อมูลที่ส่งจริง
+   ฟีเจอร์ revise ยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดี)
+
+### -2.3 ตัวเลขรันจริงสุดท้าย
+
+| Suite | ผลลัพธ์ |
+|---|---|
+| `npm run test:unit` | **175 passed, 12 skipped, 0 failed, 28/30 suites** |
+| `RUN_DB_TESTS=1 npx jest --selectProjects integration` (17 ไฟล์) | **152 passed, 2 skipped, 0 failed, 154 total, 17/17 suites เขียว** |
+| `stockLedgerAccuracy.spec.ts` แยก 3 รอบอิสระ | **เขียวทั้ง 3 รอบ (2/2 ทุกรอบ)** |
+| `npx playwright test` (19 test, 6 ไฟล์) | **16 passed, 2 failed, 1 skipped, 19 total** |
+| `tsc`/`eslint`/`vite build` | สะอาดหมด |
+
+### -2.4 สถานะ defect ล่าสุด (ดูรายละเอียดเต็มที่ defects.md)
+
+| ID | Severity | สถานะ |
+|---|---|---|
+| DEF-01..08 | — | Fixed/Resolved (ปิดตั้งแต่รอบก่อน) |
+| DEF-09 | Critical | **Fixed** — ยืนยันซ้ำ 3 รอบอิสระ |
+| DEF-10 | Major | **Fixed** |
+| DEF-11 | Major | **Fixed** — ยืนยันด้วย DOM probe จริง |
+| DEF-12 | Major | **Fixed** (ส่วน permission) — แต่ดู DEF-15 |
+| DEF-13 | Major | **Fixed** |
+| OPEN-1/2/3 | — | **ปิดหมดแล้ว** |
+| **DEF-14 (ใหม่)** | **Major** | **Open** — Production เรียก GET /users ไม่ได้ |
+| **DEF-15 (ใหม่)** | **Major** | **Open** — revise-invoice product select ไม่ผูก form state |
+| MIN-01..08 | Minor | ไม่เปลี่ยนแปลง ไม่ block |
+
+### -2.5 UAT plan (2-3 คน/role ตามที่ปอนด์ยืนยัน — ดู test-plan.md §5)
+ยังไม่ควรเริ่มนัดหมาย UAT จริงจนกว่า DEF-14/15 จะถูกแก้ (ฟีเจอร์ "มอบหมายงานผลิต" และ "แก้ไข invoice" ยังใช้งาน
+ไม่ได้จริงผ่าน UI สำหรับ role ที่ตั้งใจให้ใช้งาน — UAT scenario ที่ครอบคลุมสองฟีเจอร์นี้จะ fail แน่นอนถ้าเริ่ม
+ตอนนี้ ทำให้เสียเวลาผู้ทดสอบจริงและอาจให้ผลลัพธ์ "80% scenario สำเร็จ" ที่ไม่สะท้อนความพร้อมจริงของระบบ) เมื่อ
+DEF-14/15 ถูกแก้แล้วและ QA re-verify ผ่านครบ ตัวเลข 2-3 คน/role (14-21 คนรวม) ตามที่ปอนด์อนุมัติ (ดู
+test-plan.md §5) ยังใช้ได้ตามเดิม ไม่ต้องเปลี่ยนแปลง
+
+### -2.6 สถานะที่ตั้ง
+**FAILED** — พบ Major defect ใหม่ 2 ตัว (DEF-14, DEF-15) ระหว่างปิดงาน แม้ DEF-09 (Critical) + DEF-10/11/12/13
+(Major) + OPEN-1/2/3 ทั้งหมดจะถูกแก้และยืนยันแล้วก็ตาม ตามกติกา Exit Gate ("เจอบั๊กโค้ดจริงใหม่ → FAILED")
+ส่งกลับ Engineer พร้อม defect list เต็ม — คาดว่ารอบถัดไปจะเป็นรอบสุดท้ายจริง (defect ที่เหลือมีรูปแบบชัดเจนแล้ว
+ทั้งคู่ ไม่ใช่ปัญหาเชิง architecture ใหญ่เหมือน DEF-09)
 
 ---
 

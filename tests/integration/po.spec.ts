@@ -111,26 +111,13 @@ describe("Purchasing Order module (Epic 2)", () => {
   });
 
   test("exploratory (double-submit): two rapid confirm calls on the same Draft PO must not double-reserve stock", async () => {
-    // *** DEF-09 (NEW, Critical, confirmed on live MySQL during QA verify-3 - not a spec bug) ***
-    // `po.rules.ts#assertCanConfirm` reads `po.status` via a plain (non-locked) read before the
-    // reservation transaction opens, so BOTH concurrent confirm calls on the SAME Draft PO can
-    // pass the "must be Draft" guard and both fully execute: 2 audit `ConfirmPO` entries + 2
-    // `POStatusEvent(status:"Confirmed")` rows + 2 `StockTransaction(type:"Reservation")` ledger
-    // rows are created (reproduced via `docker exec mysql` raw SQL against a live test DB), i.e.
-    // this is NOT "harmlessly idempotent" - the PO really is processed twice.
-    // WORSE: the resulting `StockBalance.reservedQty` cache ends up UNDER-counting relative to
-    // the `StockTransaction` ledger (source of truth per NFR N1) - e.g. ledger sum for the
-    // affected material was seed(5) + this-test(5) + this-test(5) = 15, but the cached
-    // `StockBalance.reservedQty` column only reached 10 (one reservation's delta silently lost).
-    // This directly violates NFR N1 ("Σ(StockTransaction.qty) === StockBalance value, no
-    // tolerance") - the single most emphasized Gate-1 condition - under a plain double-click,
-    // not even an adversarial timing attack. See docs/test-plans/erp-core-prototype/defects.md
-    // DEF-09 for the full reproduction (raw SQL, docker exec) and root-cause hypothesis (mixing a
-    // locking raw `SELECT...FOR UPDATE` with a subsequent non-locking Prisma ORM `findUnique` read
-    // inside the same REPEATABLE READ transaction in stock.repository.ts#applyTransaction).
-    // This test intentionally asserts the CORRECT (currently failing) behavior rather than being
-    // weakened to match the buggy one - per QA's mandate to prove things break, not just confirm
-    // happy paths. Do not "fix" this assertion without first fixing the underlying race.
+    // DEF-09 [Critical] — FIXED (verify-4, confirmed green 3 consecutive independent runs by QA).
+    // Was a genuine TOCTOU: po.rules.ts#assertCanConfirm read po.status via a plain (non-locked)
+    // read before the reservation transaction opened, so both concurrent confirm calls could pass
+    // the "must be Draft" guard. Engineer collapsed the read-check-write into a single atomic
+    // conditional UPDATE (checking affected-row-count) for stock_balance, purchase_order status,
+    // and lot remaining_qty alike (defect-fix-3, pipeline/status.json). See defects.md DEF-09 for
+    // the full history/reproduction of the original bug - kept for traceability.
     const draft = await createDraft([{ productId: productWithBomId, quantity: 1 }]);
     const [r1, r2] = await Promise.all([
       sales.post(`/api/v1/pos/${draft.body.data.id}/confirm`),

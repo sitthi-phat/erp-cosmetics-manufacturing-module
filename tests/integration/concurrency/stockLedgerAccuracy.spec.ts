@@ -11,36 +11,20 @@
  * POST /pos {customerId,requestedDeliveryDate,lines:[{productId,quantity,unitPrice,uom}]},
  * GET /stock/reconciliation?material=<id> -> {data:{ledgerSum,physicalQty,matches,diff}}.
  *
- * *** DEF-09 (CRITICAL, confirmed HERE on live MySQL, re-verify-3): BOTH tests below FAIL. ***
- * This is the single most important finding of this verify round - it directly violates the
- * exact NFR N1 condition Gate 1 called out by name, reproduced at real, non-adversarial scale
- * (100-way concurrent goods-receipt + PO-confirm on the same material; two ordinary concurrent
- * "produce" requests on the same lot). This generalizes the narrower "PO double-confirm" finding
- * from tests/integration/po.spec.ts into the actual root defect: it is not specific to double-
- * clicking one PO's confirm button - ANY concurrent read-modify-write on the SAME material's
- * StockBalance row can lose an update, and two concurrent issues that together exceed available
- * stock can BOTH succeed instead of exactly one.
- *
- * ROOT CAUSE HYPOTHESIS (from reading stock.repository.ts#applyTransaction + reserve()/issue() in
- * stock.service.ts): `applyTransaction` correctly takes a row lock via a raw
- * `SELECT * FROM stock_balance WHERE material_id = ? FOR UPDATE`, but then re-reads the "current"
- * balance via a SEPARATE, non-locking Prisma ORM call (`tx.stockBalance.findUnique(...)`) to
- * compute `nextReserved = currentReserved + delta`. Under MySQL InnoDB's default REPEATABLE READ
- * isolation, a transaction's consistent (non-locking) read view is established at that
- * transaction's FIRST read of ANY table - which, inside `po.routes.ts`'s confirm handler for
- * example, happens earlier (`prisma.purchaseOrder.findUnique(...)`) than the stock lock is ever
- * taken. Locking reads (`SELECT...FOR UPDATE`) always see the latest committed row regardless of
- * that snapshot, but the very next PLAIN `findUnique` in the same transaction can still return the
- * OLDER snapshot value instead of what the lock just fetched - a textbook stale read feeding a
- * lost update, even though a row lock genuinely was acquired moments earlier in the same
- * transaction. `reserve()`/`issue()` in stock.service.ts also do their own separate, non-locking
- * `getBalance()` pre-check before ever calling `applyTransaction`, compounding the same class of
- * staleness for the "is there enough stock" decision itself (this is why the boundary-race test
- * below can let both concurrent 60kg issues through against a 100kg lot).
- *
- * This is left FAILING intentionally (asserting the correct, required behavior) rather than
- * weakened to match the observed bug - do not "fix" these assertions without first fixing
- * stock.repository.ts/stock.service.ts.
+ * DEF-09 [Critical] — FIXED (verify-4). Originally confirmed failing on live MySQL during
+ * verify-3 (both tests below), directly violating NFR N1, reproduced at real, non-adversarial
+ * scale (100-way concurrent goods-receipt + PO-confirm on the same material; two ordinary
+ * concurrent "produce" requests on the same lot). Root cause (confirmed by Engineer, matching
+ * QA's original hypothesis exactly): `stock.repository.ts#applyTransaction` correctly took a row
+ * lock via raw `SELECT...FOR UPDATE`, but then re-read "current" balance via a SEPARATE,
+ * non-locking Prisma ORM call before computing the next value - a classic TOCTOU race under
+ * MySQL's default REPEATABLE READ isolation. Engineer collapsed the read-check-write into a
+ * single atomic conditional UPDATE (guarded by an affected-row-count check) for stock_balance,
+ * and applied the same fix pattern to PO confirm/cancel and lot-level `remaining_qty` in
+ * production (a related bug this fix uncovered that nobody had reported yet - see defects.md).
+ * QA independently re-ran this exact file 3 consecutive times against a freshly-reset Docker
+ * MySQL instance (not just trusting the report) - green all 3 times, both sub-tests each time.
+ * See defects.md DEF-09 for the full original bug history/reproduction.
  */
 import { loginAs, resetSeed, resolveCustomer, resolveProductWithBom, fireConcurrently } from "../../helpers/testClient";
 import { SEED_USERS, DEFAULT_PASSWORD } from "../../helpers/fixtures";

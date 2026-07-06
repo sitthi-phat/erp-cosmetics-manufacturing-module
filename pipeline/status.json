@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "engineer",
-      "status": "READY_FOR_QA_VERIFY",
+      "current_agent": "qa",
+      "status": "FAILED",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -1041,6 +1041,61 @@
           "summary": "แก้ครบทั้ง 5 defect (1 Critical + 4 Major) และสอบสวน OPEN-1/2/3 จนจบ ไม่มีบั๊กเหลือค้างในโค้ด. DEF-09 (Critical, root cause จริง): เดิม reserve()/issue() อ่าน balance ผ่าน Prisma ORM ธรรมดา (ไม่ lock) ก่อน แล้วค่อยเขียนใน transaction ที่ lock แยกต่างหาก - เป็น TOCTOU แท้ๆ ตรงตามสมมติฐานของ QA แก้โดยยุบ read-check-write เป็น UPDATE เดียวที่มีเงื่อนไข guard ในตัว (`UPDATE stock_balance SET ... WHERE material_id=? AND (physical_qty-reserved_qty)>=?` ตรวจ affected-row-count แทนการอ่านแยก) ใช้ pattern เดียวกับที่เคยแก้ DEF-06 (NumberSequence) สำเร็จมาแล้ว ใช้ pattern เดียวกันนี้ซ้ำอีก 2 จุดที่เจอระหว่างทดสอบจริง: PO confirm/cancel (`po.routes.ts`, atomic status transition กัน double-confirm/double-cancel) และจุดที่ไม่มีใครเคยรายงานมาก่อน - lot-level remaining_qty ใน `production.routes.ts` (bug แยกจาก material-level balance: การเช็ค stock รวมทั้ง material ไม่ได้ป้องกันการเบิกเกินจาก lot เจาะจงหนึ่งใบเมื่อ material โดยรวมมีเหลือเยอะ) ยืนยันด้วย `stockLedgerAccuracy.spec.ts` เขียว 3 รอบติดกันจริงกับ MySQL จริง (ทั้ง 2 sub-test: 100-concurrent-op ledger-vs-balance และ lot-level boundary-race). DEF-10: เพิ่ม PO->Invoiced transition + POStatusEvent ใน invoice.routes.ts หลัง issueInvoice สำเร็จ - การแก้นี้เปิดโปง regression ใน invoice.service.ts เอง (เทสต์เดิม TC-020-AC2 พังเพราะ second-issue-attempt ตอนนี้มี poStatus='Invoiced' จริงแทนที่จะเป็น 'Shipped' ทำให้ generic 400 'ยังไม่ shipped' ทำงานก่อน 409 'มี invoice แล้ว' ที่เจาะจงกว่า) แก้โดยสลับลำดับการเช็ค (409 existing-invoice-chain ก่อน 400 not-shipped เสมอ) เพิ่ม regression unit test จำลอง production จริง (poStatus='Invoiced' ตอนเรียกครั้งที่สอง). DEF-11: SelectField เพิ่ม labelInValue+optionLabelProp='label' (root cause คือ rc-select ตัด value-to-label matching เมื่อ options โหลดมาช้ากว่าค่า field ที่ผูกไว้แล้ว - labelInValue จับคู่ label ตอน selection จริง ไม่ต้อง re-match กับ options array อีก) เพิ่ม normalizeSelectValues() ให้ handler เดิมทุกหน้าที่อ่าน values.xxx ยังทำงานเหมือนเดิมโดยไม่ต้องแก้ signature ยืนยันด้วย DOM inspection ตรง (dropdown แสดง 'บริษัท ABC จำกัด (CUS-00000001)' ไม่ใช่เลข id ดิบแล้ว). DEF-12 (ตัดสินใจ): เพิ่ม permission ใหม่ที่แคบกว่า `product.view` แยกจาก `stock.view` แล้วให้ Finance เฉพาะตัวใหม่นี้ (ไม่ให้ stock.view เต็มซึ่งจะเห็น physical/reserved qty ของคลังทั้งหมดที่ Finance ไม่มีความจำเป็นต้องเห็น) - เหตุผล: `GET /products` คืนแค่ชื่อ/BOM/hasBom ของสินค้า ไม่ใช่ตัวเลข stock จริง จึงสมควรแยก permission ที่ตรงกับสิ่งที่ endpoint นี้ให้จริงๆ แทนที่จะยืมสิทธิ์ที่กว้างเกินจำเป็นของอีก resource มาใช้ - ยืนยันด้วย curl ตรง (finance_demo -> 200) และ e2e (revise-invoice modal populate สินค้าได้จริงแล้ว). DEF-13: NumberField เลิกส่ง min/max ตรงเข้า antd InputNumber (root cause การ clamp เงียบ) เปลี่ยนเป็น Form validator ที่ reject พร้อมข้อความ ผูกกับ Form.onValidationError callback ใหม่ที่ AdminPage ใช้แสดงผ่าน testid เดียวกับ error จาก server ยืนยันทั้ง client (validator reject) และ server (Zod เดิมถูกอยู่แล้ว, ยืนยันซ้ำผ่าน errorMessageAudit e2e). OPEN-1/OPEN-2: root cause จริงไม่ใช่แค่ refetchIntervalInBackground (ที่เพิ่มไปแล้วเป็นการเสริมความทนทานจริง สำหรับกรณี tab ถูก background จริงๆ) แต่คือ `playwright.config.ts` มี global test timeout แค่ 30s ในขณะที่ 2 เทสต์นี้ตั้งใจให้ assertion เองมี budget 60s (ตรงตาม ECP-007 AC1/ECP-028 AC2 ที่อนุญาต worst-case fallback-polling ได้ถึง 60s) Playwright จะ kill ทั้งเทสต์ที่ 30s ก่อนที่ assertion จะได้โอกาสรอครบ - แก้ที่ config (ไม่ใช่ tests/) เป็น 90s ยืนยันด้วยการรัน fallback-polling test ผ่านจริงที่ 31s (เดิม timeout ที่ 30s พอดี). OPEN-3: เพิ่ม QueryCache-level onError ใน App.tsx ให้ทุก useQuery ที่ fail (ไม่ใช่แค่ mutation ที่เขียน catch เอง) ไปโผล่ที่ Notify กลาง ทำเครื่องหมาย /auth/me เป็น silent (401 ก่อน login คือปกติ ไม่ใช่ error จริง). สำคัญ: ระหว่างรันจริงพบว่า process เก่าจากรอบก่อน (`npm run dev` ค้างอยู่ที่ port 4000/5173 จากก่อน compaction) ยังทำงานอยู่ด้วยโค้ดเก่า - kill ทิ้งและเปิดใหม่สะอาดก่อนรัน e2e จริง (ผลรอบแรกที่ fail 18/19 เป็นผลจาก process ค้างนี้ ไม่ใช่บั๊กจริง). ตัวเลขจริงสุดท้ายทั้งหมด (หลัง kill process เก่า + เปิดใหม่สะอาด + reseed ทั้ง dev/test DB): `npm run reset && npm run setup` = ผ่านเต็มบน Docker volume ใหม่จริง; `npm run test:unit` = 175 passed/12 skipped/0 failed (28/30 suites); `npx tsc -p tsconfig.backend.json --noEmit` = 0 error; `cd src/frontend && npx tsc --noEmit` = 0 error; `npx eslint .` = 0 error (2 pre-existing warning ใน tests/ ที่ไม่แตะ); `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 152 passed/2 skipped/0 failed จาก 154 (17/17 suites) ตรงเป้า; `stockLedgerAccuracy.spec.ts` รันแยก 3 รอบติดกัน = เขียวทั้ง 3 รอบ (2/2 test ผ่านทุกรอบ); `npx playwright test` = 16 passed/2 failed/1 skipped จาก 19 (ขึ้นจาก 3/19 เดิมมาก) - 2 ที่เหลือยืนยันแล้วว่าเป็นบั๊กใน test file เอง (selector strategy) ไม่ใช่ DEF-11/12/13 ที่ fix แล้วจริง (ดูรายละเอียดใน gate_checklist ข้อสุดท้าย) บันทึกไว้ให้ QA ปรับ selector สองจุดนี้เอง ไม่ได้แตะไฟล์ tests/ เพื่อแก้ปัญหานี้ตามกติกา. ไม่ใช้ git ตลอดทั้งรอบตามที่กำหนด. seed ทั้ง dev/test DB ให้อยู่ในสถานะสะอาดก่อนส่งต่อ QA.",
           "overridden_by": null,
           "updated_at": "2026-07-08T14:30:00+07:00"
+        },
+        {
+          "agent": "qa",
+          "phase": "verify-4",
+          "status": "FAILED",
+          "gate_checklist": [
+            {
+              "item": "ยืนยัน DEF-09 (Critical) fixed จริงด้วยการรันอิสระ 3 รอบติดกัน (stockLedgerAccuracy.spec.ts) บน Docker volume ที่ reset ใหม่ล้วนๆ เขียวทั้ง 3 รอบ ทั้ง 2 sub-test",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ยืนยัน DEF-10/11/12/13 (Major) fixed: invoice.spec.ts (Invoiced transition + 409-before-400), DOM probe จริง (customer picker แสดง label ถูกต้องครบ 5 ตัวเลือก ไม่ virtualize), curl ตรง (finance_demo GET /products = 200), errorMessageAudit e2e ผ่าน",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ยืนยัน OPEN-1/2/3 ปิดแล้ว: realtimeStock.spec.ts ทั้ง 2 test ผ่าน, errorMessageAudit UI test ผ่าน",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152 passed/2 skipped/0 failed/17/17 suites ตรงกับที่ Engineer อ้างเป๊ะ",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "แก้ 2 จุด selector ที่ Engineer ชี้ (demoFlow.spec.ts getByRole(option) -> .ant-select-item-option, invoiceRevisionTimeline.spec.ts input[name=unitPrice] -> getByTestId) หลังยืนยันด้วย DOM probe ตรงว่า Engineer วิเคราะห์ถูกทั้งคู่",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี Critical/Major defect ใหม่ที่เป็นความผิดของโค้ด",
+              "pass": false,
+              "missing": "พบ 2 ตัวใหม่ระหว่างแก้ e2e spec ให้ผ่านจริง: DEF-14 (Major) Production role เรียก GET /users ไม่ได้ (403, ต้องการ user_management.view_users ซึ่งมีแค่ Admin) ทำให้ assign-worker-select (ProductionPage.tsx, ECP-012) ว่างเปล่าเสมอสำหรับ role เดียวที่ทำ assign จริง ยืนยันด้วย curl ตรง - รูปแบบเดียวกับ DEF-12 ที่เพิ่งแก้ แต่คนละ endpoint/role; DEF-15 (Major) revise-invoice modal product <select name=productId onChange={()=>undefined}> ไม่ได้ครอบด้วย AntForm.Item เลย ไม่ผูกกับ form state จึง values.productId เป็น undefined เสมอตอน submit -> Number(undefined)=NaN -> Zod reject ทุกครั้ง (form-error แสดง ข้อมูลที่กรอกไม่ถูกต้อง ยืนยันด้วย DOM probe ตรง) - DEF-12 (permission) ที่ Engineer แก้ทำให้ dropdown มีตัวเลือกให้เลือกแล้วจริง แต่การเลือกไม่มีผลอะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise invoice ยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดี เป็นบั๊กคนละชั้นซ่อนอยู่หลัง DEF-12"
+            },
+            {
+              "item": "อัปเดต verify-report.md/defects.md พร้อมสถานะ DEF ทุกตัว (01-15) + MIN + UAT plan summary",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/test-plans/erp-core-prototype/defects.md",
+            "docs/test-plans/erp-core-prototype/verify-report.md",
+            "tests/e2e/demoFlow.spec.ts",
+            "tests/e2e/invoiceRevisionTimeline.spec.ts",
+            "tests/integration/po.spec.ts",
+            "tests/integration/invoice.spec.ts",
+            "tests/integration/concurrency/stockLedgerAccuracy.spec.ts"
+          ],
+          "questions_for_pond": [],
+          "summary": "Verify-4 (รอบปิดงานตามที่คาดหวัง): ยืนยัน DEF-09 (Critical, stock ledger TOCTOU) fixed จริงด้วยการรันอิสระ stockLedgerAccuracy.spec.ts แยก 3 รอบติดกันบน Docker volume ที่ reset ใหม่ล้วนๆ เขียวทั้ง 3 รอบทั้ง 2 sub-test (100-concurrent-op + lot-level boundary-race) มั่นใจว่าปิดแล้วจริง. ยืนยัน DEF-10 (PO->Invoiced transition + 409-before-400 ordering), DEF-11 (antd Select label ถูกต้อง ยืนยันด้วย DOM probe ตรงในเบราว์เซอร์จริง เห็น 5 ตัวเลือกครบพร้อม label ภาษาไทยถูกต้อง ไม่ virtualize เหลือ ~2 เหมือนก่อน), DEF-12 (Finance เรียก GET /products ได้ 200 จริงแล้ว), DEF-13 (VAT rate validator error แสดงผ่าน UI จริง) fixed ทั้งหมด และ OPEN-1/2/3 (dashboard/polling timeout + notify-error) ปิดครบทั้ง 3 รายการ. รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152 passed/2 skipped/0 failed จาก 154 (17/17 suites) ตรงกับที่ Engineer อ้างเป๊ะ. ตรวจสอบ 2 จุด selector ที่ Engineer ชี้ว่าเป็นบั๊กใน spec ของ QA เอง (ไม่ใช่โค้ด) ด้วย DOM probe ตรงในเบราว์เซอร์จริงก่อนแก้ (ไม่เชื่อคำอธิบายเปล่าๆ): ยืนยันว่า Engineer วิเคราะห์ถูกทั้งคู่จริง - demoFlow.spec.ts ใช้ getByRole(option) ที่ match rc-select hidden ARIA shadow listbox ผิดที่ (ต้องใช้ .ant-select-item-option ที่มองเห็นได้จริงแทน) และ invoiceRevisionTimeline.spec.ts ใช้ input[name=unitPrice] ที่ antd InputNumber ไม่เคย render name attribute เลย (ต้องใช้ getByTestId แทน) แก้ทั้งสองจุดตามที่ชี้แนะ. ระหว่างแก้ให้ flow ทั้งสองไฟล์นี้ผ่านจริงจนสุดทาง กลับพบ defect โค้ดจริงใหม่อีก 2 ตัวที่ Engineer ไม่เคยรายงาน (เพราะไม่ได้ทดสอบ flow เต็มผ่านเบราว์เซอร์จริงจนสุดทางเหมือนกัน): DEF-14 (Major) - Production role (role เดียวที่ทำ ECP-012 assign worker) เรียก GET /users ไม่ได้ (403, endpoint ต้องการ user_management.view_users ซึ่งมีแค่ Admin) ทำให้ assign-worker-select dropdown ว่างเปล่าเสมอสำหรับ role ที่ต้องใช้งานจริง ยืนยันด้วย curl ตรง - รูปแบบ permission-matrix-gap เดียวกับ DEF-12 เป๊ะ แต่คนละ endpoint/role ที่ Engineer ยังไม่ได้ตรวจ; DEF-15 (Major) - revise-invoice modal product <select> ใน InvoicesPage.tsx ไม่ได้ครอบด้วย AntForm.Item และ onChange ทิ้ง event () เลย ทำให้ values.productId เป็น undefined เสมอตอน submit -> ส่ง NaN -> Zod reject ทุกครั้ง (ยืนยันด้วย DOM probe ตรง เห็น form-error message ทุกครั้งหลัง submit) เป็นบั๊กคนละชั้นที่ซ่อนอยู่หลัง DEF-12: DEF-12 (permission) ทำให้ dropdown มีตัวเลือกให้เลือกแล้วจริง แต่การเลือกไม่มีผลอะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise invoice จึงยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดีแม้ DEF-12 จะแก้แล้วก็ตาม - integration test เดิมจับบั๊กนี้ไม่ได้เพราะส่ง productId ตรงผ่าน request body อยู่แล้ว ไม่ผ่าน form ที่พังจุดนี้. ตัวเลขจริงสุดท้าย: unit 175/175, integration 152/154 (2 skip, 0 fail, 17/17 suites เขียว), stockLedgerAccuracy 3/3 รอบเขียว, e2e 16/19 (2 fail = DEF-14/15 ใหม่ + 1 skip มีเหตุผลเดิม). สถานะ FAILED ตามกติกา Exit Gate (พบ Major defect ใหม่ 2 ตัว) - ส่งกลับ Engineer พร้อม defect list เต็ม เน้นว่า DEF-01-13 + OPEN-1-3 ปิดหมดแล้วไม่ต้องแก้ซ้ำ เหลือแค่ DEF-14/15 ที่มีรูปแบบชัดเจน (permission gap + form-wiring bug) ไม่ใช่ปัญหา architecture ใหญ่เหมือน DEF-09 คาดว่ารอบถัดไปจะปิดงานได้จริง. อัปเดต UAT plan summary (2-3 คน/role ตามที่ปอนด์อนุมัติ) ใน verify-report.md พร้อมคำแนะนำว่ายังไม่ควรเริ่มนัดหมาย UAT จนกว่า DEF-14/15 จะแก้เสร็จ.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T18:00:00+07:00"
         }
       ]
     }

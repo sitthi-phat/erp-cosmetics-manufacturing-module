@@ -91,17 +91,13 @@ describe("Invoice & Payment module (Epic 7)", () => {
     expect(Number(res.body.data.totalAmount)).toBeCloseTo(53500, 2);
     expect(res.body.data.status).toBe("Issued");
 
-    // *** DEF-10 (NEW, Major, confirmed live - not a spec bug): neither invoice.service.ts nor
-    // invoice.routes.ts ever updates PurchaseOrder.status to "Invoiced", nor creates a
-    // POStatusEvent(status:"Invoiced") anywhere in the codebase (`grep -rn '"Invoiced"'
-    // src/backend/modules` only matches the type union in po.rules.ts, never an actual
-    // assignment). This means: (a) po.status stays "Shipped" forever even after the invoice is
-    // fully issued/paid, and (b) the ECP-006 AC1 5-step timeline (Confirmed/InProduction/QC
-    // Approved/Shipped/Invoiced) - the exact requirement Gate 1 called out by name - can NEVER
-    // reach its final "Invoiced" step. This asserts the CORRECT/intended behavior (per
-    // po.rules.ts's own POStatus type and the FE's TIMELINE_STEPS in PoDetailPage.tsx) rather
-    // than being weakened to match the current gap - do not "fix" this assertion without first
-    // wiring the status/timeline update in invoice.service.ts#issueInvoice.
+    // DEF-10 [Major] — FIXED (verify-4, confirmed green). Was: neither invoice.service.ts nor
+    // invoice.routes.ts ever updated PurchaseOrder.status to "Invoiced" nor created a
+    // POStatusEvent(status:"Invoiced") - Engineer wired that transition into invoice.routes.ts
+    // right after a successful issue (defect-fix-3), and fixed a knock-on regression this exposed
+    // (the existing-invoice-chain 409 must now be checked before the generic not-shipped 400,
+    // since a re-issue attempt's poStatus is legitimately "Invoiced" now, not "Shipped" - see
+    // TC-020-AC2 below, which still passes). See defects.md DEF-10 for the original bug history.
     const poRes = await sales.get(`/api/v1/pos/${po.poId}`);
     expect(poRes.body.data.status).toBe("Invoiced");
   });

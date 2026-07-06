@@ -24,28 +24,25 @@
  * respects visibility and returns "" for hidden elements, so `.textContent()` is used there
  * instead.
  *
- * RECONCILED 2026-07-08 (QA verify-3, run against a LIVE browser+backend+MySQL for the first
- * time): *** DEF-11 (NEW, Major, confirmed via direct DOM inspection) ***. Every antd `<Select>`
- * option in this app renders its VISIBLE text as the raw numeric `value` instead of the intended
- * `label` string, even though `options={[{value, label}]}` is passed correctly (verified on the
- * customer picker AND the product picker: `<div role="option" aria-label="บริษัท ABC จำกัด
- * (CUS-00000001)">21</div>` - `aria-label` is right, the rendered text a real user sees is just
- * "21"). This means every dropdown that uses a numeric id as its option value (customer, product,
- * worker, material - i.e. every Select in this app except the two-value QC-result one) shows
- * meaningless numbers to real users instead of names - a genuine usability-breaking defect, not
- * a testing artifact. Separately, Playwright's accessible-name computation for these options does
- * NOT pick up `aria-label` here either (`getByRole("option", {name: "..."})` matches 0 elements),
- * and the dropdown list is virtualized (rc-virtual-list) so only ~2 options exist in the DOM at a
- * time, meaning `.first()` or a specific-name lookup can both intermittently fail to find/click a
- * stable target depending on scroll position. Because of DEF-11, this whole file cannot be
- * reliably driven end-to-end right now regardless of selector strategy - the `selectAntdOption`
- * helper below documents the INTENDED interaction pattern (correct once DEF-11 is fixed and the
- * list virtualization is accounted for) but is not currently passing. See defects.md DEF-11 for
- * the full reproduction. `npx playwright test --list` still confirms this file compiles/collects.
+ * RECONCILED 2026-07-08 (QA verify-3): DEF-11 (Major) found here - antd `<Select>` options
+ * rendered their VISIBLE text as the raw numeric `value` instead of the `label` string
+ * (`aria-label` was correct, the text a real user saw was just "21"). Engineer fixed it
+ * (SelectField now uses `labelInValue`+`optionLabelProp="label"`, defect-fix-3) - re-verified
+ * (verify-4) via direct DOM inspection: the customer picker now shows all 5 seeded customers with
+ * correct Thai labels, e.g. "บริษัท ABC จำกัด (CUS-00000001)", and is no longer virtualized down to
+ * ~2 DOM items (all 5 render at once).
+ *
+ * RECONCILED 2026-07-08 (verify-4, Engineer's own selector-strategy finding, confirmed correct):
+ * `getByRole("option", {name})` matches rc-select's hidden ARIA-only shadow listbox (an
+ * accessibility mirror), not the actual visible/clickable `.ant-select-item-option` rows - explains
+ * why it always matched 0 elements even after DEF-11 was fixed. `selectAntdOption()` below now
+ * targets `.ant-select-item-option` directly (confirmed via direct DOM probe: exactly 1 match for
+ * a "ABC" filter, 5 total options visible).
  */
 import { test, expect, Page } from "@playwright/test";
 
 const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:5173";
+const API_BASE_URL = process.env.E2E_API_BASE_URL ?? "http://localhost:4000";
 
 async function login(page: Page, username: string, password = "Password123!") {
   await page.goto(`${BASE_URL}/login`);
@@ -56,10 +53,12 @@ async function login(page: Page, username: string, password = "Password123!") {
   await page.waitForURL((url) => url.pathname === "/");
 }
 
-/** (b) antd `<Select>` is a custom combobox, not a native <select> - open then pick by text. */
+/** (b) antd `<Select>` is a custom combobox, not a native <select> - open then pick by text.
+ * Targets the real, visible `.ant-select-item-option` row (rendered in a body-level portal), NOT
+ * `getByRole("option")` which resolves against rc-select's separate hidden ARIA shadow listbox. */
 async function selectAntdOption(page: Page, testId: string, optionText: string) {
   await page.getByTestId(testId).click();
-  await page.getByRole("option", { name: optionText, exact: false }).click();
+  await page.locator(".ant-select-item-option", { hasText: optionText }).first().click();
 }
 
 test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
@@ -75,7 +74,8 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     );
     // Add one order line via the separate "เพิ่มรายการสินค้า" mini-form BEFORE submitting create -
     // both are independent antd <Form> instances, so filling this one does not submit the outer one.
-    await selectAntdOption(page, "po-line-product-0", "PRODUCT_WITH_BOM");
+    // "ครีมบำรุงผิวหน้า 50ml" is prisma/seed.ts's first product, which always has an active BOM.
+    await selectAntdOption(page, "po-line-product-0", "ครีมบำรุงผิวหน้า 50ml");
     await page.getByTestId("po-line-qty-0").fill("100");
     await page.getByTestId("unitPrice").fill("500"); // NumberField without an explicit testId defaults to its field name
     await page.getByTestId("po-add-line").click();
@@ -93,13 +93,54 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     await login(page, "production_demo");
     await page.getByTestId("nav-production-queue").click();
     await page.getByTestId(`queue-row-${poNumber}`).getByTestId("assign-button").click();
-    await selectAntdOption(page, "assign-worker-select", "somchai");
+
+    // *** DEF-14 (NEW, Major, confirmed via direct API call: `GET /api/v1/users` as
+    // production_demo -> 403 {"code":"FORBIDDEN"}) ***. `assign-worker-select` (ProductionPage.tsx)
+    // is populated via `useUsers()` -> `GET /users`, which is guarded by
+    // `requirePermission("user_management","view_users")` - an Admin-only permission (prisma/
+    // seed.ts's permission matrix grants it only to AD). This is the exact same class of gap as
+    // DEF-12 (Finance/products, already fixed with a narrower `product.view` permission): the
+    // "assign worker" dropdown is ALWAYS EMPTY for the Production role, the only role that
+    // actually performs ECP-012 (assign production order to a worker) through this screen - no
+    // seeded username ("somchai" was always a placeholder, never real seed data either) would
+    // ever appear regardless of the text searched for. Cannot proceed past this point in the
+    // real demo flow - left failing/documented rather than silently worked around. See defects.md
+    // DEF-14 (to be filed) for the full reproduction.
+    await selectAntdOption(page, "assign-worker-select", "Production Demo");
     await page.getByTestId("assign-confirm").click();
     // No per-PO testid exists on the "assigned, awaiting produce" table (ProductionPage.tsx does
     // not pass getRowTestId there) - best-effort: click the first (only, in a fresh demo run) row.
     await page.getByTestId("produce-button").first().click();
-    await selectAntdOption(page, "produce-lot-select-0", "RAW_MATERIAL_FOR_PRODUCT_WITH_BOM");
-    await page.getByTestId("lotId").fill("1");
+
+    // ProductionPage.tsx's "Lot ID" is a raw numeric NumberField the user must type directly (no
+    // lot-lookup UI exists) - resolve a REAL, QC-passed lot via the API first (mirrors the
+    // fixture-building pattern used in the integration specs) rather than guessing a hardcoded id.
+    // Goods receipt needs `stock.goods_receipt` (Warehouse only) and lot inspection needs
+    // `qc.inspect_incoming_lot` (QC only) - neither belongs to Production, whose session is what
+    // `page` is logged into for the actual UI steps - so both side-effect calls run through a
+    // fresh, isolated API request context instead of `page.request` (which shares the browser's
+    // cookies and would otherwise clobber the production_demo session).
+    const sideEffectContext = await page.context().browser()!.newContext();
+    await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/auth/login`, {
+      data: { username: "warehouse_demo", password: "Password123!" },
+    });
+    const materialsRes = await sideEffectContext.request.get(`${API_BASE_URL}/api/v1/materials`);
+    const materialsBody = await materialsRes.json();
+    const firstMaterial = materialsBody.data[0]; // "น้ำมันมะพร้าว" - always has an active BOM line
+    const receiptRes = await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/stock/receipts`, {
+      data: { materialId: firstMaterial.id, quantity: 100, lotNumber: `E2E-DEMOFLOW-${Date.now()}` },
+    });
+    const receiptBody = await receiptRes.json();
+    await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/auth/login`, {
+      data: { username: "qc_demo", password: "Password123!" },
+    });
+    await sideEffectContext.request.post(`${API_BASE_URL}/api/v1/qc/lots/${receiptBody.data.lotId}/inspect`, {
+      data: { result: "Passed" },
+    });
+    await sideEffectContext.close();
+
+    await selectAntdOption(page, "produce-lot-select-0", firstMaterial.name);
+    await page.getByTestId("lotId").fill(String(receiptBody.data.lotId));
     await page.getByTestId("produce-lot-qty-0").fill("50");
     // NOTE: the "+ เพิ่ม Lot" button has no explicit testId, so it defaults to the SHARED
     // "form-submit" id (SubmitButton's default) - scope by the currently-open modal to avoid

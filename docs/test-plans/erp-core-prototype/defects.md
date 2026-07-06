@@ -1,17 +1,17 @@
-# Defect Log — ERP Core Prototype — QA Verify Phase (เขียน 2026-07-07, อัปเดต re-verify 2026-07-07, อัปเดต verify-3 2026-07-08)
+# Defect Log — ERP Core Prototype — QA Verify Phase (เขียน 2026-07-07, อัปเดต re-verify 2026-07-07, verify-3/verify-4 2026-07-08)
 
 - **slug**: `erp-core-prototype`
-- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3, รอบนี้รันกับ Docker/MySQL/browser จริงเป็นครั้งแรกในฐานะ QA)
+- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3 → Verify-4)
 - **สถานะรวมรอบแรก**: 2 Critical, 3 Major, 3 Minor/Observation — **status = FAILED**
 - **สถานะหลัง re-verify (รอบ 2)**: DEF-01/02/04/05 = Fixed, DEF-03 = Partially Fixed — ตั้ง READY_FOR_DEVOPS
 - **สถานะหลัง DevOps + Engineer defect-fix-2**: พบ DEF-06 (Critical)/DEF-07 (Major)/DEF-08 (contract
   decision) ใหม่จากการรันกับ MySQL/browser จริงเป็นครั้งแรก — DEF-06/07 แก้ที่ root cause แล้ว, DEF-08
   ตัดสินแล้วว่าโค้ด Engineer ถูก (spec ของ QA ต้องแก้)
-- **สถานะหลัง verify-3 (รอบนี้, 2026-07-08 — QA แก้ spec ทั้งหมดให้ตรง contract จริงแล้วรันกับ Docker/MySQL/
-  browser จริงครบ)**: ยืนยัน DEF-06/07 fixed จริงด้วยหลักฐานเพิ่มเติม (raw SQL, 100-way concurrency,
-  roleMenuOnboarding e2e) — **แต่การรันจริงแบบเจาะลึกกลับพบ defect ใหม่ 5 ตัว (DEF-09 Critical, DEF-10/11/
-  12/13 Major) ที่ไม่เคยถูกจับได้มาก่อนเพราะไม่เคยมีใครรันกับ MySQL/browser จริงแบบเจาะลึกขนาดนี้** —
-  **status = FAILED อีกครั้ง** ดู §"สรุปผล Verify-3" ท้ายไฟล์สำหรับรายละเอียดเต็ม
+- **สถานะหลัง verify-3**: ยืนยัน DEF-06/07 fixed จริง — แต่พบ defect ใหม่ 5 ตัว (DEF-09 Critical, DEF-10/11/
+  12/13 Major) — status = FAILED
+- **สถานะหลัง verify-4 (ล่าสุด, 2026-07-08)**: DEF-09/10/11/12/13 = Fixed ทั้งหมด (ยืนยันซ้ำ รวม DEF-09
+  ด้วยการรันอิสระ 3 รอบ) + OPEN-1/2/3 ปิดหมด — **แต่พบ Major defect ใหม่อีก 2 ตัวระหว่างปิดงาน (DEF-14, DEF-15)**
+  — **status = FAILED อีกครั้ง** ดู §"Verify-4" ท้ายไฟล์สำหรับรายละเอียดเต็ม
 
 Legend severity: **Critical** = ข้อมูลผิด/สูญหาย/เงื่อนไข Gate 1 ถูกละเมิดตรงๆ, **Major** = AC ที่ระบุชัด
 ไม่ผ่านจริงหรือ blocking การ verify ของเคสสำคัญ, **Minor** = ไม่กระทบ business logic/ยังไม่ยืนยันว่าเป็นปัญหาจริง.
@@ -653,3 +653,147 @@ dashboard, หรือปัจจัยอื่นที่ยังไม่
 **ผลสรุป Verify-3**: พบ Critical defect ใหม่ 1 ตัว (DEF-09) และ Major defect ใหม่ 4 ตัว (DEF-10..13) จากการ
 รันกับ MySQL/browser จริงแบบเจาะลึก — status = FAILED ตามกติกา Exit Gate ส่งกลับ Engineer พร้อม defect
 list เต็มชุดนี้ (DEF-06/07 ปิดแล้ว ไม่ต้องแก้ซ้ำ; DEF-08 ปิดแล้วเป็น QA-side work ที่ทำเสร็จแล้ว)
+
+
+---
+
+# Verify-4 (2026-07-08) — รอบปิดงาน: ยืนยัน DEF-09..13 fixed + พบ DEF-14/15 ใหม่ระหว่างแก้ e2e spec
+
+Engineer (`defect-fix-3`) แก้ DEF-09 (Critical)/DEF-10/11/12/13 (Major) ครบ + ปิด OPEN-1/2/3 ทั้งหมด ส่งกลับ
+QA พร้อมอ้างว่า integration เขียวหมด (152/154, 2 documented skip, 17/17 suites) และ e2e เหลือ 2 เคสที่เป็น
+"บั๊กใน spec ของ QA เอง" (selector strategy 2 จุด) ไม่ใช่โค้ด
+
+## สิ่งที่ QA ทำรอบนี้ (verify-4)
+1. รัน `npm run test:unit` ยืนยัน 175/175 ตรงกับที่ Engineer อ้าง
+2. `npm run reset && npm run setup` บน Docker volume ใหม่ล้วนๆ สำเร็จ
+3. รัน `RUN_DB_TESTS=1 npx jest --selectProjects integration` เต็ม: **152 passed, 2 skipped, 0 failed,
+   17/17 suites** ตรงเป๊ะกับที่ Engineer อ้าง
+4. ยืนยัน DEF-09 อิสระ: รัน `stockLedgerAccuracy.spec.ts` แยก **3 รอบติดกัน — เขียวทั้ง 3 รอบ** (2/2 test
+   ผ่านทุกรอบ) + รัน `po.spec.ts`/`invoice.spec.ts` ซ้ำ (double-confirm + Invoiced transition) ผ่านครบ
+5. อัปเดต comment ในไฟล์ spec ที่เคยบันทึก DEF-09/10 เป็น "confirmed failing" ให้เป็น "FIXED" (สอดคล้องกับผล
+   รันจริงล่าสุด ไม่ทิ้ง comment ที่ทำให้เข้าใจผิดว่ายังพังอยู่)
+6. ตรวจสอบ 2 จุด selector ที่ Engineer ชี้ (`demoFlow.spec.ts`'s `getByRole("option")` และ
+   `invoiceRevisionTimeline.spec.ts`'s `input[name="unitPrice"]`) ด้วย DOM probe ตรงในเบราว์เซอร์จริง —
+   **ยืนยันว่า Engineer วิเคราะห์ถูกทั้งคู่ เป็น bug ใน spec ของ QA เองจริง ไม่ใช่โค้ด** แก้ทั้งสองจุด:
+   - `demoFlow.spec.ts`: เปลี่ยนจาก `getByRole("option", {name})` (match rc-select's hidden ARIA shadow
+     listbox ที่ Playwright resolve ผิดที่) เป็น `.locator(".ant-select-item-option", {hasText})` (แถวที่
+     มองเห็นได้จริง) — ยืนยันด้วย probe: 5 ตัวเลือกแสดงครบ label ถูกต้อง ไม่ virtualize อีกต่อไปหลัง DEF-11 fix
+   - `invoiceRevisionTimeline.spec.ts`: เปลี่ยนจาก `input[name="unitPrice"]` (antd InputNumber ไม่ render
+     `name` attribute) เป็น `page.getByTestId("unitPrice")` (default testid ของ field ที่ไม่ได้ตั้ง testId
+     ชัดเจน ตาม `ui/Form.tsx`'s convention)
+7. **ระหว่างแก้ 2 จุดนี้ พบ defect โค้ดจริงใหม่อีก 2 ตัว** (ไม่ใช่แค่ selector อีกแล้ว):
+   - **DEF-14**: `assign-worker-select` (ProductionPage.tsx) populate จาก `GET /users` ซึ่งต้องการ
+     `user_management.view_users` (Admin-only) — Production role (role เดียวที่ทำ ECP-012 assign worker)
+     ไม่มีสิทธิ์นี้เลย ยืนยันด้วย curl ตรง (403) — เหมือน DEF-12 เป๊ะแต่คนละ endpoint/role
+   - **DEF-15**: revise-invoice modal's product `<select name="productId" onChange={() => undefined}>`
+     เป็น native select ที่**ไม่ได้ผูกกับ antd Form state เลย** (ไม่มี AntForm.Item ครอบ, onChange ทิ้ง event)
+     ทำให้ `values.productId` เป็น `undefined` เสมอตอน submit → `Number(undefined)=NaN` → Zod reject ทุกครั้ง
+     ยืนยันด้วย DOM probe ตรง (form-error แสดง "ข้อมูลที่กรอกไม่ถูกต้อง" ทุกครั้งหลัง submit) — **DEF-12
+     (permission) ที่ Engineer แก้ไปแล้วทำให้ dropdown "มีตัวเลือกให้เลือก" ได้จริงแล้วก็จริง แต่การเลือกไม่มีผล
+     อะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise ยังใช้งานผ่าน UI จริงไม่ได้อยู่ดี** เป็นบั๊กคนละชั้นจาก DEF-12
+
+## ตัวเลขรันจริงสุดท้าย (verify-4)
+
+| Suite | ผลลัพธ์ |
+|---|---|
+| `npm run test:unit` | **175 passed, 12 skipped, 0 failed, 28/30 suites** |
+| `RUN_DB_TESTS=1 npx jest --selectProjects integration` (17 ไฟล์) | **152 passed, 2 skipped, 0 failed, 154 total, 17/17 suites เขียว** |
+| `stockLedgerAccuracy.spec.ts` แยก 3 รอบอิสระ | **เขียวทั้ง 3 รอบ (2/2 ทุกรอบ)** |
+| `npx playwright test` (19 test, 6 ไฟล์) | **16 passed, 2 failed, 1 skipped, 19 total** |
+
+---
+
+## DEF-09 [CRITICAL] — สถานะสุดท้าย: FIXED (ยืนยันซ้ำ 3 รอบอิสระ verify-4)
+ดูรายละเอียดที่ §Verify-3 ด้านบน ยืนยันเพิ่มเติมรอบนี้ด้วยการรัน `stockLedgerAccuracy.spec.ts` แยก 3 ครั้งบน
+Docker volume ที่ reset ใหม่ล้วนๆ — เขียวทุกรอบ ทั้ง 2 sub-test (100-concurrent-op + lot-level boundary-race)
+ปิด defect นี้อย่างมั่นใจที่สุด
+
+## DEF-10 [MAJOR] — สถานะสุดท้าย: FIXED
+ยืนยันซ้ำผ่าน `invoice.spec.ts` TC-020-AC1 (po.status → "Invoiced" หลังออก invoice) + TC-020-AC2 (409 มาก่อน
+400 ถูกต้อง หลัง Engineer สลับลำดับการเช็ค) — ทั้งคู่ผ่าน
+
+## DEF-11 [MAJOR] — สถานะสุดท้าย: FIXED
+ยืนยันด้วย DOM probe ตรงในเบราว์เซอร์จริง: customer picker แสดง 5 ตัวเลือกครบพร้อม label ภาษาไทยที่ถูกต้อง
+("บริษัท ABC จำกัด (CUS-00000001)" ฯลฯ) ไม่ใช่เลขดิบอีกต่อไป และไม่ virtualize จนเหลือ ~2 ตัวเหมือนก่อน (labelInValue
+ทำให้ list render ครบ)
+
+## DEF-12 [MAJOR] — สถานะสุดท้าย: FIXED (แต่เจอ DEF-15 ที่เป็นบั๊กคนละชั้นในฟีเจอร์เดียวกัน)
+`GET /products` คืน 200 สำหรับ Finance แล้วจริง (permission `product.view` ใหม่ทำงานถูกต้อง) ยืนยันด้วย curl
+ตรง — dropdown มีตัวเลือกให้เลือกแล้ว **แต่ฟีเจอร์ revise โดยรวมยังใช้งานผ่าน UI ไม่ได้อยู่ดีเพราะ DEF-15**
+(ดูด้านล่าง) — ปิด DEF-12 เฉพาะส่วนที่มันรับผิดชอบ (permission) ไม่ปิด "revise ใช้งานได้จริง" ในภาพรวม
+
+## DEF-13 [MAJOR] — สถานะสุดท้าย: FIXED
+`errorMessageAudit.spec.ts` UI test ผ่านแล้ว (OPEN-3 ปิดพร้อมกัน) ยืนยัน server-side Zod validation ยังทำงาน
+ถูกต้องอยู่แล้ว (ไม่เคยเป็นปัญหา) ปัญหาเดิมอยู่ที่ client-side clamp ที่ถูกถอดออกแล้ว
+
+## OPEN-1/2/3 — สถานะสุดท้าย: ปิดแล้ว
+`realtimeStock.spec.ts` ทั้ง 2 test (dashboard AC2 + fallback polling) ผ่านแล้วหลัง Engineer ปรับ
+`playwright.config.ts` global timeout เป็น 90s (root cause ที่แท้จริง: Playwright เคย kill test ที่ 30s ก่อน
+ที่ assertion ภายในเทสต์เองจะได้โอกาสรอครบ 60s ตามที่ ECP-007 AC1/ECP-028 AC2 อนุญาตไว้) `errorMessageAudit.spec.ts`
+UI test ผ่านแล้วหลังเพิ่ม QueryCache-level onError — ยืนยันด้วยการรันจริงทั้งหมดในรอบนี้ ปิดทั้ง 3 รายการ
+
+---
+
+## DEF-14 [MAJOR, ใหม่] — Production role เรียก GET /users ไม่ได้ — assign-worker dropdown ว่างเปล่าเสมอ
+
+**เกี่ยวข้อง**: ECP-012 (assign production order to a worker), `tests/e2e/demoFlow.spec.ts`
+
+**พบจาก**: ยืนยันด้วย curl ตรง (login เป็น production_demo แล้วเรียก `GET /api/v1/users`):
+`{"error":{"code":"FORBIDDEN","message":"คุณไม่มีสิทธิ์เข้าถึงหน้านี้","fields":null}}` STATUS:403
+`user.routes.ts`'s `GET /users` guard ด้วย `requirePermission("user_management","view_users")` ซึ่งตาม
+`prisma/seed.ts`'s permission matrix มีแค่ AD (Admin) เท่านั้นที่ถือสิทธิ์นี้ — ทำให้ dropdown "มอบหมายงาน"
+(`assign-worker-select`, `ProductionPage.tsx` ใช้ `useUsers()` -> `GET /users`) **ว่างเปล่าเสมอสำหรับ
+Production role** ซึ่งเป็น role เดียวที่ทำ ECP-012 (มอบหมายงานผลิตให้คนงาน) จริงในระบบ
+
+**Severity**: Major — รูปแบบเดียวกับ DEF-12 เป๊ะ (permission ของ endpoint สนับสนุนไม่ตรงกับ role ที่ต้องใช้งาน
+จริง) แต่เป็นคนละ endpoint/role พบระหว่างแก้ `demoFlow.spec.ts` ให้ผ่าน DEF-11 fix จนไปติดจุดนี้แทน (progress
+ที่แท้จริงของ demo flow: ผ่าน PO create/confirm ครบแล้ว ติดที่ assign worker เป็นจุดแรก)
+
+**คำแนะนำแก้ไข (ไม่ใช่คำสั่งบังคับ)**: เพิ่ม permission ที่แคบกว่า (เช่น `production.view_workers` หรือคืน
+เฉพาะ user ที่ active ในบทบาทที่เกี่ยวข้อง) ให้ Production เข้าถึงได้ ตาม pattern เดียวกับที่แก้ DEF-12
+(`product.view` แยกจาก `stock.view`)
+
+---
+
+## DEF-15 [MAJOR, ใหม่] — Revise-invoice modal's product `<select>` ไม่ผูกกับ form state เลย (บั๊กคนละชั้นจาก DEF-12)
+
+**เกี่ยวข้อง**: ECP-037 (revise invoice), `tests/e2e/invoiceRevisionTimeline.spec.ts`, DEF-12 (permission ที่
+Engineer เพิ่งแก้ - นี่คือบั๊กที่ซ่อนอยู่หลัง DEF-12 อีกชั้นในฟีเจอร์เดียวกัน)
+
+**พบจาก**: หลัง DEF-12 ถูกแก้ (dropdown มีตัวเลือกให้เลือกแล้วจริง) ทำตาม flow เต็ม (เลือกสินค้า+กรอก
+รายละเอียด+จำนวน+ราคา+กด "+ เพิ่มรายการ"+กด "บันทึกการแก้ไข") แต่ modal ไม่ปิดและค้างอยู่เสมอ — ตรวจสอบด้วย
+DOM probe ตรง พบ `form-error` element แสดงข้อความ "ข้อมูลที่กรอกไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง" (Zod validation
+error ทั่วไป) ทุกครั้งหลังกด submit
+
+**Root cause**: `InvoicesPage.tsx` บรรทัดของ product select:
+```jsx
+<select name="productId" style={{ marginBottom: 8, width: "100%" }} onChange={() => undefined}>
+```
+เป็น native `<select>` ที่**ไม่ได้ครอบด้วย `AntForm.Item`** (ไม่ถูกลงทะเบียนกับ antd Form state เลย) และ
+`onChange` ของมันเองก็ทิ้ง event ทันที (`() => undefined`) — เมื่อ `addReviseLine(values)` อ่าน
+`values.productId` จาก antd's `onFinish` callback ค่านี้จะเป็น `undefined` เสมอ (เพราะไม่เคยถูกลงทะเบียน)
+ทำให้ `Number(undefined) = NaN` ถูกส่งเป็น `productId` ของทุกบรรทัดที่เพิ่ม ซึ่งไม่ผ่าน
+`z.number().int().positive()` ที่ backend เสมอ
+
+**Severity**: Major — DEF-12 (permission) ทำให้ dropdown "มีตัวเลือกให้เลือก" แล้วจริง แต่การเลือกไม่มีผลใดๆ
+ต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ "แก้ไข invoice (revise)" จึง**ยังใช้งานไม่ได้จริงผ่าน UI สำหรับ Finance แม้หลัง
+DEF-12 ถูกแก้แล้วก็ตาม** — เป็นบั๊กที่ซ่อนอยู่ลึกกว่า และจะไม่ถูกจับได้เลยถ้าไม่ทดสอบ flow เต็มจริงๆ ผ่านเบราว์เซอร์
+(การทดสอบระดับ API เพียงอย่างเดียว เช่น integration test เดิม ไม่มีทางจับบั๊กนี้ได้ เพราะ integration test ส่ง
+`productId` ตรงๆ ผ่าน request body อยู่แล้ว ไม่ผ่าน form พังจุดเดียวกันนี้)
+
+---
+
+## สรุปนับตาม severity หลัง Verify-4 (สถานะล่าสุด)
+
+| Severity | จำนวน | ID |
+|---|---|---|
+| Critical | 0 | (DEF-09 ปิดแล้ว) |
+| Major | 2 | DEF-14, DEF-15 (ใหม่) |
+| Minor/Observation | 8 | MIN-01..MIN-08 (ไม่เปลี่ยนแปลง) |
+| Open/สอบสวนต่อ | 0 | (OPEN-1/2/3 ปิดหมดแล้ว) |
+
+**ผลสรุป Verify-4**: DEF-09 (Critical) ปิดแล้วอย่างมั่นใจ (ยืนยัน 3 รอบอิสระ) พร้อม DEF-10/11/13 (Major) และ
+OPEN-1/2/3 ทั้งหมด — **แต่พบ Major defect ใหม่ 2 ตัวระหว่างปิดงาน (DEF-14, DEF-15)** ทั้งคู่เป็นรูปแบบ
+permission-matrix/form-wiring ที่ทำให้ฟีเจอร์ใช้งานไม่ได้จริงผ่าน UI สำหรับ role ที่ตั้งใจให้ใช้งาน —
+**status = FAILED** ตามกติกา Exit Gate (ยังมี Major defect ค้าง) ไม่ใช่ READY_FOR_DEVOPS แม้ integration จะ
+เขียวครบ 152/154 และ e2e จะดีขึ้นมากแล้ว (16/19) ก็ตาม เพราะยังมีบั๊กโค้ดจริงที่ยืนยันแล้ว 2 ตัวค้างอยู่

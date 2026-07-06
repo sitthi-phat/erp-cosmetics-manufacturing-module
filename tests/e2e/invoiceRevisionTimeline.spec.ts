@@ -108,24 +108,46 @@ test.describe("Invoice revision timeline demo (ECP-037)", () => {
     const row = page.getByTestId(`demo-invoice-row-${invoiceNo}`);
     await row.getByTestId("revise-invoice-button").click();
 
-    // *** DEF-12 (NEW, Major, confirmed via direct API call: `GET /api/v1/products` as
-    // finance_demo -> 403 {"code":"FORBIDDEN"}) ***. The revise-invoice modal's product picker
-    // (`useProducts()` -> `GET /products`) is guarded by `requirePermission("stock","view")` in
-    // product.routes.ts - but the Finance role (the ONLY role with `invoice.revise`, per
-    // prisma/seed.ts's permission matrix) does NOT have `stock.view` at all. This means the
-    // native `<select name="productId">` in the revise form is ALWAYS EMPTY for the one role that
-    // is actually meant to use it - a Finance user can open "แก้ไข (revise)" but can never
-    // populate a NEW product line through the real UI (the dropdown has zero options). This test
-    // therefore cannot proceed past this point as originally designed - left failing/documented
-    // rather than silently working around a broken feature.
-    // The revise form's product picker is a plain native <select> (InvoicesPage.tsx), unlike the
-    // antd Selects elsewhere - .selectOption() would be correct here once DEF-12 is fixed.
+    // DEF-12 [Major] — FIXED (verify-4). Was: `GET /api/v1/products` required `stock.view`, which
+    // Finance (the only role with `invoice.revise`) never had, so this native <select> was always
+    // empty. Engineer added a narrower `product.view` permission and granted it to Finance
+    // (product.routes.ts now uses requirePermission("product","view") instead of "stock","view") -
+    // confirmed via curl as finance_demo (200) and here via .selectOption() actually succeeding
+    // (the dropdown itself IS now populated with real product names).
+    const reviseModal = page.getByTestId("revise-invoice-modal");
     await page.locator('select[name="productId"]').selectOption({ index: 0 });
+    // TextField without an explicit testId defaults to data-testid={name} (ui/Form.tsx).
+    await page.getByTestId("description").fill("รายการที่แก้ไข");
     await page.getByTestId("revise-line-qty-0").fill("90");
-    await page.locator('input[name="unitPrice"]').fill("500");
+    // NumberField without an explicit testId defaults to data-testid={name} (ui/Form.tsx) - antd's
+    // InputNumber never renders a plain `name` HTML attribute, so `input[name="unitPrice"]` never
+    // matched anything; `getByTestId("unitPrice")` is the correct, stable locator.
+    await page.getByTestId("unitPrice").fill("500");
+    // This mini-form's own "+ เพิ่มรายการ" button has no explicit testId, so it defaults to the
+    // SHARED "form-submit" id (SubmitButton's default) - scope to the open modal. This ADDS the
+    // line to local state; it is a SEPARATE step from "revise-submit" below, which is the modal's
+    // own distinct final-submit button that actually calls the revise API.
+    await reviseModal.getByTestId("form-submit").click();
     await page.getByTestId("revise-submit").click();
 
-    await page.getByTestId("view-version-history").click();
+    // *** DEF-15 (NEW, Major, found while re-verifying DEF-12 - a SEPARATE, deeper bug in the
+    // same form): confirmed via direct probe (form-error text after submit = "ข้อมูลที่กรอกไม่ถูกต้อง
+    // กรุณาตรวจสอบอีกครั้ง", the generic Zod validation message). Root cause: InvoicesPage.tsx's
+    // `<select name="productId" ... onChange={() => undefined}>` is a RAW native <select> that is
+    // NOT wrapped in an `AntForm.Item` and whose own onChange handler discards the event - it is
+    // not registered with the surrounding antd `<Form>`'s state at all. `addReviseLine`'s `values`
+    // (from onFinish) therefore never contains a real `productId`, so every added line's
+    // `productId` is `Number(undefined)` = `NaN`, which fails the `z.number().int().positive()`
+    // schema check on submit. DEF-12 (permission) being fixed only means the dropdown now HAS
+    // options to display - selecting one still has zero effect on what gets submitted. The revise
+    // feature is therefore still not usable end-to-end through the real UI even after DEF-12.
+    // Left failing/documented rather than silently worked around - no test-side fix is applicable.
+    await expect(page.getByTestId("revise-invoice-modal")).toBeHidden();
+
+    // Scope to THIS test's own row (not a page-global query) - the shared dev DB can carry
+    // invoices created by other tests/files that ran earlier in the same suite execution, so more
+    // than one `view-version-history` button can legitimately exist on the page at once.
+    await row.getByTestId("view-version-history").click();
     const versionRows = page.getByTestId("invoice-version-row");
     await expect(versionRows).toHaveCount(2);
     await expect(versionRows.filter({ hasText: "v1" })).toContainText(/Superseded/);
