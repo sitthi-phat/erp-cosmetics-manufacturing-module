@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(git add *)",
-      "Bash(git commit -m 'pipeline\\(erp-core-prototype\\): registered *)"
+      "Bash(git commit -m 'pipeline\\(erp-core-prototype\\): registered *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "PowerShell(npm *)",
+      "PowerShell(npx *)"
     ]
   }
 }

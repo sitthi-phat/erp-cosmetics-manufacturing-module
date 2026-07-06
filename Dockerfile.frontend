@@ -1,0 +1,14 @@
+# Local dev image for the frontend (Vite dev server with HMR). DevOps may add a prod
+# static-build stage later (D-tasks) - this Dockerfile only targets local dev per D1.
+FROM node:20-alpine
+
+WORKDIR /app/src/frontend
+
+COPY src/frontend/package*.json ./
+RUN npm install
+
+COPY src/frontend ./
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -1,0 +1,54 @@
+# Local dev environment (DevOps owns tuning of this file - D1/D3). Baseline provided by
+# Engineer so `docker compose up` already boots backend + frontend + MySQL for local dev.
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: erp_core_prototype
+      MYSQL_USER: erp
+      MYSQL_PASSWORD: erp
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uerp", "-perp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: "mysql://erp:erp@mysql:3306/erp_core_prototype"
+    ports:
+      - "4000:4000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./src/backend:/app/src/backend
+      - ./prisma:/app/prisma
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./src/frontend:/app/src/frontend
+
+volumes:
+  mysql_data:

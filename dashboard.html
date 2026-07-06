@@ -141,6 +141,20 @@ const CHIP = {
 
 let source = null; // 'fetch' | 'file'
 
+function agentFromReady(st){
+  if(!/^READY_FOR_/.test(st||'')) return null;
+  const key=st.replace('READY_FOR_','');
+  const map={PO:'po',BA:'ba',TECHLEAD:'tech-lead',TECH_LEAD:'tech-lead',
+             ENGINEER:'engineer',ENG:'engineer',QA:'qa',QA_VERIFY:'qa',DEVOPS:'devops'};
+  return map[key]||null;
+}
+function chipFor(st){
+  if(CHIP[st]) return CHIP[st];
+  const a=agentFromReady(st);
+  if(a){const lbl=(AGENTS.find(x=>x.id===a)||{}).lbl||a; return {t:'ส่งต่อ '+lbl,c:'run'};}
+  return {t:st,c:'idle'};
+}
+
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function fmtTime(iso){ if(!iso) return ''; try{return new Date(iso).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}catch(e){return iso} }
 
@@ -169,9 +183,10 @@ function stationState(f){
   if(st==='BLOCKED_NEED_INPUT'||st==='FAILED'){ if(cur&&s[cur]!=='past') s[cur]='attn'; else if(cur) s[cur]='attn'; return s; }
   if(st==='ON_HOLD'){ return s; }
   // IN_PROGRESS or READY_FOR_* → light the working/next station
-  const nextMap={READY_FOR_BA:'ba',READY_FOR_TECHLEAD:'tech-lead',READY_FOR_QA_VERIFY:'qa',READY_FOR_DEVOPS:'devops'};
-  const active = nextMap[st] || cur;
+  const active = agentFromReady(st) || cur;
   if(active && s[active]!=='past') s[active]='active pulse';
+  // Engineer & QA start in parallel after gate 1
+  if(g1 && active==='engineer' && s['qa']!=='past') s['qa']='active pulse';
   return s;
 }
 
@@ -200,7 +215,7 @@ function render(data){
   feats.sort((a,b)=>rank(a[1])-rank(b[1]));
 
   for(const [slug,f] of feats){
-    const chip=CHIP[f.status]||{t:f.status,c:'idle'};
+    const chip=chipFor(f.status);
     const st=stationState(f);
     const last=(f.history||[]).slice(-1)[0];
     const needsPond = f.status==='BLOCKED_NEED_INPUT'||f.status==='WAITING_HUMAN_GATE';

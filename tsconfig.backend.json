@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "outDir": "dist"
+  },
+  "include": ["src/backend/**/*.ts", "src/shared/**/*.ts", "prisma/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/frontend", "**/*.test.ts"]
+}

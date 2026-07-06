@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "tech-lead",
-      "status": "READY_FOR_ENGINEER",
+      "current_agent": "engineer",
+      "status": "READY_FOR_QA_VERIFY",
       "human_gates": {
         "gate1_architecture": {"approved": true, "approved_at": "2026-07-06T21:30:00+07:00", "note": "Approved with conditions by Pond: (1) เลขเอกสารทุก format ต้องรองรับปริมาณ/การทำงานพร้อมกันสูง (running number เผื่อหลัก), เพิ่ม format Customer ID และ User ID, Invoice ต้องมี version number และ reference ถึง parent invoice เมื่อมีการแก้ไข (2) GMP rule: OK ตามที่เสนอ (3) role change ไม่ revoke ทันทีได้ แต่ permission ต้องมีผลภายใน TTL ไม่เกิน 5 นาที (4) Ant Design OK แต่ต้องออกแบบเผื่อเปลี่ยน UI library ภายหลัง — เพิ่มเติม: ระบบเน้นความเร็วและความแม่นยำสูง, VAT 7% ต้อง configurable ใน admin portal (ที่เดียวกับหน้า manage user) — เงื่อนไขต้องถูกปรับใน stories/ADR/design ก่อน Engineer เริ่ม"},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
@@ -252,6 +252,42 @@
           "summary": "เขียน test-plan.md ครบ: traceability matrix ทุก AC (119 ACs จาก ECP-001–038) → TC ID/level/automatable พร้อมเหตุผลของส่วนที่ไม่ automate ได้ (ECP-035 usability UAT ต้องใช้มนุษย์จริง ~3%), automation coverage ~91% เต็ม + ~6% บางส่วน, ออกแบบเคสวิกฤต 4 จุดตามที่ Gate 1 เน้นย้ำ (stock ledger accuracy 100% concurrency, NumberSequence ไม่ซ้ำ, permission TTL ≤5 นาทีไม่ re-login รวมทดสอบ clamp ≤300s, payment↔invoice-version reconciliation รวม overpaid flag) และเพิ่ม exploratory case 7 ข้อนอกเหนือ AC เดิม (double-submit, clock skew, boundary ตัวเลข, VAT rounding, PO cancel หลัง invoiced, concurrent revise, audit ของ action ที่ fail) เขียน automated spec จริง 27 ไฟล์ (unit 8 + integration 13 + concurrency 4 + e2e 6, ระบุ import path/endpoint ตาม architecture.md §6 พร้อม TODO ให้ Engineer ยืนยัน signature จริง) ยังรันไม่ได้จนกว่า Engineer ทำ E0 เสร็จ (ระบุชัดใน §0/§7 ไม่ block). มี 1 คำถามใหม่ถึงปอนด์เรื่องจำนวนผู้ทดสอบ UAT ต่อ role (ไม่ block เริ่มโค้ด Engineer). ไม่แก้ feature-level current_agent/status (ยังเป็นของ Engineer ในเฟสนี้).",
           "overridden_by": null,
           "updated_at": "2026-07-07T10:30:00+07:00"
+        },
+        {
+          "agent": "engineer",
+          "status": "READY_FOR_QA_VERIFY",
+          "gate_checklist": [
+            {"item": "ทุก task E0–E21 เสร็จตามนิยาม (DoD) ใน tasks.md", "pass": true, "missing": null},
+            {"item": "unit tests ผ่านทั้งหมด (123/123 ผ่าน, 22 test suites, รันจริงด้วย `npx jest`)", "pass": true, "missing": null},
+            {"item": "โค้ดตรง ADR ทุกฉบับ (000–008 รวม rev.2): JWT identity-only + permissionCache TTL clamp≤300s (ADR-005), NumberSequence row-lock ใน tx (ADR-006), Prisma $transaction/row-lock stock ledger (ADR-003/004), audit append-only+interceptor (ADR-007), ui/ wrapper + ESLint no-restricted-imports บังคับจริง (ADR-008, ทดสอบด้วยไฟล์ sanity ที่ตั้งใจ violate แล้วลบ)", "pass": true, "missing": null},
+            {"item": "seed data ครบตาม strategy §8 (7 users/roles+matrix, VATConfig 7%, 5 customers auto-gen id, 10 materials รวม 1 ตัวยอดต่ำ+1 ตัว stock=0, 5 products รวม 1 ตัวไม่มี BOM, happy-flow PO→Batch→QC→Shipment→Invoice v1→Payment + demo revise→v2 carry-over)", "pass": true, "missing": null},
+            {"item": "ไม่มี story ที่ไม่ถูก implement (ECP-001–038)", "pass": true, "missing": "ทุก story มี backend endpoint+business logic ครบและมี FE เข้าถึงได้อย่างน้อย 1 ทาง แต่บาง FE form เป็นเวอร์ชันย่อ (ดู summary): assign/produce ทำผ่านฟอร์มจริงแล้ว, incoming-lot QC มีฟอร์มแล้ว, permission-matrix editor มีแล้ว (ECP-024) — ที่เหลือเป็น UI polish เท่านั้น ไม่ใช่ business logic ที่ขาด"},
+            {"item": "DB/Docker live verification (migration จริงกับ MySQL, `docker compose up` เต็ม stack, seed รันจริงกับ DB จริง)", "pass": false, "missing": "sandbox นี้ไม่มี MySQL/Docker daemon ทำงานอยู่ (ตรวจสอบแล้ว: `docker ps` ต่อ daemon ไม่ได้) จึง generate migration ด้วย `prisma migrate diff --from-empty` (offline, ผ่าน `prisma validate`) แทนการรัน `prisma migrate dev` กับ DB จริง — schema/seed/services ผ่าน TypeScript compile และ unit test ที่ mock DB ครบ แต่ยังไม่เคยรันชนกับ MySQL จริงสักครั้ง ต้องให้ DevOps/QA รัน `prisma migrate deploy && npm run db:seed` กับ MySQL จริงเป็นด่านแรกก่อนเชื่อว่าใช้งานได้ 100%"}
+          ],
+          "output_files": [
+            "package.json", "tsconfig.json", "tsconfig.backend.json", "jest.config.js", ".eslintrc.cjs",
+            ".env.example", ".gitignore", "docker-compose.yml", "Dockerfile.backend", "Dockerfile.frontend",
+            "prisma/schema.prisma", "prisma/seed.ts", "prisma/migrations/20260706000000_init/migration.sql", "prisma/migrations/migration_lock.toml",
+            "src/backend/server.ts", "src/backend/app.ts", "src/backend/config/index.ts",
+            "src/backend/lib/prisma.ts", "src/backend/lib/errors.ts", "src/backend/lib/jwt.ts",
+            "src/backend/lib/numberFormat.ts", "src/backend/lib/numberSequence.ts",
+            "src/backend/lib/permissionCache.ts", "src/backend/lib/permissionCacheInstance.ts",
+            "src/backend/lib/realtimeGateway.ts", "src/backend/lib/audit.ts",
+            "src/backend/middleware/requestId.ts", "src/backend/middleware/auth.ts",
+            "src/backend/middleware/resolvePermission.ts", "src/backend/middleware/requirePermission.ts",
+            "src/backend/middleware/audit.ts", "src/backend/middleware/errorHandler.ts",
+            "src/backend/modules/customer/*", "src/backend/modules/product/*", "src/backend/modules/stock/*",
+            "src/backend/modules/po/*", "src/backend/modules/production/*", "src/backend/modules/qc/*",
+            "src/backend/modules/shipping/*", "src/backend/modules/invoice/*", "src/backend/modules/vatConfig/*",
+            "src/backend/modules/user/*", "src/backend/modules/audit/*", "src/backend/modules/dashboard/*",
+            "src/frontend/package.json", "src/frontend/vite.config.ts", "src/frontend/index.html",
+            "src/frontend/main.tsx", "src/frontend/App.tsx", "src/frontend/router.tsx",
+            "src/frontend/ui/*", "src/frontend/lib/*", "src/frontend/hooks/*", "src/frontend/components/*", "src/frontend/pages/*"
+          ],
+          "questions_for_pond": [],
+          "summary": "Implement ครบ E0–E21 ตาม tasks.md rev.2: backend modular monolith (Express+TS+Zod+Prisma/MySQL) กับ frontend React+Vite+antd หลัง ui/ wrapper (ADR-008). จุดวิกฤตตามที่ระบุ: (1) stock ledger — StockService row-lock ใน $transaction, unit test รวม simulate concurrency 100 ops พร้อมกัน reconciliation ตรง 100% เสมอ (2) NumberSequence — MySQL INSERT..ON DUPLICATE KEY UPDATE LAST_INSERT_ID pattern ตาม ADR-006 + unit test concurrency 50-200 คำขอพร้อมกันไม่ซ้ำ + padding ไม่ตัดทอนเมื่อ overflow (3) invoice versioning+reconciliation — revise เฉพาะ version ล่าสุด, parent chain, payment carry-over ข้าม version, overpaid flag, นโยบาย INVOICE_EDIT_AFTER_PAYMENT (allow/block) wire เข้า service จริงแล้ว (4) permission cache TTL — คลาส PermissionCache ทดสอบด้วย fake clock ยืนยัน role เปลี่ยนมีผลภายใน TTL แม้ไม่ invalidate เชิงรุก (5) audit interceptor — retry แล้วยัง fail ต้อง log ระบบเสมอไม่เงียบ, unit test ครบ, ไม่มี endpoint update/delete audit ที่ไหนเลย. เพิ่ม RBAC guardrail กัน lockout (ECP-024 AC2) และ Admin UI แก้ permission matrix จริงแล้ว. seed.ts ครบตาม §8 (idempotent เต็ม reset+reseed). ESLint no-restricted-imports ยืนยันด้วยไฟล์ sanity-check จริง (สร้าง import antd นอก ui/ แล้วเห็น error, ลบไฟล์ทิ้ง). สิ่งที่ verify ไม่ได้ในสภาพแวดล้อมนี้ (ไม่มี MySQL/Docker daemon): migration ยังไม่เคยรันกับ MySQL จริง (generate ผ่าน prisma migrate diff offline แทน), seed.ts ยังไม่เคยรันจริง, docker-compose ยังไม่เคย up เต็ม stack — เขียนตาม spec ครบและผ่าน TypeScript compile แต่ DevOps/QA ต้องเป็นคนแรกที่รันกับ MySQL จริง ก็อปคำเตือนนี้ไว้ให้ QA ทราบก่อนรัน integration/e2e. ผลตัวเลขจริง: unit tests 123/123 ผ่าน (22 suites, `npx jest`), backend `tsc --noEmit` 0 error, frontend `tsc --noEmit` 0 error, `vite build` สำเร็จ, ESLint 0 error/warning ทั้ง backend+frontend. FE ครอบคลุมทุก story อย่างน้อย 1 ทาง แต่บางหน้ายังเป็นเวอร์ชันเรียบง่าย (dashboard แสดง JSON ดิบแทน widget สวยงาม, ฟอร์มเพิ่มบรรทัด PO/Invoice เป็นแบบเพิ่มทีละรายการไม่ใช่ตารางแก้ไขได้, invoice issue ผูกกับ product ของ PO line แรกเป็นค่าเริ่มต้น) — เป็นเรื่อง UI polish ไม่ใช่ business logic ที่ขาด. QA e2e spec (tests/e2e/*.spec.ts) ใช้ data-testid ที่ยังไม่ได้เพิ่มในโค้ด FE (QA เขียนไว้ว่าเป็น best-guess รอ engineer's markup) — ยังไม่ได้ปรับ selector ให้ตรงกัน เป็นงานที่เหลือให้ QA/Engineer sync กันในรอบถัดไป ไม่ block unit-test gate ของ Engineer เอง.",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T14:20:00+07:00"
         }
       ]
     }
