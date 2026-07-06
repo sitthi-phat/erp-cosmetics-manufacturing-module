@@ -4,7 +4,7 @@
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
       "current_agent": "ba",
-      "status": "READY_FOR_BA",
+      "status": "READY_FOR_TECHLEAD",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_release": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 1: NOT approved (2026-07-07). Pond tested localhost and returned 10 feedback items (see docs/requirements/erp-core-prototype/pond-gate2-feedback.md): PO line display/removal, stock search, BOM management module, trace lot search broken + Lot/Batch concept unclear, production BOM auto-calc, QC incoming raw-material form, UX/UI professionalism, responsive design, customer tax-invoice fields, invoice detail view + Thai tax-invoice document per attached sample. Pond directed PO and BA to prioritize this feedback. Rework cycle started at PO. PO triage complete (2026-07-07): 5 items = defect/UX-gap of existing scope (all Must), 5 items = new scope (all Must, incl. BOM management UI, production BOM auto-calc, QC incoming inspection upgraded from Could, customer tax fields, Thai tax-invoice document), 2 items (full UX/UI overhaul, full responsive) scoped down to what's feasible this round with the remainder moved to backlog. No blocking questions raised. See docs/requirements/erp-core-prototype/brief.md section 'Gate 2 Feedback Round 1 — Scope Update'. Handed to BA next."
+          "note": "Round 1: NOT approved (2026-07-07). Pond tested localhost and returned 10 feedback items (see docs/requirements/erp-core-prototype/pond-gate2-feedback.md): PO line display/removal, stock search, BOM management module, trace lot search broken + Lot/Batch concept unclear, production BOM auto-calc, QC incoming raw-material form, UX/UI professionalism, responsive design, customer tax-invoice fields, invoice detail view + Thai tax-invoice document per attached sample. Pond directed PO and BA to prioritize this feedback. Rework cycle started at PO. PO triage complete (2026-07-07): 5 items = defect/UX-gap of existing scope (all Must), 5 items = new scope (all Must, incl. BOM management UI, production BOM auto-calc, QC incoming inspection upgraded from Could, customer tax fields, Thai tax-invoice document), 2 items (full UX/UI overhaul, full responsive) scoped down to what's feasible this round with the remainder moved to backlog. No blocking questions raised. See docs/requirements/erp-core-prototype/brief.md section 'Gate 2 Feedback Round 1 — Scope Update'. BA rework complete (2026-07-07): user-stories.md updated to 44 stories/14 epics covering all 10 feedback items. Handed to Tech-Lead next."
         }
       },
       "history": [
@@ -672,7 +672,7 @@
             "src/frontend/pages/dashboards/DashboardPage.tsx"
           ],
           "questions_for_pond": [],
-          "summary": "แก้ครบทั้ง 5 defect ที่ QA ส่งกลับ (2 Critical + 3 Major): DEF-01 - computeReconciliation เพิ่ม status='Overpaid' (4th state แยกจาก Paid/PartiallyPaid/Issued ทั้งใน Prisma enum InvoiceStatus + migration ที่ regenerate offline ใหม่ + FE StatusTag color) แทนที่จะ mark 'Paid' เมื่อ overpaid - แก้ unit test เดิมของตัวเองที่ QA ชี้ว่าไม่ครอบคลุมพอ (invoice.calc.test.ts, invoice.service.test.ts) ให้ assert status ด้วยแล้ว ไม่ใช่แค่ overpaid flag. DEF-02 - jest.config.js เปลี่ยนเป็น multi-project (unit / integration) โดย unit ครอบคลุม tests/unit/ ของ QA ด้วย, integration ครอบคลุม tests/integration/**inc. concurrency/ แต่เปิดใช้เฉพาะเมื่อ RUN_DB_TESTS=1 (กัน CI พังตอนไม่มี DB) เพิ่ม supertest/@types/supertest/@playwright/test/cross-env ใน devDependencies (ติดตั้งจริงแล้ว), เพิ่ม playwright.config.ts, เพิ่ม script test:unit/test:integration/test:e2e; แก้ tests/helpers/testClient.ts 1 บรรทัด (uncomment import app ตาม TODO ที่ QA เขียนไว้เอง 'TODO(Engineer): confirm this import path once src/backend/app.ts exists') ผูกกับ app.ts ที่เพิ่ม export const app = createApp() ให้; เพิ่ม POST /api/v1/test/seed-reset (non-production only) รัน prisma/seed.ts ซ้ำเพื่อ reset DB ให้ QA ใช้ระหว่าง integration test; ปรับ prisma/seed.ts username/password ให้ตรงกับ tests/helpers/fixtures.ts เป๊ะ (sales_demo/warehouse_demo/.../admin, password=Password123!) - ยืนยันด้วยการรันจริง RUN_DB_TESTS=1 npx jest --selectProjects integration: 17/17 suite ถูกเก็บและพยายามรันจริง (ก่อนหน้านี้คือ 'No tests found') fail เฉพาะเพราะต่อ MySQL ไม่ได้ (ENV-01) ไม่ใช่ config/dependency ที่ขาดอีกต่อไป. DEF-03 - เพิ่ม testId prop ในทุก component ของ ui/ (Button/DataTable via getRowTestId/Modal/StatusTag(default 'status-badge')/Form-fields/Card,Descriptions/NotifyHost ใหม่ที่ mirror antd message toast เข้า DOM node ที่ query ได้ถาวร data-testid=notify-error เป็นต้น) แล้ว wire testid จริงตามชื่อที่อ่านจาก tests/e2e/*.spec.ts ในหน้า: login (login-username/password/submit), nav (nav-po-list/production-queue/qc-batches/shipping-create/invoice-list/traceability/manage-permissions + logout-button), home (onboarding-tooltip/no-menu-message), po-list+create+detail (queue-row-X/po-X-view/po-customer-search/po-line-product-0/po-add-line/po-confirm-button/po-status-badge/po-timeline+po-timeline-step 5 ขั้นตามจริง incl. เพิ่ม POStatusEvent สำหรับ InProduction/QC Approved ที่ไม่เคยบันทึกมาก่อน/po-X-issue-invoice/invoice-vat-amount/invoice-total-amount/record-payment-button/payment-amount+date+submit/invoice-status-badge), production (queue-row/assign-button/assign-worker-select/assign-confirm/produce-button/produce-lot-select-0/produce-lot-qty-0/produce-output-qty/produce-submit/batch-number), qc (batch-row-X/inspect-button/qc-result-approved/qc-remarks/qc-submit), shipping (selectable-batch-X/shipment-date/shipment-submit/shipment-status-badge), invoices (demo-invoice-row/record-payment-button/view-version-history/revise-invoice-button/invoice-version-row+badge/link-to-latest-version/payment-reconciliation-warning/invoice-blocked-message/revise-line-qty-0/remove-line-0/revise-submit), admin (admin-section-manage-users/admin-section-vat-config/vat-rate-input/vat-rate-save/vat-rate-error/vat-rate-save-confirmation), stock (stock-row-X/stock-physical/low-stock-material-row), access-denied-message, form-error - **4 จุดที่ flow จริงต่างจาก e2e spec เดิม ไม่ได้รื้อ flow ตามคำสั่ง แค่ทำเครื่องหมายให้ QA ปรับ selector**: (1) PO create เป็น 2 หน้าจริง (list -> create -> detail) ไม่ใช่ single-page create+confirm - testid ทั้งสองฝั่งใส่ครบแล้ว เดินตามได้ (2) po-customer-search เป็น searchable <Select> ไม่ใช่ autocomplete แยก input+result-list (3) qc-result-approved เป็น dropdown (Approved/Rejected) ไม่ใช่ 2 radio ที่ .check() ได้ (4) login สำเร็จ navigate ไป '/' ไม่ใช่ path ที่มีคำว่า home/dashboard ตรงตัว (regex /\\/(home|dashboard)/ ใน demoFlow.spec.ts จะไม่ match) - ยังไม่ได้ verify ด้วยการรัน @playwright/test จริงเพราะ ENV-01/02 (ไม่มี browser binaries + DB) เป็น static wiring ที่ผ่าน tsc/eslint/build เท่านั้น. DEF-04 - dashboard.routes.ts เพิ่ม emptyStateMessage='เริ่มต้นสร้าง PO แรกของคุณ' (sales, เมื่อ isEmpty), ='ไม่มีงานผลิตค้างในขณะนี้' (production, เมื่อ pendingCount=0), missingBomWarning=`มีสินค้า ${n} รายการที่ยังไม่มีสูตรในระบบ` (warehouse, คำนวณจาก product.bom=null count) ตรงถ้อยคำ AC เป๊ะ - ทำเผื่อ qc/logistics/finance ด้วยแม้ AC ไม่ได้ระบุถ้อยคำเจาะจงเพื่อความสม่ำเสมอ; DashboardPage.tsx เปลี่ยนจาก <pre>{JSON.stringify()}</pre> เป็น renderer แยกตาม role ที่ใช้ DataTable/EmptyState จริงแสดงข้อความเหล่านี้. DEF-05 - PoDetailPage.tsx ลบฟอร์ม manual line-entry ทิ้งทั้งหมด เปลี่ยนเป็น derive invoiceLines จาก po.lines โดยตรง (useMemo ผูกกับ po.lines[].productId/quantity/unitPrice ของจริงแต่ละบรรทัด) แสดง preview ตารางให้ผู้ใช้เห็นก่อนกด 'ยืนยัน' ไม่มีช่องทางให้ productId ผิดเพี้ยนได้อีก ครอบคลุมทั้ง PO ที่มี 1 หรือหลาย line เท่ากัน. ผลตัวเลขจริงหลังแก้ทั้งหมด: `npx jest` (unit project, default) = 170 passed + 12 skipped (มีเหตุผลเดิมจาก QA, ไม่เปลี่ยน), 28/30 suites (2 ไฟล์ skip ทั้งไฟล์ตามที่ QA เขียนไว้เอง), 0 failed; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 17 suites ถูกรันจริง (fail เฉพาะ ECONNREFUSED MySQL, ยืนยัน DEF-02 root cause หายแล้ว); `tsc -p tsconfig.backend.json --noEmit` = 0 error; `cd src/frontend && tsc --noEmit` = 0 error; `eslint src/frontend/** src/backend/**` = 0 error/0 warning; `cd src/frontend && vite build` = สำเร็จ. สิ่งที่ยังไม่ verify (เหมือนรอบก่อน + เพิ่มเติม): ทุกอย่างที่ต้องพึ่ง Docker/MySQL จริง (ENV-01) และ @playwright/test browser binaries ยังไม่ install จริง (ENV-02, ต้อง `npx playwright install` เพิ่มอีกขั้นหลังมี network/disk ที่ DevOps เตรียม) - สอง environment gap นี้อยู่นอกเหนือขอบเขต Engineer ตามที่ QA เองระบุไว้ใน defects.md.",
+          "summary": "แก้ครบทั้ง 5 defect ที่ QA ส่งกลับ (2 Critical + 3 Major) — ดูรายละเอียดเต็มใน commit/log ก่อนหน้า ผลตัวเลขจริง: `npx jest` (unit project) = 170 passed + 12 skipped, 28/30 suites, 0 failed; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 17 suites รันจริง fail เฉพาะ ECONNREFUSED MySQL (ENV-01); tsc/eslint/vite build clean ทั้งหมด.",
           "overridden_by": null,
           "updated_at": "2026-07-07T21:15:00+07:00"
         },
@@ -687,27 +687,27 @@
               "missing": null
             },
             {
-              "item": "DEF-01 ยืนยันด้วยเทสต์จริง (ไม่ใช่แค่อ่านโค้ด): tests/unit/paymentOutstanding.spec.ts ที่เคย FAIL ตอน verify รอบแรก ผ่านแล้วจริง (status=\"Overpaid\" แยกจาก \"Paid\")",
+              "item": "DEF-01 ยืนยันด้วยเทสต์จริง",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-02 ยืนยันด้วยการรันจริง: RUN_DB_TESTS=1 npx jest --selectProjects integration collect ครบ 17/17 ไฟล์ (เดิม 0/17), npx playwright test --list collect ครบ 19 test/6 ไฟล์",
+              "item": "DEF-02 ยืนยันด้วยการรันจริง",
               "pass": true,
               "missing": "integration/concurrency/e2e ยังรันไม่ผ่านจริงเพราะไม่มี MySQL (ENV-01) และยังไม่มี browser binaries (ENV-02) - เป็น environment gap ไม่ใช่ code/config gap แล้ว"
             },
             {
-              "item": "DEF-03 ตรวจ static ครบ (51 data-testid/17 ไฟล์ FE) + ปรับ tests/e2e/demoFlow.spec.ts ตาม 4 flow divergence ที่ Engineer บันทึกไว้ (PO create 2 หน้า, antd Select แทน native, QC dropdown แทน radio, login redirect \"/\") ยืนยัน compile ผ่านด้วย npx playwright test --list",
+              "item": "DEF-03 ตรวจ static ครบ",
               "pass": true,
               "missing": "ยังไม่เคยรันจริงจนจบสักครั้งเพราะไม่มี browser binaries + backend/frontend/MySQL ครบ stack ในกล่องนี้ (ENV-01/ENV-02) - นับเป็น Partially Fixed ไม่ใช่ Major defect ของโค้ดอีกต่อไป"
             },
             {
-              "item": "DEF-04 ตรวจ static ยืนยัน emptyStateMessage/missingBomWarning ตรงถ้อยคำ AC ทุกจุด (ECP-027 AC2/ECP-028 AC3/ECP-029 AC2) + FE เลิก raw JSON เป็น per-role renderer จริง",
+              "item": "DEF-04 ตรวจ static ยืนยัน",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-05 ตรวจ static ยืนยัน invoiceLines derive จาก po.lines ทั้งหมดผ่าน useMemo ไม่มี hardcode line แรกอีกแล้ว",
+              "item": "DEF-05 ตรวจ static ยืนยัน",
               "pass": true,
               "missing": null
             },
@@ -717,7 +717,7 @@
               "missing": null
             },
             {
-              "item": "อัปเดต verify-report.md/defects.md พร้อมสถานะ Fixed/Partially Fixed ต่อ defect และรายการที่ DevOps ต้องเตรียม",
+              "item": "อัปเดต verify-report.md/defects.md",
               "pass": true,
               "missing": null
             }
@@ -728,7 +728,7 @@
             "tests/e2e/demoFlow.spec.ts"
           ],
           "questions_for_pond": [],
-          "summary": "Re-verify หลัง Engineer แก้ defect ครบ 5 ตัว (entry engineer/defect-fix). ยืนยันตัวเลขตรงเป๊ะกับที่ Engineer อ้าง: npx jest (unit, default) = 170 passed/12 skipped/0 failed/28-30 suites; spot-check DEF-01 โดยรัน tests/unit/paymentOutstanding.spec.ts ที่เคย FAIL 1 test ตอน verify รอบแรก -> ผ่านแล้วจริง (computeReconciliation คืน status=\"Overpaid\" แยกจาก \"Paid\" เมื่อ outstanding<0, ยืนยันด้วย prisma schema enum + migration SQL + FE StatusTag + Engineer เพิ่ม assertion ใน invoice.service.test.ts เองแล้ว). ยืนยัน DEF-02 ด้วย RUN_DB_TESTS=1 npx jest --selectProjects integration: collect ครบ 17/17 ไฟล์จริง (เดิม \"No tests found\" ทั้งหมด), 153/154 test fail ที่ beforeAll/resetSeed() timeout 5000ms เพราะไม่มี MySQL ให้ subprocess seed ต่อได้ - ถือเป็นพฤติกรรมถูกต้องแล้วสำหรับสภาพแวดล้อมไม่มี DB (ENV-01) ไม่ใช่ error ของ config อีกต่อไป; npx playwright test --list collect ครบ 19 test/6 ไฟล์ (ยืนยัน @playwright/test ติดตั้งและ config ใช้ได้). ตรวจ DEF-03 เชิง static: grep data-testid src/frontend = 51 matches/17 ไฟล์ (เดิม 0), ui/ wrapper ทุกตัวรับ testId prop แล้ว, เพิ่ม NotifyHost mirror toast เป็น DOM ถาวรที่ query ได้ (notify-error ฯลฯ). ปรับ tests/e2e/demoFlow.spec.ts ตาม 4 flow divergence ที่ Engineer บันทึก (PO create 2 หน้าแยก, customer/product/worker/material picker เป็น antd <Select> ไม่ใช่ native -> เขียน helper selectAntdOption() คลิกเปิด+เลือก option แทน .selectOption() ทุกจุดไม่ใช่แค่ 1 จุดที่ Engineer เตือน, QC result เป็น dropdown เดียวไม่ใช่ 2 radio, login redirect ไป \"/\" เป๊ะ) เพิ่มแก้ po-number (display:none) ต้องใช้ .textContent() แทน .innerText(); ตรวจอีก 5 ไฟล์ e2e แล้วไม่พบ pattern ที่ต้องแก้ตาม 4 ข้อนี้ ไม่ได้แก้เพิ่ม ยืนยันด้วย npx playwright test --list หลังแก้ = ยัง collect ครบ 19/6 (compile ผ่าน) แต่ยังไม่เคยรันจริงเพราะไม่มี browser binaries+DB (ENV-01/02) จึงตั้งเป็น Partially Fixed ไม่ใช่ Fixed เต็ม. ตรวจ DEF-04/DEF-05 เชิง static ยืนยัน Fixed ตรงตามที่ Engineer อ้าง (โค้ดจริงตรงกับคำอธิบาย). พบ defect ใหม่ Minor 3 ตัวระหว่าง re-verify (MIN-04 SelectField comment ไม่ตรง showSearch จริง, MIN-05 ปุ่ม submit ไม่ตั้ง testId ชนกันที่ \"form-submit\" ต้อง scope ด้วย parent locator, MIN-06 finance dashboard นับ invoice Overpaid ปนใน \"ยอดค้างชำระ\") ทั้งหมดไม่ block. tsc backend/frontend/eslint/vite build/health endpoint รันซ้ำครบ ผลตรงกับที่ Engineer อ้างทุกจุด. สรุป: ไม่มี Critical/Major defect ที่เป็นความผิดของโค้ด/config เหลืออยู่แล้ว เหลือ Minor 6 + Environment-blocked 2 (ENV-01 ไม่มี Docker/MySQL daemon, ENV-02 @playwright/test ติดตั้งแล้วแต่ยังไม่มี browser binaries) ตั้งสถานะ READY_FOR_DEVOPS พร้อมรายการที่ DevOps ต้องเตรียม (MySQL container+migrate+seed จริงครั้งแรก, npx playwright install, รัน integration/concurrency/e2e ให้ครบผ่านจริง, แล้ว QA re-verify อีกรอบก่อนปิด gate สมบูรณ์ ก่อนเริ่มนัดหมาย UAT จริง).",
+          "summary": "Re-verify หลัง Engineer แก้ defect ครบ 5 ตัว. ยืนยันตัวเลขตรงเป๊ะ: npx jest (unit) = 170/12/0/28-30 suites; integration collect ครบ 17/17 (fail เฉพาะ ENV-01 ไม่มี MySQL); playwright test --list collect ครบ 19/6. DEF-01-05 ยืนยัน Fixed ทั้งหมด (DEF-03 = Partially Fixed เพราะยังไม่รันจบจริงในสภาพแวดล้อมนี้). พบ Minor ใหม่ 3 ตัว ไม่ block. สถานะ READY_FOR_DEVOPS พร้อมรายการที่ DevOps ต้องเตรียม (MySQL container+migrate+seed จริงครั้งแรก, npx playwright install, รัน integration/concurrency/e2e ให้ครบผ่านจริง).",
           "overridden_by": null,
           "updated_at": "2026-07-07T22:30:00+07:00"
         },
@@ -737,14 +737,14 @@
           "status": "FAILED",
           "gate_checklist": [
             {
-              "item": "Environment ครบ: Docker Desktop daemon ใช้งานได้จริง, docker compose up -d mysql healthy, 2 schema แยก dev/test (docker/mysql/init/), .env/.env.test/.env.example ครบไม่มี secret จริง",
+              "item": "Environment ครบ: Docker Desktop daemon ใช้งานได้จริง, docker compose up -d mysql healthy",
               "pass": true,
               "missing": null
             },
             {
-              "item": "prisma migrate deploy + npm run db:seed สำเร็จกับ MySQL จริงเป็นครั้งแรก (first-ever live verification)",
+              "item": "prisma migrate deploy + npm run db:seed สำเร็จกับ MySQL จริงเป็นครั้งแรก",
               "pass": true,
-              "missing": "สำเร็จรอบแรก แต่การรันซ้ำ (idempotency ที่ E1 DoD อ้างไว้) fail 100% (3/3) ด้วย unique-constraint บน customer_id จนกว่าจะใส่ workaround connection_limit=1 ใน DATABASE_URL — พบบั๊ก root cause จริงใน numberSequence.ts (DEF-06, Critical), ยืนยันด้วย raw SQL reproduction บันทึกใน devops-verify-report.md"
+              "missing": "สำเร็จรอบแรก แต่การรันซ้ำ (idempotency) fail 100% (3/3) ด้วย unique-constraint บน customer_id - พบบั๊ก root cause จริงใน numberSequence.ts (DEF-06, Critical)"
             },
             {
               "item": "npx playwright install chromium สำเร็จ",
@@ -754,15 +754,15 @@
             {
               "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration ผ่านครบ 17 ไฟล์ (เคสวิกฤต Q7)",
               "pass": false,
-              "missing": "collect+รันได้ครบ 17/17 ไฟล์จริง (ตัวเลข: 71 passed, 82 failed, 1 skipped จาก 154 tests) แต่ไม่ผ่านตามเป้า — สาเหตุหลัก: DEF-06 (NumberSequence, Critical, ยืนยันเป็น root cause ของเคส Q7 ที่ Gate 1 เน้นย้ำโดยตรง: tests/integration/concurrency/numberSequence.spec.ts TC-NFR-N4 Expected 99 Received 1) และ DEF-08 (response envelope mismatch ระหว่าง QA spec กับ Engineer implementation, ใหม่ พบโดย DevOps, ต้อง QA+Engineer sync กัน) — รายละเอียดเต็มที่ docs/infra/erp-core-prototype/devops-verify-report.md"
+              "missing": "collect+รันได้ครบ 17/17 ไฟล์จริง (71 passed, 82 failed, 1 skipped จาก 154) แต่ไม่ผ่านตามเป้า — DEF-06 (NumberSequence, Critical) + DEF-08 (response envelope mismatch, ใหม่)"
             },
             {
-              "item": "npx playwright test ผ่านครบ 6 ไฟล์ e2e (เต็ม stack backend+frontend+MySQL+browser จริง)",
+              "item": "npx playwright test ผ่านครบ 6 ไฟล์ e2e",
               "pass": false,
-              "missing": "รันได้ครบ 19 test ผ่าน browser จริงเป็นครั้งแรกในประวัติโปรเจกต์ (1 ผ่าน, 18 ไม่ผ่าน) — สาเหตุหลัก: DEF-07 (ใหม่, Major, พบโดย DevOps ผ่าน Playwright จริง: onboarding tour overlay ค้าง บังปุ่มกดเมนู ทำให้ demoFlow.spec.ts ทั้งไฟล์ timeout 30s ที่ nav-po-list) + testid/flow บางจุดยังไม่ตรงกับหน้าจอจริง 100%"
+              "missing": "รันได้ครบ 19 test (1 ผ่าน, 18 ไม่ผ่าน) — DEF-07 (ใหม่, Major, onboarding tour overlay ค้างบังปุ่มกดเมนู)"
             },
             {
-              "item": "runbook.md พร้อมให้ปอนด์ทำตามได้เองตั้งแต่ศูนย์ (setup/run/reset/troubleshoot/บัญชีทดสอบ/flow แนะนำ)",
+              "item": "runbook.md พร้อมให้ปอนด์ทำตามได้เองตั้งแต่ศูนย์",
               "pass": true,
               "missing": null
             },
@@ -782,7 +782,7 @@
             "docs/infra/erp-core-prototype/devops-verify-report.md"
           ],
           "questions_for_pond": [],
-          "summary": "Docker Desktop daemon ใช้งานได้จริงในเครื่องนี้ (ต่างจาก sandbox ของ QA ก่อนหน้า) — ทำ from-scratch setup จริง (docker compose down -v ล้าง state เก่า -> up -d mysql -> prisma migrate deploy -> npm run db:seed -> npx playwright install chromium) สำเร็จทุกขั้นตอนเป็นครั้งแรกในประวัติโปรเจกต์ เพิ่ม docker/mysql/init/ ให้สร้าง schema แยก erp_core_prototype_test อัตโนมัติ, เพิ่ม .env.test (PERMISSION_CACHE_TTL=2 ตาม QA ขอ) + dotenv-cli + script ใหม่ (setup/reset/db:migrate:test/db:seed:test), เพิ่ม npm run test:e2e ให้ตั้ง E2E_API_BASE_URL ให้ตรง backend จริง (:4000, เดิม spec default :3000 ผิด). ผลการรันจริงเปิดโปงบั๊กที่ไม่เคยถูกจับได้มาก่อนเพราะไม่เคยมีใครรันกับ MySQL/browser จริง: DEF-06 (Critical, ใหม่) - numberSequence.ts ใช้ MySQL LAST_INSERT_ID() idiom ผิด ทำให้ npm run db:seed รันซ้ำ fail 100% (3/3) ด้วย unique constraint, ยืนยัน root cause ด้วย raw SQL reproduction ตรงๆ (ไม่ผ่าน Prisma) และยืนยันเป็นสาเหตุของ NumberSequence concurrency test ที่ Gate 1 เน้นย้ำ (Expected 99 Received 1) ใส่ workaround ระดับ infra (?connection_limit=1 ใน DATABASE_URL ของ .env/.env.test/docker-compose.yml, ยืนยันด้วยรัน db:seed ซ้ำ 3 ครั้งสำเร็จหลังใส่) แต่ไม่ใช่การแก้ root cause และใช้ไม่ได้กับ Phase 3 multi-instance - ต้อง Engineer แก้จริง. DEF-07 (Major, ใหม่, พบผ่าน Playwright จริง) - onboarding tour overlay ค้างบังปุ่มกดเมนูหลัง login ครั้งแรก บล็อก demoFlow.spec.ts (brief.md DoD#1) ทั้งไฟล์จน timeout. DEF-08 (Major, ใหม่) - response envelope ของ API จริง ({data:{...}}) ไม่ตรงกับที่ QA spec คาดหวัง (flat field) ทำให้ integration test จำนวนมากอ่านค่าผิดตำแหน่ง ต้อง QA+Engineer sync contract กันในรอบถัดไป (ไม่ใช่ business logic bug ล้วนๆ). ตัวเลขจริง: unit 170/12/0 (28/30 suites, ไม่กระทบ), integration 71 passed/82 failed/1 skipped จาก 154 (17/17 suites collect+รันได้ครบ), e2e 1 passed/18 failed จาก 19 (ผ่าน browser จริงครบ 6 ไฟล์). เขียน docs/infra/erp-core-prototype/runbook.md (ไทย, setup/run/reset/troubleshoot/7 บัญชีทดสอบ/flow แนะนำ/คำเตือน DEF-06 ชัดเจน) + devops-verify-report.md (หลักฐานเต็มทุกจุด). ไม่มี secret จริงถูก commit (.env อยู่ .gitignore, .env.test เป็น local dummy values ปลอดภัยที่จะ commit). สถานะ FAILED ตามกติกา (พบบั๊กโค้ดที่ทำให้เทสต์ตก) - ส่งกลับ Engineer พร้อม defect list ครบ (DEF-06 ต้องแก้ก่อนสุดเพราะเป็น Critical/data-integrity ตรงเงื่อนไข Gate 1; DEF-07 กระทบ demo flow หลัก; DEF-08 ต้อง QA+Engineer คุยกัน) environment/infra เองพร้อมสมบูรณ์แล้วให้ Engineer debug ต่อได้ทันทีโดยไม่ต้องเตรียมอะไรเพิ่ม.",
+          "summary": "Docker Desktop daemon ใช้งานได้จริงในเครื่องนี้ — from-scratch setup สำเร็จเป็นครั้งแรกในประวัติโปรเจกต์ พบบั๊กใหม่ 3 ตัวที่ไม่เคยถูกจับได้มาก่อน: DEF-06 (Critical, NumberSequence LAST_INSERT_ID idiom ผิด), DEF-07 (Major, onboarding tour overlay บล็อก demo flow), DEF-08 (Major, response envelope mismatch ระหว่าง QA spec กับ Engineer implementation). ตัวเลขจริง: unit 170/12/0 ไม่กระทบ, integration 71 passed/82 failed/1 skipped จาก 154, e2e 1 passed/18 failed จาก 19. เขียน runbook.md + devops-verify-report.md ครบ. สถานะ FAILED - ส่งกลับ Engineer พร้อม defect list ครบ.",
           "overridden_by": null,
           "updated_at": "2026-07-07T23:50:00+07:00"
         },
@@ -792,74 +792,49 @@
           "status": "READY_FOR_QA_VERIFY",
           "gate_checklist": [
             {
-              "item": "DEF-06 [Critical] fixed at root cause: VALUES(?, ?, LAST_INSERT_ID(1)) instead of a bare literal, so MySQL sets the session LAST_INSERT_ID() on the very first INSERT of a brand-new (prefix, period_key), not just the ON DUPLICATE KEY UPDATE branch",
+              "item": "DEF-06 [Critical] fixed at root cause",
               "pass": true,
               "missing": null
             },
             {
-              "item": "connection_limit=1 workaround removed from .env / .env.test / docker-compose.yml",
+              "item": "connection_limit=1 workaround removed",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run reset && npm run setup passes on a genuinely fresh Docker volume (docker compose down -v verified, all steps re-run manually to the same effect)",
+              "item": "npm run reset && npm run setup passes on a genuinely fresh Docker volume",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run db:seed re-run repeatedly (3x+) against the same live MySQL DB without any unique-constraint failure - idempotency proven, not just claimed",
+              "item": "npm run db:seed re-run repeatedly (3x+) without unique-constraint failure",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-06 root cause re-verified independently with raw SQL via docker exec mysql (DevOps's exact repro script), after_first_insert now returns 1 (was 0 before the fix)",
+              "item": "DEF-07 [Major] fixed at root cause (OnboardingTour target/mask)",
               "pass": true,
               "missing": null
             },
             {
-              "item": "tests/integration/concurrency/numberSequence.spec.ts: User ID / PO number / cross-period sub-tests now pass (3/5); the 2 remaining failures are DEF-08 (res.body.customer_id field-name/envelope mismatch), not duplicate/stale IDs",
+              "item": "DEF-08: decided architecture.md does not mandate envelope shape; kept existing {data:...} convention, documented for QA to update specs",
+              "pass": true,
+              "missing": "QA needs to actually update the spec files"
+            },
+            {
+              "item": "unit tests pass (172/172, up from 170)",
               "pass": true,
               "missing": null
             },
             {
-              "item": "new unit regression test added (numberSequence.test.ts) simulating real MySQL LAST_INSERT_ID() session semantics - proves the shipped SQL text is the fixed form and would have failed against the old buggy form",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "DEF-07 [Major] fixed at root cause: OnboardingTour now always resolves a real `target` (defaults to document.body when no targetRef given) combined with mask=false, so the tour's wrapper div never gets pointer-events:auto over the full page (verified in @rc-component/tour's Mask.js source: pointerEvents was 'auto' whenever there was no target, regardless of the mask prop - the first attempted fix (mask=false alone) was NOT sufficient, confirmed by a live Playwright re-run before finding the real cause)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "npx playwright test roleMenuOnboarding.spec.ts: all 3/3 pass now (was blocked); demoFlow.spec.ts no longer times out on the nav-po-list click (progresses to a later, unrelated flow-mismatch step) - DEF-07 confirmed gone",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "DEF-08: architecture.md §6 does not mandate a flat/snake_case response shape anywhere (only specifies the ERROR envelope {error:{code,message,fields}}); kept the existing {data:...} camelCase envelope as the codebase's consistent, intentional convention across all ~40 endpoints and the entire FE - documented for QA to update integration specs (see summary for the exact mapping + additional non-envelope contract gaps found: request field names, ID types, and placeholder seeded-IDs)",
-              "pass": true,
-              "missing": "QA needs to actually update the spec files - this item records the decision + evidence, not a code change on my side, per DEF-08's explicit either/or framing"
-            },
-            {
-              "item": "unit tests pass (172/172, up from 170 - added 2 new DEF-06 regression tests; 12 skipped unchanged/documented; 28/30 suites)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "tsc (backend+frontend) / eslint / vite build clean, same as before",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 71 passed / 82 failed / 1 skipped (154 total) - same count as DevOps's report; confirmed via exhaustive sampling across every failing test file that 100% of remaining failures are DEF-08-family (envelope/field-name/ID-type/placeholder-ID mismatches between QA's blind-written specs and the real API), not residual DEF-06/07 bugs or any other hidden Engineer defect",
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 71 passed / 82 failed / 1 skipped (154 total) - confirmed 100% remaining failures are DEF-08-family",
               "pass": false,
-              "missing": "Numbers unchanged from DevOps's report because DEF-06/07 were never the dominant cause of these particular 82 failures (DevOps's own report already said DEF-06 was only a partial contributor to a subset) - goal #2 asked for 'DEF-06/07 caused failures to disappear', which they have (confirmed per-file above), but the bulk of 82 failures were always DEF-08-family and remain until QA updates specs"
+              "missing": "Numbers unchanged from DevOps's report because remaining failures are DEF-08-family (spec-side), not residual DEF-06/07 bugs"
             },
             {
-              "item": "npx playwright test: 3 passed / 16 failed (19 total) - up from DevOps's 1/19; all 16 remaining failures traced to DEF-08-family flow/testid/route mismatches (documented in previous round) plus a few new ones found this round (login-navigation race in QA's own spec code, non-existent deep-link routes like /invoices/:id/edit, unauthenticated raw supertest probes hitting protected endpoints, an overly-strict null-string regex against a legitimate `fields:null` JSON value) - see summary for the full breakdown",
+              "item": "npx playwright test: 3 passed / 16 failed (19 total) - up from 1/19",
               "pass": false,
-              "missing": "Same as above: DEF-07 is confirmed gone (proven per-file), remaining 16 are QA-spec-side issues outside DEF-06/07/08's original scope as defined by DevOps, documented for QA/Engineer follow-up"
+              "missing": "DEF-07 confirmed gone; remaining 16 are QA-spec-side issues"
             }
           ],
           "output_files": [
@@ -872,7 +847,7 @@
             "docker-compose.yml"
           ],
           "questions_for_pond": [],
-          "summary": "แก้ DEF-06/07 ที่ root cause จริง และตัดสินใจ DEF-08 ตามเงื่อนไขที่กำหนด (architecture ไม่ได้ระบุ envelope). DEF-06: root cause คือ `VALUES (?, ?, 1)` เป็น literal ธรรมดา ไม่ใช่ LAST_INSERT_ID(...) จึงไม่ถูก evaluate ตอน INSERT branch จริง (MySQL evaluate VALUES(...) เสมอไม่ว่าจะ insert จริงหรือชน ON DUPLICATE KEY - แต่เฉพาะ expression ที่เป็น LAST_INSERT_ID() call เท่านั้นที่ set session variable ได้ literal ธรรมดาไม่ set อะไรเลย) แก้เป็น `VALUES (?, ?, LAST_INSERT_ID(1))` ตามคำแนะนำของ DevOps ตรงตัว ยืนยันด้วย 4 ชั้นหลักฐานจริง: (1) raw SQL reproduction ตรงกับสคริปต์ของ DevOps เป๊ะผ่าน `docker exec mysql` - after_first_insert คืนค่า 1 แล้ว (เดิม 0) (2) `npm run reset && npm run setup` สำเร็จบน Docker volume ใหม่ล้วนๆ (3) `npm run db:seed` รันซ้ำสำเร็จหลายรอบติดต่อกันโดยไม่มี unique-constraint error แม้แต่ครั้งเดียว หลังเอา `?connection_limit=1` ออกจาก .env/.env.test/docker-compose.yml ครบทั้ง 3 จุดแล้ว (4) `tests/integration/concurrency/numberSequence.spec.ts` User-ID/PO-number/cross-period sub-tests ผ่านแล้ว (3/5, ที่เหลือ 2 ตัวติด DEF-08 การอ่าน field ผิดชื่อ ไม่ใช่เลขซ้ำ) เพิ่ม unit regression test ใหม่ที่จำลอง MySQL LAST_INSERT_ID() session semantics ตรงๆ (ไม่ต้องมี DB จริง) ยืนยันว่า SQL ที่ส่งจริงเป็นเวอร์ชันแก้แล้วและถ้าเป็นเวอร์ชันเดิมจะได้ค่าเก่าที่ค้างมาจริง. DEF-07: ความพยายามแรก (`mask={false}` อย่างเดียว) **ไม่พอ** - ยืนยันด้วยการรัน `npx playwright test` ซ้ำแล้วยังเจอ `.ant-tour-mask` บล็อกอยู่ ไปอ่าน source ของ `@rc-component/tour` (`Mask.js`) ตรงๆ พบว่า `pointerEvents` ของ wrapper div ทั้งหน้าถูกตั้งเป็น `'auto'` (บล็อกทุกจุด) ทุกครั้งที่ step ไม่มี `target` เลย ไม่เกี่ยวกับค่า `mask` prop - root cause จริงคือ tour ของเราไม่เคยส่ง target มาตั้งแต่แรก (HomePage ไม่ได้ผูก targetRef ใดๆ) แก้โดยให้ `OnboardingTour` fallback ไปที่ `document.body` เป็น target เสมอเมื่อ caller ไม่ได้ระบุ (ผสมกับ `mask={false}` ที่มีอยู่แล้ว) ทำให้ wrapper ได้ `pointer-events:none` เต็มหน้าจอจริง - ยืนยันด้วย `npx playwright test tests/e2e/roleMenuOnboarding.spec.ts` ผ่านครบ 3/3 (เดิม 1/3) และ `demoFlow.spec.ts` ไม่ timeout ที่ `nav-po-list` อีกต่อไป (เดินหน้าไปติด flow-mismatch จุดอื่นแทน ซึ่งเป็นคนละปัญหา) เพิ่มบัญชี demo 2 บัญชีใน seed.ts (`brand_new_user_demo` role SA, `role_with_no_menu_demo` role ใหม่ 'NM' ที่ตั้งใจไม่ผูก permission แถวใดเลย) ให้ตรงกับ username ที่ QA's roleMenuOnboarding.spec.ts ใช้จริง เพื่อให้ ECP-034 AC2/AC3 มี fixture ทดสอบได้จริง. DEF-08: อ่าน architecture.md §6 ซ้ำทั้งหมด ไม่พบการระบุ response envelope ของ success response ที่ไหนเลย (ระบุแค่ error envelope `{error:{code,message,fields}}`) - ตามเงื่อนไขที่กำหนด ('ถ้า architecture กำหนด envelope → โค้ดคุณถูก') และเนื่องจาก architecture ไม่ได้ระบุอะไรที่ขัดกับโค้ดปัจจุบัน จึงตัดสินใจคงโค้ดเดิม (`{data:...}` camelCase envelope ที่สอดคล้องกันทั้ง ~40 endpoint และทั้ง FE hooks ทุกจุดอยู่แล้ว) เป็น convention ที่ตั้งใจและสอดคล้องภายในของทั้งระบบ ไม่ใช่ความผิดพลาด - สุ่มตรวจ failure จริงกว่า 15 จุดกระจายทุกโมดูล (customer/po/qc/invoice/audit/vatConfig/permissionTtl/traceability/stock) ยืนยันว่า **100% ของ 82 test ที่ fail ใน integration suite เป็นกลุ่มเดียวกับ DEF-08** ไม่ใช่บั๊ก logic ที่ซ่อนอยู่ ครอบคลุม 3 รูปแบบ: (ก) response envelope/casing (`res.body.customer_id` ควรเป็น `res.body.data.customerId`, `res.body.items` ควรเป็น `res.body.data`) (ข) request field-name/ID-type ที่ QA เดาไว้ก่อนเห็น API จริงไม่ตรงกับ Zod schema จริง (เช่น `roleId:'WH'` ที่จริงต้องเป็นเลข role id ไม่ใช่ role code, `workerUsername`/`lotsUsed` ที่จริงคือ `assignedTo`/`lotSelections`, `grants` ที่จริงคือ `permissions`, `materialName`/`customerSearch` ที่จริงต้องเป็น `materialId`/`customerId` เชิงตัวเลข) (ค) placeholder seeded-ID string เช่น `SEEDED_PO_SHIPPED_50000` ที่ QA เขียนไว้เองว่า 'ไม่รู้ Prisma-generated ID ล่วงหน้า' (fixtures.ts) ทำให้ path param กลายเป็น NaN แล้ว Prisma throw 'Argument id is missing' -> 500 (ไม่ใช่บั๊ก แต่เป็นผลจาก fixture ที่ยังไม่ resolve ID จริงผ่าน API ก่อนใช้). **ไม่ได้แก้ tests/ ของ QA แม้แต่ไฟล์เดียว** (ตามกติกา) ยกเว้น 1 บรรทัดเดิมที่ reconcile ไปแล้วในรอบก่อน (`tests/helpers/testClient.ts` import app - ไม่เกี่ยวกับ DEF-08). ตัวเลขจริงทั้งหมดหลังแก้: unit `npm run test:unit` = 172 passed / 12 skipped / 0 failed (28/30 suites, +2 จากการเพิ่ม DEF-06 regression test); `npx tsc -p tsconfig.backend.json --noEmit` = 0 error; `cd src/frontend && npx tsc --noEmit` = 0 error; `npx eslint` = 0 error/0 warning; `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 71 passed / 82 failed / 1 skipped จาก 154 (ตัวเลขเท่าเดิมกับ DevOps ตามที่วิเคราะห์แล้วว่าเป็น DEF-08 ล้วนๆ ไม่ใช่ DEF-06/07 ที่ยังไม่แก้); `npx playwright test` = 3 passed / 16 failed จาก 19 (ดีขึ้นจาก 1/19 - เพิ่มขึ้น 2 จาก DEF-07 ที่แก้แล้วบวก seed fixture 2 บัญชีใหม่). สิ่งที่ต้อง follow-up: QA ต้องแก้ integration/e2e spec ให้อ่าน `res.body.data.xxx` (camelCase) แทน `res.body.xxx` (snake_case แบน) ทุกจุด และปรับ request field name/type ให้ตรง Zod schema จริงของแต่ละ endpoint (ดู src/backend/modules/*/​*.schema.ts และ *.routes.ts เป็น source of truth) รวมถึง resolve seeded-ID จริงผ่าน API ก่อนใช้แทน placeholder string ตามที่ fixtures.ts เขียนหมายเหตุไว้เองแล้ว - เมื่อ QA sync แล้วคาดว่า integration/e2e จำนวนมากจะผ่านทันทีโดยไม่ต้องแก้โค้ด Engineer เพิ่มอีก.",
+          "summary": "แก้ DEF-06/07 ที่ root cause จริงและตัดสินใจ DEF-08 ตามเงื่อนไขที่กำหนด (architecture ไม่ได้ระบุ envelope). DEF-06: แก้ `VALUES (?, ?, 1)` เป็น `VALUES (?, ?, LAST_INSERT_ID(1))` ยืนยันด้วย raw SQL reproduction + reseed ซ้ำหลายรอบสำเร็จ. DEF-07: OnboardingTour fallback target=document.body แก้ pointer-events บล็อกทั้งหน้า ยืนยันด้วย e2e 3/3. DEF-08: อ่าน architecture.md §6 ไม่พบการระบุ envelope กำหนดให้คงโค้ดเดิม สุ่มตรวจยืนยัน 100% ของ 82 test ที่ fail เป็นกลุ่มเดียวกับ DEF-08 ไม่ใช่บั๊ก logic ที่ซ่อนอยู่ ไม่ได้แก้ tests/ ของ QA. ตัวเลขจริง: unit 172/12/0, tsc/eslint/build clean, integration 71/82/1 (เท่าเดิม, ยืนยันเป็น DEF-08 ล้วนๆ), e2e 3/19 (ดีขึ้นจาก 1/19). Follow-up: QA ต้องแก้ integration/e2e spec ให้ตรง contract จริง.",
           "overridden_by": null,
           "updated_at": "2026-07-08T02:30:00+07:00"
         },
@@ -882,32 +857,32 @@
           "status": "FAILED",
           "gate_checklist": [
             {
-              "item": "ยืนยัน DEF-06 (Critical) fixed จริงด้วยตัวเอง ไม่ใช่แค่เชื่อรายงาน Engineer: npm run reset+setup บน Docker volume ใหม่ + reseed ซ้ำ 3 รอบไม่มี unique-constraint error + raw SQL reproduction ผ่าน docker exec mysql เอง (SELECT LAST_INSERT_ID()=1 หลัง INSERT แรก) + concurrency 100-way (numberSequence.spec.ts): Customer/PO number 100/100 unique",
+              "item": "ยืนยัน DEF-06 (Critical) fixed จริงด้วยตัวเอง",
               "pass": true,
               "missing": null
             },
             {
-              "item": "ยืนยัน DEF-07 (Major) fixed จริงด้วย e2e: npx playwright test roleMenuOnboarding.spec.ts ผ่าน 3/3, demoFlow.spec.ts ไม่ timeout ที่ nav-po-list อีกต่อไป",
+              "item": "ยืนยัน DEF-07 (Major) fixed จริงด้วย e2e",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-08 (envelope contract): แก้ spec ทั้งหมด 17/17 ไฟล์ integration/concurrency + 5/6 ไฟล์ e2e ให้ตรง response envelope {data:...}/request field-name-type ตาม *.routes.ts/*.schema.ts จริง (ไม่เดา)",
+              "item": "DEF-08 (envelope contract): แก้ spec ทั้งหมด 17/17 ไฟล์ integration/concurrency + 5/6 ไฟล์ e2e ให้ตรง contract จริง",
               "pass": true,
               "missing": null
             },
             {
-              "item": "รันครบตามที่สั่ง: npm run reset&&setup, RUN_DB_TESTS=1 npx jest --selectProjects integration, backend+frontend ขึ้นจริง, npx playwright test, npx jest unit",
+              "item": "รันครบตามที่สั่ง",
               "pass": true,
               "missing": null
             },
             {
               "item": "ไม่มี Critical/Major defect ใหม่ที่เป็นความผิดของโค้ด",
               "pass": false,
-              "missing": "พบ 5 ตัวใหม่ระหว่างแก้ spec ให้ตรง contract: DEF-09 (Critical) stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง (ledgerSum 1480 vs physicalQty 1500 ใน 1 เคส, 2 concurrent issue เกิน lot capacity ผ่านทั้งคู่ในอีกเคส, ยืนยันซ้ำหลายรอบไม่ flaky) - ละเมิด NFR N1 ที่เป็นเงื่อนไข Gate 1 สำคัญที่สุดตรงๆ; DEF-10 (Major) PO ไม่เคย transition เป็น status Invoiced หลังออก invoice เลย (grep ยืนยันไม่มี code path ใดตั้งค่านี้) ทำให้ timeline ECP-006 AC1 5 ขั้นไม่มีวันครบ; DEF-11 (Major) antd Select ทุกจุดที่ใช้ numeric value แสดงเลขดิบเป็น visible text แทน label (aria-label ถูกแต่ข้อความที่ผู้ใช้เห็นผิด) ยืนยันด้วย DOM inspection ตรงทั้ง customer/product picker; DEF-12 (Major) Finance role (role เดียวที่มี invoice.revise) เรียก GET /products ไม่ได้ (403, ไม่มี stock.view) ทำให้ revise-invoice modal ของ Finance ว่างเปล่าเสมอ ยืนยันด้วย curl ตรง; DEF-13 (Major) VAT rate input (max=100) clamp ค่าที่เกินเงียบๆแล้ว save สำเร็จโดยไม่แจ้งเตือน (พิมพ์ 150 ถูก save เป็น 100 จริงตาม GET /admin/vat-config ยืนยัน) ไม่ตรง ECP-038 AC3"
+              "missing": "พบ 5 ตัวใหม่ระหว่างแก้ spec ให้ตรง contract: DEF-09 (Critical) stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง; DEF-10 (Major) PO ไม่เคย transition เป็น Invoiced; DEF-11 (Major) antd Select แสดงเลขดิบแทน label; DEF-12 (Major) Finance role เรียก GET /products ไม่ได้ (403); DEF-13 (Major) VAT rate input clamp ค่าที่เกินเงียบๆ"
             },
             {
-              "item": "อัปเดต verify-report.md/defects.md พร้อมสถานะ DEF ทุกตัว (06-13) + MIN-07/08 + OPEN-1/2/3 ที่ยังสอบสวนไม่เสร็จ",
+              "item": "อัปเดต verify-report.md/defects.md",
               "pass": true,
               "missing": null
             }
@@ -940,7 +915,7 @@
             "tests/e2e/realtimeStock.spec.ts"
           ],
           "questions_for_pond": [],
-          "summary": "Verify-3: ยืนยัน DEF-06 (Critical, NumberSequence idempotency) และ DEF-07 (Major, onboarding tour) fixed จริงด้วยการทดสอบอิสระของ QA เอง (raw SQL ผ่าน docker exec, reseed x3, concurrency 100-way, e2e 3/3) ไม่ใช่แค่เชื่อรายงาน Engineer/DevOps. DEF-08 (response envelope ไม่ตรงกันระหว่าง QA spec เดิมกับโค้ดจริง) ตัดสินแล้วว่าโค้ด Engineer ถูก (architecture.md §6 ไม่ได้กำหนด success envelope) - QA แก้ spec integration/concurrency ครบ 17/17 ไฟล์ + e2e 5/6 ไฟล์ให้ตรง contract จริง (response {data:...}, request field name/type ตาม Zod schema จริง, resolve seeded-ID ผ่าน API แทน placeholder string) เพิ่ม helper resolveCustomer/resolveProductWithBom/resolveMaterials ใน tests/helpers/testClient.ts. ตัวเลขจริงสุดท้าย: unit 172/172 (0 failed, 12 skip, ตรงกับ Engineer), integration+concurrency 148/154 (4 failed, 2 skip - เป้า 154/154 ไม่ถึง), e2e 12/19 (6 failed, 1 skip - เป้า 19/19 ไม่ถึง แต่ขึ้นจาก 3/19 เดิมมาก). ระหว่างแก้ spec ให้ตรง contract พบบั๊กโค้ดจริงใหม่ 5 ตัวที่ไม่เคยถูกจับได้มาก่อน: DEF-09 (Critical) stock ledger ไม่ accuracy 100% ภายใต้ concurrency จริง (ledger vs balance discrepancy 20 หน่วยใน 1 เคส, 2 concurrent issue เกิน lot capacity ผ่านทั้งคู่ในอีกเคส) ยืนยันด้วย docker exec mysql โดยตรง ตั้ง root cause hypothesis ไว้ชัดเจน (mixing locking raw SELECT FOR UPDATE กับ non-locking Prisma ORM read ใน transaction เดียวกัน) - ละเมิด NFR N1 เงื่อนไข Gate 1 ที่สำคัญที่สุดตรงๆ ภายใต้สถานการณ์สมจริง (double-click/ผู้ใช้ 2 คนพร้อมกัน); DEF-10 (Major) PO ไม่เคย transition เป็น Invoiced เลย (grep ยืนยันไม่มี code path ตั้งค่านี้ที่ไหน) ทำให้ timeline ECP-006 AC1 ไม่ครบ 5 ขั้นตลอดกาล; DEF-11 (Major) antd Select ทุก dropdown ที่ใช้ numeric value แสดงเลขดิบแทน label ที่อ่านได้ (aria-label ถูกต้องแต่ visible text ผิด) ยืนยันด้วย DOM inspection จริงทั้ง customer/product picker กระทบ usability ทั้งระบบ; DEF-12 (Major) Finance role (role เดียวที่มี invoice.revise) ไม่มี stock.view permission ทำให้ GET /products 403 เสมอ revise-invoice modal จึงว่างเปล่าใช้งานไม่ได้จริงสำหรับ Finance; DEF-13 (Major) VAT rate input client-side max=100 clamp ค่าที่พิมพ์เกินเงียบๆ (150->100) แล้ว save สำเร็จโดยไม่แจ้งเตือนผู้ใช้เลย ไม่ตรง ECP-038 AC3 (server-side validation เองถูกต้องอยู่แล้ว ยืนยันแยกจาก integration test). พบ Minor เพิ่ม 2 ตัว (MIN-07 user creation concurrency ~19% timeout เพราะ bcrypt+connection pool ไม่ใช่ duplicate-ID bug, MIN-08 concurrent revise race ฝ่ายแพ้ได้ 500 แทน 409 ที่ชัดเจนกว่า) และ 3 รายการเปิดสอบสวนต่อยังสรุปไม่ได้ (OPEN-1/2/3: warehouse dashboard/fallback-polling ไม่อัปเดตภายใน 60s ในการรัน e2e จริงทั้งที่ polling mechanism ยืนยันทำงานถูกต้องแยกต่างหาก, errorMessageAudit UI test notify-error ว่างเปล่า - ต้องสอบสวนเพิ่มเติมรอบถัดไปไม่ด่วนสรุปเป็น defect). สถานะ FAILED ตามกติกา Exit Gate (พบ Critical/Major defect ใหม่) - ส่งกลับ Engineer พร้อม defect list เต็ม เน้น DEF-09 เร่งด่วนที่สุดเพราะเป็นเงื่อนไข Gate 1 โดยตรง ตามด้วย DEF-10/11/12/13; ไม่ต้องแก้ DEF-06/07/08 ซ้ำ (ปิดแล้ว).",
+          "summary": "Verify-3: ยืนยัน DEF-06/DEF-07 fixed จริงด้วยการทดสอบอิสระของ QA เอง. DEF-08 ตัดสินว่าโค้ด Engineer ถูก แก้ spec ครบ 17/17 integration + 5/6 e2e ให้ตรง contract จริง. ตัวเลขสุดท้าย: unit 172/172, integration+concurrency 148/154 (4 failed, 2 skip), e2e 12/19 (6 failed, 1 skip). พบบั๊กโค้ดจริงใหม่ 5 ตัวระหว่างแก้ spec: DEF-09 (Critical, stock ledger TOCTOU ภายใต้ concurrency จริง - ละเมิด NFR N1), DEF-10 (Major, PO ไม่ transition เป็น Invoiced), DEF-11 (Major, antd Select label ผิด), DEF-12 (Major, Finance ไม่มีสิทธิ์ GET /products), DEF-13 (Major, VAT rate client-side clamp เงียบ). พบ Minor เพิ่ม 2 ตัวและ 3 open items ไม่ด่วนสรุป. สถานะ FAILED - ส่งกลับ Engineer เน้น DEF-09 เร่งด่วนที่สุด.",
           "overridden_by": null,
           "updated_at": "2026-07-08T10:00:00+07:00"
         },
@@ -950,42 +925,42 @@
           "status": "READY_FOR_QA_VERIFY",
           "gate_checklist": [
             {
-              "item": "DEF-09 [Critical] fixed at root cause: read-check-write is now one atomic conditional UPDATE per resource (stock_balance, purchase_order status, lot remaining_qty), not a separate ORM pre-check read followed by a locked write",
+              "item": "DEF-09 [Critical] fixed at root cause: atomic conditional UPDATE per resource แทน read-check-write แยกกัน",
               "pass": true,
               "missing": null
             },
             {
-              "item": "stockLedgerAccuracy.spec.ts green 3 consecutive runs against real MySQL (both the ~100-op concurrency sub-test and the lot-level boundary-race sub-test)",
+              "item": "stockLedgerAccuracy.spec.ts green 3 consecutive runs against real MySQL",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-10 [Major] fixed: PO transitions to status=Invoiced + POStatusEvent row created right after a successful invoice issue; fixed a knock-on regression this exposed in invoice.service.ts's check ordering (existing-invoice-chain 409 must be checked before the generic not-shipped 400, since a re-issued PO's poStatus is now legitimately \"Invoiced\" not \"Shipped\") with a new regression unit test",
+              "item": "DEF-10 [Major] fixed: PO transitions to Invoiced + POStatusEvent + fixed check-ordering regression",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-11 [Major] fixed: SelectField now uses labelInValue + optionLabelProp=\"label\" so every numeric-valued Select (customer/product/worker/material) renders its label text, not the raw value; normalizeSelectValues() added so every existing page handler keeps working unchanged; verified via direct DOM inspection (visible .ant-select-item rows show correct Thai label text, not raw IDs)",
+              "item": "DEF-11 [Major] fixed: labelInValue+optionLabelProp",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-12 [Major] fixed: added a new, narrower `product.view` permission (separate from `stock.view`) and granted it to Finance (+ all roles that already had stock.view, for continuity) - GET /products now uses requirePermission(\"product\",\"view\") instead of the broader stock.view, so Finance can populate the revise-invoice product picker without being over-provisioned with full warehouse stock-visibility; verified via curl as finance_demo (200, populated list) and via e2e (select[name=productId] now populates)",
+              "item": "DEF-12 [Major] fixed: new narrower product.view permission granted to Finance",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-13 [Major] fixed at both layers: NumberField no longer passes min/max straight to antd's InputNumber (which silently clamps on blur); range is now enforced by an explicit Form validator wired through a new Form.onValidationError callback, surfaced through the same vat-rate-error test id used for server-side errors; backend Zod validation (already correct) re-confirmed via errorMessageAudit e2e",
+              "item": "DEF-13 [Major] fixed at both layers: Form validator + confirmed server Zod",
               "pass": true,
               "missing": null
             },
             {
-              "item": "OPEN-1/OPEN-2 (dashboard/stock polling not updating within 60s): root cause found and fixed - refetchIntervalInBackground was not enough on its own; the real blocker was playwright.config.ts's global test timeout (30s) being shorter than these tests' own explicit 60s assertion budget (ECP-007 AC1 / ECP-028 AC2 intentionally allow up to 60s for the polling-fallback path) - raised global timeout to 90s; also kept refetchIntervalInBackground:true on both hooks as a real, independent hardening (a genuinely backgrounded tab would otherwise still stop polling)",
+              "item": "OPEN-1/OPEN-2 fixed: playwright.config.ts global timeout raised to 90s",
               "pass": true,
               "missing": null
             },
             {
-              "item": "OPEN-3 (errorMessageAudit notify-error empty) fixed: added a QueryCache-level onError handler (App.tsx) so every failed useQuery (not just hand-written mutation catch blocks) reaches the central Notify component; /auth/me marked meta:{silent:true} since its expected pre-login 401 is not a real error",
+              "item": "OPEN-3 fixed: QueryCache-level onError handler",
               "pass": true,
               "missing": null
             },
@@ -995,17 +970,17 @@
               "missing": null
             },
             {
-              "item": "unit tests pass (175/175, up from 172 - added 1 DEF-10 regression test in invoice.service.test.ts + 2 DEF-09 regression tests in stock.service.test.ts; 12 skipped unchanged/documented; 28/30 suites)",
+              "item": "unit tests pass (175/175, up from 172)",
               "pass": true,
               "missing": null
             },
             {
-              "item": "tsc (backend+frontend) / eslint / vite build clean",
+              "item": "tsc/eslint/build clean",
               "pass": true,
               "missing": null
             },
             {
-              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 152 passed / 2 skipped / 0 failed (154 total), all 17/17 suites green - target 154/154 (minus documented skips) met",
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 152 passed / 2 skipped / 0 failed (154 total), all 17/17 suites green",
               "pass": true,
               "missing": null
             }
@@ -1033,7 +1008,7 @@
             "playwright.config.ts"
           ],
           "questions_for_pond": [],
-          "summary": "แก้ครบทั้ง 5 defect (1 Critical + 4 Major) และสอบสวน OPEN-1/2/3 จนจบ ไม่มีบั๊กเหลือค้างในโค้ด. DEF-09 (Critical, root cause จริง): เดิม reserve()/issue() อ่าน balance ผ่าน Prisma ORM ธรรมดา (ไม่ lock) ก่อน แล้วค่อยเขียนใน transaction ที่ lock แยกต่างหาก - เป็น TOCTOU แท้ๆ ตรงตามสมมติฐานของ QA แก้โดยยุบ read-check-write เป็น UPDATE เดียวที่มีเงื่อนไข guard ในตัว (`UPDATE stock_balance SET ... WHERE material_id=? AND (physical_qty-reserved_qty)>=?` ตรวจ affected-row-count แทนการอ่านแยก) ใช้ pattern เดียวกับที่เคยแก้ DEF-06 (NumberSequence) สำเร็จมาแล้ว ใช้ pattern เดียวกันนี้ซ้ำอีก 2 จุดที่เจอระหว่างทดสอบจริง: PO confirm/cancel (`po.routes.ts`, atomic status transition กัน double-confirm/double-cancel) และจุดที่ไม่มีใครเคยรายงานมาก่อน - lot-level remaining_qty ใน `production.routes.ts` (bug แยกจาก material-level balance: การเช็ค stock รวมทั้ง material ไม่ได้ป้องกันการเบิกเกินจาก lot เจาะจงหนึ่งใบเมื่อ material โดยรวมมีเหลือเยอะ) ยืนยันด้วย `stockLedgerAccuracy.spec.ts` เขียว 3 รอบติดกันจริงกับ MySQL จริง (ทั้ง 2 sub-test: 100-concurrent-op ledger-vs-balance และ lot-level boundary-race). DEF-10: เพิ่ม PO->Invoiced transition + POStatusEvent ใน invoice.routes.ts หลัง issueInvoice สำเร็จ - การแก้นี้เปิดโปง regression ใน invoice.service.ts เอง (เทสต์เดิม TC-020-AC2 พังเพราะ second-issue-attempt ตอนนี้มี poStatus='Invoiced' จริงแทนที่จะเป็น 'Shipped' ทำให้ generic 400 'ยังไม่ shipped' ทำงานก่อน 409 'มี invoice แล้ว' ที่เจาะจงกว่า) แก้โดยสลับลำดับการเช็ค (409 existing-invoice-chain ก่อน 400 not-shipped เสมอ) เพิ่ม regression unit test จำลอง production จริง (poStatus='Invoiced' ตอนเรียกครั้งที่สอง). DEF-11: SelectField เพิ่ม labelInValue+optionLabelProp='label' (root cause คือ rc-select ตัด value-to-label matching เมื่อ options โหลดมาช้ากว่าค่า field ที่ผูกไว้แล้ว - labelInValue จับคู่ label ตอน selection จริง ไม่ต้อง re-match กับ options array อีก) เพิ่ม normalizeSelectValues() ให้ handler เดิมทุกหน้าที่อ่าน values.xxx ยังทำงานเหมือนเดิมโดยไม่ต้องแก้ signature ยืนยันด้วย DOM inspection ตรง (dropdown แสดง 'บริษัท ABC จำกัด (CUS-00000001)' ไม่ใช่เลข id ดิบแล้ว). DEF-12 (ตัดสินใจ): เพิ่ม permission ใหม่ที่แคบกว่า `product.view` แยกจาก `stock.view` แล้วให้ Finance เฉพาะตัวใหม่นี้ (ไม่ให้ stock.view เต็มซึ่งจะเห็น physical/reserved qty ของคลังทั้งหมดที่ Finance ไม่มีความจำเป็นต้องเห็น) - เหตุผล: `GET /products` คืนแค่ชื่อ/BOM/hasBom ของสินค้า ไม่ใช่ตัวเลข stock จริง จึงสมควรแยก permission ที่ตรงกับสิ่งที่ endpoint นี้ให้จริงๆ แทนที่จะยืมสิทธิ์ที่กว้างเกินจำเป็นของอีก resource มาใช้ - ยืนยันด้วย curl ตรง (finance_demo -> 200) และ e2e (revise-invoice modal populate สินค้าได้จริงแล้ว). DEF-13: NumberField เลิกส่ง min/max ตรงเข้า antd InputNumber (root cause การ clamp เงียบ) เปลี่ยนเป็น Form validator ที่ reject พร้อมข้อความ ผูกกับ Form.onValidationError callback ใหม่ที่ AdminPage ใช้แสดงผ่าน testid เดียวกับ error จาก server ยืนยันทั้ง client (validator reject) และ server (Zod เดิมถูกอยู่แล้ว, ยืนยันซ้ำผ่าน errorMessageAudit e2e). OPEN-1/OPEN-2: root cause จริงไม่ใช่แค่ refetchIntervalInBackground (ที่เพิ่มไปแล้วเป็นการเสริมความทนทานจริง สำหรับกรณี tab ถูก background จริงๆ) แต่คือ `playwright.config.ts` มี global test timeout แค่ 30s ในขณะที่ 2 เทสต์นี้ตั้งใจให้ assertion เองมี budget 60s (ตรงตาม ECP-007 AC1/ECP-028 AC2 ที่อนุญาต worst-case fallback-polling ได้ถึง 60s) Playwright จะ kill ทั้งเทสต์ที่ 30s ก่อนที่ assertion จะได้โอกาสรอครบ - แก้ที่ config (ไม่ใช่ tests/) เป็น 90s ยืนยันด้วยการรัน fallback-polling test ผ่านจริงที่ 31s (เดิม timeout ที่ 30s พอดี). OPEN-3: เพิ่ม QueryCache-level onError ใน App.tsx ให้ทุก useQuery ที่ fail (ไม่ใช่แค่ mutation ที่เขียน catch เอง) ไปโผล่ที่ Notify กลาง ทำเครื่องหมาย /auth/me เป็น silent (401 ก่อน login คือปกติ ไม่ใช่ error จริง). สำคัญ: ระหว่างรันจริงพบว่า process เก่าจากรอบก่อน (`npm run dev` ค้างอยู่ที่ port 4000/5173 จากก่อน compaction) ยังทำงานอยู่ด้วยโค้ดเก่า - kill ทิ้งและเปิดใหม่สะอาดก่อนรัน e2e จริง (ผลรอบแรกที่ fail 18/19 เป็นผลจาก process ค้างนี้ ไม่ใช่บั๊กจริง). ตัวเลขจริงสุดท้ายทั้งหมด (หลัง kill process เก่า + เปิดใหม่สะอาด + reseed ทั้ง dev/test DB): `npm run reset && npm run setup` = ผ่านเต็มบน Docker volume ใหม่จริง; `npm run test:unit` = 175 passed/12 skipped/0 failed (28/30 suites); `npx tsc -p tsconfig.backend.json --noEmit` = 0 error; `cd src/frontend && npx tsc --noEmit` = 0 error; `npx eslint .` = 0 error (2 pre-existing warning ใน tests/ ที่ไม่แตะ); `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 152 passed/2 skipped/0 failed จาก 154 (17/17 suites) ตรงเป้า; `stockLedgerAccuracy.spec.ts` รันแยก 3 รอบติดกัน = เขียวทั้ง 3 รอบ (2/2 test ผ่านทุกรอบ); `npx playwright test` = 16 passed/2 failed/1 skipped จาก 19 (ขึ้นจาก 3/19 เดิมมาก) - 2 ที่เหลือยืนยันแล้วว่าเป็นบั๊กใน test file เอง (selector strategy) ไม่ใช่ DEF-11/12/13 ที่ fix แล้วจริง (ดูรายละเอียดใน gate_checklist ข้อสุดท้าย) บันทึกไว้ให้ QA ปรับ selector สองจุดนี้เอง ไม่ได้แตะไฟล์ tests/ เพื่อแก้ปัญหานี้ตามกติกา. ไม่ใช้ git ตลอดทั้งรอบตามที่กำหนด. seed ทั้ง dev/test DB ให้อยู่ในสถานะสะอาดก่อนส่งต่อ QA.",
+          "summary": "แก้ครบทั้ง 5 defect (1 Critical + 4 Major) และสอบสวน OPEN-1/2/3 จนจบ ไม่มีบั๊กเหลือค้างในโค้ด. DEF-09: ยุบ read-check-write เป็น UPDATE เดียวที่มีเงื่อนไข guard ในตัว ใช้ pattern เดียวกับที่แก้ DEF-06 สำเร็จ ใช้ซ้ำอีก 2 จุด (PO confirm/cancel, lot-level remaining_qty). DEF-10: เพิ่ม PO->Invoiced transition + แก้ regression ลำดับการเช็ค. DEF-11: SelectField labelInValue. DEF-12: product.view permission ใหม่. DEF-13: NumberField validator แทน silent clamp. OPEN-1/2: playwright timeout 30s->90s (root cause จริง). OPEN-3: QueryCache onError. ตัวเลขจริงสุดท้าย: unit 175/12/0; integration 152/2/0 (17/17 suites); stockLedgerAccuracy 3/3 รอบเขียว; playwright 16/2/1 จาก 19 (ขึ้นจาก 3/19). ไม่ใช้ git ตลอดทั้งรอบ.",
           "overridden_by": null,
           "updated_at": "2026-07-08T14:30:00+07:00"
         },
@@ -1043,34 +1018,34 @@
           "status": "FAILED",
           "gate_checklist": [
             {
-              "item": "ยืนยัน DEF-09 (Critical) fixed จริงด้วยการรันอิสระ 3 รอบติดกัน (stockLedgerAccuracy.spec.ts) บน Docker volume ที่ reset ใหม่ล้วนๆ เขียวทั้ง 3 รอบ ทั้ง 2 sub-test",
+              "item": "ยืนยัน DEF-09 (Critical) fixed จริงด้วยการรันอิสระ 3 รอบติดกัน",
               "pass": true,
               "missing": null
             },
             {
-              "item": "ยืนยัน DEF-10/11/12/13 (Major) fixed: invoice.spec.ts (Invoiced transition + 409-before-400), DOM probe จริง (customer picker แสดง label ถูกต้องครบ 5 ตัวเลือก ไม่ virtualize), curl ตรง (finance_demo GET /products = 200), errorMessageAudit e2e ผ่าน",
+              "item": "ยืนยัน DEF-10/11/12/13 (Major) fixed",
               "pass": true,
               "missing": null
             },
             {
-              "item": "ยืนยัน OPEN-1/2/3 ปิดแล้ว: realtimeStock.spec.ts ทั้ง 2 test ผ่าน, errorMessageAudit UI test ผ่าน",
+              "item": "ยืนยัน OPEN-1/2/3 ปิดแล้ว",
               "pass": true,
               "missing": null
             },
             {
-              "item": "รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152 passed/2 skipped/0 failed/17/17 suites ตรงกับที่ Engineer อ้างเป๊ะ",
+              "item": "รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152/2/0/17-17 ตรงกับที่ Engineer อ้างเป๊ะ",
               "pass": true,
               "missing": null
             },
             {
-              "item": "แก้ 2 จุด selector ที่ Engineer ชี้ (demoFlow.spec.ts getByRole(option) -> .ant-select-item-option, invoiceRevisionTimeline.spec.ts input[name=unitPrice] -> getByTestId) หลังยืนยันด้วย DOM probe ตรงว่า Engineer วิเคราะห์ถูกทั้งคู่",
+              "item": "แก้ 2 จุด selector ที่ Engineer ชี้",
               "pass": true,
               "missing": null
             },
             {
               "item": "ไม่มี Critical/Major defect ใหม่ที่เป็นความผิดของโค้ด",
               "pass": false,
-              "missing": "พบ 2 ตัวใหม่ระหว่างแก้ e2e spec ให้ผ่านจริง: DEF-14 (Major) Production role เรียก GET /users ไม่ได้ (403, ต้องการ user_management.view_users ซึ่งมีแค่ Admin) ทำให้ assign-worker-select (ProductionPage.tsx, ECP-012) ว่างเปล่าเสมอสำหรับ role เดียวที่ทำ assign จริง ยืนยันด้วย curl ตรง - รูปแบบเดียวกับ DEF-12 ที่เพิ่งแก้ แต่คนละ endpoint/role; DEF-15 (Major) revise-invoice modal product <select name=productId onChange={()=>undefined}> ไม่ได้ครอบด้วย AntForm.Item เลย ไม่ผูกกับ form state จึง values.productId เป็น undefined เสมอตอน submit -> Number(undefined)=NaN -> Zod reject ทุกครั้ง (form-error แสดง ข้อมูลที่กรอกไม่ถูกต้อง ยืนยันด้วย DOM probe ตรง) - DEF-12 (permission) ที่ Engineer แก้ทำให้ dropdown มีตัวเลือกให้เลือกแล้วจริง แต่การเลือกไม่มีผลอะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise invoice ยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดี เป็นบั๊กคนละชั้นซ่อนอยู่หลัง DEF-12"
+              "missing": "พบ 2 ตัวใหม่ระหว่างแก้ e2e spec ให้ผ่านจริง: DEF-14 (Major) Production role เรียก GET /users ไม่ได้ (403) ทำให้ assign-worker-select ว่างเปล่าเสมอ; DEF-15 (Major) revise-invoice modal product select ไม่ผูกกับ form state จริง (values.productId เป็น undefined เสมอตอน submit)"
             },
             {
               "item": "อัปเดต verify-report.md/defects.md พร้อมสถานะ DEF ทุกตัว (01-15) + MIN + UAT plan summary",
@@ -1088,7 +1063,7 @@
             "tests/integration/concurrency/stockLedgerAccuracy.spec.ts"
           ],
           "questions_for_pond": [],
-          "summary": "Verify-4 (รอบปิดงานตามที่คาดหวัง): ยืนยัน DEF-09 (Critical, stock ledger TOCTOU) fixed จริงด้วยการรันอิสระ stockLedgerAccuracy.spec.ts แยก 3 รอบติดกันบน Docker volume ที่ reset ใหม่ล้วนๆ เขียวทั้ง 3 รอบทั้ง 2 sub-test (100-concurrent-op + lot-level boundary-race) มั่นใจว่าปิดแล้วจริง. ยืนยัน DEF-10 (PO->Invoiced transition + 409-before-400 ordering), DEF-11 (antd Select label ถูกต้อง ยืนยันด้วย DOM probe ตรงในเบราว์เซอร์จริง เห็น 5 ตัวเลือกครบพร้อม label ภาษาไทยถูกต้อง ไม่ virtualize เหลือ ~2 เหมือนก่อน), DEF-12 (Finance เรียก GET /products ได้ 200 จริงแล้ว), DEF-13 (VAT rate validator error แสดงผ่าน UI จริง) fixed ทั้งหมด และ OPEN-1/2/3 (dashboard/polling timeout + notify-error) ปิดครบทั้ง 3 รายการ. รัน RUN_DB_TESTS=1 npx jest --selectProjects integration เต็ม: 152 passed/2 skipped/0 failed จาก 154 (17/17 suites) ตรงกับที่ Engineer อ้างเป๊ะ. ตรวจสอบ 2 จุด selector ที่ Engineer ชี้ว่าเป็นบั๊กใน spec ของ QA เอง (ไม่ใช่โค้ด) ด้วย DOM probe ตรงในเบราว์เซอร์จริงก่อนแก้ (ไม่เชื่อคำอธิบายเปล่าๆ): ยืนยันว่า Engineer วิเคราะห์ถูกทั้งคู่จริง - demoFlow.spec.ts ใช้ getByRole(option) ที่ match rc-select hidden ARIA shadow listbox ผิดที่ (ต้องใช้ .ant-select-item-option ที่มองเห็นได้จริงแทน) และ invoiceRevisionTimeline.spec.ts ใช้ input[name=unitPrice] ที่ antd InputNumber ไม่เคย render name attribute เลย (ต้องใช้ getByTestId แทน) แก้ทั้งสองจุดตามที่ชี้แนะ. ระหว่างแก้ให้ flow ทั้งสองไฟล์นี้ผ่านจริงจนสุดทาง กลับพบ defect โค้ดจริงใหม่อีก 2 ตัวที่ Engineer ไม่เคยรายงาน (เพราะไม่ได้ทดสอบ flow เต็มผ่านเบราว์เซอร์จริงจนสุดทางเหมือนกัน): DEF-14 (Major) - Production role (role เดียวที่ทำ ECP-012 assign worker) เรียก GET /users ไม่ได้ (403, endpoint ต้องการ user_management.view_users ซึ่งมีแค่ Admin) ทำให้ assign-worker-select dropdown ว่างเปล่าเสมอสำหรับ role ที่ต้องใช้งานจริง ยืนยันด้วย curl ตรง - รูปแบบ permission-matrix-gap เดียวกับ DEF-12 เป๊ะ แต่คนละ endpoint/role ที่ Engineer ยังไม่ได้ตรวจ; DEF-15 (Major) - revise-invoice modal product <select> ใน InvoicesPage.tsx ไม่ได้ครอบด้วย AntForm.Item และ onChange ทิ้ง event () เลย ทำให้ values.productId เป็น undefined เสมอตอน submit -> ส่ง NaN -> Zod reject ทุกครั้ง (ยืนยันด้วย DOM probe ตรง เห็น form-error message ทุกครั้งหลัง submit) เป็นบั๊กคนละชั้นที่ซ่อนอยู่หลัง DEF-12: DEF-12 (permission) ทำให้ dropdown มีตัวเลือกให้เลือกแล้วจริง แต่การเลือกไม่มีผลอะไรต่อข้อมูลที่ส่งจริงเลย ฟีเจอร์ revise invoice จึงยังใช้งานผ่าน UI ไม่ได้จริงอยู่ดีแม้ DEF-12 จะแก้แล้วก็ตาม - integration test เดิมจับบั๊กนี้ไม่ได้เพราะส่ง productId ตรงผ่าน request body อยู่แล้ว ไม่ผ่าน form ที่พังจุดนี้. ตัวเลขจริงสุดท้าย: unit 175/175, integration 152/154 (2 skip, 0 fail, 17/17 suites เขียว), stockLedgerAccuracy 3/3 รอบเขียว, e2e 16/19 (2 fail = DEF-14/15 ใหม่ + 1 skip มีเหตุผลเดิม). สถานะ FAILED ตามกติกา Exit Gate (พบ Major defect ใหม่ 2 ตัว) - ส่งกลับ Engineer พร้อม defect list เต็ม เน้นว่า DEF-01-13 + OPEN-1-3 ปิดหมดแล้วไม่ต้องแก้ซ้ำ เหลือแค่ DEF-14/15 ที่มีรูปแบบชัดเจน (permission gap + form-wiring bug) ไม่ใช่ปัญหา architecture ใหญ่เหมือน DEF-09 คาดว่ารอบถัดไปจะปิดงานได้จริง. อัปเดต UAT plan summary (2-3 คน/role ตามที่ปอนด์อนุมัติ) ใน verify-report.md พร้อมคำแนะนำว่ายังไม่ควรเริ่มนัดหมาย UAT จนกว่า DEF-14/15 จะแก้เสร็จ.",
+          "summary": "Verify-4: ยืนยัน DEF-09 (Critical, stock ledger TOCTOU) fixed จริงด้วยการรันอิสระ 3 รอบติดกันเขียวทั้งหมด. ยืนยัน DEF-10/11/12/13 และ OPEN-1/2/3 fixed ทั้งหมด. รัน integration เต็ม: 152/2/0 จาก 154 (17/17 suites) ตรงกับที่ Engineer อ้างเป๊ะ. แก้ 2 จุด selector ที่ Engineer ชี้ (ยืนยันด้วย DOM probe ก่อนแก้). ระหว่างแก้ให้ flow ผ่านจริงจนสุดทาง พบ defect โค้ดจริงใหม่อีก 2 ตัว: DEF-14 (Major, permission-matrix-gap เดียวกับ DEF-12 แต่คนละ endpoint/role - Production ไม่มีสิทธิ์ดู user list), DEF-15 (Major, form-wiring bug ซ่อนอยู่หลัง DEF-12 - native select ไม่ผูก form state). ตัวเลขจริงสุดท้าย: unit 175/175, integration 152/154, stockLedgerAccuracy 3/3, e2e 16/19 (2 fail = DEF-14/15 ใหม่ + 1 skip). สถานะ FAILED - ส่งกลับ Engineer เน้นว่า DEF-01-13+OPEN-1-3 ปิดหมดแล้ว เหลือแค่ DEF-14/15.",
           "overridden_by": null,
           "updated_at": "2026-07-08T18:00:00+07:00"
         },
@@ -1098,54 +1073,49 @@
           "status": "READY_FOR_QA_VERIFY",
           "gate_checklist": [
             {
-              "item": "DEF-14 [Major] fixed: added a new, narrower `user.view_basic` permission (distinct from Admin-only `user_management.view_users`) + a new GET /users/basic endpoint returning only {id, fullName} for active users; granted to Production (the only role that does ECP-012 assign-worker) instead of the broader user-management permission",
+              "item": "DEF-14 [Major] fixed: new narrower user.view_basic permission + GET /users/basic endpoint granted to Production",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-14 verified via curl as production_demo: GET /users/basic now returns 200 with a minimal {id, fullName} list (no username/role/status leaked), confirmed Admin's existing GET /users (full record) untouched/unaffected",
+              "item": "DEF-14 verified via curl as production_demo",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-15 [Major] fixed: revise-invoice modal's product picker was a native <select> rendered OUTSIDE any AntForm.Item with an onChange that discarded the event, so productId was always undefined on submit. Added a new ui/Form.tsx `NativeSelectField` component (a real native <select>, wrapped in AntForm.Item so it registers with Form state via antd's default getValueFromEvent) and wired InvoicesPage.tsx to use it - keeps the DOM element a genuine native <select> (required since tests/e2e/invoiceRevisionTimeline.spec.ts drives it with Playwright's .selectOption(), which only works on native <select> elements) while fixing the actual form-state wiring bug",
+              "item": "DEF-15 [Major] fixed: new NativeSelectField wrapped in AntForm.Item",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-15 verified via direct Playwright probe: selecting a product now yields a real id (not NaN) in the added revise-line, and via the full e2e suite: tests/e2e/invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 (the exact test that was blocked by DEF-15) now passes",
+              "item": "DEF-15 verified via direct Playwright probe + full e2e suite",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run reset && npm run setup passes end-to-end on a genuinely fresh Docker volume; no stale dev server left over on ports 4000/5173 before any test run (explicitly checked with netstat before every server start this round)",
+              "item": "npm run reset && npm run setup passes end-to-end; no stale dev server left over",
               "pass": true,
               "missing": null
             },
             {
-              "item": "unit tests pass (175/175, unchanged from defect-fix-3 - DEF-14/15 required no unit-level logic changes worth new unit tests beyond the existing route/permission/component coverage)",
+              "item": "unit tests pass (175/175, unchanged)",
               "pass": true,
               "missing": null
             },
             {
-              "item": "tsc (backend+frontend) / eslint / vite build clean",
+              "item": "tsc/eslint/build clean",
               "pass": true,
               "missing": null
             },
             {
-              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 152 passed / 2 skipped / 0 failed (154 total), 17/17 suites green - unchanged from defect-fix-3, confirming DEF-14/15 fixes did not regress anything",
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration: 152/2/0 unchanged, confirming no regression",
               "pass": true,
               "missing": null
             },
             {
-              "item": "stockLedgerAccuracy.spec.ts re-run 3 consecutive times on the fresh volume - green all 3 times (DEF-09 re-confirmed stable, not touched this round)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "npx playwright test: 17 passed / 1 failed / 1 skipped (19 total) - both DEF-14 and DEF-15 blockers are gone (demoFlow.spec.ts now progresses far past both the assign-worker step and the whole customer/product select flow; invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 fully passes) but the 19/19 or 18/19+1-skip target was not fully hit",
+              "item": "npx playwright test: 17 passed / 1 failed / 1 skipped (19 total) - both DEF-14 and DEF-15 blockers gone",
               "pass": false,
-              "missing": "demoFlow.spec.ts now fails at a NEW checkpoint never reached before (line 163): `expect(...).toHaveText(/QC Approved/i)` expects a space in \"QC Approved\" but the actual rendered text is \"QCApproved\" (no space) - StatusTag (ui/StatusTag.tsx) renders every status enum value in the app verbatim with no spaces inserted, by a single consistent app-wide convention (InProduction, ReadyToShip, QCApproved, PartiallyPaid, etc. - every Prisma status enum across the whole schema is one PascalCase word, never two). This is not a DEF-14/DEF-15 regression and not a business-logic defect: it is a pre-existing test-expectation-vs-naming-convention mismatch in demoFlow.spec.ts's own regex, unrelated to and unreachable before this round (the test never got this far previously). Per instructions (never edit tests/, scope limited to DEF-14/DEF-15), left as-is and documented here for QA to decide: either fix the regex to /QCApproved/i (matching the app's real, consistent convention) or, if QA believes inserting spaces into status labels is a genuine UX improvement worth doing app-wide, log it as a new defect/enhancement for a future round - changing StatusTag's rendering would affect every status badge across the entire app and is out of this round's scope."
+              "missing": "demoFlow.spec.ts fails at a NEW checkpoint never reached before: regex /QC Approved/i expects a space but actual text is 'QCApproved' (no space) - StatusTag renders every status enum verbatim app-wide, consistent convention. Not a DEF-14/15 regression, not a business-logic bug - a pre-existing test-expectation-vs-naming-convention mismatch in demoFlow.spec.ts's own regex. Left as-is per instructions (never edit tests/), documented for QA to decide."
             }
           ],
           "output_files": [
@@ -1157,7 +1127,7 @@
             "src/frontend/pages/InvoicesPage.tsx"
           ],
           "questions_for_pond": [],
-          "summary": "แก้ครบทั้ง 2 defect (DEF-14, DEF-15) ตามรูปแบบที่ QA ระบุ (เหมือน DEF-12 ที่เคยแก้มาแล้ว). DEF-14: เพิ่ม permission ใหม่ที่แคบกว่า `user.view_basic` แยกจาก `user_management.view_users` (Admin-only เดิม) พร้อม endpoint ใหม่ `GET /users/basic` ที่คืนแค่ {id, fullName} ของ user ที่ active เท่านั้น (ไม่คืน username/roleName/status แบบ endpoint เดิม) แล้วให้สิทธิ์นี้กับ Production (role เดียวที่ทำ ECP-012 มอบหมายงานผลิตจริง) แทนที่จะให้ user_management.view_users แบบเต็ม - เหตุผลเดียวกับ DEF-12 เป๊ะ (least privilege): dropdown มอบหมายงานต้องการแค่ 'ใครคือใคร' (id+ชื่อ) ไม่ต้องเห็น username/role/status ของพนักงานคนอื่นทั้งระบบซึ่งเป็นข้อมูล user-management เต็มรูปแบบที่ Production ไม่มีความจำเป็นต้องเห็นเพื่อเลือกคนมอบหมายงาน อัปเดต ProductionPage.tsx ให้เรียก useBasicUsers() (hook ใหม่) แทน useUsers() เดิม (ซึ่งยังคงใช้เฉพาะใน AdminPage.tsx สำหรับ Admin เต็มรูปแบบเหมือนเดิม ไม่กระทบ) ยืนยันด้วย curl ตรงเป็น production_demo: GET /users/basic คืน 200 พร้อม {id,fullName} เท่านั้นจริง. DEF-15: root cause คือ native `<select>` ใน InvoicesPage.tsx ไม่เคยถูกครอบด้วย AntForm.Item เลย (ประกาศ onChange ของตัวเองทิ้ง event ด้วย () => undefined) ทำให้ไม่เคยลงทะเบียนกับ Form state จริง - values.productId เป็น undefined เสมอตอน submit เพิ่ม component ใหม่ `NativeSelectField` ใน ui/Form.tsx ที่ยังคงเป็น native `<select>` จริง (จำเป็นเพราะ tests/e2e/invoiceRevisionTimeline.spec.ts ใช้ Playwright's .selectOption() ซึ่งทำงานกับ native <select> เท่านั้น ไม่ใช่ antd's div-based Select เหมือนที่อื่นในแอป) แต่ครอบด้วย AntForm.Item อย่างถูกต้อง (antd's default getValueFromEvent อ่าน e.target.value จาก DOM element ธรรมดาได้อยู่แล้วโดยไม่ต้องเขียนโค้ดเพิ่ม) แก้ที่ wiring เท่านั้น ไม่เปลี่ยนพฤติกรรมที่มองเห็น ยืนยันด้วย Playwright probe ตรง (เลือกสินค้าแล้วได้ id จริงไม่ใช่ NaN, บรรทัดถูกเพิ่มเข้า preview list) และยืนยันด้วย e2e จริง: invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 (เทสต์ที่เคยติด DEF-15 พอดี) ผ่านแล้ว. ตัวเลขจริงหลังแก้ทั้งหมด (บน Docker volume ที่ reset ใหม่ล้วนๆ, kill stale dev server ทุกครั้งก่อนรัน e2e ตามที่กำชับ): `npm run test:unit` = 175 passed/12 skipped/0 failed (28/30 suites, ไม่เปลี่ยนจากรอบก่อน); `npx tsc` backend+frontend = 0 error ทั้งคู่; `npx eslint .` = 0 error (2 pre-existing warning ใน tests/ เดิม); `cd src/frontend && npx vite build` = สำเร็จ; `RUN_DB_TESTS=1 npx jest --selectProjects integration` = 152 passed/2 skipped/0 failed จาก 154 (17/17 suites เขียว, ตัวเลขเท่าเดิมกับรอบก่อนยืนยันว่า DEF-14/15 ไม่กระทบ integration เลย); `stockLedgerAccuracy.spec.ts` แยก 3 รอบติดกันซ้ำ = เขียวทั้ง 3 รอบ (DEF-09 ยังนิ่งดี ไม่ได้แตะรอบนี้); `npx playwright test` = **17 passed/1 failed/1 skipped จาก 19** (ขึ้นจาก 16/19 เดิม - ยืนยันทั้ง DEF-14 (demoFlow.spec.ts เดินหน้าผ่านจุด assign-worker ไปได้แล้ว) และ DEF-15 (invoiceRevisionTimeline TC-037-AC1/AC2 ผ่านเต็มแล้ว) ปิดจริงทั้งคู่ ไม่ใช่แค่ static review) เหลือ 1 fail ใหม่ที่ demoFlow.spec.ts พบเจอเป็นจุดแรก (ไม่เคยเดินไปถึงจุดนี้มาก่อนเพราะติด DEF-14 ก่อนหน้านี้เสมอ) ไม่เกี่ยวกับ DEF-14/15: บรรทัด 163 `expect(...).toHaveText(/QC Approved/i)` คาดหวัง 'QC Approved' มีเว้นวรรค แต่ข้อความจริงที่ render คือ 'QCApproved' (ไม่มีวรรค) เพราะ StatusTag (ui/StatusTag.tsx) render สถานะทุกตัวในทั้งแอปแบบ verbatim ไม่เว้นวรรคเป็น convention เดียวกันทั้งระบบ (InProduction, ReadyToShip, PartiallyPaid ฯลฯ ทุก enum สถานะใน Prisma schema เป็นคำเดียวติดกันหมด ไม่มีที่ไหนเว้นวรรคเลย) - เป็นบั๊กใน spec ของ QA เอง (regex คาดหวังวรรคที่ไม่เคยมีอยู่จริงในระบบ) ไม่ใช่ DEF-14/DEF-15 regression และไม่ใช่ business logic bug ไม่ได้แก้ tests/ ตามกติกา บันทึกไว้ให้ QA พิจารณา (แก้ regex เป็น /QCApproved/i ให้ตรง convention จริง หรือถ้า QA เห็นว่าควรเว้นวรรค label ทั้งแอปเพื่อ UX ให้เปิดเป็น defect/enhancement ใหม่แยกต่างหากในรอบถัดไป เพราะเป็นการเปลี่ยนพฤติกรรมการแสดงผล status ทุกจุดในทั้งแอป เกินขอบเขตของรอบนี้ที่จำกัดไว้แค่ DEF-14/15). ไม่ใช้ git ตลอดทั้งรอบ ไม่แก้ tests/ แม้แต่ไฟล์เดียว seed ทั้ง dev/test DB ให้สะอาดก่อนส่งต่อ QA.",
+          "summary": "แก้ครบทั้ง 2 defect (DEF-14, DEF-15) ตามรูปแบบเดียวกับ DEF-12 ที่เคยแก้มาแล้ว (least-privilege permission gap + form-wiring bug). ตัวเลขจริงหลังแก้ทั้งหมด: unit 175/12/0 (28/30 suites); tsc/eslint/build clean; integration 152/2/0 จาก 154 (17/17 suites เขียว, ไม่กระทบ); stockLedgerAccuracy 3 รอบติดกันเขียว (DEF-09 ยังนิ่งดี); playwright 17/1/1 จาก 19 (ขึ้นจาก 16/19) - เหลือ 1 fail ใหม่ที่ demoFlow.spec.ts พบเป็นจุดแรก (ไม่เคยเดินไปถึงมาก่อนเพราะติด DEF-14 ก่อนหน้านี้เสมอ) เป็นบั๊กใน spec ของ QA เอง (regex คาดหวังวรรคที่ไม่เคยมีอยู่จริงในระบบ) ไม่ใช่ DEF-14/15 regression ไม่ได้แก้ tests/ ตามกติกา บันทึกไว้ให้ QA พิจารณา. ไม่ใช้ git ตลอดทั้งรอบ ไม่แก้ tests/ แม้แต่ไฟล์เดียว seed ทั้ง dev/test DB ให้สะอาดก่อนส่งต่อ QA.",
           "overridden_by": null,
           "updated_at": "2026-07-08T20:15:00+07:00"
         },
@@ -1167,67 +1137,67 @@
           "status": "READY_FOR_DEVOPS",
           "gate_checklist": [
             {
-              "item": "DEF-14 re-verified independently via direct curl as production_demo (not just re-reading Engineer's claim): GET /users/basic returns 200 with only {id, fullName}; GET /users (full) still returns 403 for Production - confirmed twice this round (start and end)",
+              "item": "DEF-14 re-verified independently via direct curl",
               "pass": true,
               "missing": null
             },
             {
-              "item": "DEF-15 re-verified via direct source read of ui/Form.tsx NativeSelectField + InvoicesPage.tsx usage, and via tests/e2e/invoiceRevisionTimeline.spec.ts TC-037-AC1/AC2 passing green",
+              "item": "DEF-15 re-verified via direct source read + e2e passing green",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Investigated the coordinator-flagged 'QC Approved' regex mismatch by reading qc.routes.ts directly rather than accepting either side's framing at face value: confirmed Batch.status enum (\"QCApproved\", no space) and POStatusEvent.status plain-string column (\"QC Approved\", with space) are two genuinely different fields intentionally using different conventions, not one inconsistency. Fixed only the one mis-written regex in demoFlow.spec.ts (Batch status badge assertion) to /QCApproved/i; left the correct PO-timeline assertion untouched. Classified as a QA-owned spec bug, not a product defect - not bounced back to Engineer per explicit instruction",
+              "item": "Investigated 'QC Approved' regex mismatch by reading qc.routes.ts directly: confirmed two genuinely different fields intentionally using different conventions, not one inconsistency. Fixed only the mis-written regex, classified as QA-owned spec bug",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Logged a non-blocking UX enhancement note (UX-01: status badges show raw un-spaced/untranslated enum values app-wide) in verify-report.md for future backlog - does not block this Gate 2 per explicit instruction",
+              "item": "Logged non-blocking UX enhancement note (UX-01) for future backlog",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Fixed several additional QA-owned spec bugs in demoFlow.spec.ts newly exposed now that DEF-14/15 no longer block flow progress (shipping row nested button, antd DatePicker+Modal Escape-vs-Tab, invoice-issue navigation/modal-confirm click, VAT text format, missing required method field, PO Timeline 6-vs-5 entries, cross-file shared-dev-DB pollution for shipment badge and global VATConfig rate) - all verified via direct DOM probes before fixing, not guessed",
+              "item": "Fixed several additional QA-owned spec bugs in demoFlow.spec.ts newly exposed now that DEF-14/15 no longer block flow progress",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run reset && npm run setup succeeded on a fresh Docker volume (worked around known healthcheck-race manually)",
+              "item": "npm run reset && npm run setup succeeded on a fresh Docker volume",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run test:unit: 175 passed, 12 skipped, 0 failed, 28/30 suites - matches Engineer's claim, independently re-run",
+              "item": "npm run test:unit: 175/12/0, 28/30 suites - matches Engineer's claim",
               "pass": true,
               "missing": null
             },
             {
-              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration (full, incl. concurrency): 152 passed, 2 skipped, 0 failed, 154 total, 17/17 suites green - matches Engineer's claim, independently re-run",
+              "item": "RUN_DB_TESTS=1 npx jest --selectProjects integration (full, incl. concurrency): 152/2/0/154, 17/17 suites green",
               "pass": true,
               "missing": null
             },
             {
-              "item": "stockLedgerAccuracy.spec.ts (DEF-09 NFR N1 regression guard) re-run standalone once more this round: green (2/2) - 4th independent confirmation across all verify rounds combined",
+              "item": "stockLedgerAccuracy.spec.ts re-run standalone once more: green (2/2) - 4th independent confirmation",
               "pass": true,
               "missing": null
             },
             {
-              "item": "demoFlow.spec.ts run standalone after all fixes: 1 passed (full Sales->Production->QC->Shipping->Finance->PO-timeline flow, first time ever reaching full green)",
+              "item": "demoFlow.spec.ts run standalone after all fixes: 1 passed (full flow, first time ever reaching full green)",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Full e2e suite (all 6 spec files together) re-run after a fresh db:seed: 18 passed, 1 skipped, 0 failed, 19 total - fully green (the 1 skip is TC-037-AC3, documented since verify-3 as having no real UI route to test, covered instead at API level)",
+              "item": "Full e2e suite (all 6 spec files together) re-run after a fresh db:seed: 18 passed, 1 skipped, 0 failed, 19 total - fully green",
               "pass": true,
               "missing": null
             },
             {
-              "item": "No stray probe files left in tests/e2e/; no production code under src/ modified at any point this round",
+              "item": "No stray probe files left in tests/e2e/; no production code under src/ modified",
               "pass": true,
               "missing": null
             },
             {
-              "item": "defects.md and verify-report.md updated with final closure of all DEF-01 through DEF-15 (15/15 Fixed), the QC-Approved regex resolution, the UX-01 backlog note, and UAT plan confirmation (2-3 testers/role, ready to schedule)",
+              "item": "defects.md and verify-report.md updated with final closure of all DEF-01 through DEF-15",
               "pass": true,
               "missing": null
             }
@@ -1238,7 +1208,7 @@
             "tests/e2e/demoFlow.spec.ts"
           ],
           "questions_for_pond": [],
-          "summary": "ยืนยัน DEF-14/DEF-15 fixed จริงด้วยการทดสอบอิสระ (curl + code read + e2e). วิเคราะห์เคส QC-Approved regex แล้วสรุปเป็น spec bug ของ QA เอง (ไม่ใช่ product defect) แก้เองไม่ตีกลับ Engineer พร้อมบันทึก UX enhancement note แยกไว้ (ไม่ block Gate 2). รันครบทุก suite: unit 175/175, integration 152/154 (17/17 suites), e2e 18/19 (1 documented skip) เขียวครบ. DEF-01 ถึง DEF-15 ปิดครบทั้ง 15 รายการ ไม่มี Critical/Major defect ค้าง. UAT plan (2-3 คน/role) พร้อมนัดหมายได้ทันที.",
+          "summary": "ยืนยัน DEF-14/DEF-15 fixed จริงด้วยการทดสอบอิสระ (curl + code read + e2e). วิเคราะห์เคส QC-Approved regex แล้วสรุปเป็น spec bug ของ QA เอง แก้เองไม่ตีกลับ Engineer พร้อมบันทึก UX enhancement note แยกไว้ (ไม่ block Gate 2). รันครบทุก suite: unit 175/175, integration 152/154 (17/17 suites), e2e 18/19 (1 documented skip) เขียวครบ. DEF-01 ถึง DEF-15 ปิดครบทั้ง 15 รายการ ไม่มี Critical/Major defect ค้าง. UAT plan (2-3 คน/role) พร้อมนัดหมายได้ทันที.",
           "overridden_by": null,
           "updated_at": "2026-07-08T22:30:00+07:00"
         },
@@ -1248,52 +1218,47 @@
           "status": "WAITING_HUMAN_GATE",
           "gate_checklist": [
             {
-              "item": "Killed stale dev-server processes left over from a previous round (port 4000/5173) before starting the from-scratch smoke, per coordinator's known-issue warning",
+              "item": "Killed stale dev-server processes left over from a previous round before starting the from-scratch smoke",
               "pass": true,
               "missing": null
             },
             {
-              "item": "npm run reset (docker compose down -v, real volume wipe) -> npm run setup succeeded following runbook.md verbatim, as a first-time user would",
+              "item": "npm run reset -> npm run setup succeeded following runbook.md verbatim",
               "pass": true,
-              "missing": "hit the known MySQL healthcheck-race on a brand-new volume (P1017 on prisma migrate deploy right after container reports healthy) - documented in runbook.md §2 with the exact recovery steps, resolved on retry without a second down -v"
+              "missing": "hit the known MySQL healthcheck-race on a brand-new volume - documented in runbook.md §2 with exact recovery steps, resolved on retry"
             },
             {
-              "item": "npm run dev started backend(:4000)+frontend(:5173); curl /health = 200, curl :5173/ = 200",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Login smoke via real HTTP (POST /api/v1/auth/login + GET /auth/me) for admin + sales_demo: both 200, correct role/permission payload including new product.view/user.view_basic grants",
+              "item": "npm run dev started backend(:4000)+frontend(:5173); curl checks 200",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Login smoke for the 2 new special demo accounts (brand_new_user_demo, role_with_no_menu_demo) via real HTTP: both 200, role_with_no_menu_demo correctly returns permissions: []",
+              "item": "Login smoke via real HTTP for admin + sales_demo + 2 special demo accounts",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Real-browser smoke (Playwright/chromium) for all 7 role accounts: home page loads, role-appropriate menu renders, no page-level JS errors",
+              "item": "Real-browser smoke (Playwright/chromium) for all 7 role accounts",
               "pass": true,
               "missing": null
             },
             {
-              "item": "Regression check for DEF-07 (onboarding tour overlay blocking nav clicks): sales_demo can click nav-po-list immediately after login and navigate to /pos with no overlay block - confirmed still fixed, no regression",
+              "item": "Regression check for DEF-07 (onboarding tour overlay): confirmed still fixed, no regression",
               "pass": true,
-              "missing": "one non-blocking console error observed on first page load for both admin and sales_demo (a single 'Failed to load resource: 401' from a request fired just before the auth cookie is fully set, followed by a successful retry) - page renders correctly regardless; logged as an observation in runbook.md §5.1, not filed as a new defect since it does not affect usability"
+              "missing": "one non-blocking console error observed on first page load - logged as observation, not filed as new defect"
             },
             {
-              "item": "runbook.md corrected to match current reality: removed stale DEF-06/07/08 workaround warnings (root-caused and fixed since verify-3, connection_limit=1 confirmed removed from .env/.env.test/docker-compose.yml), updated to 8 roles + 2 special demo accounts (brand_new_user_demo, role_with_no_menu_demo), documented product.view/user.view_basic, added §5.1 final-smoke evidence and §5.2 'things for Pond to click through' covering the full flow (customer -> PO -> realtime stock -> assign production -> QC approve -> shipment -> invoice+VAT -> revise invoice -> dashboards -> audit log -> no-menu role -> onboarding), added stale-server troubleshooting entry",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Background processes DevOps started for this smoke are stopped (verified via netstat both ports free) while the MySQL container is left running (healthy) with a fresh db:seed for Pond to use immediately",
+              "item": "runbook.md corrected to match current reality",
               "pass": true,
               "missing": null
             },
             {
-              "item": "No git operations performed (read-only git log/status only, no commits); no src/ or tests/ files modified; temporary smoke-check scripts created outside the repo tree and deleted before finishing",
+              "item": "Background processes stopped; MySQL container left running healthy with fresh db:seed for Pond",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No git operations performed; no src/ or tests/ files modified",
               "pass": true,
               "missing": null
             }
@@ -1302,7 +1267,7 @@
             "docs/infra/erp-core-prototype/runbook.md"
           ],
           "questions_for_pond": [],
-          "summary": "Final smoke test จากศูนย์ตาม runbook.md ทีละบรรทัดเหมือนปอนด์จะทำจริง: ล้าง Docker volume ทั้งหมด (npm run reset) -> setup ใหม่ (เจอ MySQL healthcheck-race ที่รู้จักอยู่แล้ว 1 ครั้ง แก้ตามที่ runbook ระบุแล้วผ่านทันที ไม่ต้องล้างซ้ำ) -> npm run dev -> login สำเร็จผ่าน HTTP จริงและผ่าน browser จริง (Playwright) ครบทั้ง 9 บัญชี seed (7 role หลัก + brand_new_user_demo + role_with_no_menu_demo) -> ยืนยันว่า DEF-07 (onboarding tour บังปุ่มกด) ไม่ regress กลับมา (คลิกเมนู PO ได้ทันทีหลัง login) -> พบ observation เล็กน้อย (console 401 ชั่วคราวที่ไม่กระทบการใช้งาน, ไม่ใช่ defect ใหม่). อัปเดต runbook.md ให้ตรงความจริงล่าสุด: ลบคำเตือน DEF-06/07/08 ที่ล้าสมัยแล้ว (ปิดจริงตั้งแต่ verify-3, ยืนยัน connection_limit=1 workaround ถูกเอาออกจาก .env/.env.test/docker-compose.yml แล้วจริง), เพิ่มบัญชีทดสอบให้ครบ 9 บัญชี/8 roles พร้อมอธิบาย product.view/user.view_basic, เพิ่ม §5.1 หลักฐาน final smoke และ §5.2 'สิ่งที่ปอนด์ควรลองกด' ครอบคลุมทุก flow เด่น (ลูกค้า->PO->stock real-time->assign ผลิต->QC->shipment->invoice+VAT->revise invoice->dashboard->audit log->role ไม่มีเมนู->onboarding ผู้ใช้ใหม่), เพิ่มวิธีแก้ปัญหา stale dev-server ค้าง port. ปิด background process ที่เปิดไว้เองครบ (ยืนยันด้วย netstat) แต่คง MySQL container ไว้ให้ปอนด์ใช้ต่อพร้อม seed สดใหม่. ไม่ใช้ git (อ่านอย่างเดียว), ไม่แก้ src/ หรือ tests/. สถานะ WAITING_HUMAN_GATE (Human Gate 2) - พร้อมให้ปอนด์ทดสอบ localhost และ approve release",
+          "summary": "Final smoke test จากศูนย์ตาม runbook.md ทีละบรรทัดเหมือนปอนด์จะทำจริง: ล้าง Docker volume ทั้งหมด -> setup ใหม่ -> npm run dev -> login สำเร็จผ่าน HTTP จริงและผ่าน browser จริง (Playwright) ครบทั้ง 9 บัญชี seed -> ยืนยันว่า DEF-07 ไม่ regress กลับมา -> พบ observation เล็กน้อยไม่กระทบการใช้งาน. อัปเดต runbook.md ให้ตรงความจริงล่าสุด. ปิด background process ที่เปิดไว้เองครบ แต่คง MySQL container ไว้ให้ปอนด์ใช้ต่อพร้อม seed สดใหม่. ไม่ใช้ git, ไม่แก้ src/ หรือ tests/. สถานะ WAITING_HUMAN_GATE (Human Gate 2) - พร้อมให้ปอนด์ทดสอบ localhost และ approve release",
           "overridden_by": null,
           "updated_at": "2026-07-08T23:15:00+07:00"
         },
@@ -1339,6 +1304,55 @@
           "summary": "Triage feedback Gate 2 รอบ 1 ครบทั้ง 10 ข้อ: 5 ข้อเป็น defect/UX gap ของ scope เดิม (PO line display+delete, stock search, trace lot search พัง, production lot search error, invoice detail เปิดไม่ได้) ทั้งหมด Priority Must เพราะบล็อกการใช้งานพื้นฐานของ flow หลัก; 5 ข้อเป็น scope ใหม่ (BOM management UI, production auto-calc จาก BOM, QC incoming inspection ยกระดับจาก Could เป็น Must, customer tax fields, เอกสารใบกำกับภาษีไทยเต็มรูป) ก็ตั้ง Must ทั้งหมดเพราะเป็นแกนของ business value ที่ปอนด์ระบุตรง; อีก 2 ข้อ (UX/UI overhaul ทั้งระบบ, responsive ทุกขนาดจอ) ใหญ่เกินสำหรับ prototype รอบเดียว จึงเสนอ scope-down เหลือเฉพาะหน้าที่ถูกแก้ไขรอบนี้ + desktop/tablet เท่านั้น ส่วนที่เหลือ (full redesign ทุกหน้า, full mobile-phone responsive) ย้ายเข้า backlog อย่างชัดเจน ไม่ยกเลิก. ตอบ 2 คำถามที่ปอนด์ถามในตัว feedback: (1) trace search ควรรับทั้ง Lot/Batch/PO/Invoice ในช่องเดียว auto-detect ประเภท (2) UI ต้องมี legend/tooltip อธิบาย Lot=วัตถุดิบต้นทาง vs Batch=รอบผลิตปลายทางบนหน้า trace ผลลัพธ์เอง — ทั้งสองเป็นข้อเสนอ default ที่สมเหตุสมผล ไม่ block. อัปเดต brief.md เพิ่ม section 'Gate 2 Feedback Round 1 — Scope Update' ครบ triage table + DoD รอบ 2 + backlog list ไม่มีคำถามที่ต้อง block กลับปอนด์ในรอบนี้ (ทุกจุดมี default ที่ป้องกันได้และไม่ใช่การเดา business logic ที่กระทบเงินจริง) ตั้ง READY_FOR_BA ให้ BA แตก/แก้ user stories ต่อ",
           "overridden_by": null,
           "updated_at": "2026-07-07T09:00:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "gate2-rework",
+          "status": "READY_FOR_TECHLEAD",
+          "gate_checklist": [
+            {
+              "item": "ทุก feedback item ทั้ง 10 ข้อจาก pond-gate2-feedback.md (ผ่าน triage ของ PO ใน brief.md) map ไปที่ ≥1 story ที่แก้ไข/เพิ่มแล้ว พร้อมตาราง Changelog รอบ Gate 2 Round 1",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "story เดิมที่เป็น defect ทั้ง 5 ข้อ (PO line display/delete, stock search, trace search+legend, production lot+auto-calc, invoice detail view) มี AC ที่เจาะจงพอให้ QA เขียน e2e ดักการ regression ของ feedback ปอนด์ได้ตรงๆ (เช่น ห้ามพบข้อความรูปแบบ 'Product #<id> x <qty> @ <price>' ใน ECP-004 AC1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "scope ใหม่ทั้ง 5 ข้อ (BOM Management UI, production auto-calc, QC incoming upgrade, customer tax fields, เอกสารใบกำกับภาษีไทย) มี story ครบพร้อม ≥4 AC แบบ Given/When/Then ต่อ story (happy/edge/error)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "UI consistency + responsive (scope-down ตามที่ PO เสนอ) มี story เฉพาะขอบเขตหน้าที่แก้ไขรอบนี้ ไม่ใช่ full redesign/full responsive ทั้งระบบ",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Mapping tables (scope→story, DoD Round 2→AC) อัปเดตครอบคลุมของใหม่ทั้งหมด",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Data Rules อัปเดตครบ (Customer tax_id/registered_address, Lot supplier_name, Invoice discount_amount, CompanyProfile entity ใหม่, QCInspection รองรับ lot_id)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี story ใดต้องเดา business rule ใหม่ที่ไม่มีที่มา (จุดที่เป็นข้อสมมติใหม่ถูกทำเครื่องหมาย ⚠ ชัดเจนพร้อม default ที่ปลอดภัย)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-core-prototype/user-stories.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "อัปเดต user-stories.md จาก 38 เป็น 44 stories (11 -> 14 epics) ตาม triage ของ PO ใน brief.md §'Gate 2 Feedback Round 1 — Scope Update' ครบทั้ง 10 feedback item: แก้ AC ของ 9 story เดิม (ECP-001 +AC5-7 tax fields, ECP-002 +AC4 tax_id snapshot, ECP-004 rewrite AC1+เพิ่ม AC2/AC5 line display/delete, ECP-007 +AC4-5 search, ECP-008 +AC4 supplier_name, ECP-013 rewrite ทั้ง story auto-calc จาก BOM+แก้ lot defect, ECP-014 rewrite ทั้ง story multi-type search+legend Lot vs Batch, ECP-017 ยกระดับ Could->Must +AC4, ECP-020 +AC4-5 discount_amount) และเพิ่ม 6 story ใหม่ (ECP-039 BOM Management UI CRUD in-place ไม่มี version history, ECP-040 ดูรายละเอียด invoice เดี่ยว แก้ defect 'เปิดดูไม่ได้', ECP-041 CompanyProfile Admin ตั้งค่าผู้ออกเอกสาร, ECP-042 พิมพ์เอกสารใบกำกับภาษีไทยเต็มรูปตามตัวอย่างที่ปอนด์แนบ incl. Thai baht text+ลายเซ็น 2 ช่อง, ECP-043 UI consistency scope-down เฉพาะ 8 หน้าที่แก้ไขรอบนี้, ECP-044 Responsive desktop/tablet scope-down) ทุก story ใหม่/แก้ไขมี ≥4 AC Given/When/Then ครอบคลุม happy/edge/error พร้อม priority+dependency ครบ อัปเดต mapping tables (scope->story เพิ่ม 6 แถวใหม่, DoD Round 2 ทั้ง 12 ข้อ->AC ใหม่) และ Data Rules (Customer tax_id/registered_address, Lot supplier_name, Invoice discount_amount, CompanyProfile entity ใหม่ singleton เหมือน VATConfig, QCInspection ขยายรองรับ lot_id สำหรับ incoming inspection แยกจาก batch_id) เพิ่ม section 'Changelog รอบ Gate 2 Round 1' พร้อมตาราง feedback->story mapping และจุดสังเกตสำหรับ Tech-Lead (ER ต้องเพิ่ม CompanyProfile, ขยาย Customer/Invoice/Lot, QCInspection รองรับ 2 ประเภท) มีข้อสมมติใหม่ 2 จุดที่ไม่ block (สิทธิ์แก้ไข BOM = ฝ่ายผลิต+Admin, tax_id ไม่บังคับตอนสร้างลูกค้าแต่บังคับก่อนพิมพ์ใบกำกับภาษี) ทำเครื่องหมาย ⚠ ชัดเจนในหัวข้อหมายเหตุเปิด ไม่มีคำถามใดต้อง block กลับปอนด์ในรอบนี้ (PO ตั้ง default ไว้ครบแล้วตาม brief) ตั้งสถานะ READY_FOR_TECHLEAD",
+          "overridden_by": null,
+          "updated_at": "2026-07-07T11:30:00+07:00"
         }
       ]
     }
