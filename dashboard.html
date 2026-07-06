@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Board — ERP AI Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F6F2; --card:#FFFFFF; --ink:#1C2320; --muted:#66716B;
+    --line:#D9DFD9; --track:#E4E9E3;
+    --run:#1F7A4D; --run-soft:#E2F0E8;
+    --wait:#B26B12; --wait-soft:#F7ECDC;
+    --stop:#B03A2A; --stop-soft:#F7E3DF;
+    --idle:#9AA49E; --done:#1F7A4D;
+    --hold:#5B6763;
+    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;padding:28px 20px 60px}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* header */
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 18px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
+  h1{font-size:22px;font-weight:700;letter-spacing:.2px}
+  h1 .sub{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);display:block;letter-spacing:.6px;text-transform:uppercase}
+  .meta{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+  .meta .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--idle);margin-right:6px;vertical-align:1px}
+  .meta.live .dot{background:var(--run)}
+
+  /* summary strip */
+  .strip{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);margin:16px 0 26px}
+  .cell{flex:1 1 120px;padding:12px 16px;border-right:1px solid var(--line)}
+  .cell:last-child{border-right:none}
+  .cell b{font-size:24px;font-weight:700;display:block;line-height:1.1}
+  .cell span{font-size:12.5px;color:var(--muted)}
+  .cell.c-run b{color:var(--run)} .cell.c-wait b{color:var(--wait)} .cell.c-stop b{color:var(--stop)}
+
+  /* feature card */
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px 16px;margin-bottom:18px}
+  .feat.needs-pond{border-left:5px solid var(--wait)}
+  .feat.blocked{border-left:5px solid var(--stop)}
+  .feat.is-done{border-left:5px solid var(--done)}
+  .top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:14px}
+  .slug{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:.4px}
+  .title{font-size:16.5px;font-weight:600}
+  .chip{margin-left:auto;font-family:var(--mono);font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:99px;letter-spacing:.4px;white-space:nowrap}
+  .chip.run{background:var(--run-soft);color:var(--run)}
+  .chip.wait{background:var(--wait-soft);color:var(--wait)}
+  .chip.stop{background:var(--stop-soft);color:var(--stop)}
+  .chip.idle{background:var(--track);color:var(--hold)}
+  .chip.ok{background:var(--run-soft);color:var(--run)}
+
+  /* production line */
+  .lane{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 2px 10px}
+  .st{position:relative;flex:1 1 0;min-width:86px;text-align:center}
+  .st .node{width:34px;height:34px;border-radius:50%;margin:0 auto;border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--muted);position:relative;z-index:2}
+  .st .lbl{font-size:12px;margin-top:7px;color:var(--muted);font-weight:500}
+  .st .who{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.5px}
+  .st::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--track);z-index:1}
+  .st:first-child::before{display:none}
+  .st.past::before{background:var(--run)}
+  .st.past .node{border-color:var(--run);background:var(--run);color:#fff}
+  .st.active .node{border-color:var(--run);color:var(--run);box-shadow:0 0 0 4px var(--run-soft)}
+  .st.active .lbl{color:var(--ink);font-weight:700}
+  .st.active.pulse .node{animation:pulse 1.6s ease-in-out infinite}
+  .st.attn .node{border-color:var(--stop);color:var(--stop);background:var(--stop-soft)}
+  .st.attn .lbl{color:var(--stop);font-weight:700}
+  .st.gatewait .node{border-color:var(--wait);color:var(--wait);background:var(--wait-soft);box-shadow:0 0 0 4px var(--wait-soft)}
+  .st.gatewait .lbl{color:var(--wait);font-weight:700}
+  .st.gate .node{border-radius:8px;width:30px;height:30px;margin-top:2px}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--run-soft)}50%{box-shadow:0 0 0 9px rgba(31,122,77,.12)}}
+  @media (prefers-reduced-motion:reduce){.st.active.pulse .node{animation:none}}
+
+  /* detail */
+  .detail{border-top:1px dashed var(--line);margin-top:8px;padding-top:12px;font-size:14px}
+  .detail .sum{color:var(--muted)}
+  .qbox{background:var(--wait-soft);border:1px solid #E8D6B8;border-radius:8px;padding:12px 14px;margin-top:10px}
+  .qbox h4{font-size:13.5px;color:var(--wait);margin-bottom:6px}
+  .qbox ol{margin-left:18px}
+  .qbox li{margin-bottom:6px}
+  .qbox .opts{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .gbox{margin-top:10px}
+  .gbox summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:600;user-select:none}
+  .gbox ul{list-style:none;margin-top:8px}
+  .gbox li{font-size:13.5px;padding:3px 0;display:flex;gap:8px;align-items:baseline}
+  .gbox .mk{font-family:var(--mono);font-weight:700}
+  .gbox .pass .mk{color:var(--run)} .gbox .fail .mk{color:var(--stop)}
+  .gbox .miss{color:var(--stop);font-size:12.5px}
+  .files{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .files code{background:var(--track);padding:2px 7px;border-radius:5px;margin-right:6px;display:inline-block;margin-bottom:4px}
+  .hint{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:12px}
+  .hint code{background:var(--track);padding:2px 6px;border-radius:4px}
+
+  /* empty / error */
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:44px 24px;text-align:center;color:var(--muted)}
+  .empty h2{color:var(--ink);font-size:17px;margin-bottom:8px}
+  .empty code{background:var(--track);padding:2px 8px;border-radius:5px;font-size:13px}
+  .empty .actions{margin-top:18px}
+  button{font-family:var(--sans);font-size:14px;font-weight:600;padding:9px 18px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;margin:0 5px}
+  button.ghost{background:transparent;color:var(--ink)}
+  button:focus-visible{outline:3px solid var(--run-soft);outline-offset:2px}
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="sub">ERP Cosmetics Factory · AI Team</span>Pipeline Board</h1>
+    <div class="meta" id="meta"><span class="dot"></span><span id="metaText">ยังไม่ได้โหลดข้อมูล</span></div>
+  </header>
+  <div id="app"></div>
+</div>
+
+<script>
+const AGENTS = [
+  {id:'po',        lbl:'PO',        who:'Product Owner'},
+  {id:'ba',        lbl:'BA',        who:'Business Analyst'},
+  {id:'tech-lead', lbl:'Tech Lead', who:'Architecture'},
+  {id:'gate1',     lbl:'Gate 1',    who:'ปอนด์ approve', gate:true},
+  {id:'engineer',  lbl:'Engineer',  who:'Implement'},
+  {id:'qa',        lbl:'QA',        who:'Test & Verify'},
+  {id:'devops',    lbl:'DevOps',    who:'Environment'},
+  {id:'gate2',     lbl:'Gate 2',    who:'ปอนด์ approve', gate:true},
+];
+const ORDER = AGENTS.map(a=>a.id);
+
+const CHIP = {
+  IN_PROGRESS:            {t:'กำลังทำงาน', c:'run'},
+  READY_FOR_BA:           {t:'ส่งต่อ BA', c:'run'},
+  READY_FOR_TECHLEAD:     {t:'ส่งต่อ Tech Lead', c:'run'},
+  READY_FOR_QA_VERIFY:    {t:'ส่งต่อ QA', c:'run'},
+  READY_FOR_DEVOPS:       {t:'ส่งต่อ DevOps', c:'run'},
+  BLOCKED_NEED_INPUT:     {t:'รอปอนด์ตอบคำถาม', c:'wait'},
+  WAITING_HUMAN_GATE:     {t:'รอปอนด์อนุมัติ', c:'wait'},
+  FAILED:                 {t:'งานตีกลับ', c:'stop'},
+  ON_HOLD:                {t:'พักไว้', c:'idle'},
+  DONE:                   {t:'เสร็จแล้ว ✓', c:'ok'},
+};
+
+let source = null; // 'fetch' | 'file'
+
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function fmtTime(iso){ if(!iso) return ''; try{return new Date(iso).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}catch(e){return iso} }
+
+function latestOf(f, agent){
+  const h=(f.history||[]).filter(e=>e.agent===agent);
+  return h.length? h[h.length-1] : null;
+}
+function agentDone(f, agent){
+  const e = latestOf(f, agent);
+  if(!e) return false;
+  return /^READY_FOR_/.test(e.status) || e.status==='WAITING_HUMAN_GATE';
+}
+function stationState(f){
+  // returns map id -> 'past'|'active'|'attn'|'gatewait'|''
+  const s={}; ORDER.forEach(id=>s[id]='');
+  const g1 = f.human_gates?.gate1_architecture?.approved;
+  const g2 = f.human_gates?.gate2_release?.approved;
+  const st = f.status, cur = f.current_agent;
+  ORDER.forEach(id=>{
+    if(id==='gate1'){ if(g1) s[id]='past'; }
+    else if(id==='gate2'){ if(g2) s[id]='past'; }
+    else if(agentDone(f,id)) s[id]='past';
+  });
+  if(st==='DONE'){ ORDER.forEach(id=>s[id]='past'); return s; }
+  if(st==='WAITING_HUMAN_GATE'){ s[g1?'gate2':'gate1']='gatewait'; return s; }
+  if(st==='BLOCKED_NEED_INPUT'||st==='FAILED'){ if(cur&&s[cur]!=='past') s[cur]='attn'; else if(cur) s[cur]='attn'; return s; }
+  if(st==='ON_HOLD'){ return s; }
+  // IN_PROGRESS or READY_FOR_* → light the working/next station
+  const nextMap={READY_FOR_BA:'ba',READY_FOR_TECHLEAD:'tech-lead',READY_FOR_QA_VERIFY:'qa',READY_FOR_DEVOPS:'devops'};
+  const active = nextMap[st] || cur;
+  if(active && s[active]!=='past') s[active]='active pulse';
+  return s;
+}
+
+function render(data){
+  const app=document.getElementById('app');
+  const feats=Object.entries(data.features||{});
+  if(!feats.length){ app.innerHTML=emptyHTML('ยังไม่มี feature ใน pipeline','สั่งงานแรกด้วย <code>/new-feature</code> ใน Claude Code แล้วกลับมาดูที่นี่'); return; }
+
+  let nRun=0,nWait=0,nStop=0,nDone=0;
+  feats.forEach(([,f])=>{
+    if(f.status==='DONE')nDone++;
+    else if(f.status==='BLOCKED_NEED_INPUT'||f.status==='WAITING_HUMAN_GATE')nWait++;
+    else if(f.status==='FAILED')nStop++;
+    else if(f.status!=='ON_HOLD')nRun++;
+  });
+
+  let html=`<div class="strip">
+    <div class="cell c-run"><b>${nRun}</b><span>กำลังทำงาน</span></div>
+    <div class="cell c-wait"><b>${nWait}</b><span>รอปอนด์</span></div>
+    <div class="cell c-stop"><b>${nStop}</b><span>ตีกลับ/ติดปัญหา</span></div>
+    <div class="cell"><b>${nDone}</b><span>เสร็จแล้ว</span></div>
+  </div>`;
+
+  // needs-Pond first, then running, then hold, then done
+  const rank=f=>({BLOCKED_NEED_INPUT:0,WAITING_HUMAN_GATE:0,FAILED:1,ON_HOLD:3,DONE:4}[f.status]??2);
+  feats.sort((a,b)=>rank(a[1])-rank(b[1]));
+
+  for(const [slug,f] of feats){
+    const chip=CHIP[f.status]||{t:f.status,c:'idle'};
+    const st=stationState(f);
+    const last=(f.history||[]).slice(-1)[0];
+    const needsPond = f.status==='BLOCKED_NEED_INPUT'||f.status==='WAITING_HUMAN_GATE';
+    const cls = f.status==='DONE'?'is-done': f.status==='FAILED'?'blocked': needsPond?'needs-pond':'';
+
+    const lane = AGENTS.map(a=>`
+      <div class="st ${st[a.id]} ${a.gate?'gate':''}">
+        <div class="node">${st[a.id].startsWith('past')?'✓':(a.gate?'◆':'●')}</div>
+        <div class="lbl">${a.lbl}</div><div class="who">${a.who}</div>
+      </div>`).join('');
+
+    let detail='';
+    if(last){
+      detail+=`<div class="sum"><b>${esc(last.agent)}</b> · ${esc(last.summary||'')} <span style="font-family:var(--mono);font-size:11px">(${fmtTime(last.updated_at)})</span></div>`;
+      const qs=(last.questions_for_pond||[]).filter(q=>!q.answer);
+      if(qs.length){
+        detail+=`<div class="qbox"><h4>คำถามรอปอนด์ตอบ (${qs.length}) — ตอบด้วย /continue ${esc(slug)} &lt;คำตอบ&gt;</h4><ol>`+
+          qs.map(q=>`<li>${esc(q.q)}${q.options?.length?`<div class="opts">ตัวเลือก: ${q.options.map(esc).join(' | ')}</div>`:''}</li>`).join('')+`</ol></div>`;
+      }
+      if(f.status==='WAITING_HUMAN_GATE'){
+        const g=f.human_gates?.gate1_architecture?.approved?'gate2':'gate1';
+        detail+=`<div class="qbox"><h4>รอปอนด์อนุมัติ — /approve ${esc(slug)} ${g}</h4></div>`;
+      }
+      const gc=last.gate_checklist||[];
+      if(gc.length){
+        detail+=`<details class="gbox"><summary>Gate checklist ล่าสุด (${gc.filter(i=>i.pass).length}/${gc.length} ผ่าน)</summary><ul>`+
+          gc.map(i=>`<li class="${i.pass?'pass':'fail'}"><span class="mk">${i.pass?'✓':'✕'}</span><span>${esc(i.item)}${!i.pass&&i.missing?` — <span class="miss">ขาด: ${esc(i.missing)}</span>`:''}</span></li>`).join('')+`</ul></details>`;
+      }
+      const of=last.output_files||[];
+      if(of.length) detail+=`<div class="files">${of.map(p=>`<code>${esc(p)}</code>`).join('')}</div>`;
+    } else {
+      detail+=`<div class="sum">ลงทะเบียนแล้ว รอ agent เริ่มงาน</div>`;
+    }
+
+    html+=`<section class="feat ${cls}">
+      <div class="top"><span class="slug">${esc(slug)}</span><span class="title">${esc(f.title||'')}</span>
+        <span class="chip ${chip.c}">${chip.t}</span></div>
+      <div class="lane">${lane}</div>
+      <div class="detail">${detail}</div>
+    </section>`;
+  }
+  app.innerHTML=html;
+}
+
+function emptyHTML(h,p){
+  return `<div class="empty"><h2>${h}</h2><p>${p}</p>
+    <div class="actions">
+      <button class="ghost" onclick="document.getElementById('fpick').click()">เปิดไฟล์ status.json เอง</button>
+      <button class="ghost" onclick="loadSample()">ดูตัวอย่างหน้าตา</button>
+    </div>
+    <p class="hint" style="margin-top:16px">ดูสดแบบ auto-refresh: รัน <code>python3 -m http.server</code> ที่ root โปรเจกต์ แล้วเปิด <code>localhost:8000/dashboard.html</code></p>
+    <input type="file" id="fpick" accept=".json" onchange="pickFile(this)"></div>`;
+}
+
+function setMeta(text, live){
+  const m=document.getElementById('meta');
+  m.className='meta'+(live?' live':'');
+  document.getElementById('metaText').textContent=text;
+}
+
+async function tryFetch(){
+  try{
+    const r=await fetch('pipeline/status.json?t='+Date.now());
+    if(!r.ok) throw 0;
+    const data=await r.json();
+    source='fetch';
+    render(data);
+    setMeta('LIVE · อัปเดต '+new Date().toLocaleTimeString('th-TH'),true);
+    return true;
+  }catch(e){ return false; }
+}
+
+function pickFile(inp){
+  const f=inp.files[0]; if(!f)return;
+  f.text().then(t=>{ source='file'; render(JSON.parse(t)); setMeta('อ่านจากไฟล์ · '+f.name+' (ไม่ auto-refresh)',false); })
+   .catch(()=>setMeta('อ่านไฟล์ไม่ได้ — ไม่ใช่ JSON ที่ถูกต้อง',false));
+}
+
+function loadSample(){
+  source='file';
+  render(SAMPLE);
+  setMeta('โหมดตัวอย่าง — ไม่ใช่ข้อมูลจริง',false);
+}
+
+const SAMPLE={features:{
+ 'lot-traceability':{title:'ระบบตรวจสอบย้อนกลับ Lot วัตถุดิบ',status:'BLOCKED_NEED_INPUT',current_agent:'po',
+  human_gates:{gate1_architecture:{approved:false},gate2_release:{approved:false}},
+  history:[{agent:'po',status:'BLOCKED_NEED_INPUT',summary:'ร่าง brief แล้ว แต่ยังขาดข้อมูล format ของ Lot number',updated_at:new Date().toISOString(),
+   gate_checklist:[{item:'Business problem is concrete',pass:true},{item:'Business Key Value measurable',pass:true},{item:'Definition of Done complete',pass:false,missing:'Lot number format'}],
+   output_files:['docs/requirements/lot-traceability/brief.md'],
+   questions_for_pond:[{q:'Lot number ใช้ format ของโรงงานเดิม หรือกำหนดใหม่?',options:['ใช้ของเดิม (ระบุ pattern)','กำหนดใหม่ ให้ทีมเสนอ'],answer:null},{q:'ต้อง track ถึงระดับถังผสม (batch) ด้วยหรือไม่?',options:['ใช่','ไม่ เอาแค่ระดับ Lot'],answer:null}]}]},
+ 'pipeline-dashboard':{title:'Dashboard แสดงสถานะ pipeline',status:'IN_PROGRESS',current_agent:'engineer',
+  human_gates:{gate1_architecture:{approved:true},gate2_release:{approved:false}},
+  history:[
+   {agent:'po',status:'READY_FOR_BA',summary:'Brief ชัด scope ครบ',updated_at:'2026-07-06T09:10:00+07:00',gate_checklist:[{item:'DoD complete',pass:true}],output_files:['docs/requirements/pipeline-dashboard/brief.md'],questions_for_pond:[]},
+   {agent:'ba',status:'READY_FOR_TECHLEAD',summary:'5 stories, AC ครบทุกตัว',updated_at:'2026-07-06T09:40:00+07:00',gate_checklist:[{item:'All AC testable',pass:true}],output_files:['docs/requirements/pipeline-dashboard/stories.md'],questions_for_pond:[]},
+   {agent:'tech-lead',status:'WAITING_HUMAN_GATE',summary:'Single-file HTML, no server. แตก 6 tasks',updated_at:'2026-07-06T10:05:00+07:00',gate_checklist:[{item:'Every story covered by a task',pass:true}],output_files:['docs/requirements/pipeline-dashboard/design.md','docs/adr/001-dashboard-no-server.md'],questions_for_pond:[]},
+   {agent:'engineer',status:'IN_PROGRESS',summary:'ทำ task 3/6 — render production line',updated_at:new Date().toISOString(),gate_checklist:[],output_files:[],questions_for_pond:[]}]},
+ 'setup-ci-local':{title:'สคริปต์ setup เครื่องจากศูนย์',status:'DONE',current_agent:'devops',
+  human_gates:{gate1_architecture:{approved:true},gate2_release:{approved:true}},
+  history:[{agent:'devops',status:'WAITING_HUMAN_GATE',summary:'make up รันผ่านจากศูนย์ test เขียว runbook อัปเดตแล้ว',updated_at:'2026-07-05T16:00:00+07:00',gate_checklist:[{item:'From-scratch setup one step',pass:true},{item:'No secrets in git',pass:true}],output_files:['docs/infra/runbook.md'],questions_for_pond:[]}]}
+}};
+
+(async()=>{
+  const ok=await tryFetch();
+  if(ok){ setInterval(tryFetch, 5000); }
+  else {
+    document.getElementById('app').innerHTML=emptyHTML(
+      'ยังอ่าน pipeline/status.json อัตโนมัติไม่ได้',
+      'เบราว์เซอร์บล็อกการอ่านไฟล์เมื่อเปิดแบบ file:// — เลือกไฟล์เองด้านล่าง หรือรันผ่าน local server เพื่อให้ขึ้น LIVE');
+    setMeta('OFFLINE — เปิดแบบไฟล์ตรง',false);
+  }
+})();
+</script>
+</body>
+</html>

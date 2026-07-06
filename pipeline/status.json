@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "ba",
-      "status": "READY_FOR_BA",
+      "current_agent": "techlead",
+      "status": "READY_FOR_TECHLEAD",
       "human_gates": {
         "gate1_architecture": {"approved": false, "approved_at": null, "note": null},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
@@ -92,6 +92,24 @@
           "summary": "ปอนด์ตอบคำถามครบ 5 ข้อ (pain point = ไม่เคยมี ERP มาก่อน + ใช้ Excel/กระดาษแยกแผนก, เน้น stock real-time visibility เป็น value หลัก, mock data พอ ไม่เชื่อมระบบจริง, ครบ 7 roles รวม QA/QC พร้อม role config ง่าย, single company/THB) ปรับ brief เป็นฉบับสมบูรณ์: เพิ่มตาราง Business Key Value 5 ตัวชี้วัดพร้อม baseline/target ที่ PO เสนอ (ทำเครื่องหมาย ⚠ ข้อสมมติ รอปอนด์ยืนยัน), เติม role QA/QC และข้อกำหนด role config ได้ง่าย, เพิ่ม usability/self-navigation เป็นทั้ง Business Key Value และ DoD เนื่องจากผู้ใช้ไม่ชำนาญ user journey, ปรับ DoD ให้ verifiable ครบ gate ผ่านทุกข้อ ตั้งสถานะ READY_FOR_BA",
           "overridden_by": null,
           "updated_at": "2026-07-06T18:30:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "status": "READY_FOR_TECHLEAD",
+          "gate_checklist": [
+            {"item": "ทุก story มี AC แบบ Given/When/Then ที่ทดสอบได้", "pass": true, "missing": null},
+            {"item": "ครอบคลุมทุก scope ใน brief (in-scope ครบ)", "pass": true, "missing": null},
+            {"item": "ไม่มี story เกิน scope prototype", "pass": true, "missing": null},
+            {"item": "ระบุ priority และ dependency ครบ", "pass": true, "missing": null},
+            {"item": "traceability/GMP ถูกฝังใน story ที่เกี่ยวข้อง", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-core-prototype/user-stories.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "แตก brief เป็น 36 User Stories (ECP-001..ECP-036) ใน 10 epic: Customer, PO, Stock/BOM real-time, Production/Traceability, QA/QC, Shipping, Invoice/Billing, User Management/Audit Log, Dashboard (ครบ 7 roles), Usability/Onboarding ทุก story มี ≥3 AC (happy/edge/error) แบบ Given/When/Then ที่ทดสอบได้จริง อิงตัวเลข Business Key Value ที่ PO เสนอ มี mapping table scope→story และ DoD→AC ครบ พร้อม data rules (entity/field/state/validation) ประเด็นเดียวที่เป็นข้อสมมติ (QA/QC ต้องอนุมัติ Batch ก่อนจัดส่งเสมอ) ไม่ block ตามที่ปอนด์ระบุไว้ใน brief แล้ว — อิงตาม domain knowledge กลาง (GMP) และทำเครื่องหมาย ⚠ ให้ยืนยันระหว่าง UAT ไม่มีคำถามที่ block ส่งต่อ Tech-Lead",
+          "overridden_by": null,
+          "updated_at": "2026-07-06T20:15:00+07:00"
         }
       ]
     }
