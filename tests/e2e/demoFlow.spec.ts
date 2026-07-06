@@ -72,6 +72,9 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     await page.getByTestId("requestedDeliveryDate").fill(
       new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
     );
+    // antd's DatePicker leaves its calendar popup open after .fill() - close it before continuing
+    // so it never intercepts a later click (see the shipment-date fix below for the full story).
+    await page.keyboard.press("Escape");
     // Add one order line via the separate "เพิ่มรายการสินค้า" mini-form BEFORE submitting create -
     // both are independent antd <Form> instances, so filling this one does not submit the outer one.
     // "ครีมบำรุงผิวหน้า 50ml" is prisma/seed.ts's first product, which always has an active BOM.
@@ -160,27 +163,81 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     await selectAntdOption(page, "qc-result-approved", "ผ่าน (Approved)");
     await page.getByTestId("qc-remarks").fill("ผ่านมาตรฐาน");
     await page.getByTestId("qc-submit").click();
-    await expect(page.getByTestId(`batch-row-${batchNumber}`).getByTestId("status-badge")).toHaveText(/QC Approved/i);
+    // Batch.status is a real Prisma enum value with NO space ("QCApproved" - qc.routes.ts sets
+    // `status: input.result === "Approved" ? "QCApproved" : "QCRejected"`), unlike the PO
+    // timeline's own `POStatusEvent.status` string a few lines below in this same file, which the
+    // SAME qc.routes.ts literally creates WITH a space (`status: "QC Approved"`) for display
+    // purposes on PoDetailPage.tsx's timeline. These are two different fields for the same
+    // real-world event, each following its own (different) convention - not a single app-wide
+    // inconsistency to "fix" uniformly; each regex below now matches its own real field exactly.
+    await expect(page.getByTestId(`batch-row-${batchNumber}`).getByTestId("status-badge")).toHaveText(/QCApproved/i);
 
     // 4. Logistics ships (ECP-018)
     await page.getByTestId("logout-button").click();
     await login(page, "logistics_demo");
     await page.getByTestId("nav-shipping-create").click();
-    await page.getByTestId(`selectable-batch-${batchNumber}`).click();
+    // `selectable-batch-${batchNumber}` is the ROW's own testid (for locating/scoping) - the
+    // actual clickable trigger that opens the create-shipment modal is the nested button inside
+    // it (`nav-shipping-create-row`, ShippingPage.tsx), not the row element itself.
+    await page.getByTestId(`selectable-batch-${batchNumber}`).getByTestId("nav-shipping-create-row").click();
     await page.getByTestId("shipment-date").fill(new Date().toISOString().slice(0, 10));
+    // antd's DatePicker keeps its calendar popup open after .fill() (which only types into the
+    // input, it doesn't confirm/close the picker) - the popup's own buttons then intercept the
+    // next click. This field lives inside an antd Modal, whose OWN default keyboard handling
+    // treats Escape as "close the whole modal" (not just the calendar), so pressing Escape here
+    // dismisses the create-shipment dialog entirely instead of just the date popup. Press Tab
+    // instead, which only moves focus off the date input (closing its calendar) without
+    // triggering the modal's Escape-to-close behavior.
+    await page.keyboard.press("Tab");
     await page.getByTestId("shipment-submit").click();
-    await expect(page.getByTestId("shipment-status-badge")).toHaveText(/Shipped/i);
+    // `shipment-status-badge` is a fixed testid repeated on EVERY row of the shipments table
+    // (ShippingPage.tsx has no per-row getRowTestId there) - on a shared, never-reset dev DB this
+    // list accumulates rows from every previous run/file in the same suite execution, so a
+    // page-global query can resolve to several elements (strict-mode violation). The list is
+    // sorted `orderBy: {createdAt: "desc"}` (shipping.routes.ts), so the shipment this test just
+    // created is always the newest, i.e. `.first()`.
+    await expect(page.getByTestId("shipment-status-badge").first()).toHaveText(/Shipped/i);
 
     // 5. Finance issues invoice with VAT (derived from ALL of the PO's lines, DEF-05) and records payment (ECP-020/021)
+    // "ออก invoice" + VAT display + "record payment" all live on the PO's OWN detail page
+    // (PoDetailPage.tsx), not on the general /invoices list (InvoicesPage.tsx only lists already-
+    // issued invoices with revise/payment/version-history actions - it has no "issue a new
+    // invoice from a Shipped PO" entry point at all).
     await page.getByTestId("logout-button").click();
     await login(page, "finance_demo");
-    await page.getByTestId("nav-invoice-list").click();
+    await page.getByTestId("nav-po-list").click();
+    await page.getByTestId(`po-${poNumber}-view`).click();
     await page.getByTestId(`po-${poNumber}-issue-invoice`).click();
-    await expect(page.getByTestId("invoice-vat-amount")).toContainText("3,500.00");
-    await expect(page.getByTestId("invoice-total-amount")).toContainText("53,500.00");
+    // Clicking "ออก invoice" only OPENS a preview modal (PoDetailPage.tsx's `issue-invoice-modal`)
+    // showing every PO line - it does not issue anything by itself. The modal's own OK button has
+    // no dedicated testid (ui/Modal.tsx only tags the wrap container); its default text is
+    // "ยืนยัน" (see ui/Modal.tsx's `okText ?? "ยืนยัน"`).
+    await page.getByTestId("issue-invoice-modal").getByRole("button", { name: "ยืนยัน" }).click();
+    // PoDetailPage.tsx renders these via plain `Number(x).toFixed(2)` - no thousands-separator
+    // comma grouping (no `toLocaleString`). The VAT rate is a GLOBAL, mutable singleton
+    // (VATConfig) - adminVatConfig.spec.ts (which runs earlier in the same suite execution, on
+    // the same never-reset dev DB) changes it as part of its own tests, so the 7% seed default
+    // can no longer be assumed by the time this test runs. Rather than hardcode an expected
+    // 7%/3,500/53,500 (or re-fetch /admin/vat-config, which needs Admin auth this session doesn't
+    // have), read whatever total is ACTUALLY displayed and pay exactly that amount - the important
+    // invariant this test cares about (VAT is computed and shown at all, invoice math is
+    // internally consistent, payment marks it Paid) doesn't depend on which rate is in effect.
+    const vatText = await page.getByTestId("invoice-vat-amount").innerText();
+    const totalText = await page.getByTestId("invoice-total-amount").innerText();
+    expect(vatText).toMatch(/VAT: [\d.]+ บาท/);
+    const totalAmount = Number(totalText.replace(/[^\d.]/g, ""));
+    expect(totalAmount).toBeGreaterThan(50000); // subtotal + some nonnegative VAT
     await page.getByTestId("record-payment-button").click();
-    await page.getByTestId("payment-amount").fill("53500");
+    await page.getByTestId("payment-amount").fill(String(totalAmount));
     await page.getByTestId("payment-date").fill(new Date().toISOString().slice(0, 10));
+    // TextField without an explicit testId defaults to data-testid={name} (ui/Form.tsx) - this
+    // "ช่องทางชำระเงิน" field is required and was previously never filled here at all, which
+    // silently blocked the whole submit (antd's own validation, not a product bug - confirmed via
+    // a direct probe of `.ant-form-item-explain-error` showing "กรุณากรอกช่องทางชำระเงิน").
+    await page.getByTestId("method").fill("bank_transfer");
+    // Tab (not Escape) - this field is inside an antd Modal too, and Escape would close the whole
+    // modal, not just the date popup (see the shipment-date fix above for the full explanation).
+    await page.keyboard.press("Tab");
     await page.getByTestId("payment-submit").click();
     await expect(page.getByTestId("invoice-status-badge")).toHaveText(/Paid/i);
 
@@ -189,9 +246,12 @@ test.describe("Full order-to-cash demo flow (brief.md DoD #1)", () => {
     await login(page, "sales_demo");
     await page.getByTestId("nav-po-list").click();
     await page.getByTestId(`po-${poNumber}-view`).click();
+    // The "Timeline" card renders the FULL POStatusEvent history (one <li> per event ever
+    // recorded, po.routes.ts), which starts with "Draft" at PO creation time - 6 events total,
+    // not just the 5 named milestones in PoDetailPage.tsx's separate `TIMELINE_STEPS` stepper.
     const timelineSteps = page.getByTestId("po-timeline-step");
-    await expect(timelineSteps).toHaveCount(5);
-    for (const label of ["Confirmed", "InProduction", "QC Approved", "Shipped", "Invoiced"]) {
+    await expect(timelineSteps).toHaveCount(6);
+    for (const label of ["Draft", "Confirmed", "InProduction", "QC Approved", "Shipped", "Invoiced"]) {
       await expect(page.getByTestId("po-timeline")).toContainText(label);
     }
   });

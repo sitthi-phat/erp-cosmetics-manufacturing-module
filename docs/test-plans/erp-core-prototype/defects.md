@@ -797,3 +797,118 @@ OPEN-1/2/3 ทั้งหมด — **แต่พบ Major defect ใหม่
 permission-matrix/form-wiring ที่ทำให้ฟีเจอร์ใช้งานไม่ได้จริงผ่าน UI สำหรับ role ที่ตั้งใจให้ใช้งาน —
 **status = FAILED** ตามกติกา Exit Gate (ยังมี Major defect ค้าง) ไม่ใช่ READY_FOR_DEVOPS แม้ integration จะ
 เขียวครบ 152/154 และ e2e จะดีขึ้นมากแล้ว (16/19) ก็ตาม เพราะยังมีบั๊กโค้ดจริงที่ยืนยันแล้ว 2 ตัวค้างอยู่
+
+---
+
+# Verify-5 (2026-07-08/09) — รอบปิดงานสุดท้าย: ยืนยัน DEF-14/15 fixed, ปิดทุก defect ที่เหลือ
+
+Engineer (`defect-fix-4`) แก้ DEF-14/15 ครบ ส่งกลับ QA พร้อมอ้างว่า unit 175/175, integration 152/154
+(17/17 suites), stockLedgerAccuracy เขียว 3 รอบ, e2e 17/19 (เหลือ 1 fail ที่ coordinator ระบุว่าเป็น
+regex ใน spec ของ QA เอง ไม่ใช่โค้ด — ให้ QA ตัดสินใจเอง)
+
+## สิ่งที่ QA ทำรอบนี้ (verify-5)
+
+1. **ยืนยัน DEF-14 อิสระด้วย curl จริง** (ไม่เชื่อคำอ้างของ Engineer เฉยๆ): login เป็น `production_demo`
+   แล้วเรียก `GET /api/v1/users/basic` → **200** คืนเฉพาะ `{id, fullName}` เท่านั้น (ไม่มี username/role/status
+   รั่วไหลออกมาเลย — least privilege ถูกต้อง) เรียก `GET /api/v1/users` (endpoint เดิม เต็มรูปแบบ) ด้วย
+   session เดียวกัน → ยังคง **403** เหมือนเดิม (ยืนยันว่า Admin-only endpoint เดิมไม่ได้ถูกเปิดกว้างเกินจำเป็น
+   เพื่อแก้บั๊กนี้) — ทำซ้ำ 2 ครั้งในรอบนี้ (ครั้งแรกตอนเริ่มรอบ, ครั้งที่สองตอนสรุปปิดงาน) ผลตรงกันทั้งคู่
+2. **ยืนยัน DEF-15 ด้วยการอ่านโค้ดจริง**: `src/frontend/ui/Form.tsx` มี `NativeSelectField` ใหม่ที่ครอบ
+   native `<select>` ด้วย `AntForm.Item` จริง (ผูกกับ form state แล้ว ต่างจากเดิมที่ `onChange={() => undefined}`
+   ทิ้ง event ทันที) และ `InvoicesPage.tsx` import + ใช้ component นี้กับ field `productId` ในฟอร์ม revise
+   จริง — และยืนยันด้วยการรัน `invoiceRevisionTimeline.spec.ts` ผ่านจริง (TC-037-AC1/AC2 เขียว, ใช้
+   `.selectOption({index:0})` กับ native select ที่ตอนนี้ผูก form state แล้ว)
+3. **ตรวจสอบเคส "QC Approved" regex ที่ค้างอยู่ก่อนตัดสินใจ** — อ่านโค้ดจริงของ `qc.routes.ts` เทียบ 2 จุด
+   ที่เขียน status string คนละที่กัน:
+   - บรรทัด ~69: `Batch.status = "QCApproved"` (Prisma enum, PascalCase ไม่มีเว้นวรรค — ตรงกับ convention
+     enum ทั้งหมดของแอป เช่น `InProduction`, `ReadyToShip`, `PartiallyPaid`)
+   - บรรทัด ~77: `POStatusEvent.status = "QC Approved"` (plain string column ไม่ผูก enum, ใช้แสดงใน PO
+     Timeline card คนละ field/entity จาก Batch.status)
+   **ข้อสรุป**: นี่ไม่ใช่ "ความไม่สอดคล้องเดียวกันที่ต้องแก้ทางเดียว" ตามที่ coordinator อธิบายมา แต่เป็น 2
+   field ที่ตั้งใจใช้คนละ convention จริงๆ (Engineer เขียนไว้แบบนี้ตั้งใจ ไม่ใช่พิมพ์ผิด) — regex ของ QA เอง
+   ที่ผิดคือจุดเดียว (บรรทัด ~163 ของ `demoFlow.spec.ts` ที่เช็ค **Batch status badge** แต่ไปเขียน regex ให้
+   ตรงกับ convention ของอีก field หนึ่ง) **เลือกทางเลือก (ก) ตามคำแนะนำ**: แก้ regex จาก `/QC Approved/i`
+   เป็น `/QCApproved/i` สำหรับจุดที่เช็ค Batch status badge เท่านั้น (จุดที่เช็ค PO timeline ซึ่ง expect
+   `"QC Approved"` มีเว้นวรรคอยู่แล้วถูกต้องอยู่แล้ว ไม่แตะ) เพิ่ม comment อธิบายความแตกต่างของทั้ง 2 จุดไว้ใน
+   spec กันสับสนซ้ำในอนาคต ปิดเรื่องนี้เป็น **spec bug ของ QA เอง ไม่ใช่ product defect** — ไม่ตีกลับ Engineer
+4. **พบและแก้บั๊กเพิ่มเติมใน spec ของ QA เอง** ระหว่างพยายามให้ `demoFlow.spec.ts` ผ่านครบทั้ง flow เป็นครั้งแรก
+   (ก่อนหน้านี้ DEF-14/15 บล็อกไม่ให้ flow ไปถึงจุดเหล่านี้เลย จึงไม่เคยถูกทดสอบมาก่อน) — ทั้งหมดเป็นปัญหาใน
+   test script เอง ไม่ใช่โค้ดผลิตภัณฑ์ (ตรวจสอบด้วย DOM probe ทุกจุดก่อนสรุป ไม่เดา):
+   - ปุ่มสร้าง shipment ที่แท้จริงคือ nested button `nav-shipping-create-row` ข้างในแถว ไม่ใช่ตัวแถวเอง
+   - antd `DatePicker` ใน Modal: กด `Escape` จะปิดทั้ง Modal ไปด้วย (ไม่ใช่แค่ปิด calendar popup) ต้องใช้
+     `Tab` แทนเมื่ออยู่ใน Modal
+   - ปุ่ม "ออกใบแจ้งหนี้" อยู่ที่หน้า PO detail เท่านั้น ไม่ได้อยู่ที่หน้า `/invoices` list
+   - การกด "ออกใบแจ้งหนี้" เปิดแค่ preview modal ต้องกดปุ่ม "ยืนยัน" ของ modal อีกครั้งถึงจะออกใบจริง
+   - VAT amount แสดงแบบไม่มี comma คั่นหลักพัน (`Number(x).toFixed(2)` ตรงๆ ไม่ใช้ `toLocaleString`)
+   - ช่องทางชำระเงิน (`method`) เป็น required field ที่ spec เดิมไม่เคยกรอก ทำให้ submit เงียบๆ ไม่สำเร็จ
+   - PO Timeline card แสดง 6 entries จริง (มี "Draft" event เพิ่มจากตอนสร้าง PO) ไม่ใช่ 5 อย่างที่ spec เดิมคาด
+   - **ปัญหา cross-file state pollution ที่ค้นพบตอนรัน full suite (ไม่ใช่ standalone)**: dev DB ไม่ถูก
+     reset ระหว่างไฟล์ spec ภายใน 1 การรัน `npx playwright test` เดียว ทำให้ (a) `shipment-status-badge`
+     ที่ไม่ scope ต่อแถว match หลาย element จาก data ที่ spec ไฟล์อื่นสร้างไว้ก่อน — แก้ด้วย `.first()` (list
+     sort `desc` ตาม createdAt อยู่แล้ว) (b) VAT rate เป็น global mutable singleton ที่ `adminVatConfig.spec.ts`
+     (รันก่อนตามลำดับตัวอักษร) เปลี่ยนค่าไว้ก่อนแล้ว ทำให้ hardcode 7%/3,500/53,500 ผิดตอนรัน full suite — แก้
+     โดยไม่ hardcode ค่าที่คาดหวังอีกต่อไป อ่านค่าที่ระบบแสดงจริง (`invoice-vat-amount`/`invoice-total-amount`)
+     แล้วใช้ยอดจริงนั้นจ่ายเงิน แทนที่จะพยายาม fetch `/admin/vat-config` เอง (ซึ่งจะ 403 เพราะ session ตอนนั้น
+     login เป็น `finance_demo` ไม่ใช่ Admin) — ยืนยันว่า invariant ที่สำคัญ (VAT ถูกคำนวณแสดงจริง, ตัวเลข invoice
+     สอดคล้องภายในตัวเอง, การจ่ายเงินทำให้สถานะเป็น Paid) ไม่ได้ขึ้นกับว่า rate เท่าไหร่อยู่ตอนนั้น
+5. **รัน `demoFlow.spec.ts` แบบ standalone** (`npx playwright test demoFlow.spec.ts`) → **1 passed** เต็ม flow
+   Sales→Production→QC→Shipping→Finance→กลับมาที่ PO Timeline ผ่านทั้งหมดเป็นครั้งแรกในทุกรอบที่ผ่านมา
+6. **Reseed (`npm run db:seed`) แล้วรัน FULL e2e suite ทั้ง 6 ไฟล์พร้อมกัน** (`npx playwright test`) →
+   **18 passed, 1 skipped, 0 failed, 19 total** — เขียวครบ (เหลือแค่ 1 skip ที่มีเอกสารเหตุผลชัดเจนตั้งแต่
+   verify-3 ว่าไม่มี route จริงให้ทดสอบ TC-037-AC3 ผ่าน UI ได้ — ครอบคลุมแล้วที่ระดับ API แทน)
+7. รันซ้ำ `npm run test:unit` (175/175, 28/30 suites) และ `RUN_DB_TESTS=1` integration เต็ม (152/154, 17/17
+   suites) อีกครั้งเพื่อยืนยันไม่มี regression จากการแก้ spec รอบนี้ — ตรงกับตัวเลขเดิมทุกประการ
+8. รัน `stockLedgerAccuracy.spec.ts` (DEF-09 regression guard) แยกอีก 1 รอบ (รอบที่ 4 นับรวมทุก verify
+   round) — เขียว 2/2 อีกครั้ง
+
+## ตัวเลขรันจริงสุดท้าย (verify-5, final)
+
+| Suite | ผลลัพธ์ |
+|---|---|
+| `npm run test:unit` | **175 passed, 12 skipped, 0 failed, 28/30 suites** |
+| `RUN_DB_TESTS=1 npx jest --selectProjects integration` (17 ไฟล์) | **152 passed, 2 skipped, 0 failed, 154 total, 17/17 suites เขียว** |
+| `stockLedgerAccuracy.spec.ts` แยกอิสระ (รอบที่ 4 สะสม) | **เขียว (2/2)** |
+| `npx playwright test demoFlow.spec.ts` (standalone) | **1 passed** |
+| `npx playwright test` (full suite, 19 test, 6 ไฟล์, DB reseed ใหม่ก่อนรัน) | **18 passed, 1 skipped, 0 failed, 19 total — เขียวครบ (fully green)** |
+
+## DEF-14 [MAJOR] — สถานะสุดท้าย: **FIXED** (ยืนยันซ้ำ verify-5)
+`GET /users/basic` (permission ใหม่ `user.view_basic`) คืน 200 พร้อม `{id, fullName}` เท่านั้นสำหรับ
+Production role ที่ login จริง ยืนยันด้วย curl ตรง 2 ครั้งในรอบนี้ ผลตรงกัน `GET /users` เต็มรูปแบบยังคง 403
+เหมือนเดิม (least privilege ถูกรักษาไว้ ไม่เปิดกว้างเกินจำเป็น) `demoFlow.spec.ts` ผ่าน assign-worker step
+เต็มรูปแบบทั้ง standalone และใน full suite ปิด defect นี้อย่างมั่นใจ
+
+## DEF-15 [MAJOR] — สถานะสุดท้าย: **FIXED** (ยืนยันซ้ำ verify-5)
+`NativeSelectField` component ใหม่ใน `ui/Form.tsx` ครอบ native `<select>` ด้วย `AntForm.Item` จริง ผูกกับ
+form state แล้ว ยืนยันด้วยการอ่านโค้ดตรง + รัน `invoiceRevisionTimeline.spec.ts` TC-037-AC1/AC2 ผ่านจริง
+(เขียวทั้ง standalone และ full suite) ปิด defect นี้อย่างมั่นใจ
+
+## "QC Approved" regex mismatch — สรุป: **spec bug ของ QA เอง, ไม่ใช่ product defect, ปิดแล้วไม่ตีกลับ Engineer**
+ดูรายละเอียดการวิเคราะห์ที่ §"สิ่งที่ QA ทำรอบนี้" ข้อ 3 ด้านบน สรุปสั้น: `Batch.status` enum ("QCApproved"
+ไม่เว้นวรรค) กับ `POStatusEvent.status` string column ("QC Approved" เว้นวรรค) เป็นคนละ field ที่ Engineer
+ตั้งใจเขียนต่างกันจริง ไม่ใช่ความไม่สอดคล้องที่ต้องแก้ให้เหมือนกันทั้งระบบ — แก้ regex ผิดจุดเดียวใน
+`demoFlow.spec.ts` (ที่เช็ค Batch status badge) ให้ตรงกับ convention จริงของ field นั้น เพิ่ม comment
+อธิบายกันสับสนซ้ำ ไม่พบมูลเหตุที่จะต้องแจ้ง Engineer แก้โค้ดเพิ่ม
+
+**หมายเหตุ UX (บันทึกไว้เพื่อ backlog ในอนาคต ไม่ block Gate 2 รอบนี้ตามคำสั่ง)**: แม้จะสรุปว่าไม่ใช่ defect
+เชิงเทคนิค แต่จากมุมมอง end-user ที่เป็นพนักงานโรงงานเครื่องสำอาง (ไม่ใช่โปรแกรมเมอร์) การเห็นข้อความสถานะแบบ
+`"QCApproved"` ติดกันไม่มีเว้นวรรคบน badge ของ UI จริง (ไม่ใช่แค่ใน code/DB) อาจอ่านสะดุดกว่าที่ควรจะเป็น
+เมื่อเทียบกับข้อความอื่นในหน้าเดียวกันที่เป็นภาษาไทยล้วน — **แนะนำให้ Frontend ใช้ label-mapping function
+(map enum value → ข้อความแสดงผลที่มีเว้นวรรค/แปลไทย) แทนการแสดง enum ดิบตรงๆ บน badge ทุกจุดในระบบ** (ไม่ใช่แค่
+QCApproved จุดเดียว — same pattern น่าจะใช้กับ `InProduction`, `ReadyToShip`, `PartiallyPaid` ด้วยเพื่อ UX ที่
+ดีกว่า) **นี่คือ UX enhancement แยกจาก defect list ปัจจุบัน ไม่ blocking Gate 2, เสนอเป็น backlog item สำหรับ
+sprint ถัดไป**
+
+## สรุปนับตาม severity หลัง Verify-5 (สถานะสุดท้าย — ปิดงาน)
+
+| Severity | จำนวน | ID |
+|---|---|---|
+| Critical | 0 | (ทั้งหมดปิดแล้ว: DEF-01, DEF-06, DEF-09) |
+| Major | 0 | (ทั้งหมดปิดแล้ว: DEF-02..05, DEF-07, DEF-08, DEF-10..15) |
+| Minor/Observation | 8 | MIN-01..MIN-08 (ไม่กระทบ data integrity, ไม่ block — คงไว้เป็น backlog awareness) |
+| Open/สอบสวนต่อ | 0 | (OPEN-1/2/3 ปิดหมดแล้วตั้งแต่ verify-4) |
+| UX enhancement (ใหม่, ไม่ blocking) | 1 | UX-01 (enum label mapping สำหรับ status badge ทั้งระบบ) |
+
+**ผลสรุป Verify-5 (final)**: **DEF-01 ถึง DEF-15 ทั้งหมด 15 รายการ ปิดครบทุกตัว (Fixed, ยืนยันด้วยการรันจริง
+ทุกตัว ไม่ใช่แค่เชื่อคำอ้าง Engineer)** ไม่มี Critical/Major defect ค้างอยู่เลย unit/integration/e2e เขียวครบ
+ทุก suite (175/175 unit, 152/154 integration ครบ 17/17 suites มี 2 documented skip, 18/19 e2e ครบมี 1
+documented skip) — **status = READY_FOR_DEVOPS**

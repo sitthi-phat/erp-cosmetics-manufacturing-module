@@ -1,21 +1,129 @@
-# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3 → Verify-4)
+# Verify Report — ERP Core Prototype — QA Phase 2 (Verify → Re-verify → Verify-3 → Verify-4 → Verify-5)
 
 - **slug**: `erp-core-prototype`
 - **วันที่**: เขียน 2026-07-07 (verify รอบแรก) — อัปเดต 2026-07-07 (re-verify) — อัปเดต 2026-07-08 (verify-3,
-  verify-4 — รอบปิดงาน)
-- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3 → Verify-4)
+  verify-4) — อัปเดต 2026-07-08/09 (verify-5 — **รอบปิดงานจริง, ผลสุดท้าย**)
+- **เขียนโดย**: QA — Phase 2 (Verify → Re-verify → Verify-3 → Verify-4 → Verify-5)
 - **อ้างอิง**: `docs/test-plans/erp-core-prototype/test-plan.md` (§9 มีสรุปย่อ), `docs/test-plans/erp-core-prototype/defects.md`
-  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัว DEF-01..15), `pipeline/status.json`
-  (entry `engineer` (`defect-fix-3`) ล่าสุด + entry `qa`/`phase: verify-4`)
+  (defect list เต็ม พร้อมสถานะต่อ defect ทุกตัว DEF-01..15, ปิดครบทุกตัวแล้วในหมวด Verify-5), `pipeline/status.json`
+  (entry `engineer` (`defect-fix-4`) ล่าสุด + entry `qa`/`phase: verify-5`)
 
 > จุดยืน: รายงานนี้บันทึกเฉพาะสิ่งที่ **รันจริง** ในสภาพแวดล้อมนี้เท่านั้น อะไรที่รันไม่ได้ (ไม่ว่าเพราะขาด
 > tooling หรือขาด environment) จะระบุไว้ชัดเจนว่า "ไม่ verify" ไม่ใช่ "ผ่าน"
-> **หมวด -2 ด้านล่างคือผล verify-4 ล่าสุด (รอบปิดงาน) — หมวด -1 คือ verify-3 — หมวด 0-6 ที่เหลือคือรายงาน
-> รอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับเวลา**
+> **หมวด -3 ด้านล่างคือผล verify-5 ล่าสุด (รอบปิดงานจริง, สถานะสุดท้าย) — หมวด -2 คือ verify-4 — หมวด -1 คือ
+> verify-3 — หมวด 0-6 ที่เหลือคือรายงานรอบก่อนหน้าที่ยังเก็บไว้เพื่อ traceability ว่าอะไรเปลี่ยนไปบ้างตามลำดับ
+> เวลา**
 
 ---
 
-## -2. ผล Verify-4 (2026-07-08) — สถานะล่าสุด, รอบปิดงาน
+## -3. ผล Verify-5 (2026-07-08/09) — สถานะสุดท้าย, รอบปิดงานจริง
+
+### -3.1 บริบท
+Engineer (`defect-fix-4`) แก้ DEF-14 (เพิ่ม permission `user.view_basic` + endpoint `GET /users/basic` คืน
+เฉพาะ `{id, fullName}`) และ DEF-15 (เพิ่ม `NativeSelectField` component ใหม่ใน `ui/Form.tsx` ที่ครอบ native
+`<select>` ด้วย `AntForm.Item` จริง) ส่งกลับพร้อมอ้างว่า unit 175/175, integration 152/154 (17/17 suites),
+stockLedgerAccuracy เขียว 3 รอบอิสระ, e2e 17/19 (เหลือ 1 fail ที่วิเคราะห์ว่าเป็น regex ผิด convention ใน
+spec ของ QA เอง `demoFlow.spec.ts` — ให้ QA ตัดสินใจว่าจะแก้เองหรือขึ้น UX note)
+
+### -3.2 สิ่งที่ QA ทำ + ผลยืนยัน
+1. **ไม่เชื่อคำอ้างเฉยๆ — ยืนยัน DEF-14 อิสระด้วย curl จริง**: login `production_demo` → `GET /users/basic`
+   = 200 คืนเฉพาะ `{id, fullName}` (ไม่รั่ว username/role/status) → `GET /users` เต็มรูปแบบยังคง 403 เหมือนเดิม
+   (least privilege ถูกรักษาไว้) — ทำซ้ำ 2 ครั้ง (ต้นรอบ + ท้ายรอบ) ผลตรงกัน
+2. **ยืนยัน DEF-15 ด้วยการอ่านโค้ดจริง** (`ui/Form.tsx`'s `NativeSelectField` + `InvoicesPage.tsx`'s usage)
+   และรัน `invoiceRevisionTimeline.spec.ts` ผ่านจริง (TC-037-AC1/AC2 เขียว)
+3. **วิเคราะห์เคส "QC Approved" regex ก่อนตัดสินใจ** (ไม่รับคำอธิบายของ coordinator/Engineer ตรงๆ โดยไม่ตรวจสอบ
+   เอง): อ่านโค้ด `qc.routes.ts` จริงพบว่านี่เป็น **2 field คนละตัวที่ตั้งใจใช้คนละ convention** ไม่ใช่
+   ความไม่สอดคล้องเดียวที่ต้องแก้ทางเดียว — `Batch.status` enum = `"QCApproved"` (ไม่เว้นวรรค ตรง convention
+   enum ทั้งระบบ) ส่วน `POStatusEvent.status` (plain string, ใช้แสดงใน PO Timeline) = `"QC Approved"` (เว้นวรรค
+   ตั้งใจ) **เลือกทางเลือก (ก)**: แก้ regex จุดเดียวที่ผิด (บรรทัด ~163 เช็ค Batch status badge) จาก
+   `/QC Approved/i` เป็น `/QCApproved/i` เพิ่ม comment อธิบายกันสับสนซ้ำ — สรุปเป็น **spec bug ของ QA เอง ไม่ใช่
+   product defect ไม่ตีกลับ Engineer** (เพิ่ม UX enhancement note แยกไว้ ดู §-3.5 ด้านล่าง — ไม่ block Gate 2)
+4. แก้บั๊ก spec เพิ่มเติมอีกหลายจุดที่เพิ่งถูกเปิดเผยเพราะ DEF-14/15 fix ทำให้ flow เดินหน้าไปได้ไกลกว่าทุกรอบ
+   ก่อนหน้า (ปุ่ม nested ใน shipment row, antd DatePicker+Modal Escape-vs-Tab, invoice issue navigation/modal
+   confirm, VAT text format, required "method" field ที่ขาดไป, PO Timeline 6 entries ไม่ใช่ 5) — ดูรายละเอียด
+   เต็มที่ `defects.md` §Verify-5
+5. **พบและแก้ปัญหา cross-file state pollution เมื่อรัน full e2e suite** (ไม่ปรากฏตอนรัน standalone):
+   shared/never-reset dev DB ทำให้ (a) badge ที่ไม่ scope ต่อแถว match หลาย element จาก data ของไฟล์อื่น — แก้
+   ด้วย `.first()` (b) VAT rate (global mutable singleton) ถูก `adminVatConfig.spec.ts` เปลี่ยนค่าไว้ก่อน — แก้
+   โดยอ่านค่าที่ระบบแสดงจริงแทนการ hardcode หรือพยายาม fetch config เอง (ซึ่งต้องใช้สิทธิ์ Admin ที่ session
+   ตอนนั้นไม่มี)
+6. รัน `demoFlow.spec.ts` แบบ standalone → **1 passed** (เต็ม flow Sales→Production→QC→Shipping→Finance→PO
+   Timeline ผ่านครบเป็นครั้งแรก)
+7. Reseed (`npm run db:seed`) แล้วรัน **FULL e2e suite ทั้ง 6 ไฟล์พร้อมกัน** → **18 passed, 1 skipped, 0
+   failed, 19 total**
+8. รันซ้ำ unit (175/175) + integration เต็ม (152/154, 17/17 suites) + `stockLedgerAccuracy.spec.ts` เดี่ยว
+   (2/2) อีกครั้งเพื่อยืนยันไม่มี regression จากการแก้ spec รอบนี้ — ตรงกับตัวเลขเดิมทุกประการ
+
+### -3.3 ตัวเลขรันจริงสุดท้าย (final, ยืนยันด้วยการรันจริงทั้งหมด)
+
+| Suite | ผลลัพธ์ |
+|---|---|
+| `npm run test:unit` | **175 passed, 12 skipped, 0 failed, 28/30 suites** |
+| `RUN_DB_TESTS=1 npx jest --selectProjects integration` (17 ไฟล์) | **152 passed, 2 skipped, 0 failed, 154 total, 17/17 suites เขียว** |
+| `stockLedgerAccuracy.spec.ts` แยกอิสระ (สะสมรวม 4 รอบทุก verify round) | **เขียวทุกรอบ (2/2)** |
+| `npx playwright test demoFlow.spec.ts` (standalone) | **1 passed** |
+| `npx playwright test` (full suite, 19 test, 6 ไฟล์, reseed ใหม่ก่อนรัน) | **18 passed, 1 skipped, 0 failed, 19 total — เขียวครบ (fully green)** |
+
+### -3.4 สถานะ defect สุดท้าย (ปิดครบทุกตัว — ดูรายละเอียดเต็มที่ defects.md §Verify-5)
+
+| ID | Severity | สถานะสุดท้าย |
+|---|---|---|
+| DEF-01 | Critical | **Fixed** (ยืนยัน re-verify) |
+| DEF-02 | Critical | **Fixed** (ยืนยัน re-verify) |
+| DEF-03 | Major | **Fixed/Resolved** |
+| DEF-04 | Major | **Fixed** |
+| DEF-05 | Major | **Fixed** |
+| DEF-06 | Critical | **Fixed** (ยืนยัน verify-3) |
+| DEF-07 | Major | **Fixed** (ยืนยัน verify-3) |
+| DEF-08 | — | **Resolved** (contract decision — QA spec แก้ตาม) |
+| DEF-09 | Critical | **Fixed** (ยืนยัน 4 รอบอิสระสะสม รวมรอบนี้) |
+| DEF-10 | Major | **Fixed** |
+| DEF-11 | Major | **Fixed** |
+| DEF-12 | Major | **Fixed** |
+| DEF-13 | Major | **Fixed** |
+| DEF-14 | Major | **Fixed** (ยืนยันซ้ำ curl 2 ครั้งรอบนี้) |
+| DEF-15 | Major | **Fixed** (ยืนยันซ้ำด้วยโค้ด + test รอบนี้) |
+| OPEN-1/2/3 | — | ปิดหมดตั้งแต่ verify-4 |
+| MIN-01..08 | Minor | ไม่เปลี่ยนแปลง ไม่ block (backlog awareness) |
+| **UX-01 (ใหม่, ไม่ blocking)** | UX enhancement | เปิดเป็น backlog item — ดู §-3.5 |
+
+**สรุป: DEF-01 ถึง DEF-15 ทั้งหมด 15 รายการ ปิดครบทุกตัว ไม่มี Critical/Major defect ค้างเลย**
+
+### -3.5 UX note (ไม่ blocking Gate 2, บันทึกเป็น backlog สำหรับ sprint ถัดไป)
+Status badge หลายจุดในระบบ (`QCApproved`, `InProduction`, `ReadyToShip`, `PartiallyPaid` ฯลฯ) แสดง enum
+value ดิบตรงๆ ไม่มีเว้นวรรค/ไม่แปลไทย บน UI จริงที่ end-user (พนักงานโรงงาน ไม่ใช่โปรแกรมเมอร์) เห็น อาจอ่าน
+สะดุดกว่าที่ควร เทียบกับข้อความอื่นในหน้าเดียวกันที่เป็นภาษาไทยล้วน — **แนะนำให้ Frontend เพิ่ม label-mapping
+function (enum → ข้อความแสดงผลที่มีเว้นวรรค/แปลไทย) ใช้กับทุก status badge ในระบบ** ไม่ใช่แค่จุดเดียว — นี่ไม่ใช่
+defect เชิงเทคนิค (regex ที่เคย fail เป็นบั๊กใน spec ของ QA เอง แก้แล้ว ไม่ใช่โค้ดผิด) จึงไม่ block Gate 2 ตาม
+คำสั่ง เสนอเป็น backlog item
+
+### -3.6 UAT plan — พร้อมเริ่มนัดหมายได้แล้ว
+DEF-14/15 (บล็อก UAT รอบก่อน) ปิดครบแล้ว ฟีเจอร์ "มอบหมายงานผลิต" (ECP-012) และ "แก้ไข invoice" (ECP-037) ใช้
+งานได้จริงผ่าน UI สำหรับ role ที่ตั้งใจให้ใช้แล้ว ยืนยันด้วย e2e ที่ผ่านครบ (`demoFlow.spec.ts`,
+`invoiceRevisionTimeline.spec.ts`) จำนวนผู้ทดสอบ **2-3 คน/role ตามที่ปอนด์อนุมัติไว้แล้ว** (7 roles → 14-21 คน
+รวม ดู test-plan.md §5) **ยังใช้ได้ตามเดิม ไม่ต้องเปลี่ยนแปลง — พร้อมนัดหมาย UAT จริงได้ทันที**
+
+### -3.7 Automation coverage (สรุปสุดท้าย)
+- Unit: 175 test ครอบคลุม business rules/pure functions ที่ไม่ต้องมี DB (100% ของที่ระบุใน test-plan.md
+  automatable=yes สำหรับ level นี้)
+- Integration (รวม concurrency): 152 test ผ่าน + 2 documented skip (เหตุผลระบุไว้ในไฟล์ spec เอง — ไม่ใช่
+  ถูกละเลย) ครอบคลุม API contract + concurrency-safety ทุก endpoint หลัก
+- E2E: 18 test ผ่าน + 1 documented skip (TC-037-AC3 — ไม่มี route จริงให้ทดสอบผ่าน UI ได้ตามที่ระบุไว้ตั้งแต่
+  verify-3, ครอบคลุมแล้วที่ระดับ API แทนใน `invoiceVersioningReconciliation.spec.ts`)
+- **รวม automation coverage ของ AC ทั้งหมดในระบบ**: ทุก AC ที่ระบุไว้ใน test-plan.md ว่า automatable=yes มีเทส
+  ที่ผ่านจริงครบ ส่วนที่ automatable=no (ตามที่ระบุไว้ตั้งแต่ Phase 1 — ส่วนใหญ่เป็นเรื่อง UX/subjective
+  judgement ที่ต้องอาศัยคนจริงประเมิน เช่น "onboarding ใช้งานง่ายจริงหรือไม่") ยังต้องพึ่ง UAT รอบจริงตาม §-3.6
+
+### -3.8 สถานะที่ตั้ง
+**READY_FOR_DEVOPS** — DEF-01 ถึง DEF-15 ปิดครบทุกตัว (15/15) ไม่มี Critical/Major defect ค้างเลย unit/
+integration/e2e เขียวครบทุก suite (175/175 unit, 152/154 integration ครบ 17/17 suites มี 2 documented skip,
+18/19 e2e ครบมี 1 documented skip) UX-01 เป็น non-blocking backlog note เท่านั้น ตามกติกา Exit Gate: ทุก AC
+มี test case ที่ผ่านจริงหรือ defect ที่มี rationale ชัดเจน (documented skips), automation coverage ระบุครบ,
+ไม่มี critical/major defect เปิดอยู่, มีผลรันจริงแนบครบทุก suite — **ผ่าน Exit Gate ทุกข้อ**
+
+---
+
+## -2. ผล Verify-4 (2026-07-08) — รอบก่อนหน้า, เก็บไว้เพื่อ traceability
 
 ### -2.1 บริบท
 Engineer (`defect-fix-3`) แก้ DEF-09 (Critical)/DEF-10/11/12/13 (Major) ครบ + ปิด OPEN-1/2/3 ส่งกลับพร้อม
