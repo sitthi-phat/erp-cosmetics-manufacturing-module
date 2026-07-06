@@ -4,12 +4,78 @@
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
       "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED_NEED_INPUT",
       "human_gates": {
         "gate1_architecture": {"approved": false, "approved_at": null, "note": null},
         "gate2_release": {"approved": false, "approved_at": null, "note": null}
       },
-      "history": []
+      "history": [
+        {
+          "agent": "po",
+          "status": "BLOCKED_NEED_INPUT",
+          "gate_checklist": [
+            {"item": "Business problem is concrete, not just 'we want system X'", "pass": false, "missing": "raw requirement เป็นรายการฟีเจอร์ที่อยากได้ ยังไม่ระบุปัญหา/pain point ปัจจุบันหรือ baseline ที่ทำให้ต้องสร้างระบบนี้ตอนนี้"},
+            {"item": "At least 1 genuinely measurable Business Key Value", "pass": false, "missing": "ไม่มีตัวเลข baseline/target ที่วัดผลได้ ไม่สามารถเดาแทนปอนด์ได้"},
+            {"item": "Definition of Done is complete, verifiable, unambiguous", "pass": false, "missing": "DoD ยังไม่สมบูรณ์เพราะขึ้นกับขอบเขต (integration ระบบภายนอก, role, multi-company) ที่ยังไม่ยืนยัน"},
+            {"item": "Scope in/out both specified", "pass": false, "missing": "มีร่างขอบเขตแล้วจาก raw requirement แต่บางจุด (การเชื่อมระบบบัญชี/payment, จำนวนบริษัท/สกุลเงิน) ยังไม่ยืนยันจากปอนด์"},
+            {"item": "บทบาทผู้ใช้หลักระบุครบ", "pass": false, "missing": "มีร่างรายชื่อ role จากการอนุมานเท่านั้น ยังไม่ยืนยันว่าต้องมี role QA/QC แยกหรือ role อื่นเพิ่มเติมหรือไม่"}
+          ],
+          "output_files": [
+            "docs/requirements/erp-core-prototype/brief.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "อะไรคือปัญหา/pain point หลักในปัจจุบันที่ทำให้อยากสร้างระบบ ERP นี้ตอนนี้ (baseline ปัจจุบันเป็นอย่างไร)?",
+              "options": [
+                "A) ปัจจุบันใช้ Excel/เอกสารกระดาษแยกส่วนแต่ละแผนก ทำให้ข้อมูลไม่เชื่อมกันและตรวจสอบย้อนกลับ (traceability) ช้า",
+                "B) มีระบบเดิมอยู่แต่ล้าสมัย/แยกกันหลายระบบ ต้องการรวมเป็นระบบเดียว",
+                "C) ยังไม่มีระบบเลย เป็นระบบ ERP ตัวแรกของโรงงาน",
+                "D) อื่นๆ (โปรดระบุ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Business Key Value (ตัวชี้วัดความสำเร็จที่วัดผลได้) ของ prototype นี้คืออะไร พร้อมตัวเลข baseline/target?",
+              "options": [
+                "A) ลดเวลาตรวจสอบ traceability lot วัตถุดิบ→batch→สินค้าสำเร็จรูป จาก X นาที/ชั่วโมง เป็น Y (โปรดระบุตัวเลข)",
+                "B) ลดเวลาตั้งแต่รับ PO จนถึงออก invoice จาก X วัน เป็น Y วัน",
+                "C) ลดปัญหา stock วัตถุดิบไม่พอสำหรับสูตร (stock-out) จาก X% เป็น Y%",
+                "D) อื่นๆ (โปรดระบุ metric และตัวเลข target)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ขอบเขต prototype ต้องการแค่ demo flow ด้วยข้อมูลจำลอง (mock/seed data) โดยไม่ต้องเชื่อมระบบจริง (เช่น payment gateway, ระบบบัญชี) ใช่หรือไม่?",
+              "options": [
+                "A) ใช่ ต้องการแค่ demo/mock data พอ ไม่ต้องเชื่อมระบบจริง",
+                "B) ต้องการเชื่อมต่อระบบบัญชี/payment จริงด้วย (โปรดระบุระบบที่ต้องเชื่อม)",
+                "C) อื่นๆ (โปรดระบุ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "บทบาทผู้ใช้งานหลัก (roles) ที่ต้องมีใน User Management ของ prototype มีอะไรบ้าง?",
+              "options": [
+                "A) Sales/CS, คลังสินค้า, ฝ่ายผลิต, ฝ่ายจัดส่ง, ฝ่ายบัญชี/การเงิน, Admin (ตามร่างใน brief)",
+                "B) เหมือน A แต่เพิ่ม role QA/QC ตรวจสอบคุณภาพแยกต่างหาก (สำคัญต่อ GMP)",
+                "C) อื่นๆ (โปรดระบุ role ที่ต้องการทั้งหมด)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "prototype ต้องรองรับกี่บริษัท/สาขา และกี่สกุลเงิน?",
+              "options": [
+                "A) Single company, สกุลเงินเดียว (THB) เท่านั้น (เหมาะกับ prototype)",
+                "B) Multi-company และ/หรือ multi-currency ต้องรองรับตั้งแต่ prototype (โปรดระบุรายละเอียด)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "อ่าน raw requirement แล้ว flow หลัก (ลูกค้า→PO→stock→ผลิต→จัดส่ง→invoice + User Mgmt/audit log/dashboard) ชัดเจนในระดับภาพกว้าง แต่ยังขาดปัญหา/pain point ปัจจุบัน, ตัวเลข Business Key Value, และรายละเอียดขอบเขต (integration, roles, multi-company) จึงเขียน brief แบบร่างพร้อมข้อสมมติที่ระบุชัด และตั้ง BLOCKED_NEED_INPUT รอคำตอบปอนด์ 5 ข้อก่อนส่งต่อ BA",
+          "overridden_by": null,
+          "updated_at": "2026-07-06T16:00:00+07:00"
+        }
+      ]
     }
   }
 }
