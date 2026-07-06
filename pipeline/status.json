@@ -246,7 +246,7 @@
                 "B) 2-3 คน/role (14-21 คนรวม) เพื่อความน่าเชื่อถือของตัวเลข 80% มากขึ้น",
                 "C) อื่นๆ (โปรดระบุจำนวน)"
               ],
-              "answer": null
+              "answer": "B — 2-3 คน/role (14-21 คนรวม) เพื่อความน่าเชื่อถือของตัวเลข 80% มากขึ้น (ปอนด์ตอบ 2026-07-07)"
             }
           ],
           "summary": "เขียน test-plan.md ครบ: traceability matrix ทุก AC (119 ACs จาก ECP-001–038) → TC ID/level/automatable พร้อมเหตุผลของส่วนที่ไม่ automate ได้ (ECP-035 usability UAT ต้องใช้มนุษย์จริง ~3%), automation coverage ~91% เต็ม + ~6% บางส่วน, ออกแบบเคสวิกฤต 4 จุดตามที่ Gate 1 เน้นย้ำ (stock ledger accuracy 100% concurrency, NumberSequence ไม่ซ้ำ, permission TTL ≤5 นาทีไม่ re-login รวมทดสอบ clamp ≤300s, payment↔invoice-version reconciliation รวม overpaid flag) และเพิ่ม exploratory case 7 ข้อนอกเหนือ AC เดิม (double-submit, clock skew, boundary ตัวเลข, VAT rounding, PO cancel หลัง invoiced, concurrent revise, audit ของ action ที่ fail) เขียน automated spec จริง 27 ไฟล์ (unit 8 + integration 13 + concurrency 4 + e2e 6, ระบุ import path/endpoint ตาม architecture.md §6 พร้อม TODO ให้ Engineer ยืนยัน signature จริง) ยังรันไม่ได้จนกว่า Engineer ทำ E0 เสร็จ (ระบุชัดใน §0/§7 ไม่ block). มี 1 คำถามใหม่ถึงปอนด์เรื่องจำนวนผู้ทดสอบ UAT ต่อ role (ไม่ block เริ่มโค้ด Engineer). ไม่แก้ feature-level current_agent/status (ยังเป็นของ Engineer ในเฟสนี้).",
