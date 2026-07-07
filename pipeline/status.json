@@ -3,8 +3,8 @@
     "erp-core-prototype": {
       "title": "ERP Core Prototype — Order-to-Cash สำหรับโรงงานผลิตเครื่องสำอาง (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice/เก็บเงิน + User Management + Dashboard)",
       "created_at": "2026-07-06T15:10:00+07:00",
-      "current_agent": "qa",
-      "status": "READY_FOR_DEVOPS",
+      "current_agent": "devops",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_architecture": {
           "approved": true,
@@ -1759,6 +1759,85 @@
           "summary": "Verify รอบ Gate 2 Rework (E22-E33) เสร็จสมบูรณ์: แก้ testid mismatch ทั้งหมดตาม mapping ของ Engineer + พบบั๊กเพิ่มเติมเองอีกหลายจุด (nav-po-create ไม่ใช่ menu item, onboarding tour ใช้ localStorage, seed default stock ~1000 ทำให้ FIFO-split test ต้องปรับ requiredQty ให้ใหญ่กว่านั้นจริง). แก้ fixture qtyUsed ทั้ง suite (10 ไฟล์) ด้วย helper กลางที่ทนทานต่อการตัดสินใจ AC5 ในอนาคต. ตัดสินใจ ECP-013 AC5 ตาม under-only ปัจจุบัน mark เป็น pending Pond ไม่นับ defect. ไม่พบ defect โค้ดจริงใหม่เลย มีแค่ 1 responsive gap ที่ Engineer เปิดเผยเองแล้ว (MIN-09, ไม่ block). ตัวเลขสุดท้าย: unit 233/0 failed, integration 211/0 failed (26/26 suites, 3 documented skip), e2e 45/0 failed (1 documented skip) เขียวครบทุก suite.",
           "overridden_by": null,
           "updated_at": "2026-07-09T02:00:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "final-smoke-2",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "No stale servers found on port 4000/5173 before starting (checked via netstat)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npm run reset (real docker compose down -v volume wipe) -> npm run setup following runbook.md verbatim",
+              "pass": true,
+              "missing": "hit the same known MySQL healthcheck-race documented from smoke round 1 (P1017 on prisma migrate deploy right after container reports healthy) - recovered via the documented steps without a second down -v, confirmed still an infra-timing gap not a Gate 2 rework regression"
+            },
+            {
+              "item": "Both migrations apply cleanly on a fresh volume: 20260706000000_init + 20260706210210_gate2_rework",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npm run db:seed (dev schema) + npm run db:seed:test (test schema) both succeed, log confirms new steps (CompanyProfile, customer tax_id/registered_address)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "npm run dev started backend(:4000)+frontend(:5173); curl /health = 200, curl :5173/ = 200",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Login smoke via real HTTP for admin + production_demo + sales_demo: all 200, permission payload includes new bom.manage/bom.view/product.view/user.view_basic grants correctly",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Real-browser click-through (Playwright/chromium) of new Gate 2 Rework features: BOM management page (nav-bom) lists all 4 seeded product BOMs + create-new form",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Real-browser trace search for L-SEED-1 (single search box, auto-detect) returns real results showing which batches consumed that lot - confirms Pond feedback item #3 fixed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "End-to-end smoke of a brand-new invoice (created a real PO -> confirmed -> assigned -> produced via the new FIFO material-plan endpoint -> QC approved -> shipped -> issued with a non-zero discount) then opened its detail page and print view in the browser: full tax invoice document renders correctly (issuer+customer tax IDs, line items, subtotal/discount/VAT/grand total, Thai baht text) - confirms Pond feedback item #10 fixed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Regression check for DEF-07 (onboarding tour overlay): still no regression, nav clicks work immediately after login",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "runbook.md updated: header/status banner reflects Gate 2 Rework results, accounts table updated with new bom.manage/bom.view/product.view/user.view_basic and CompanyProfile responsibilities, new §5.1 round-2 smoke evidence table, §5.2 rewritten to map directly to Pond's original 10 feedback items (docs/requirements/erp-core-prototype/pond-gate2-feedback.md) plus dashboard/audit-log/revise/no-menu/onboarding checks, references docs/test-plans/erp-core-prototype/uat-print-responsive-script.md for the manual print-fidelity/responsive/UI-consistency script, §6 updated with PENDING-POND-1 (ECP-013 AC5 decision needed) and MIN-09 (QC incoming responsive gap) plus a new observation about seed-created invoices lacking document_snapshot (by design, not a bug - only affects the 2 pre-seeded demo invoices, not newly-issued ones)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Background processes DevOps started for this smoke are stopped (verified via netstat both ports free) while the MySQL container is left running (healthy); reseeded once more at the end to remove the extra PO/batch/shipment/invoice DevOps created during the click-through so Pond starts from clean seed data",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No git operations performed beyond read-only status/log; no src/ or tests/ files modified; temporary smoke-check scripts created inside the repo root and deleted before finishing (confirmed clean via git status)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/infra/erp-core-prototype/runbook.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Final smoke รอบ 2 จากศูนย์ตาม runbook.md ทีละบรรทัดเหมือนปอนด์จะทำจริง หลัง Gate 2 Rework (feedback 10 ข้อของปอนด์): kill stale server (ไม่พบ) -> npm run reset (ล้าง volume จริง, เจอ MySQL healthcheck-race เดิมที่เคยบันทึกไว้ 1 ครั้ง แก้ตาม runbook แล้วผ่านทันที) -> setup สำเร็จทั้ง 2 migration + seed ทั้ง dev/test schema -> npm run dev -> login สำเร็จผ่าน HTTP จริงครบ (admin/production_demo/sales_demo) พร้อม permission ใหม่ถูกต้อง (bom.manage/bom.view/product.view/user.view_basic) -> คลิกผ่านฟีเจอร์ใหม่จริงในเบราว์เซอร์ครบ: หน้า BOM management โหลดได้พร้อมข้อมูล, ค้นหา L-SEED-1 ในหน้า Traceability เจอจริง (แก้ feedback ข้อ 3), สร้าง PO->ผลิตด้วย material-plan FIFO->QC->ship->ออก invoice ใหม่พร้อม discount แล้วเปิดหน้ารายละเอียด+พิมพ์ใบกำกับภาษีได้ครบถูกต้อง (แก้ feedback ข้อ 10) -> ยืนยัน DEF-07 (onboarding tour) ไม่ regress. พบ observation ที่ไม่ใช่ defect: invoice 2 ใบที่มาจาก seed เดิมไม่มี document_snapshot (สร้างตรงในสคริปต์ seed ไม่ผ่าน flow จริง) จึงเปิดพิมพ์ไม่ได้ ในขณะที่ invoice ที่ออกผ่านหน้าเว็บทุกใบพิมพ์ได้ปกติ - บันทึกไว้ให้ปอนด์ทราบไม่ให้สับสน. อัปเดต runbook.md ครบ: บัญชี/permission ใหม่, §5.1 หลักฐาน smoke รอบ 2, §5.2 เขียนใหม่ให้ครอบ feedback 10 ข้อของปอนด์ตรงๆ ทีละข้อ พร้อมอ้างอิง uat-print-responsive-script.md, §6 เพิ่ม PENDING-POND-1 (ECP-013 AC5 รอปอนด์ตัดสินใจ, ไม่ใช่บั๊ก) และ MIN-09 (QC incoming responsive gap, Engineer เปิดเผยเองแล้ว, ไม่ block). ปิด background process ที่เปิดไว้เองครบ คง MySQL container ไว้ให้ปอนด์ใช้ต่อ พร้อม reseed ข้อมูลสดใหม่ (ล้างข้อมูลทดสอบที่ DevOps สร้างระหว่าง smoke ออกหมดแล้ว). ไม่ใช้ git (อ่านอย่างเดียว), ไม่แก้ src/ หรือ tests/. สถานะ WAITING_HUMAN_GATE (Human Gate 2) - พร้อมให้ปอนด์ทดสอบ localhost และ approve release (มี 1 คำถามรอปอนด์ตัดสินใจเรื่อง ECP-013 AC5 ที่ไม่ block gate นี้).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T04:30:00+07:00"
         }
       ]
     }

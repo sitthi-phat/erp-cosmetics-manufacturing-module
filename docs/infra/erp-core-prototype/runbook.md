@@ -2,12 +2,19 @@
 
 - **slug**: `erp-core-prototype`
 - **เขียนโดย**: DevOps
-- **อัปเดตล่าสุด**: 2026-07-08 (หลัง final smoke ก่อน Human Gate 2 — QA verify-5 เขียวทั้งหมด, defect 15/15 ปิด)
+- **อัปเดตล่าสุด**: 2026-07-09 (หลัง final smoke **รอบที่ 2** ก่อน Human Gate 2 — QA gate2-verify เขียวทั้งหมด
+  รวม Gate 2 Rework จาก feedback 10 ข้อของปอนด์)
 - **เป้าหมาย**: ให้ปอนด์ (หรือใครก็ตาม) รันระบบนี้บนเครื่องตัวเองได้ "จากศูนย์" โดยไม่ต้องถามใคร
 
-> ✅ **สถานะล่าสุด**: DEF-01 ถึง DEF-15 ปิดครบทั้งหมดแล้ว (QA verify-5, 2026-07-08) — unit 175/175, integration
-> 152/154 (2 documented skip), e2e 18/19 (1 documented skip) เขียวทั้งหมด. DevOps ทำ **final smoke จากศูนย์จริง**
-> (ล้าง Docker volume ทั้งหมด แล้วตั้งใหม่ตาม runbook นี้ทีละบรรทัด) ยืนยันว่าใช้งานได้จริง — รายละเอียดที่ §5.1
+> ✅ **สถานะล่าสุด**: Gate 2 Rework (feedback 10 ข้อของปอนด์รอบแรก — BOM management, material-plan
+> auto-calculate, trace ค้นหาช่องเดียว, QC incoming form, ใบกำกับภาษี+print, customer tax fields, responsive,
+> UI consistency) implement+verify ครบแล้ว — unit 233/233, integration 211/211 (26/26 suites, 3 documented
+> skip), e2e 45/45 (1 documented skip) เขียวทั้งหมด รวม regression guard เฉพาะที่ครอบ defect เดิมทั้ง 5 ที่ปอนด์
+> เจอรอบแรก. DevOps ทำ **final smoke รอบ 2 จากศูนย์จริง** (ล้าง Docker volume ทั้งหมด แล้วตั้งใหม่ตาม runbook
+> นี้ทีละบรรทัด รวมถึงคลิกผ่านฟีเจอร์ใหม่จริงในเบราว์เซอร์) ยืนยันว่าใช้งานได้จริง — รายละเอียดที่ §5.1
+>
+> ⚠ **ก่อนปอนด์ approve Gate 2 รอบนี้**: มี 1 คำถามค้างรอปอนด์ตัดสินใจ (ไม่ใช่บั๊ก) + 1 responsive gap ระดับ
+> Minor ที่ Engineer เปิดเผยเองแล้ว — ดู §6
 
 ---
 
@@ -100,19 +107,22 @@ taskkill /F /PID <PID ที่เจอ>
 
 | Username | บทบาท (role) | หน้าที่หลักที่ทดสอบได้ |
 |---|---|---|
-| `sales_demo` | Sales/CS (SA) | สร้าง/ดู PO, ลูกค้า |
-| `warehouse_demo` | คลังสินค้า (WH) | รับของเข้า (goods receipt), ดู stock real-time |
-| `production_demo` | ฝ่ายผลิต (PR) | คิวผลิต, assign, ผลิต batch |
-| `qc_demo` | QA/QC (QA) | ตรวจ batch/lot |
+| `sales_demo` | Sales/CS (SA) | สร้าง/ดู PO, ลูกค้า (รวมข้อมูลภาษี) |
+| `warehouse_demo` | คลังสินค้า (WH) | รับของเข้า (goods receipt), ดู stock real-time, ค้นหาใน stock, ดู BOM (`bom.view`) |
+| `production_demo` | ฝ่ายผลิต (PR) | คิวผลิต, assign, ผลิตด้วย material-plan (FIFO auto-calculate), **จัดการ BOM ได้เต็มที่ (`bom.manage`)** |
+| `qc_demo` | QA/QC (QA) | ตรวจ batch/lot **+ ตรวจรับวัตถุดิบขาเข้า (incoming inspection form ใหม่)** |
 | `logistics_demo` | ฝ่ายจัดส่ง (LO) | สร้าง/อัปเดตสถานะ shipment |
-| `finance_demo` | บัญชี/การเงิน (FI) | ออก invoice, บันทึกชำระเงิน, ดูตัวเลือกสินค้าตอน revise invoice (`product.view`) |
-| `admin` | Admin (AD) | จัดการผู้ใช้/สิทธิ์ (`user.view_basic` ให้ role อื่นดูรายชื่อผู้ใช้แบบจำกัดได้), ตั้งค่า VAT |
+| `finance_demo` | บัญชี/การเงิน (FI) | ออก invoice (พร้อม discount), บันทึกชำระเงิน, ดูตัวเลือกสินค้าตอน revise invoice (`product.view`), **เปิดหน้ารายละเอียด invoice + พิมพ์ใบกำกับภาษี** |
+| `admin` | Admin (AD) | จัดการผู้ใช้/สิทธิ์ (`user.view_basic` ให้ role อื่นดูรายชื่อผู้ใช้แบบจำกัดได้), ตั้งค่า VAT, **ตั้งค่าข้อมูลบริษัท (CompanyProfile ใหม่ — ชื่อ/ที่อยู่/เลขผู้เสียภาษี/โทรศัพท์/โลโก้ ที่ใช้พิมพ์บนเอกสาร)**, `bom.manage` เต็มสิทธิ์เหมือน production |
 | `role_with_no_menu_demo` | No Menu (NM, ไม่มี permission ใดๆ เลยโดยตั้งใจ) | ทดสอบเคส "role ไม่มีเมนูที่กำหนด → ต้องเห็นข้อความ 'ติดต่อ Admin' ไม่ใช่หน้าว่างเปล่า" (ECP-034 AC3) |
 | `brand_new_user_demo` | Sales (SA, บัญชีแยกจาก `sales_demo`) | ทดสอบเคส "login ครั้งแรกสุด → ต้องเห็น onboarding tooltip อย่างน้อย 1 จุด" (ECP-034 AC2) — แยกบัญชีจาก `sales_demo` เพื่อไม่ให้ onboarding state (เก็บใน browser ผ่าน localStorage) ปนกัน |
 
 ---
 
 ## 5. Flow แนะนำให้คลิกทดสอบ (demo flow เต็มสาย, ตรงกับ brief.md DoD #1)
+
+> รายการด้านล่างคือ flow พื้นฐานเดิม (ยังใช้ได้ปกติ) — **สำหรับรอบ Gate 2 นี้ ให้ดู §5.2 เป็นหลัก** เพราะครอบ
+> ทั้ง flow พื้นฐานนี้ + ฟีเจอร์ใหม่ทั้งหมดที่ตรงกับ feedback ของปอนด์
 
 1. Login เป็น `sales_demo` → เมนู "คำสั่งซื้อ (PO)" → สร้าง PO ใหม่ให้ลูกค้าที่มีอยู่ → ยืนยัน PO (ระบบเช็ค
    stock/reserve วัตถุดิบให้อัตโนมัติ)
@@ -125,70 +135,110 @@ taskkill /F /PID <PID ที่เจอ>
 7. เปิด 2 แท็บพร้อมกัน (คนละ role) เพื่อดู real-time: รับของเข้าคลังในแท็บหนึ่ง แล้วดู stock อัปเดตในอีกแท็บ
    โดยไม่ต้อง refresh
 
-### 5.1 ผลการทำ Final Smoke จากศูนย์ (2026-07-08, ยืนยันจริงก่อนเปิด Human Gate 2)
+### 5.1 ผลการทำ Final Smoke (สรุปทั้ง 2 รอบ, ล่าสุด 2026-07-09 ก่อนเปิด Human Gate 2 รอบนี้)
 
 ทำตาม runbook นี้ทีละขั้นเหมือนคนที่ไม่เคยเห็นระบบมาก่อน (`npm run reset` → `npm run setup` → `npm run dev`):
 
 | ขั้นตอน | ผล |
 |---|---|
-| `npm run reset` (ล้าง Docker volume ทั้งหมดจริง) → `npm run setup` | เจอ timing race ที่ §2 ระบุไว้ 1 ครั้ง (`P1017` ตอน migrate) — แก้ตามขั้นตอนใน §2 แล้วผ่านทันทีในรอบถัดไป ไม่ต้อง `down -v` ซ้ำ |
+| `npm run reset` (ล้าง Docker volume ทั้งหมดจริง) → `npm run setup` | เจอ timing race ที่ §2 ระบุไว้อีกครั้ง 1 ครั้ง (`P1017` ตอน migrate) — แก้ตามขั้นตอนใน §2 แล้วผ่านทันทีในรอบถัดไป ไม่ต้อง `down -v` ซ้ำ — **ยังคงเป็น timing gap เดิม ไม่ใช่ของใหม่จาก Gate 2 rework** |
+| `npm run prisma:migrate` | ทั้ง 2 migration apply สำเร็จ (`20260706000000_init` + `20260706210210_gate2_rework`) |
+| `npm run db:seed` (dev schema) + `npm run db:seed:test` (test schema) | สำเร็จทั้งคู่ — log ยืนยัน step ใหม่ `CompanyProfile (ECP-041)` และ `customers (Gate 2: tax_id/registered_address)` รันจริง |
 | `docker compose ps` | `mysql` container `Up (healthy)` |
 | `npm run dev` → `curl http://localhost:4000/health` | `{"status":"ok"}` |
 | `curl http://localhost:5173/` | HTTP 200 |
-| Login จริงผ่าน HTTP (`POST /api/v1/auth/login`) ด้วย `admin` + `sales_demo` | ทั้งคู่ 200 OK, คุกกี้ set ถูกต้อง, `GET /auth/me` คืน role/permissions ตรง (เห็น `product.view`/`user.view_basic` ใน payload ของ admin) |
-| Login `brand_new_user_demo` + `role_with_no_menu_demo` ผ่าน HTTP | ทั้งคู่ 200 OK — `role_with_no_menu_demo` คืน `"permissions": []` ตรงตามที่ตั้งใจ |
-| เปิดหน้าเว็บจริงผ่าน browser (Playwright, chromium) — login ครบทั้ง 7 role หลัก | ทุก role โหลดหน้าแรกสำเร็จ, เมนูซ้ายตรงกับสิทธิ์ของแต่ละ role (admin เห็นครบ, sales เห็นเฉพาะที่เกี่ยวข้อง) |
-| คลิกเมนู "คำสั่งซื้อ (PO)" ทันทีหลัง login (`sales_demo`) | **คลิกได้ทันที ไม่มี overlay บัง** (ยืนยันว่า DEF-07 onboarding-tour-block fix ยังอยู่ ไม่ regress) → navigate ไป `/pos` สำเร็จ |
-| Console error บนหน้าแรกหลัง login | พบ 1 รายการที่ไม่ block (`Failed to load resource: 401`) เกิดจาก request แรกสุดก่อนคุกกี้ auth ถูกตั้งค่าเสร็จ (retry ตามมาสำเร็จ, หน้าโหลด/render ถูกต้อง 100% ไม่กระทบการใช้งาน) — ไม่ยกเป็น defect ใหม่ เป็นแค่ observation |
-| ปิด background process (backend/frontend) ที่ smoke test เปิดไว้ | ปิดเรียบร้อยผ่าน `taskkill` ตาม PID, ตรวจซ้ำด้วย `netstat` ว่า port 4000/5173 ว่างแล้ว |
-| MySQL container | **คงไว้ให้ปอนด์ใช้ต่อ** (`docker compose ps` ยังเห็น `Up (healthy)`) พร้อมข้อมูล seed สดใหม่ (reseed ล่าสุดหลัง smoke) |
+| Login `admin` + `production_demo` + `sales_demo` ผ่าน HTTP จริง | ทั้งหมด 200 OK, permission payload ตรง (`bom.manage` เห็นใน `production_demo`/`admin`) |
+| **คลิกหน้า "จัดการ BOM" จริง** (`admin`, `nav-bom`) | โหลดสำเร็จ, เห็นรายการ BOM ของสินค้าทั้ง 4 ตัวพร้อมจำนวนวัตถุดิบ + ฟอร์ม "สร้าง BOM ใหม่" |
+| **ค้นหา `L-SEED-1` ในหน้า Traceability จริง** (`warehouse_demo`, ช่องค้นหาเดียว) | เจอผลลัพธ์จริง แสดง Batch ที่ใช้ Lot นี้ครบ (**ยืนยันแก้ feedback ข้อ 3 ของปอนด์แล้วจริง**) |
+| **ออก invoice ใหม่จริง (สร้าง PO→confirm→assign→ผลิตด้วย material-plan FIFO→QC approve→ship→ออก invoice พร้อม discount) แล้วเปิดหน้ารายละเอียด + กดพิมพ์ใบกำกับภาษี** | เปิดหน้ารายละเอียดสำเร็จ (**แก้ feedback ข้อ 10 "เปิดดูไม่ได้" แล้วจริง**), หน้าพิมพ์แสดงครบ: ผู้ออก+เลขผู้เสียภาษี, ลูกค้า+เลขผู้เสียภาษี, ตารางรายการ, subtotal/discount/VAT/grand total, **ตัวหนังสือไทย ("หนึ่งพันสามร้อยเก้าสิบเอ็ดบาทถ้วน")** ตรงตามตัวอย่างที่ปอนด์แนบ |
+| ⚠ **Observation ที่พบระหว่าง smoke**: เปิดหน้ารายละเอียด/พิมพ์ของ **invoice ที่มาจาก seed data เดิม** (INV-2026-000001 v1/v2) | ขึ้นข้อความ "กรุณาตั้งค่าข้อมูลบริษัทผู้ออกเอกสารก่อน" ทั้งที่ตั้งค่า CompanyProfile ไว้แล้วจริง — **ไม่ใช่บั๊ก**: invoice 2 ใบนี้ถูกสร้างตรงๆ ใน `prisma/seed.ts` (ไม่ผ่าน flow ออก invoice จริงของระบบ) จึงไม่มี `document_snapshot` ถูกบันทึกไว้ ตรงตาม design "block เมื่อไม่เคย snapshot" (ECP-041 AC4) — **invoice ที่ออกผ่านหน้าเว็บจริงทุกใบไม่เจอปัญหานี้** (ยืนยันแล้วด้านบน) — ถ้าปอนด์ทดสอบพิมพ์แล้วเจอข้อความนี้กับ invoice ที่เพิ่งออกเอง ให้แจ้งเป็นบั๊กจริง แต่ถ้าเจอกับ invoice หมายเลข `INV-2026-000001` (จาก seed) ถือเป็นข้อจำกัดของข้อมูลตัวอย่างเท่านั้น |
+| Regression check DEF-07 (onboarding tour ไม่บังปุ่ม) | ยังไม่ regress — คลิกเมนูได้ทันทีหลัง login |
+| ปิด background process (backend/frontend) ที่ smoke test เปิดไว้ทั้ง 2 รอบ | ปิดเรียบร้อยผ่าน `taskkill` ตาม PID, ตรวจซ้ำด้วย `netstat` ว่า port 4000/5173 ว่างแล้วทุกครั้ง |
+| MySQL container | **คงไว้ให้ปอนด์ใช้ต่อ** (`docker compose ps` ยังเห็น `Up (healthy)`) พร้อม `npm run db:seed` รอบสุดท้ายให้ข้อมูลสดใหม่ (ล้าง PO/invoice ทดสอบที่ DevOps สร้างระหว่าง smoke ออกหมดแล้ว) |
 
-**สรุป**: runbook นี้ทำตามได้จริงตั้งแต่ศูนย์ (fresh Docker volume) จนถึงเปิดเว็บ+login ได้ครบทุก role — พร้อม
-ให้ปอนด์ทดสอบเองได้ทันที
+**สรุป**: runbook นี้ทำตามได้จริงตั้งแต่ศูนย์ (fresh Docker volume, migration 2 ตัว) จนถึงคลิกผ่านฟีเจอร์ใหม่ทั้งหมด
+จากรอบ Gate 2 Rework ได้จริงในเบราว์เซอร์ — พร้อมให้ปอนด์ทดสอบเองได้ทันที
 
-### 5.2 สิ่งที่ปอนด์ควรลองกด (ครอบคลุม flow เด่นทั้งหมดของ prototype นี้)
+### 5.2 สิ่งที่ปอนด์ควรลองกด — ครอบตรงกับ feedback ทั้ง 10 ข้อที่ปอนด์เคยให้ไว้รอบแรก
 
-ลำดับแนะนำสำหรับปอนด์ทดสอบเอง (ใช้เวลาประมาณ 15-20 นาที ถ้าไล่ครบทุกข้อ):
+(อ้างอิงเต็มที่ `docs/requirements/erp-core-prototype/pond-gate2-feedback.md` — แต่ละข้อด้านล่างระบุว่าตรงกับ
+feedback ข้อไหน)
 
-1. **สร้างลูกค้าใหม่** — login `sales_demo` → เมนู "ลูกค้า" → เพิ่มลูกค้าใหม่ (สังเกตว่า customer_id
-   สร้างอัตโนมัติ ไม่มีช่องให้กรอกเอง)
-2. **สร้าง PO** — จากลูกค้าที่เพิ่งสร้าง (หรือลูกค้าเดิมจาก seed) → เพิ่มสินค้า → ยืนยัน PO → สังเกตว่า
-   ระบบเช็ค stock วัตถุดิบตาม BOM ให้อัตโนมัติก่อนอนุมัติ
-3. **ดู stock real-time** — เปิดอีกแท็บ login `warehouse_demo` → หน้า "สต็อกวัตถุดิบ" เปิดค้างไว้ → กลับไป
-   ทำ goods receipt (รับวัตถุดิบเข้า) ในแท็บเดิมหรือแท็บใหม่ → สังเกตว่าตัวเลขในแท็บ "สต็อกวัตถุดิบ" อัปเดต
-   เองโดยไม่ต้อง refresh หน้า (ภายใน 1 นาที)
-4. **Assign งานผลิต** — login `production_demo` → "งานผลิต" → คิวงาน → assign PO ที่ยืนยันแล้วเข้าคิว →
-   ผลิต (เลือก Lot วัตถุดิบที่จะใช้) → ได้เลข Batch ใหม่
-5. **QC Approve** — login `qc_demo` → "ตรวจสอบคุณภาพ (QC)" → หา batch ที่เพิ่งผลิต → Approve
-6. **สร้าง Shipment** — login `logistics_demo` → "จัดส่งสินค้า" → สร้าง shipment จาก batch ที่ QC
-   Approved แล้ว (batch ที่ยังไม่ผ่าน QC จะไม่ปรากฏให้เลือก) → อัปเดตสถานะจนถึง Delivered
-7. **ออก Invoice + ดู VAT** — login `finance_demo` → "Invoice / การเงิน" → ออก invoice จาก PO ที่ Shipped
-   แล้ว → สังเกตว่า VAT (7% ค่าเริ่มต้น) คำนวณให้อัตโนมัติในยอดรวม → บันทึกการชำระเงิน
-8. **Revise Invoice** — จาก invoice ที่เพิ่งออก → กด "แก้ไข/revise" → ปรับจำนวน/ราคา → ยืนยัน → สังเกตว่า
-   ระบบสร้างเป็น version ใหม่ (v2) โดยที่ v1 ยังดูย้อนหลังได้ (ไม่ถูกเขียนทับ) พร้อม timeline แสดงว่า v1 ถูก
-   แทนที่โดย v2 เมื่อไหร่/โดยใคร
-9. **ดู Dashboard** — สลับ login ไปแต่ละ role แล้วดูหน้า "หน้าแรก" ของแต่ละคน (ตัวเลขสรุปของแต่ละแผนก
-   ตรงกับข้อมูลที่เพิ่งทำไปในข้อ 1-8 หรือไม่)
-10. **ดู Audit Log** — login `admin` → "Audit Log" → ค้นหา action ที่เพิ่งทำไปทั้งหมด (สร้าง PO, ผลิต,
-    QC approve, ออก invoice, revise invoice ฯลฯ) ต้องเห็นครบทุก action พร้อมชื่อผู้ทำ+เวลา
-11. **ทดสอบ role ที่ไม่มีเมนู** — login `role_with_no_menu_demo` → ต้องเห็นข้อความชัดเจนว่า "ยังไม่มีเมนูที่
-    กำหนดให้บทบาทนี้ กรุณาติดต่อ Admin" ไม่ใช่หน้าว่างเปล่า
-12. **ทดสอบ onboarding ผู้ใช้ใหม่** — login `brand_new_user_demo` (ครั้งแรกในเบราว์เซอร์/โหมดไม่ระบุตัวตน
-    ที่ยังไม่เคย login มาก่อน) → ต้องเห็น onboarding tooltip แนะนำอย่างน้อย 1 จุด และคลิกเมนูต่อได้ทันที
-    ไม่มี overlay ค้างบัง
+1. **[feedback ข้อ 1] สร้าง PO แล้วดูว่ารายการอ่านออก + ลบได้** — login `sales_demo` → `/pos/new` → เพิ่ม
+   สินค้า → ต้องเห็น **ชื่อสินค้าจริง + จำนวน + ราคา** (ไม่ใช่ `"Product #7 x 1 @ 1"` แบบเดิม) → ลองกด
+   ลบรายการที่เพิ่งเพิ่ม → ต้องลบได้จริง
+2. **[feedback ข้อ 2, 6] จัดการ BOM** — login `admin` หรือ `production_demo` → เมนู "จัดการ BOM" → ดูสูตร
+   ของสินค้าที่มีอยู่ (สินค้า/จำนวนวัตถุดิบในสูตร) → ลองสร้าง BOM ใหม่ให้สินค้าที่ยังไม่มีสูตร
+3. **[feedback ข้อ 3] ค้นหา `L-SEED-1` ในหน้า Traceability** — login role ใดก็ได้ที่มีสิทธิ์ → เมนู
+   "Traceability" → พิมพ์ `L-SEED-1` ในช่องค้นหาเดียว (ค้นได้ทั้ง Lot/Batch/PO/Invoice) → กด "ค้นหา" →
+   ต้องเจอ พร้อมคำอธิบาย Lot vs Batch ที่แสดงอยู่บนหน้าจอตลอดเวลา (ตอบคำถาม "Batch เอาไว้ทำอะไร")
+4. **[feedback ข้อ 4] ผลิตด้วย material-plan (auto-calculate จาก BOM)** — login `production_demo` →
+   "งานผลิต" → assign งานจากคิว → หน้าผลิตต้อง **คำนวณวัตถุดิบที่ต้องใช้ให้อัตโนมัติจาก BOM พร้อมเสนอ Lot
+   ที่จะใช้ (FIFO)** ให้แค่ review/ปรับ ไม่ต้องกรอก Lot ID เองแบบเดิม → ยืนยันผลิต → ได้ Batch ใหม่
+5. **[feedback ข้อ 5] QC ตรวจรับวัตถุดิบขาเข้า** — login `qc_demo` → เมนู QC → ต้องมีส่วน "ตรวจรับวัตถุดิบ
+   ขาเข้า (incoming inspection)" แยกจากตรวจ batch — ลองกรอกฟอร์มตรวจรับ 1 รายการ
+6. **[feedback ข้อ 9] ข้อมูลภาษีลูกค้า** — login `sales_demo` → เมนู "ลูกค้า" → สร้าง/แก้ไขลูกค้า → ต้องมี
+   ช่องเลขประจำตัวผู้เสียภาษี (13 หลัก) + ที่อยู่จดทะเบียน ครบ
+7. **[feedback ข้อ 10] เปิดดู invoice + พิมพ์ใบกำกับภาษี** — login `finance_demo` → ออก invoice ใหม่จาก PO
+   ที่ Shipped แล้ว (ใส่ discount เป็นตัวเลขที่ไม่ใช่ 0 เพื่อทดสอบเต็มรูป) → **เปิดหน้ารายละเอียด invoice
+   ต้องเห็นข้อมูลครบ** (แก้ปัญหาเดิมที่ "เรียกดูไม่ได้") → กด "พิมพ์/ดาวน์โหลด" → เทียบกับตัวอย่างที่ปอนด์แนบ
+   ทีละส่วนตาม `docs/test-plans/erp-core-prototype/uat-print-responsive-script.md` ส่วนที่ 1 (หัวเอกสาร,
+   ข้อมูลผู้ออก/ลูกค้า, ตารางรายการ, ยอดรวม+VAT+ตัวหนังสือไทย, ช่องลายเซ็น 2 ช่อง) — **ใช้ invoice ที่เพิ่ง
+   ออกเองเท่านั้น อย่าใช้ invoice หมายเลข `INV-2026-000001` จาก seed (ดู observation ใน §5.1)**
+8. **[feedback ข้อ 7, 8] UI consistency + Responsive** — ทำตาม
+   `docs/test-plans/erp-core-prototype/uat-print-responsive-script.md` ส่วนที่ 2 (responsive บนแท็บเล็ต/
+   resize browser 768-1024px) และส่วนที่ 3 (เปิด 8 หน้าไล่ดูความสม่ำเสมอของ UI) — **มีจุดที่รู้อยู่แล้วว่า
+   อาจ overflow บนแท็บเล็ต portrait ที่หน้า QC incoming (ดู MIN-09 ใน §6) ไม่ต้องแปลกใจถ้าเจอ**
+9. **ดู Dashboard** — สลับ login ไปแต่ละ role แล้วดูหน้า "หน้าแรก" ของแต่ละคน (ตัวเลขสรุปตรงกับข้อมูลที่
+   เพิ่งทำไปข้างต้นหรือไม่)
+10. **ดู Audit Log** — login `admin` → "Audit Log" → ค้นหา action ที่เพิ่งทำไปทั้งหมด ต้องเห็นครบพร้อมชื่อ
+    ผู้ทำ+เวลา (รวม action ใหม่ เช่น สร้าง/แก้ไข BOM, ตั้งค่า CompanyProfile)
+11. **Revise Invoice** — จาก invoice ที่เพิ่งออก → กด "แก้ไข/revise" → ปรับจำนวน/ราคา → ยืนยัน → ดู version
+    ใหม่ (v2) กับ timeline ว่า v1 ถูกแทนที่เมื่อไหร่/โดยใคร → ลองพิมพ์ version เก่า (Superseded) → ต้องเห็น
+    ป้าย "ยกเลิกแล้ว — ใช้ version ล่าสุดแทน"
+12. **ทดสอบ role ที่ไม่มีเมนู** — login `role_with_no_menu_demo` → ต้องเห็นข้อความ "ยังไม่มีเมนูที่กำหนดให้
+    บทบาทนี้ กรุณาติดต่อ Admin" ไม่ใช่หน้าว่างเปล่า
+13. **ทดสอบ onboarding ผู้ใช้ใหม่** — login `brand_new_user_demo` (browser/โหมดไม่ระบุตัวตนที่ยังไม่เคย login)
+    → ต้องเห็น onboarding tooltip อย่างน้อย 1 จุด และคลิกเมนูต่อได้ทันที ไม่มี overlay ค้างบัง
 
 ---
 
 ## 6. ปัญหาที่รู้อยู่แล้ว (Known Issues)
 
 รายละเอียดเต็มอยู่ที่ `docs/infra/erp-core-prototype/devops-verify-report.md` และ
-`docs/test-plans/erp-core-prototype/defects.md` (DEF-01 ถึง DEF-15, ปิดครบทั้งหมดแล้ว ณ verify-5)
+`docs/test-plans/erp-core-prototype/defects.md` (DEF-01 ถึง DEF-15 ปิดครบจาก Gate 2 รอบแรก; Gate 2 Rework
+verify ล่าสุดไม่พบ defect โค้ดจริงใหม่เลยแม้แต่ตัวเดียว)
 
-- **ปัญหาเดียวที่ยังพบระหว่าง final smoke**: MySQL healthcheck race ตอน setup จาก Docker volume ใหม่ล้วนๆ
-  (§2) — เป็นเรื่อง timing ของ infra ล้วนๆ ไม่ใช่บั๊ก schema/seed/business logic, แก้ได้ด้วยการรันคำสั่งที่
-  fail ซ้ำอีกครั้งโดยไม่ต้องล้างอะไรเพิ่ม
-- ไม่พบบั๊ก Critical/Major ใหม่ระหว่าง final smoke (console error 401 ที่พบเป็นแค่ observation ไม่กระทบ
-  การใช้งานจริง — ดู §5.1)
+### ⚠ 1 คำถามรอปอนด์ตัดสินใจก่อน approve Gate 2 (ไม่ใช่บั๊ก) — PENDING-POND-1
+
+**ECP-013 AC5 (ผลิต — server-side re-validation ยอดวัตถุดิบที่ใช้จริง)**: สเปกเดิมระบุว่ายอดรวมที่ใช้ต้อง
+"เท่ากับที่ BOM กำหนดพอดี" (ห้ามทั้งเกินและขาด) แต่ตอนนี้ระบบ implement แบบ **reject เฉพาะกรณีใช้น้อยกว่าที่
+กำหนด (under-supply)** เท่านั้น (ใช้เกินได้) เพราะ exact-match เต็มรูปจะกระทบ fixture/flow การทดสอบเดิมเกือบ
+ทั้งหมด มี 3 ทางเลือก:
+- **A**: ยอมรับพฤติกรรมปัจจุบัน (under-only) ตามที่ verify ไว้แล้ว
+- **B**: บังคับ exact-match เต็มรูปแบบตามสเปกเดิม (ต้องแก้โค้ด+เทสต์เพิ่มอีกรอบ)
+- **C**: ยกเลิก server-side re-validation ส่วนนี้ทั้งหมด
+
+ปอนด์สามารถลองผลิตจริงในหน้า "งานผลิต" (feedback ข้อ 4 ใน §5.2) แล้วลองปรับจำนวนวัตถุดิบที่ระบบเสนอให้มากกว่า
+required เล็กน้อยก่อนยืนยัน เพื่อดูพฤติกรรมปัจจุบันด้วยตัวเองก่อนตัดสินใจ
+
+### MIN-09 (Minor, ไม่ block, Engineer เปิดเผยเองแล้วในรอบพัฒนา) — QC incoming table อาจ overflow บนแท็บเล็ต portrait
+
+หน้า "ตรวจรับวัตถุดิบขาเข้า" (QC incoming) อาจต้อง scroll แนวนอนทั้งหน้าแทนที่จะ scroll แค่ในตาราง เมื่อความ
+กว้างข้อมูล (เช่น ชื่อผู้จำหน่ายยาว) เกิน viewport 768px — ดู `docs/test-plans/erp-core-prototype/
+uat-print-responsive-script.md` ส่วนที่ 2 เพื่อทดสอบเอง ไม่ block Gate 2
+
+### Observation ใหม่จาก final smoke รอบนี้ (ไม่ใช่ defect)
+
+- **invoice ที่มาจาก seed data เดิม (`INV-2026-000001` v1/v2) เปิดพิมพ์ไม่ได้** เพราะไม่มี `document_snapshot`
+  (สร้างตรงในสคริปต์ seed ไม่ผ่าน flow ออก invoice จริง) — invoice ที่ออกผ่านหน้าเว็บจริงทุกใบพิมพ์ได้ปกติ
+  (ยืนยันแล้ว §5.1) — ให้ปอนด์ทดสอบพิมพ์ด้วย invoice ที่เพิ่งออกเองเท่านั้น
+
+### ปัญหา infra เดิมที่ยังพบซ้ำ
+
+- MySQL healthcheck race ตอน setup จาก Docker volume ใหม่ล้วนๆ (§2) — เป็นเรื่อง timing ของ infra ล้วนๆ
+  ไม่ใช่บั๊ก schema/seed/business logic, แก้ได้ด้วยการรันคำสั่งที่ fail ซ้ำอีกครั้งโดยไม่ต้องล้างอะไรเพิ่ม
+  (พบซ้ำอีกครั้งในรอบ final smoke นี้ ยืนยันว่ายังไม่ได้แก้ที่ root cause แต่ไม่ block เพราะมีวิธีแก้ชัดเจน)
 
 ### วิธี Reset ระบบ (ล้างข้อมูล กลับไปเป็น seed เริ่มต้น)
 
