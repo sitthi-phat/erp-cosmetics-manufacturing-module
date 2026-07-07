@@ -18,7 +18,14 @@ auto-chain on pass, stop on BLOCKED, and report status.
 
 ```
 Pond → PO → BA → Tech-Lead → [HUMAN GATE 1] → Engineer ∥ QA → DevOps → [HUMAN GATE 2] → Done
+                     ↑                                ↑
+              UX/UI (spec phase)              UX/UI (visual audit)
 ```
+
+- **UX/UI agent** (added by Pond, 2026-07-07): writes the design system + page-level UX
+  specs after BA (feeding Tech-Lead/Engineer), and visually audits the running app
+  (Playwright screenshots) before Human Gate 2. UI-heavy features should include both
+  phases; backend-only features may skip UX/UI.
 
 - **HUMAN GATE 1**: Pond must approve architecture + task breakdown before Engineer writes code
 - **HUMAN GATE 2**: Pond must approve before merge to main / deploy
