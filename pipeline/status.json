@@ -1,15 +1,15 @@
 {
   "features": {
     "erp-v2-ui-first": {
-      "title": "ERP v2 — UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
+      "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "current_agent": "ux-ui",
+      "status": "READY_FOR_UXUI",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 1 (2026-07-08): NOT approved. Theme A (Clean Clinical) approved; logo=placeholder+icon needed; company info via Admin settings. Large add/change list per page recorded in docs/requirements/erp-v2-ui-first/pond-gate1-feedback.md (customer lifecycle+contacts+sale assignment, per-dept dashboards, PO suggest+purchase request, stock new materials+UOM+thresholds+buy/sell price, BOM builder+cost/sell price, production scheduling+statuses+cross-notify, supplier management+returns, delivery notes multi-PO, invoice overdue alerts, trace archive superuser, RUCDA permission matrix). Pond directive: PO owns status-journey continuity; UX/UI consults PO and delivers 100% of pages; Pond reviews UI again (round 2)."
+          "note": "Round 1 (2026-07-08): NOT approved. Theme A (Clean Clinical) approved; logo=placeholder+icon needed; company info via Admin settings. Large add/change list per page recorded in docs/requirements/erp-v2-ui-first/pond-gate1-feedback.md (customer lifecycle+contacts+sale assignment, per-dept dashboards, PO suggest+purchase request, stock new materials+UOM+thresholds+buy/sell price, BOM builder+cost/sell price, production scheduling+statuses+cross-notify, supplier management+returns, delivery notes multi-PO, invoice overdue alerts, trace archive superuser, RUCDA permission matrix). Pond directive: PO owns status-journey continuity; UX/UI consults PO and delivers 100% of pages; Pond reviews UI again (round 2). Round-2 = one-shot real pitch, must be best; responsive is Must; system name = ESSENCE Hub System."
         },
         "gate2_requirements": {
           "approved": false,
@@ -40,78 +40,30 @@
           "phase": "design-brief",
           "status": "IN_PROGRESS",
           "gate_checklist": [
-            {
-              "item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Gate 1 'approve the look' defined with verifiable pass criteria",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Screen business-priority tiers defined",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Feature-level Definition of Done to Gate 2 complete",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Scope in/out specified",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)", "pass": true, "missing": null},
+            {"item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)", "pass": true, "missing": null},
+            {"item": "Gate 1 'approve the look' defined with verifiable pass criteria", "pass": true, "missing": null},
+            {"item": "Screen business-priority tiers defined", "pass": true, "missing": null},
+            {"item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)", "pass": true, "missing": null},
+            {"item": "Feature-level Definition of Done to Gate 2 complete", "pass": true, "missing": null},
+            {"item": "Scope in/out specified", "pass": true, "missing": null},
+            {"item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md"
-          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/brief.md"],
           "questions_for_pond": [
             {
               "q": "ยืนยันหน้าจอ Tier 1 (ต้องเนี้ยบสุด) ที่ผมเสนอ: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, stock — ตรงกับจุดที่ปอนด์ feedback หนักสุดไหม?",
-              "options": [
-                "ตรงแล้ว ใช้ 4 หน้านี้เป็น Tier 1",
-                "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)",
-                "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"
-              ],
+              "options": ["ตรงแล้ว ใช้ 4 หน้านี้เป็น Tier 1", "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)", "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"],
               "answer": "ยืนยัน — และสั่งเพิ่ม: เอาให้เนี๊ยบที่สุด มีโอกาสเสนองานครั้งเดียว ต้องดีที่สุด (2026-07-08)"
             },
             {
               "q": "เป้าเวลาทำงานของ user มือใหม่ (BKV-1) ควรตั้งที่เท่าไรจึงถือว่า 'ใช้ง่ายพอ'? (ใช้วัดตอน UAT)",
-              "options": [
-                "เปิด PO ≤ 3 นาที / ออก invoice+ใบกำกับภาษี ≤ 5 นาที (ค่าที่ผมเสนอ)",
-                "เข้มกว่านี้ (ระบุเวลา)",
-                "ผ่อนกว่านี้ (ระบุเวลา)",
-                "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"
-              ],
+              "options": ["เปิด PO ≤ 3 นาที / ออก invoice+ใบกำกับภาษี ≤ 5 นาที (ค่าที่ผมเสนอ)", "เข้มกว่านี้ (ระบุเวลา)", "ผ่อนกว่านี้ (ระบุเวลา)", "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"],
               "answer": "เชิงคุณภาพ: ใช้ง่ายโดยไม่มีคนสอน + เสร็จเร็ว + อ่านง่าย + ลดจำนวนการกด/จำนวนหน้าให้น้อยที่สุด — ผู้ใช้ทำงาน routine ถ้ากรอกนาน/กดหลายหน้าจะไม่ใช้และพลาดสูง → ตัวเลข ≤3/≤5 นาทีใช้เป็น proxy ได้ แต่เกณฑ์จริงคือ minimize clicks/pages (2026-07-08)"
             },
             {
               "q": "เกณฑ์คะแนน UAT 'ดู professional + ใช้ง่าย' (BKV-5) ควรผ่านที่เท่าไร?",
-              "options": [
-                "เฉลี่ย ≥ 4 จาก 5 (ค่าที่ผมเสนอ)",
-                "≥ 3.5 จาก 5",
-                "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)",
-                "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"
-              ],
+              "options": ["เฉลี่ย ≥ 4 จาก 5 (ค่าที่ผมเสนอ)", "≥ 3.5 จาก 5", "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)", "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"],
               "answer": "Function ต้องเต็ม 5 — ไม่มี defect เหลือเลยทุกระดับ (minor/major/critical = 0) / UX-UI ผ่านที่ ≥3.5 แต่ต้องใช้ง่าย (2026-07-08)"
             }
           ],
@@ -124,51 +76,15 @@
           "phase": "design",
           "status": "WAITING_HUMAN_GATE",
           "gate_checklist": [
-            {
-              "item": "Design-system tokens are concrete values (hex, px, weights) — not adjectives",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Thai status-label map covers every enum (PO/ProductionOrder/Batch/Lot/QC/Shipment/Invoice/Customer/User) — no raw enum shown",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Print stylesheet spec for Thai tax invoice (structure, Thai baht text, 2 signatures, VAT snapshot, Superseded watermark)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Proposals stay inside antd + wrapper-layer constraints (ADR-008); new wrapper components spec'd with API",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Backlog vs this-round scope explicit, each spec item maps to a story/AC or tagged polish",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "mockup ครอบทุกหน้าหลัก (17 หน้า: login/home/customers/PO list-create-detail/stock+goods-receipt/BOM/production/QC/shipping/invoices+detail+print/trace/admin/dashboard)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "มี theme options ให้ปอนด์เลือก (3 directions + 1 recommended)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "index.html เปิดดูได้ (self-contained, inline CSS, no CDN) — verified via Playwright render",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's 10 prototype complaints addressed in mockups (readable PO lines+delete, stock search+goods-receipt, BOM UI, production auto-calc, QC incoming, customer tax fields, invoice detail+Thai tax print, trace single-search+Lot/Batch legend, humanized Thai statuses, responsive desktop+tablet)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Design-system tokens are concrete values (hex, px, weights) — not adjectives", "pass": true, "missing": null},
+            {"item": "Thai status-label map covers every enum (PO/ProductionOrder/Batch/Lot/QC/Shipment/Invoice/Customer/User) — no raw enum shown", "pass": true, "missing": null},
+            {"item": "Print stylesheet spec for Thai tax invoice (structure, Thai baht text, 2 signatures, VAT snapshot, Superseded watermark)", "pass": true, "missing": null},
+            {"item": "Proposals stay inside antd + wrapper-layer constraints (ADR-008); new wrapper components spec'd with API", "pass": true, "missing": null},
+            {"item": "Backlog vs this-round scope explicit, each spec item maps to a story/AC or tagged polish", "pass": true, "missing": null},
+            {"item": "mockup ครอบทุกหน้าหลัก (17 หน้า: login/home/customers/PO list-create-detail/stock+goods-receipt/BOM/production/QC/shipping/invoices+detail+print/trace/admin/dashboard)", "pass": true, "missing": null},
+            {"item": "มี theme options ให้ปอนด์เลือก (3 directions + 1 recommended)", "pass": true, "missing": null},
+            {"item": "index.html เปิดดูได้ (self-contained, inline CSS, no CDN) — verified via Playwright render", "pass": true, "missing": null},
+            {"item": "Pond's 10 prototype complaints addressed in mockups (readable PO lines+delete, stock search+goods-receipt, BOM UI, production auto-calc, QC incoming, customer tax fields, invoice detail+Thai tax print, trace single-search+Lot/Batch legend, humanized Thai statuses, responsive desktop+tablet)", "pass": true, "missing": null}
           ],
           "output_files": [
             "docs/design/erp-v2-ui-first/design-system.md",
@@ -194,43 +110,82 @@
           "questions_for_pond": [
             {
               "q": "เลือกโทนสี (theme) ไหนสำหรับทั้งระบบ? (ดู swatch + preview ใน index.html หัวข้อ 1) ผมแนะนำ Clean Clinical เพราะสื่อความสะอาด/มาตรฐาน GMP ของโรงงานเครื่องสำอาง คอนทราสต์ดีใช้ทั้งวัน",
-              "options": [
-                "Clean Clinical — teal #0E7C7B (แนะนำ ใช้ใน mockups อยู่แล้ว)",
-                "Warm Cosmetic — rose #B0546E",
-                "Corporate Blue — #1F5EDB",
-                "มีสีแบรนด์เฉพาะ ขอส่ง hex ให้"
-              ],
+              "options": ["Clean Clinical — teal #0E7C7B (แนะนำ ใช้ใน mockups อยู่แล้ว)", "Warm Cosmetic — rose #B0546E", "Corporate Blue — #1F5EDB", "มีสีแบรนด์เฉพาะ ขอส่ง hex ให้"],
               "answer": "A — Clean Clinical (teal) อนุมัติ"
             },
             {
               "q": "มีไฟล์โลโก้จริงสำหรับหัวเว็บและหัวใบกำกับภาษีไหม? (ตอนนี้ mockup ใช้กล่อง placeholder 'LOGO')",
-              "options": [
-                "มี จะส่งไฟล์ให้",
-                "ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน"
-              ],
+              "options": ["มี จะส่งไฟล์ให้", "ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน"],
               "answer": "ยังไม่มีไฟล์จริง — เตรียม placeholder logo + icon file (favicon/app icon) ให้เข้ากับ theme ไว้ก่อน"
             },
             {
               "q": "ข้อมูลบริษัทผู้ออกเอกสารบนใบกำกับภาษี (ชื่อ/ที่อยู่/เลขผู้เสียภาษี) — ตอนนี้ใส่ตัวอย่าง 'บริษัท คอสเมดิก แฟคทอรี จำกัด'",
-              "options": [
-                "จะส่งข้อมูลจริงให้ใส่",
-                "ให้ Admin กรอกเองในหน้าตั้งค่าระบบ (มี field รองรับแล้ว)"
-              ],
+              "options": ["จะส่งข้อมูลจริงให้ใส่", "ให้ Admin กรอกเองในหน้าตั้งค่าระบบ (มี field รองรับแล้ว)"],
               "answer": "ให้ Admin กรอกเองในหน้าตั้งค่า"
             },
             {
               "q": "ความหนาแน่นของ UI (density) — ผมตั้งปุ่ม/ช่องกรอกสูง 40px และแถวตาราง ~48px ให้กดง่ายบนแท็บเล็ต เหมาะกับพนักงานโรงงานไหม หรืออยากได้แน่นกว่านี้เพื่อเห็นข้อมูลต่อจอมากขึ้น?",
-              "options": [
-                "40px กำลังดี (แนะนำ)",
-                "อยากให้แน่นกว่านี้ (compact 32px)",
-                "อยากให้ใหญ่กว่านี้อีก"
-              ],
+              "options": ["40px กำลังดี (แนะนำ)", "อยากให้แน่นกว่านี้ (compact 32px)", "อยากให้ใหญ่กว่านี้อีก"],
               "answer": "ปอนด์ไม่ได้ตอบ — ใช้ 40px ตามแนะนำไปก่อน (รอยืนยัน)"
             }
           ],
           "summary": "Delivered v2 design system (concrete antd ConfigProvider tokens: IBM Plex Sans Thai, Clean Clinical teal palette, 40px density, breakpoints, component/print rules, full Thai status-label map) + 17 self-contained clickable HTML mockups covering every main page + index.html gallery with 3 theme options (Clean Clinical recommended). Directly fixes all 10 Pond prototype complaints (readable+deletable PO lines, stock search+goods receipt, BOM UI, production BOM auto-calc, QC incoming form, customer tax fields, invoice detail+Thai tax-invoice print with baht-text & 2 signatures, trace single-search + Lot/Batch legend, humanized Thai statuses, desktop+tablet responsive). Verified render via Playwright. Set feature to WAITING_HUMAN_GATE (Gate 1 = Pond approves the look). 4 taste questions batched for Pond.",
           "overridden_by": null,
           "updated_at": "2026-07-08T14:45:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "gate1-feedback-analysis",
+          "status": "READY_FOR_UXUI",
+          "gate_checklist": [
+            {"item": "Gate 1 round-1 feedback (12 pages + system-level issues) fully absorbed into brief scope", "pass": true, "missing": null},
+            {"item": "Status-journeys documented as state machines with transitions/owners/comment+trace rules (Customer, PO 2-track, Production, Shipping/Delivery Note, Purchase Request, Return, Invoice/Payment)", "pass": true, "missing": null},
+            {"item": "Cross-module continuity map complete (14 rows, source->downstream) — Pond's 'no broken journey' directive is verifiable", "pass": true, "missing": null},
+            {"item": "New roles (Sale Manager, Super User) + RUCDA per-module model + capability layer beyond CRUD flagged", "pass": true, "missing": null},
+            {"item": "Gate 1 round-2 criteria updated (100% pages + every status, per-dept dashboards, all customer statuses, cross-module continuity, responsive Must, product identity)", "pass": true, "missing": null},
+            {"item": "Pond's answers folded in: Tier1 confirmed + one-shot pitch, minimize-clicks as first design principle, BKV-5 functional zero-defect + UX>=3.5, ESSENCE Hub System name, responsive=Must", "pass": true, "missing": null},
+            {"item": "Product identity (ESSENCE Hub System) handed to UX/UI as requirement (login/header/title + placeholder logo/icon in theme teal)", "pass": true, "missing": null},
+            {"item": "Reasonable defaults set for unresolved business rules and tagged [DEFAULT — awaiting confirm] so UX/UI is not blocked", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/brief.md",
+            "docs/requirements/erp-v2-ui-first/status-journeys.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "เมื่อเปิด PO แล้ววัตถุดิบขาด ควรให้ระบบทำอย่างไร? (มีผลต่อความต่อเนื่องของ journey — ผมตั้ง default ไว้แล้วเพื่อไม่ block UX/UI)",
+              "options": ["[DEFAULT] บันทึก PO เป็นสถานะ 'รอวัตถุดิบ (Awaiting Materials)' + เปิด Purchase Request อัตโนมัติ แล้วปลดบล็อกเมื่อของเข้า", "block ไม่ให้ save PO เลยจนกว่าวัตถุดิบจะพอ (แต่ยังส่ง Purchase Request ให้)", "ให้ Sale เลือกเองต่อ PO ว่าจะค้างไว้หรือยกเลิก"],
+              "answer": null
+            },
+            {
+              "q": "ใบจัดส่ง (Delivery Note) 1 ใบมีหลาย PO ถ้าบาง PO ถูก Reject/เลื่อน สถานะ 'ระดับใบ' ควรเป็นแบบไหน?",
+              "options": ["[DEFAULT] ใบ = 'ส่งบางส่วน (Partially Delivered)' แสดง breakdown ราย PO และยังไม่ปิดจนเคลียร์ครบ", "ใบยังเป็น In-Route จนกว่าทุก PO จะจบ", "แตกใบใหม่อัตโนมัติสำหรับ PO ที่เหลือ"],
+              "answer": null
+            },
+            {
+              "q": "PO ที่ลูกค้าปฏิเสธตอนส่ง (Rejected) ควรวิ่งกลับไปไหน?",
+              "options": ["[DEFAULT] กลับไป Production = Ready to Delivery + แจ้ง Sale", "ไปที่ Sale ให้ตัดสินใจก่อน (ติดต่อลูกค้า/ยกเลิก)", "ยกเลิก PO ทันที (ต้องเปิดใหม่)"],
+              "answer": null
+            },
+            {
+              "q": "เกณฑ์ 'ใกล้หมด' ของวัตถุดิบ config ต่อตัวได้ (% หรือจำนวน) — ถ้า Admin ไม่ตั้งค่า ควร default เป็นอะไร?",
+              "options": ["[DEFAULT] เตือนที่ 10% ของยอดคงเหลือ", "บังคับต้องตั้งค่าตอนเพิ่มวัตถุดิบ (ไม่มี default)", "ไม่เตือนจนกว่าจะตั้งค่าเอง"],
+              "answer": null
+            },
+            {
+              "q": "สิทธิ์บางอย่างเป็น 'ความสามารถพิเศษ' ที่เกินกรอบ RUCDA ราย module (reassign ลูกค้า, archive trace, ปลด Blacklist, force เปลี่ยนสถานะ) — จะจัดการอย่างไร?",
+              "options": ["[DEFAULT] มี capability layer แยกนอกเหนือ RUCDA ผูกกับ role (เช่น Sale Manager, Super User, System Admin)", "ยัดทุกอย่างให้เป็นสิทธิ์ Approve ของ module ที่เกี่ยวข้อง", "ให้เฉพาะ System Admin ทำได้ทั้งหมด (ไม่แยก Sale Manager/Super User)"],
+              "answer": null
+            },
+            {
+              "q": "ออกใบแจ้งหนี้ได้ 'ตลอดเวลา' หมายถึงเร็วสุดตั้งแต่ stage ไหนของ PO?",
+              "options": ["[DEFAULT] ตั้งแต่ PO = Confirmed ขึ้นไป", "ได้ตั้งแต่ Draft เลย (ก่อนยืนยัน PO)", "ได้ต่อเมื่อ Delivered แล้วเท่านั้น"],
+              "answer": null
+            }
+          ],
+          "summary": "Absorbed Gate-1 round-1 feedback (12 pages + system issues) into an expanded brief and authored status-journeys.md — state machines for Customer / PO (2-track fulfilment+billing) / Production (Hold+Potential Delay+cross-notify) / Shipping-Delivery Note (multi-PO reconcile) / Purchase Request / Return / Invoice-Payment, each with transitions, owners, mandatory comment+trace, plus a 14-row cross-module continuity map making Pond's 'no broken journey' directive verifiable. Added new roles (Sale Manager, Super User) + RUCDA per-module model + capability-layer flag. Folded Pond's latest answers: Tier1 confirmed + one-shot pitch, minimize-clicks as first design principle, BKV-5 functional zero-defect + UX>=3.5, official name ESSENCE Hub System (login/header/title + placeholder logo/icon in teal), responsive=Must on every page. Set reasonable [DEFAULT] on 6 open business rules so UX/UI is not blocked; batched those as confirm-later questions for Gate 1 round 2. Handoff: feature -> READY_FOR_UXUI (UX/UI to rebuild 100% of pages/states for round-2 review).",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T15:30:00+07:00"
         }
       ]
     }

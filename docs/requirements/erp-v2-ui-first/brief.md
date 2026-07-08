@@ -1,125 +1,160 @@
-# Product Brief — ERP v2 (UI-First Rebuild)
+# Product Brief — ESSENCE Hub System (ERP v2, UI-First Rebuild)
 
+**ชื่อระบบอย่างเป็นทางการ: ESSENCE Hub System** (ปอนด์กำหนด 2026-07-08 — บันทึกใน CLAUDE.md)
 slug: `erp-v2-ui-first` · เอกสารนี้เขียนในขั้น design-brief (PO ทำคู่ขนานกับ UX/UI) · เจ้าของ status ในขั้นนี้คือ UX/UI
+เอกสารประกอบ: `status-journeys.md` (state machine ทุกสาย — หัวใจ Gate 1 รอบ 2), `prototype-feedback-reference.md`, `pond-gate1-feedback.md`
 
 ## สรุปภาษาไทย
-Prototype (prototype-v1) มี feature ครบทั้ง 44 stories/14 epics แต่ปอนด์ไม่อนุมัติ เพราะ "ดูไม่ professional / ใช้ยาก / อ่านไม่ออก" — คุณค่าทาง business จึงยังไม่เกิดเลยเพราะ user ใช้งานจริงไม่ได้ v2 จึงกลับด้าน: **ล็อก "หน้าตา" ให้ผ่านก่อนเขียนโค้ด** โดยปอนด์อนุมัติ design system + mockup ทุกหน้าที่ Gate 1 แล้วค่อย implement ให้ตรง mockup โดยคง functional scope เดิมไว้ครบ ตัววัดความสำเร็จรอบนี้วัดที่ **ผู้ใช้ที่ไม่เคยใช้ ERP ทำงานจริงได้เร็วและเอง** ไม่ใช่แค่ feature ครบ หน้าที่ต้องเนี้ยบสุดคือจุดที่ปอนด์ feedback หนัก: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, และ stock — และ Gate 1 ผูกกับ **10 จุด feedback จริงจาก prototype** (ดูข้อ 3.1)
+Prototype (prototype-v1) มี feature ครบ แต่ปอนด์ไม่อนุมัติเพราะ "ไม่ professional / ใช้ยาก / อ่านไม่ออก" — คุณค่า business ยังไม่เกิดเพราะ user ใช้จริงไม่ได้ v2 ("**ESSENCE Hub System**") กลับด้าน: **ล็อกหน้าตาให้ผ่านก่อนเขียนโค้ด** วัดที่ผู้ใช้มือใหม่ทำงานได้เอง+เร็ว **Gate 1 รอบ 1 ปอนด์อนุมัติ theme (A — Clean Clinical teal) แล้ว แต่ยังไม่ผ่านหน้าตา** เพราะมี requirement เพิ่มก้อนใหญ่ โดยเน้นคำสั่ง: **"ทุกสถานะต้องต่อเนื่องกันทั้งระบบ ห้ามหลุด journey"** (ดู `status-journeys.md`) และปอนด์ย้ำว่า **Gate 1 รอบ 2 = การเสนองานจริงครั้งเดียว ต้องเนี๊ยบที่สุด** หลักการออกแบบข้อแรก: **ลดจำนวนคลิก/หน้าต่อ task ให้น้อยที่สุด** เกณฑ์คุณภาพเข้มขึ้น: **functional ต้อง 0 defect ทุกระดับ** และ UX/UI ≥ 3.5 + ต้องใช้ง่าย · **responsive เป็น requirement ระดับ Must ทุกหน้า**
 
 ---
 
+## 0. Product Identity (ส่งถึง UX/UI เป็นข้อกำหนด)
+- **ชื่อระบบ:** ESSENCE Hub System — ต้องปรากฏใน **ทุกหน้า mockup**: หน้า login, header ของแอป, และ **browser title**
+- **Placeholder logo + favicon/app icon:** ออกแบบจากชื่อ "ESSENCE Hub System" ให้เข้ากับ **theme A — Clean Clinical (teal)** ที่ปอนด์เลือก (ยังไม่มีไฟล์แบรนด์จริง → ใช้ placeholder)
+- โทน/สี = theme A teal ทั้งระบบ
+
 ## 1. ปัญหา/โอกาสทาง business (ทำไมต้อง rebuild แบบ UI-first)
 
-**บทเรียนจาก prototype-v1:** ระบบทำ functional ครบทั้งสาย order-to-cash แต่ตกที่ human gate ด้าน "หน้าตา" ซ้ำ ๆ (มีประวัติ FAILED / re-run) ผลคือ:
-- ลงทุนสร้าง feature เต็มระบบแล้ว แต่ **adoption = 0** เพราะ user มือใหม่ใช้ไม่ได้จริง → ROI ของ prototype ยังไม่เกิด
-- แก้ UI ทีหลังบนโค้ดที่สร้างเสร็จแล้ว = rework แพงและวน (แก้แล้วยังไม่ผ่านสายตาปอนด์)
+**บทเรียนจาก prototype-v1:** ระบบทำ functional ครบทั้งสาย order-to-cash แต่ตกที่ human gate ด้าน "หน้าตา" ซ้ำ ๆ ผลคือ:
+- ลงทุนสร้าง feature เต็มระบบแล้ว แต่ **adoption = 0** เพราะ user มือใหม่ใช้ไม่ได้จริง → ROI ยังไม่เกิด
+- แก้ UI ทีหลังบนโค้ดที่สร้างเสร็จ = rework แพงและวน
 
-**สมมติฐานของ v2:** ถ้า **ตกลง "หน้าตา" ให้จบก่อน** (design system + mockup ทุกหน้า + theme) แล้วให้ปอนด์อนุมัติที่ Gate 1 ก่อนลงมือเขียนโค้ด จะ:
-- ตัด rework loop ด้าน UI (ตัดสินบน mockup ราคาถูก แทนบนโค้ดราคาแพง)
-- ได้ระบบที่ user ที่ **ไม่เคยใช้ ERP** ทำงานได้เองตั้งแต่วันแรก → เกิด adoption จริง
+**สมมติฐานของ v2:** ตกลง "หน้าตา" (design system + mockup ทุกหน้า/ทุกสถานะ + theme) ให้ปอนด์อนุมัติที่ Gate 1 ก่อนเขียนโค้ด → ตัด rework loop + ได้ระบบที่ user มือใหม่ใช้เองได้ตั้งแต่วันแรก
 
-> v2 ไม่เพิ่ม functional scope ใหม่ — scope อ้างอิง prototype-v1 ทั้งหมด งานรอบนี้คือ "ยกระดับ UX/UI ให้ professional + usable แล้ว implement ใหม่ให้ตรงหน้าตาที่อนุมัติ"
+**บทเรียนเพิ่มจาก Gate 1 รอบ 1:** functional scope ที่อ้างจาก prototype **ยังไม่ครบพอ** — พอปอนด์เห็น mockup จริงจึงระบุ requirement เชิงกระบวนการอีกมาก โดยเฉพาะ **ความต่อเนื่องของสถานะข้าม module** → v2 ยกให้ status-journey continuity เป็น first-class requirement (`status-journeys.md`)
 
-## 2. Business Key Value (วัดที่ adoption/ความเร็วจริง — ไม่ใช่ feature ครบ)
+## 2. Business Key Value (วัดที่ adoption/ความเร็วจริง)
 
-| # | ตัวชี้วัด | Baseline (prototype-v1) | เป้าหมาย v2 | วัดเมื่อไร |
+| # | ตัวชี้วัด | Baseline | เป้าหมาย v2 | วัดเมื่อไร |
 |---|---|---|---|---|
-| BKV-1 | ผู้ใช้ที่ไม่เคยใช้ ERP ทำงานหลักได้เอง (ไม่มีคนสอน) ในเวลาเป้าหมาย เช่น เปิด PO ≤ 3 นาที, ออก invoice+ใบกำกับภาษี ≤ 5 นาที | ทำไม่สำเร็จ/ต้องมีคนช่วย | ≥ 80% ของ UAT tester ทำสำเร็จเองในเวลาเป้าหมาย | UAT (2–3 คน/role) |
-| BKV-2 | รอบ rework ด้าน "หน้าตา" | ตกซ้ำหลังสร้างเต็มระบบ | ปอนด์อนุมัติหน้าตาได้ตั้งแต่ขั้น mockup ภายใน ≤ 2 รอบรีวิว (ก่อนเขียนโค้ด) | Gate 1 |
-| BKV-3 | หน้าจอที่ยังโชว์ enum/รหัสดิบให้ user เห็น | มี (เช่น `Product #7 x 1 @ 1`) | 0 หน้า (100% เป็นข้อความที่คนอ่านออก) | UX/UI visual audit |
-| BKV-4 | จุด feedback เดิมของปอนด์ที่ยังไม่ถูกแก้ | ค้าง 10 ข้อ (ดู `prototype-feedback-reference.md`) | แก้เห็นชัดใน mockup ครบ **10/10** ตามตารางข้อ 3.1 | Gate 1 |
-| BKV-5 | คะแนนความรู้สึก "professional + ใช้ง่าย" จาก UAT tester | ไม่ผ่าน | เฉลี่ย ≥ 4 จาก 5 | UAT |
+| BKV-1 | **ความเร็ว/ความง่ายของ task หลัก** — user มือใหม่ทำเองได้โดยไม่มีคนสอน โดย**ลดจำนวนคลิก/หน้าให้น้อยสุด** | prototype หลายหน้า/หลายคลิก, ผู้ใช้เลิกกลางคัน | flow หลักจบใน **จำนวนคลิกจำกัด** (เปิด PO ≤ 10 คลิก, ออก invoice ≤ 6 คลิก [DEFAULT — รอยืนยันตัวเลข]) + ฟอร์มจบในหน้าเดียวถ้าทำได้ + smart default; ≥ 80% ของ UAT tester ทำสำเร็จเอง | UAT + review mockup flow count |
+| BKV-2 | รอบ rework ด้านหน้าตา | ตกซ้ำ (Gate 1 รอบ 1 ยังไม่ผ่าน) | อนุมัติหน้าตาที่ขั้น mockup ภายใน ≤ 2 รอบนับจากรอบนี้ | Gate 1 |
+| BKV-3 | หน้าจอที่โชว์ enum/รหัสดิบ | มี | 0 หน้า | visual audit |
+| BKV-4 | จุด feedback ปอนด์ที่ยังไม่ถูกแก้ | prototype 10 ข้อ + Gate1-รอบ1 12 หน้า | แก้เห็นชัดใน mockup ครบ 100% | Gate 1 รอบ 2 |
+| BKV-5 | **คุณภาพส่งมอบ (เกณฑ์ปอนด์)** | prototype ไม่ผ่าน | **Functional = 0 defect ทุกระดับ (minor/major/critical)** และ **UX/UI ≥ 3.5/5 + ต้องใช้ง่าย** | UAT / QA |
+| BKV-6 | ความต่อเนื่องของสถานะข้าม module (mockup ต้นทาง+ปลายทาง + trace) | ไม่มีใน prototype | 14/14 แถวใน `status-journeys.md` §8 ครบ | Gate 1 รอบ 2 |
 
-## 3. นิยาม Gate 1 "อนุมัติหน้าตา" ให้วัดได้
+### 2.1 หลักการออกแบบข้อแรก — ส่งถึง UX/UI (คำสั่งตรงจากปอนด์)
+ผู้ใช้ทำงาน **routine ซ้ำ ๆ ทั้งวัน** — ถ้ากรอกนาน/สลับหลายหน้า จะ **เลิกใช้ + พลาดสูง** ดังนั้นทุก mockup ต้อง:
+1. **Minimize clicks per task** — ตั้ง click budget ต่อ flow หลัก (BKV-1) และออกแบบให้ถึงเป้า
+2. **จบในหน้าเดียวถ้าทำได้** — ฟอร์มยาวไม่ควรบังคับ wizard หลายหน้าโดยไม่จำเป็น
+3. **Smart defaults** — เติมค่าที่เดาได้ให้อัตโนมัติ (ราคาจาก BOM, lot FIFO, supplier จาก lot ฯลฯ) ผู้ใช้แค่ review
+4. **อ่านง่าย/นำทางเอง** — ไม่มี enum ดิบ, ป้ายสถานะสื่อความหมาย
+5. **Responsive ทุกหน้า (Must)** — ดู §5
+> **Gate 1 รอบ 2 = การเสนองานจริง มีโอกาสครั้งเดียว ต้องดีที่สุด — ห้ามส่ง mockup ครึ่งๆ กลางๆ**
 
-**ปอนด์ต้องเห็นครบทั้ง 6 อย่างจึงจะตัดสินได้:**
-1. **Design system** — palette, typography, ระยะห่าง/grid, component library (ปุ่ม/ฟอร์ม/ตาราง/modal ฯลฯ), state ครบ (empty / loading / error / success / disabled), responsive breakpoints
-2. **Theme options** — ให้เลือก ≥ 2–3 ธีม พร้อม "ตัวแนะนำ" 1 ตัว และเหตุผล (สี/logo/โทน ปอนด์ยังไม่กำหนด → UX/UI เสนอ)
-3. **Mockup ครบทุกหน้าหลัก** ตามรายการลำดับความสำคัญในข้อ 4 แต่ละหน้าแสดง state สำคัญ
-4. **Responsive** — โชว์อย่างน้อย desktop + tablet/mobile ในหน้าหัวใจ (Tier 1)
-5. **ตารางแก้ feedback** — จุด feedback เดิมของปอนด์ทั้ง 10 ข้อ map ไปยัง mockup ที่แก้ให้เห็นชัด (ตามข้อ 3.1)
-6. **Mockup ใบกำกับภาษีไทย** ที่มีฟิลด์ตามกฎหมาย/ตามตัวอย่างที่ปอนด์แนบครบ (ดูข้อ 5)
+## 3. นิยาม Gate 1 "อนุมัติหน้าตา" — เกณฑ์รอบ 2
 
-**เกณฑ์ผ่าน Gate 1 (ทุกข้อต้องจริง):**
-- [ ] ทุกหน้าหลักในรายการที่ตกลง มี mockup ครบ (coverage 100%)
-- [ ] จุด feedback เดิมทั้ง 10 ข้อ แสดงการแก้ชัดใน mockup (map ครบ 10/10 ตามข้อ 3.1)
-- [ ] มี theme ให้เลือก ≥ 2 พร้อมตัวแนะนำ
-- [ ] ไม่มี mockup หน้าใดโชว์ enum/รหัสดิบให้ user เห็น
-- [ ] หน้า Tier 1 ทุกหน้าแสดงแบบ responsive
-- [ ] mockup ใบกำกับภาษีไทยมีฟิลด์ตามกฎหมาย/ตัวอย่างครบตามข้อ 5
-- [ ] traceability Lot → Batch → FG มองเห็น/กดไล่ดูได้ใน mockup
+ปอนด์อนุมัติ theme แล้ว (A — Clean Clinical teal). Gate 1 รอบ 2 คือ **การเสนองานจริงครั้งเดียว** — ต้องครบและเนี๊ยบที่สุด
 
-### 3.1 ตาราง 10 จุด feedback → สิ่งที่ต้องเห็นใน mockup (เกณฑ์วัด BKV-4 / Gate 1)
-ที่มา: `docs/requirements/erp-v2-ui-first/prototype-feedback-reference.md` (Gate 2 feedback รอบ 1, 2026-07-07). แต่ละข้อถือว่า "แก้แล้ว" เมื่อเห็นสิ่งที่ระบุใน mockup ที่ตรงกัน
+**ปอนด์ต้องเห็นครบ:**
+1. **Design system** (theme A) + component/state ครบ (empty/loading/error/success/disabled) + responsive breakpoints + **placeholder logo + favicon/app icon (จากชื่อ ESSENCE Hub System)** + ชื่อระบบทุกหน้า (login/header/browser title)
+2. **Mockup ครบ 100% ทุกหน้า** ตามข้อ 6 — รวม **ทุกสถานะ**:
+   - **ทุก Customer status** (Lead/Active/Inactive/Disabled/Blacklist)
+   - **Dashboard แยกทุกแผนก** (Sale, Stock, Production, QC, Shipping, Finance, Admin) + ตัวสลับแผนกเมื่อ user หลาย role
+   - ทุก state ของ PO / Production / Shipping / Purchase Request / Return / Invoice ตาม `status-journeys.md`
+3. **ตาราง feedback → mockup** ครบ: prototype 10 ข้อ (§3.1) + Gate1-รอบ1 (12 หน้า + ประเด็นเชิงระบบ)
+4. **Mockup แสดง cross-module continuity** — 14 แถวใน `status-journeys.md` §8
+5. **Mockup ใบกำกับภาษีไทย** ฟิลด์ครบ (§5)
+6. **หลักการ minimize-clicks (§2.1) เห็นในทุก flow หลัก**
+7. **Responsive (Must)** — ทุกหน้าแสดงผลได้บนหลายขนาดจอ (desktop / tablet / mobile) ไม่ใช่เฉพาะบางหน้า
 
-| # | จุด feedback (prototype) | หน้า/mockup | สิ่งที่ต้องเห็นใน mockup จึงถือว่าผ่าน | Tier |
+**เกณฑ์ผ่าน Gate 1 รอบ 2 (ทุกข้อต้องจริง):**
+- [ ] mockup coverage 100% ทุกหน้า + ทุกสถานะ (customer 5, dashboard 7 แผนก, ทุก state ทุก journey)
+- [ ] ชื่อ "ESSENCE Hub System" + placeholder logo/icon (theme teal) ปรากฏทุกหน้า (login/header/title)
+- [ ] feedback prototype 10 ข้อ + Gate1-รอบ1 ทั้งหมด map เห็นการแก้
+- [ ] cross-module continuity 14/14 แถวมี mockup ต้นทาง+ปลายทาง
+- [ ] ไม่มี mockup โชว์ enum/รหัสดิบ
+- [ ] **ทุกหน้า responsive (Must)** — แสดง desktop + tablet + mobile
+- [ ] ใบกำกับภาษีไทยฟิลด์ครบ (§5)
+- [ ] traceability Lot→Batch→FG + trace ทุก status change เห็นใน mockup
+- [ ] role/permission ใหม่ (Sale Manager, Super User, RUCDA ราย module) มีหน้าตั้งค่า
+- [ ] flow หลักผ่าน click budget (§2.1 / BKV-1)
+
+### 3.1 ตาราง 10 จุด feedback (prototype) → สิ่งที่ต้องเห็นใน mockup
+ที่มา: `prototype-feedback-reference.md`
+
+| # | จุด feedback | หน้า/mockup | สิ่งที่ต้องเห็น | Tier |
 |---|---|---|---|---|
-| 1 | PO แสดง `Product #7 x 1 @ 1` อ่านไม่ออก + แก้/ลบรายการไม่ได้ | PO create (`pos/new`) | รายการแสดง **ชื่อสินค้า / จำนวน / ราคา** (ไม่มีรหัสดิบ) และมีปุ่ม **ลบ/แก้** รายการต่อบรรทัด | 1 |
-| 2 | stock search ไม่ได้ + ไม่มีทางไป BOM | stock | ช่อง **search**, และลิงก์/ทางเข้าไปดูสูตร BOM ของสินค้า | 1 |
-| 3 | trace หา `L-SEED-1` ไม่เจอ + ไม่เข้าใจ Lot vs Batch | traceability (`trace`) | **search ได้ทั้ง Lot / Batch / PO**, และมีคำอธิบายในหน้าจอว่า Lot (วัตถุดิบ) ต่างจาก Batch (รอบผลิต) อย่างไร | 2 |
-| 4 | production กรอก lot แล้ว error + ต้องกรอกเอง | production plan | ระบบ **auto-calc จาก BOM** ให้ raw material + จำนวนอัตโนมัติ, ฝ่ายผลิตแค่ **review**, มี lot picker (FIFO) ที่เลือกได้ไม่ต้องพิมพ์ | 1 |
-| 5 | QC ไม่มีส่วนรับเข้า raw material | QC | ฟอร์ม **incoming inspection** (รับเข้า raw material + ผูก lot) | 2 |
-| 6 | ไม่มี module จัดการ BOM ที่ใช้ง่าย | BOM management | หน้าจัดการ BOM (สร้าง/แก้สูตร: สินค้า → raw material + ปริมาณ) ใช้งานง่าย | 3 |
-| 7 | หน้าจอไม่ professional | ทั้งระบบ | design system + ทุก mockup ยกระดับหน้าตาให้ professional | ทุก Tier |
-| 8 | ไม่ responsive | ทั้งระบบ (โชว์ Tier 1) | mockup แสดง desktop + tablet/mobile | 1 |
-| 9 | customers ไม่มีฟิลด์สำหรับออกใบกำกับภาษี | customers | ฟอร์มลูกค้ามี **เลขผู้เสียภาษี 13 หลัก, ที่อยู่จดทะเบียน, contact** และฟิลด์ที่จำเป็น | 2 |
-| 10 | invoice เปิดดูรายละเอียดไม่ได้ + ไม่มีเอกสารตามตัวอย่าง | invoice + ใบกำกับภาษี | **หน้ารายละเอียด invoice เปิดดูได้**, และ mockup เอกสารใบกำกับภาษีไทยตามโครงสร้างที่ปอนด์แนบครบ (ดูข้อ 5 — รวมฟิลด์ discount + ตัวหนังสือไทย + ลายเซ็น 2 ช่อง) | 1 |
+| 1 | PO แสดง `Product #7 x 1 @ 1` + แก้/ลบไม่ได้ | PO create | ชื่อสินค้า/จำนวน/ราคา + ปุ่มลบ/แก้ต่อบรรทัด | 1 |
+| 2 | stock search ไม่ได้ + ไม่มีทาง BOM | stock | search + ลิงก์ไป BOM | 1 |
+| 3 | trace หา lot ไม่เจอ + งง Lot vs Batch | traceability | search Lot/Batch/PO + อธิบาย Lot vs Batch | 2 |
+| 4 | production กรอก lot error + ต้องกรอกเอง | production | auto-calc จาก BOM + review + lot picker FIFO | 1 |
+| 5 | QC ไม่มีรับเข้า raw material | QC | ฟอร์ม incoming inspection | 2 |
+| 6 | ไม่มี BOM module | BOM management | หน้าจัดการ/สร้างสูตร ใช้ง่าย | 3→1 |
+| 7 | ไม่ professional | ทั้งระบบ | design system theme A | ทุก Tier |
+| 8 | ไม่ responsive | ทั้งระบบ | **ทุกหน้า** desktop + tablet + mobile (Must) | 1 |
+| 9 | customers ไม่มีฟิลด์ tax | customers | เลขผู้เสียภาษี 13 หลัก, ที่อยู่จดทะเบียน, contact | 2→1 |
+| 10 | invoice เปิดดูไม่ได้ + ไม่มีเอกสาร | invoice | หน้ารายละเอียด + เอกสารใบกำกับภาษีครบ (§5) | 1 |
 
-## 4. ลำดับความสำคัญของหน้าจอ (business priority)
+## 4. ลำดับความสำคัญของหน้าจอ (ปอนด์ยืนยัน Tier 1)
 
-**Tier 1 — หัวใจ ต้องเนี้ยบสุด (จุดที่ปอนด์ feedback หนักสุด):**
-- เปิด PO (create purchase/sales order) — จุดเริ่ม cash cycle, user แตะบ่อยสุด (feedback #1)
-- วางแผนผลิต / วัตถุดิบ (production plan + BOM auto-calc + FIFO lot) — ซับซ้อนสุด, เสี่ยงอ่านไม่ออกสุด (feedback #4)
-- Invoice + ใบกำกับภาษีไทย (VAT, versioning, discount) — ผูกกฎหมาย, ผิดไม่ได้ (feedback #10)
-- Stock / inventory — ข้อมูลหนาแน่น อ่านง่ายยากสุด (feedback #2)
+**Tier 1 — หัวใจ ต้องเนี๊ยบที่สุด (ยืนยันโดยปอนด์ — เสนอครั้งเดียว ต้องดีที่สุด):**
+- **PO create + summary** (suggest สินค้า, เช็ควัตถุดิบ, Purchase Request, ขาย BOM/วัตถุดิบ, sale ที่ดูแล, ราคาแก้ได้)
+- **Production / วางแผนผลิต** (auto-calc BOM, FIFO lot, สถานะ+Potential Delay+cross-notify, เรียง/ค้นตามวันจัดส่ง)
+- **Invoice + ใบกำกับภาษีไทย** (โชว์ PO status, overdue alert, VAT/discount/ตัวหนังสือไทย)
+- **Stock** (add material+UOM, config ใกล้หมด, ราคาซื้อ/ขายแยก, search)
+- **Customer** (5 สถานะ, contact ไม่จำกัด, note, sale assignment, search ด้วย PO/วันที่) — เพราะ lifecycle เป็นแกน
 
-**Tier 2 — สำคัญรองลงมา:**
-- QC รับเข้า + batch (feedback #5), ลูกค้า (พร้อมข้อมูลใบกำกับภาษี, feedback #9), จัดส่ง/delivery, dashboard ตามส่วนงาน, หน้า traceability (Lot→Batch→FG, feedback #3)
+> Tier ใช้จัดลำดับความประณีต/ลำดับทำ — **แต่ responsive เป็น Must ทุก Tier ทุกหน้า** (ไม่ scope-down)
 
-**Tier 3 — ตั้งค่า/สนับสนุน:**
-- User management (7 roles + config permission), audit log, BOM management (feedback #6), เก็บเงิน/payment
+**Tier 2:** QC incoming + Supplier Management + Return · Shipping/Delivery Note · Dashboard รายแผนก · Traceability · BOM builder
+
+**Tier 3:** Settings (RUCDA, role ไม่จำกัด, company profile) · Home · Audit log · Payment/collection
 
 ## 5. ข้อกำหนด business ที่ UI ห้ามละเมิด (non-negotiable)
 
-- **GMP traceability:** ต้องไล่ Lot → Batch → FG ได้ครบและมองเห็นในหน้าที่เกี่ยวข้อง (ผลิต/QC/stock/traceability) — และ UI ต้องอธิบายแนวคิด Lot vs Batch ให้ผู้ใช้เข้าใจ (feedback #3)
-- **ใบกำกับภาษีไทยตามกฎหมาย/ตามตัวอย่างที่ปอนด์แนบ (feedback #10):**
-  - ส่วนหัว: ชื่อเอกสาร "ใบแจ้งหนี้ / ใบกำกับภาษี" + พื้นที่ LOGO; ผู้ออก (ชื่อ, ที่อยู่, **เลขผู้เสียภาษี 13 หลัก**, โทร); ลูกค้า (ชื่อ, ที่อยู่, เลขผู้เสียภาษี, โทร); เลขที่เอกสาร; วันที่; เงื่อนไขชำระ/เครดิต
-  - ตารางรายการ: ลำดับ | รายการ | จำนวน | ราคา | ราคารวม
-  - สรุปยอด: subtotal, **หักส่วนลด (discount — ต้องเพิ่มฟิลด์)**, ยอดหลังหักส่วนลด, **VAT 7%** (ใช้ VATConfig เดิม), grand total, **จำนวนเงินเป็นตัวหนังสือไทย**
-  - ส่วนท้าย: หมายเหตุเงื่อนไข, **ช่องลายเซ็น 2 ช่อง** (ผู้รับ/ผู้ออก พร้อมวงเล็บชื่อ), พื้นที่ตรายาง
-- **Audit ทุก action:** ทุกการกระทำที่เปลี่ยนข้อมูลต้องบันทึกได้ (UI ต้องรองรับการแสดง audit)
-- **ผู้ใช้ไม่เคยใช้ ERP:** นำทางตัวเองได้, **ไม่แสดง enum/รหัสดิบ** (feedback #1), อ่านออกทุกจุด, มี guard/ยืนยันในงานที่ผิดพลาดไม่ได้, ทุก list สำคัญ search ได้ (feedback #2, #3)
-- **Responsive** ทุกหน้า (feedback #8)
-- **7 roles + permission config:** UI ต้องแสดง/ซ่อนตาม role ได้จริง
+- **Status-journey continuity (คำสั่งเน้นของปอนด์):** ทุกการเปลี่ยนสถานะต้องต่อเนื่องข้าม module ตาม `status-journeys.md` และมี **trace เสมอ** (ใคร/จากอะไร→เป็นอะไร/เมื่อไหร่/เหตุผล) + comment ได้ทุกสถานะ (บังคับในจุดที่ระบุ)
+- **Responsive ทุกหน้า (Must — คำสั่งย้ำจากปอนด์):** ทุกหน้าต้องแสดงผลได้ดีบน desktop / tablet / mobile — เป็น requirement หลัก **ไม่ใช่ nice-to-have** และไม่ scope-down เหลือเฉพาะบางหน้า
+- **GMP traceability:** ไล่ Lot → Batch → FG ได้ครบ + UI อธิบาย Lot vs Batch; trace ทุก module/activity ตลอด; archive text file เฉพาะ Super User
+- **ใบกำกับภาษีไทยตามกฎหมาย/ตัวอย่างที่ปอนด์แนบ:** หัวเอกสาร (LOGO, ผู้ออก+เลขผู้เสียภาษี 13 หลัก, ลูกค้า, เลขที่, วันที่, เครดิต), ตารางรายการ, สรุปยอด (subtotal, **discount**, VAT 7% จาก VATConfig, grand total, **ตัวหนังสือไทย**), ท้าย (**ลายเซ็น 2 ช่อง**, ตรายาง) — ข้อมูลบริษัท Admin กรอกในหน้าตั้งค่า
+- **Audit ทุก action** · **ผู้ใช้ไม่เคยใช้ ERP:** นำทางเอง, ไม่โชว์ enum/รหัสดิบ, อ่านออกทุกจุด, list สำคัญ search ได้, guard/ยืนยันงานที่ผิดไม่ได้, **จำนวนคลิก/หน้าต่อ task น้อยสุด (§2.1)**
+- **Permission RUCDA ราย module** + role ไม่จำกัด; UI แสดง/ซ่อนตามสิทธิ์จริง
 
-## 6. Scope
+## 6. Scope (v2 — รวม Gate1 รอบ1)
 
-**In scope (v2):**
-- Design system + mockup ทุกหน้าของ functional scope เดิม (prototype-v1) — ทั้งสาย order-to-cash + user mgmt + audit + dashboard + BOM + traceability
-- ปิดจุด feedback ทั้ง 10 ข้อ (ข้อ 3.1) ซึ่งรวม feature ที่ prototype ยังไม่มี: BOM management UI (#6), production auto-calc จาก BOM (#4), QC incoming inspection (#5), customer tax fields (#9), เอกสารใบกำกับภาษีไทยเต็มรูป (#10)
-- Theme options ให้ปอนด์เลือก
-- Implement ใหม่ให้ตรง mockup ที่อนุมัติ บน stack React + Node.js + MySQL (ADR-000)
-- QA regression: functional เดิมต้องไม่พัง
-- UX/UI visual audit: ของจริงต้องตรง mockup
+**In scope:**
+- Product identity: ชื่อ **ESSENCE Hub System** + placeholder logo/favicon (theme A teal) ทุกหน้า
+- Design system (theme A) + mockup ทุกหน้า/ทุกสถานะ + **responsive ทุกหน้า (Must)**
+- **Home**: ชื่อ user จุดเดียว
+- **Dashboard รายแผนก** 7 แผนก + สลับเมื่อหลาย role
+- **Customers**: contact ไม่จำกัด, 5 สถานะ (lifecycle §1 status-journeys), note timeline, sale assignment + reassign, ประวัติ PO, search ด้วย PO/วันที่
+- **PO**: summary (ราคา/VAT/sale), suggest สินค้า + เช็ควัตถุดิบครบ/ขาด, วัตถุดิบขาด → Purchase Request, ขาย BOM + วัตถุดิบตรง, ราคา default จาก BOM แก้ได้; PO 2 ราง (fulfilment + billing)
+- **Stock**: เพิ่มวัตถุดิบใหม่ + UOM, config เกณฑ์ใกล้หมด (% หรือจำนวน) ต่อวัตถุดิบ, ราคาซื้อ/ขายแยก
+- **BOM builder**: สร้างสูตร (ไม่ต้องมี stock แต่โชว์ stock ประกอบ), ราคาทุน (default จากราคาซื้อ), ราคาขาย mandatory
+- **Production**: เรียง/ค้นตามวันจัดส่ง/PO/ลูกค้า, Potential Delay (2+1 วัน), 5 สถานะ, comment + cross-notify Sale/Stock, trace
+- **QC incoming + Supplier Management**: lot prefix ต่อ supplier, mapping วัตถุดิบ-หลาย supplier, รับเข้า (เลือก supplier → gen lot + เลขใบรับ + upload เอกสาร), **Return flow** (lot→supplier→ตัด stock + comment บังคับ)
+- **Shipping**: Delivery Note รวมหลาย PO, 5 สถานะใบ + reconcile ระดับ PO, comment + trace
+- **Invoice**: ออกได้ตลอด + โชว์ PO status, overdue alert (นับวันค้าง), versioning, เอกสารใบกำกับภาษีไทยเต็มรูป
+- **Traceability**: ทุก module/activity + archive text file (Super User)
+- **Settings**: RUCDA ราย module, สร้าง role ไม่จำกัด, user ใต้ role, company profile
+- **Roles ใหม่**: Sale Manager, Super User
+- Implement ให้ตรง mockup บน React+Node+MySQL (ADR-000); QA regression; UX/UI visual audit
 
-**Out of scope (v2):**
-- feature/business logic ใหม่ที่อยู่นอก 10 จุด feedback และนอก prototype-v1 (ถ้าต้องเพิ่ม = requirement ใหม่)
-- การเปลี่ยน tech stack
-- ข้อมูล/สี/logo แบรนด์จริง (ปอนด์เลือกจาก theme options ที่ UX/UI เสนอ ที่ Gate 1)
-- งานส่วน design UI เอง — นั่นเป็นของ UX/UI agent (PO ให้กรอบ business เท่านั้น)
+**Out of scope:**
+- feature/logic นอก feedback ทั้งสองชุด + นอก prototype-v1 (= requirement ใหม่)
+- เปลี่ยน tech stack · logo/แบรนด์จริง (ใช้ placeholder จากชื่อ ESSENCE Hub System) · ข้อมูลบริษัทจริง (Admin กรอกเอง)
+- งาน design UI เอง (เป็นของ UX/UI — PO ให้กรอบ business + journey)
 
 ## 7. Definition of Done — feature v2 ทั้งสาย (ถึง Gate 2)
 
-- [ ] **Gate 1 ผ่าน:** design system + mockup ทุกหน้า + theme ที่เลือก ได้รับอนุมัติจากปอนด์ (ตามเกณฑ์ข้อ 3 + ตาราง 3.1 ครบ 10/10)
-- [ ] **Engineer implement** ครบ functional scope prototype-v1 + ปิด feedback 10 ข้อ บน React+Node+MySQL โดยหน้าตาตรง mockup ที่อนุมัติ
-- [ ] **QA regression ผ่าน:** functional scope เดิมทั้งหมดยังทำงานถูกต้อง (ไม่ถอยหลัง)
-- [ ] **UX/UI visual audit ผ่าน:** ของจริงตรง mockup (component/spacing/responsive) และ 0 หน้าโชว์ enum/รหัสดิบ
-- [ ] **ข้อกำหนดห้ามละเมิด (ข้อ 5) ครบ:** traceability ไล่ได้, ใบกำกับภาษีไทยฟิลด์ครบ, audit ทำงาน
-- [ ] **BKV วัดผลแล้วผ่านเกณฑ์:** BKV-1 (เวลาทำงาน user มือใหม่), BKV-3 (0 enum ดิบ), BKV-4 (feedback 10/10), BKV-5 (คะแนน UAT)
+- [ ] **Gate 1 รอบ 2 ผ่าน:** mockup ครบ 100% ทุกหน้า/ทุกสถานะ + cross-module continuity + product identity (ESSENCE Hub System) + responsive ทุกหน้า + flow ผ่าน click budget — ปอนด์อนุมัติ
+- [ ] **Engineer implement** ครบ scope §6 + ทุก status journey โดยหน้าตาตรง mockup + responsive
+- [ ] **QA: Functional = 0 defect ทุกระดับ (minor/major/critical)** + ทดสอบทุก state transition & cross-module notify ถูกต้อง (regression เดิมไม่พัง)
+- [ ] **UX/UI visual audit ผ่าน:** ตรง mockup + 0 หน้าโชว์ enum/รหัสดิบ + responsive จริงทุกหน้า + คะแนน UX/UI ≥ 3.5/5 และใช้ง่าย
+- [ ] **ข้อกำหนดห้ามละเมิด (§5) ครบ:** trace ทุก status change, ใบกำกับภาษีครบ, permission RUCDA ทำงาน
+- [ ] **BKV ผ่านเกณฑ์:** BKV-1 (click budget + task success), BKV-3, BKV-4, BKV-5 (0 defect + UX ≥3.5), BKV-6
 - [ ] **DevOps deploy** สำเร็จ
 - [ ] **Gate 2 ผ่าน:** ปอนด์อนุมัติ release
 
 ## 8. Known constraints / target users
 - Tech stack ตายตัว: React + Node.js + MySQL (ADR-000)
-- GMP / full traceability เป็นข้อบังคับแฝงในทุก feature (CLAUDE.md)
-- Target users: พนักงานโรงงาน/บัญชี/คลัง/ผลิต/QC ที่ **ไม่เคยใช้ ERP** — usability เป็น first-class requirement
-- ข้อมูลต้นทาง (44 stories/architecture) อยู่ใน git tag `prototype-v1`; รายการ feedback 10 ข้อ + โครงสร้างใบกำกับภาษี อยู่ที่ `docs/requirements/erp-v2-ui-first/prototype-feedback-reference.md`
+- GMP / full traceability + status-journey continuity + responsive เป็นข้อบังคับแฝงทุก feature
+- Target users: พนักงานที่ไม่เคยใช้ ERP ทำงาน routine — usability + minimize clicks เป็น first-class requirement
+- เอกสารต้นทาง: 44 stories/architecture ใน git tag `prototype-v1`; feedback prototype + ใบกำกับภาษีที่ `prototype-feedback-reference.md`; feedback Gate1 รอบ1 ที่ `pond-gate1-feedback.md`; state machine ที่ `status-journeys.md`
+
+## 9. เอนทิตี/role ใหม่ที่ต้อง flag ให้ BA/Tech-Lead
+- **Role ใหม่:** Sale Manager (reassign ลูกค้า, dashboard ทีม), Super User (archive trace)
+- **เอนทิตีใหม่:** Purchase Request, Delivery Note (รวมหลาย PO), Supplier, Customer Contact (หลายรายการ), Customer Note, เอกสารใบรับ supplier (file), ใบคืนของ (Return), UOM, ราคาซื้อ/ขาย/ทุน แยก field, low-stock threshold config ต่อวัตถุดิบ
+- **สิทธิ์พิเศษข้าม RUCDA:** reassign customer, archive trace, ปลด Blacklist, status override — ต้องมี capability layer นอกเหนือ CRUD (ดู `status-journeys.md` §9)
