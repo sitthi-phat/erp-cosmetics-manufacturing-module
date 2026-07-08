@@ -3,13 +3,13 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "WAITING_HUMAN_GATE",
+      "current_agent": "po",
+      "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 3 (2026-07-08): submitted for Gate 1. UX/UI closed ALL P0/P1/P2 from po-mockup-review.md + all 13 categories of pond-gate1-r2-feedback.md + Pond's 5 flow answers. PO re-reviewed all 24 mockups (deep-read 15+ pages + grep) and PASSED — see po-mockup-review.md section 7 (round-3 results). Awaiting Pond's approval of the look. Prior: Round 1 theme A approved; Round 2 NOT approved (13-category feedback). PO's 5 flow answers: 6th customer status 'Follow-up'; 2-tier Shipment/DN (DN=1 PO); PO reopen keeps same number; Hold edits all fields w/ trace; BOM snapshot+stale badge."
+          "note": "Round 3 (2026-07-08): NOT approved. Feedback in pond-gate1-r3-feedback.md — label dedupe (all pages), dashboard date filter (PO to make practical), customer test data + add-contact + true create page, PO status-change UI, multi-line goods receipt per supplier doc (PO), searchable dropdowns, PR create page, supplier add page + edit layout rethink (UX), BOM create page clickable, QC decision only on QC page + line-item pass/fail semantics (PO) + batch lifecycle/linkage (PO), shipment-round create screens + driver/phone/route/vehicle type."
         },
         "gate2_requirements": {
           "approved": false,
