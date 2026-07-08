@@ -98,6 +98,27 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .chk{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
 .chk.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .uprow{display:flex;align-items:center;gap:12px;border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--text2);font-size:13px}
+.noti-wrap{position:relative}
+.noti-btn{background:none;border:none;cursor:pointer;font-size:18px;position:relative;color:var(--text2);padding:4px}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--error);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.noti-panel{display:none;position:absolute;right:0;top:38px;width:344px;max-width:88vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:50;overflow:hidden}
+.noti-panel.open{display:block}
+.noti-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border2);font-weight:600;font-size:14px}
+.noti-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border2);font-size:13px;align-items:flex-start}
+.noti-item:hover{background:#FAFCFC}.noti-item .di{font-size:16px;flex-shrink:0}
+.noti-item a{font-weight:600;display:block}.noti-item .tm{font-size:11px;color:var(--text3);margin-top:2px}
+.noti-item .ack{margin-left:auto;color:var(--text3);cursor:pointer;font-size:15px;flex-shrink:0}
+.noti-f{padding:10px 14px;text-align:center;font-size:12px}
+.pager{display:flex;justify-content:space-between;align-items:center;padding-top:14px;flex-wrap:wrap;gap:10px}
+.pager .pages{display:flex;gap:6px}.pgbtn{min-width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;font-size:13px;font-family:inherit}
+.pgbtn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.drill{margin-top:8px}
+.refbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.switch{width:38px;height:22px;border-radius:12px;background:var(--primary);position:relative;cursor:pointer;flex-shrink:0}
+.switch::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.switch.off{background:#C4CDD5}.switch.off::after{right:auto;left:2px}
+.tile{cursor:pointer;transition:.12s;position:relative}.tile:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(14,124,123,.14)}
+.tile.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}.tile .dr{position:absolute;top:12px;right:14px;color:var(--text3);font-size:12px}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
@@ -120,9 +141,12 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 }
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class="active"><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อกวัตถุดิบ</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
-   <div style="min-width:0"><div class="crumb">หน้าหลัก</div><div class="title">หน้าหลัก</div></div>
+   <div style="min-width:0"><div class="crumb">ยินดีต้อนรับสู่ ESSENCE Hub</div><div class="title">หน้าหลัก</div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
-   <div class="right"><span class="tiny">🔔</span><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
+   <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">4</span></button>
+ <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (4)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
+ <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">QC ไม่ผ่าน: งานผลิต PRD-000091 ตีกลับให้ผลิตใหม่</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000031 (กลีเซอรีนขาด 6 กก.)</a><div class="tm">15 นาทีที่แล้ว · จากการเปิด PO-188</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000181 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000138 เกินกำหนดชำระ +6 วัน</a><div class="tm">วันนี้ 00:05 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
+ <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
   <div class="content">
  <div class="pagehead"><div><h1>สวัสดี คุณสมชาย 👋</h1><div class="sub">อังคารที่ 8 กรกฎาคม 2569 · นี่คือสิ่งที่คุณทำได้ในฐานะ "ฝ่ายขาย/CS"</div></div></div>
  <div class="alert alert-info"><span class="ai">💡</span><div>ยังใหม่กับระบบใช่ไหม? การ์ดด้านล่างพาคุณไปงานหลักทีละขั้น ทุกหน้ามีปุ่ม "ย้อนกลับ" ไม่ต้องกลัวกดผิด</div></div>
@@ -132,14 +156,14 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  </div>
  <div class="grid2" style="gap:20px">
   <div class="card"><div class="card-h"><h3>งานที่รอคุณอยู่</h3><a href="po-list.html">ดูทั้งหมด</a></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><tbody>
-     <tr><td><b>PO-202607-000188</b><div class="id">บริษัท บิวตี้ เอเชีย จำกัด</div></td><td><span class="badge b-warning">รอวัตถุดิบ</span></td><td class="num"><a href="po-detail.html">เปิด</a></td></tr>
+     <tr><td><b>PO-202607-000188</b><div class="id">บริษัท บิวตี้ เอเชีย จำกัด</div></td><td><span class="badge b-processing">ยืนยันแล้ว</span></td><td class="num"><a href="po-detail.html">เปิด</a></td></tr>
      <tr><td><b>PO-202607-000185</b><div class="id">ร้านกลอรี่ คอสเมติก</div></td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="po-detail.html">เปิด</a></td></tr>
      <tr><td><b>PO-202607-000176</b><div class="id">บริษัท เดอร์มา แคร์</div></td><td><span class="badge b-error">เกินกำหนดชำระ +6 วัน</span></td><td class="num"><a href="po-detail.html">เปิด</a></td></tr>
   </tbody></table></div></div></div>
   <div class="card"><div class="card-h"><h3>ต้องรู้ก่อนเริ่ม</h3></div><div class="card-b"><div style="display:grid;gap:14px">
      <div><span class="pill">Lot</span> = ล็อตวัตถุดิบที่รับเข้าคลัง (ต้นทาง)</div>
      <div><span class="pill">Batch</span> = รอบการผลิตสินค้าสำเร็จรูป (ปลายทาง)</div>
-     <div>สถานะเป็นภาษาไทยเสมอ เช่น <span class="badge b-success">QC ผ่าน</span> <span class="badge b-warning">รอวัตถุดิบ</span> <span class="badge b-error">บัญชีดำ</span></div>
+     <div>สถานะเป็นภาษาไทยเสมอ เช่น <span class="badge b-success">QC ผ่าน</span> <span class="badge b-warning">รอ QC</span> <span class="badge b-error">บัญชีดำ</span></div>
      <div class="muted">ทุกการเปลี่ยนสถานะมีบันทึกว่าใครทำ เมื่อไหร่ (trace) — ดูได้ในหน้ารายละเอียด</div>
   </div></div></div>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

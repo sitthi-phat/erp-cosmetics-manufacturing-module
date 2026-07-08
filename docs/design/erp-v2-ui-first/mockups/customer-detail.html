@@ -98,6 +98,27 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .chk{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
 .chk.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .uprow{display:flex;align-items:center;gap:12px;border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--text2);font-size:13px}
+.noti-wrap{position:relative}
+.noti-btn{background:none;border:none;cursor:pointer;font-size:18px;position:relative;color:var(--text2);padding:4px}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--error);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.noti-panel{display:none;position:absolute;right:0;top:38px;width:344px;max-width:88vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:50;overflow:hidden}
+.noti-panel.open{display:block}
+.noti-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border2);font-weight:600;font-size:14px}
+.noti-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border2);font-size:13px;align-items:flex-start}
+.noti-item:hover{background:#FAFCFC}.noti-item .di{font-size:16px;flex-shrink:0}
+.noti-item a{font-weight:600;display:block}.noti-item .tm{font-size:11px;color:var(--text3);margin-top:2px}
+.noti-item .ack{margin-left:auto;color:var(--text3);cursor:pointer;font-size:15px;flex-shrink:0}
+.noti-f{padding:10px 14px;text-align:center;font-size:12px}
+.pager{display:flex;justify-content:space-between;align-items:center;padding-top:14px;flex-wrap:wrap;gap:10px}
+.pager .pages{display:flex;gap:6px}.pgbtn{min-width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;font-size:13px;font-family:inherit}
+.pgbtn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.drill{margin-top:8px}
+.refbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.switch{width:38px;height:22px;border-radius:12px;background:var(--primary);position:relative;cursor:pointer;flex-shrink:0}
+.switch::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.switch.off{background:#C4CDD5}.switch.off::after{right:auto;left:2px}
+.tile{cursor:pointer;transition:.12s;position:relative}.tile:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(14,124,123,.14)}
+.tile.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}.tile .dr{position:absolute;top:12px;right:14px;color:var(--text3);font-size:12px}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
@@ -122,12 +143,15 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="customers.html">ลูกค้า</a> › <b>เดอร์มา แคร์</b></div><div class="title">บริษัท เดอร์มา แคร์ จำกัด</div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
-   <div class="right"><span class="tiny">🔔</span><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">Sale Manager</div></div></div></div></div>
+   <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">4</span></button>
+ <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (4)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
+ <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">QC ไม่ผ่าน: งานผลิต PRD-000091 ตีกลับให้ผลิตใหม่</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000031 (กลีเซอรีนขาด 6 กก.)</a><div class="tm">15 นาทีที่แล้ว · จากการเปิด PO-188</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000181 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000138 เกินกำหนดชำระ +6 วัน</a><div class="tm">วันนี้ 00:05 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
+ <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">Sale Manager</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>บริษัท เดอร์มา แคร์ จำกัด &nbsp;<span style="position:relative;display:inline-block"><span class="badge b-warning">ห่างหาย</span></span></h1>
+ <div class="pagehead"><div><h1>บริษัท เดอร์มา แคร์ จำกัด &nbsp;<span style="position:relative;display:inline-block"><span class="badge b-processing">ต้องติดตาม</span></span></h1>
    <div class="sub">CUS-00000021 · เลขผู้เสียภาษี 0107561000099 · <b>Sale ที่ดูแล: สมหญิง</b></div></div>
   <div style="display:flex;gap:10px"><a class="btn btn-ghost" href="customers.html">← ย้อนกลับ</a><button class="btn">เปลี่ยนสถานะ ▾</button></div></div>
- <div class="alert alert-warn"><span class="ai">⏱️</span><div>ระบบปรับเป็น <b>ห่างหาย</b> อัตโนมัติ เพราะไม่มีคำสั่งซื้อเกินรอบที่ตั้งไว้ (3 เดือน) — order ล่าสุด 02/07/2569 <a href="#">ปรับรอบ/ตั้งค่า</a></div></div>
+ <div class="alert alert-info"><span class="ai">📌</span><div>ลูกค้ารายนี้ถูกตั้งเป็น <b>ต้องติดตาม</b> โดย สมหญิง (08/07 10:20) — เหตุ: งานผลิต <a href="po-detail.html">PO-202607-000181</a> ติด <b>Hold</b> เพราะลูกค้าขอแก้สูตร ต้องติดต่อยืนยันก่อนผลิตต่อ (โยงจาก Production Hold → raise Sale)</div></div>
  <div class="split">
   <div>
    <div class="card"><div class="card-h"><h3>ผู้ติดต่อ (เพิ่มได้ไม่จำกัด)</h3><button class="btn btn-sm btn-primary">➕ เพิ่มผู้ติดต่อ</button></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>ชื่อ</th><th>ตำแหน่ง</th><th>โทร</th><th>อีเมล</th><th></th></tr></thead><tbody>
@@ -143,9 +167,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div>
    <div class="card"><div class="card-h"><h3>เปลี่ยนสถานะ / มอบหมาย</h3></div><div class="card-b">
     <div class="pop" style="max-width:none;box-shadow:none;border-color:var(--primary-bg)">
-     <div class="tiny" style="margin-bottom:8px">เปลี่ยนสถานะลูกค้า (บันทึก trace + เหตุผล)</div>
-     <select class="sel" style="margin-bottom:10px"><option>ห่างหาย (ปัจจุบัน)</option><option>ปิดใช้งาน (Disabled)</option><option>บัญชีดำ (Blacklist)</option></select>
-     <textarea class="inp" rows="2" placeholder="เหตุผล (บังคับเมื่อปิดใช้งาน/บัญชีดำ)"></textarea>
+     <div class="tiny" style="margin-bottom:8px">เปลี่ยนสถานะลูกค้า (6 สถานะ · บันทึก trace + เหตุผล)</div>
+     <select class="sel" style="margin-bottom:10px"><option>ต้องติดตาม (ปัจจุบัน)</option><option>ลูกค้าประจำ (Active)</option><option>ห่างหาย (Inactive)</option><option>ปิดใช้งาน (Disabled)</option><option>บัญชีดำ (Blacklist)</option></select>
+     <textarea class="inp" rows="2" placeholder="เรื่องที่ติดตาม / เหตุผล (บังคับเมื่อ ต้องติดตาม / ปิดใช้งาน / บัญชีดำ)">โทรยืนยันการแก้สูตร PO-181 ภายในพรุ่งนี้</textarea>
+     <div class="help">"ต้องติดตาม" = สถานะที่ 6 แยกจริง ใช้เมื่อมีเรื่องต้องตามลูกค้า (เช่น งานผลิตติด Hold) — โผล่ tile "ต้องติดตาม" บน Sale Dashboard</div>
      <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-top:10px">บันทึก</button>
     </div>
     <div style="border-top:1px dashed var(--border);margin:16px 0 12px;padding-top:12px"></div>

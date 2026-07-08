@@ -392,3 +392,43 @@ BOM builder; production sort/search/delay/5-status/cross-notify/trace; QC+Suppli
 invoice overdue+PO-stage+Thai tax print; trace all-module+archive; settings RUCDA+roles+company profile; Purchase Request.
 
 **Backlog (polish):** dark mode, dashboard charting library, offline, i18n beyond Thai, drag-drop BOM ordering, bulk CSV. Tagged "polish".
+
+---
+
+# ADDENDUM — Round 3 (Gate 1 r2 rework + PO review, 2026-07-08)
+
+Incremental only — design system/theme locked. Adds flows from `pond-gate1-r2-feedback.md` (13 หมวด),
+`po-mockup-review.md` (P0/P1/P2), and Pond's 5 answers. New/changed component specs for Engineer:
+
+## R3.1 Notification / Inbox (new wrapper `<NotificationBell items />`)
+- Header bell with unread **badge count**; click → dropdown panel (`.noti-panel`) listing items:
+  icon + deep-link title + relative time + per-item **acknowledge** (✓) + "อ่านแล้วทั้งหมด" + footer "ดูกิจกรรมทั้งหมด".
+- Recipients = users with **Read** on the destination module. Each item deep-links to the work page
+  (production/PR/shipping/invoice/customer detail). Present on every page via the shell. wraps antd `Dropdown+Badge+List`.
+
+## R3.2 Dashboard (all departments)
+- `<RefreshBar/>`: manual **รีเฟรช** button + last-updated timestamp + **auto-refresh 15s (default on)** toggle.
+  Auto-refresh **preserves current view** (selected department + open drill panel never reset). wraps antd `Switch+Button`.
+- **Every KPI tile is a `<DrillTile/>`** (clickable, shows "ดูรายการ ›"): click → drill-down **list + pagination**;
+  each row deep-links into its module with context. One real path mocked per department; Sale has 5th tile **"ต้องติดตาม"**.
+
+## R3.3 Status-flow changes (StatusFlowBar / StatusChanger)
+- **Production** flow = รับงาน → กำลังผลิต → **QC** → พร้อมส่งมอบ (จบที่นี่; "ส่งมอบแล้ว/ส่งถึง" = shipping only).
+  Changer adds: **QC**, **QC ไม่ผ่าน → กลับกำลังผลิต + feedback (mandatory)**, **Hold → raise Sale + ปุ่ม "แก้ไข PO"**.
+- **Customer** = **6 real statuses**: Lead/Active/Inactive/**Follow-up "ต้องติดตาม"**/Disabled/Blacklist (Follow-up มี comment บังคับ; tile บน Sale Dashboard).
+- **PO**: **Cancel any stage** (mandatory comment) + **Cancelled→Draft reopen keeping same PO number** + **แก้ไข PO** (Hold: Sale edits qty/product/price/date, every field traced). No "รอวัตถุดิบ" state (material shortage = warning only).
+- **Shipping/Delivery Note**: **1 DN = 1 order** (print per order for signature) grouped under a **Shipment "รอบจัดส่ง" (`SHP-YYYYMMDD-NNNN`)** that bundles many DNs; status reconciles at both shipment and DN level; Reject→order back to พร้อมจัดส่ง + raise Sale; Postpone→flag(+date) stays in queue.
+- **Purchase Request**: create directly from PR page OR auto from PO; **Fulfilled auto from Goods Receipt** (ref PR → auto-close, records lot). Acknowledge/Close manual.
+- **BOM cost** = **max buy-price among ACTIVE suppliers**, **snapshotted at save**; `<StaleCostBadge/>` "ราคาทุนอาจล้าสมัย" when live max differs.
+
+## R3.4 New page + Settings
+- **`goods-receipt.html`** (new, full screen): supplier→auto Lot, qty, buy-price (0 allowed), supplier receipt no, file upload, **PR reference search → auto-close PR** (C4/C12).
+- **Supplier**: no receipt form (moved to Goods Receipt); **Active/Inactive** toggle + **price matrix** (buy price per supplier×material) + material search to link.
+- **Settings = 5 real tab screens** (JS-switched): Role&perm (RUCDAA 6-col + create role) / Users (+create user) / VAT + **effective date** + rate history / Company profile / Audit log. All lists have pagination.
+
+## R3.5 Trace
+- Add **entity selector** (customer/PO/material-Lot/PR/supplier/BOM/production/shipping), **date-range + time** filter, and a **field-level audit table** (time · actor · entity · field · from→to) + pagination — alongside Lot→Batch genealogy.
+
+## R3.6 Common
+- All list pages carry `<Pager/>` (wraps antd `Pagination`); empty/loading/error states per §6. Prices accept **0**.
+- `<Switch/>` styling for toggles (auto-refresh, supplier active). All interactive mockups verified via Playwright (notification open, dashboard drill-down, tab switches).

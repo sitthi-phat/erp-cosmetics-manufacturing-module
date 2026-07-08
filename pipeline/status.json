@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "ux-ui",
-      "status": "READY_FOR_UXUI",
+      "status": "READY_FOR_PO_REVIEW",
       "human_gates": {
         "gate1_look": {
           "approved": false,
@@ -718,6 +718,57 @@
           "summary": "STAGE 2 PREP (understand + ask only, per Pond's iron rule — no ADR/design/schema/API written). Read all inputs: stage2-directives, brief, status-journeys (7 machines + 14-row continuity + noti/deep-link), Gate1 r1+r2 feedback, ADR-000 (React+Node+MySQL locked), 24 mockups (field structure incl. field-level audit table old->new, RUCDAA matrix, VAT effective-date, 2-tier Shipment/DN), status.json. Produced a Stage-2 design plan (Security / API Spec / DB Schema) covering all cases + technical risk register + effort estimate, returned to dispatcher as message. Batched 9 NFR/business questions for Pond. Deliverables (ADRs/design.md/schema/API spec/tasks) intentionally deferred until Gate 1 (look) approved. Did NOT modify feature-level current_agent/status.",
           "overridden_by": null,
           "updated_at": "2026-07-08T21:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "design-r3",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {"item": "P0-1 Production flow fixed: รับงาน→กำลังผลิต→QC→พร้อมส่งมอบ (dropped 'ส่งมอบแล้ว'); changer has QC / QC-fail→กลับกำลังผลิต+feedback(mandatory) / Hold→raise Sale + 'แก้ไข PO'", "pass": true, "missing": null},
+            {"item": "P0-2 Removed cancelled state 'รอวัตถุดิบ/พักรอวัตถุดิบ/ปลดบล็อก PO' everywhere (po-list chip+row, po-create notify, purchase-request, home)", "pass": true, "missing": null},
+            {"item": "P0-3 Supplier: goods-receipt form removed (moved to stock)", "pass": true, "missing": null},
+            {"item": "P0-4 po-detail: ยกเลิก PO (any stage) + เปิดใหม่ Cancelled→Draft (same PO number) + แก้ไข PO (Hold) + trace entries", "pass": true, "missing": null},
+            {"item": "P1-5 New full-screen goods-receipt.html: supplier→auto lot, qty, buy-price(0 ok), receipt no, upload, PR reference search → auto-close PR (C4/C12)", "pass": true, "missing": null},
+            {"item": "P1-6 Supplier: Active/Inactive toggle + price matrix (buy price per supplier×material) + material search to link", "pass": true, "missing": null},
+            {"item": "P1-7 customer-detail: 'ต้องติดตาม' as 6th real status + mandatory comment (Hold use-case); customers list adds 6th chip+row+pagination", "pass": true, "missing": null},
+            {"item": "P1-8 purchase-request: '➕ สร้างคำขอใหม่' direct create + 'ของเข้าครบ = auto from Goods Receipt' note", "pass": true, "missing": null},
+            {"item": "P1-9 dashboard: refresh button + auto-refresh 15s (default, preserves view) + every KPI tile drill-down → list + pagination + deep link (verified via Playwright click)", "pass": true, "missing": null},
+            {"item": "P1-10 bom: cost = max ACTIVE-supplier buy price + snapshot at save + 'ราคาทุนอาจล้าสมัย' badge + recompute", "pass": true, "missing": null},
+            {"item": "P1-11 trace: entity selector + date-range+time filter + field-level audit table (time/actor/entity/field/from→to) + pagination", "pass": true, "missing": null},
+            {"item": "P1-12 settings: all 5 real tab screens (Role+create role / Users+create user / VAT+effective date+history / Company profile / Audit log), JS-switched", "pass": true, "missing": null},
+            {"item": "P1-13 shipping redesign: create Shipment (รอบจัดส่ง) from ready POs → 1 DN per order; search PO by customer data; Postpone POs stay in queue", "pass": true, "missing": null},
+            {"item": "P1-14 po-list: search by 3 date types (created/actual-ship/requested) + pagination", "pass": true, "missing": null},
+            {"item": "P2-15 Notification panel (bell→badge→list→deep link+acknowledge) on every page via shell (verified open via Playwright)", "pass": true, "missing": null},
+            {"item": "P2-16..20 home dedupe 'หน้าหลัก'; QC batch tab 'ไม่ผ่าน→กลับกำลังผลิต+feedback'; VAT effective date in settings; pagination+empty/loading on lists; index updated + goods-receipt link + round-3 tags", "pass": true, "missing": null},
+            {"item": "Pond's 5 answers embedded: 'ต้องติดตาม'=6th real status (not overlay); DN=1/order + Shipment groups DNs; PO reopen keeps same number; Hold Sale edits everything+trace; BOM snapshot + stale-cost badge", "pass": true, "missing": null},
+            {"item": "Responsive re-verified desktop/tablet/mobile; design system/theme unchanged (incremental only)", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/design-system.md",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/supplier.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/po-list.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/bom.html",
+            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
+            "docs/design/erp-v2-ui-first/mockups/invoices.html",
+            "docs/design/erp-v2-ui-first/mockups/trace.html",
+            "docs/design/erp-v2-ui-first/mockups/settings.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Round-3 incremental rework (design system/theme locked). Applied all P0/P1/P2 from po-mockup-review.md + all 13 หมวด of pond-gate1-r2-feedback + the 5 Pond answers. Key: Production flow now ...→QC→พร้อมส่งมอบ (QC-fail loop + Hold→แก้ไข PO); removed obsolete 'รอวัตถุดิบ' everywhere; Customer 6th real status 'ต้องติดตาม'+comment; PO cancel any stage + reopen keeping same number; Shipping = create 'รอบจัดส่ง (Shipment)' → 1 DN per order (print each) with 2-level reconcile; new full-screen Goods Receipt (ref PR→auto-close); Supplier active/inactive + price matrix (no receipt form); BOM cost=max active-supplier+snapshot+stale badge; Trace entity selector+date-range+field-level audit; Settings = 5 real tab screens; Dashboard refresh+auto-15s+drill-down list+pagination (view-preserving); global Notification panel (bell→deep link+ack). Added goods-receipt.html (24 pages + index). Verified rendering AND interactivity (notification open, dashboard drill-down) via Playwright at desktop/tablet/mobile. No src/ touched, no git. Handoff: READY_FOR_PO_REVIEW (PO re-reviews completeness before Gate 1 look approval).",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T23:10:00+07:00"
         }
       ]
     }

@@ -98,6 +98,27 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .chk{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
 .chk.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .uprow{display:flex;align-items:center;gap:12px;border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--text2);font-size:13px}
+.noti-wrap{position:relative}
+.noti-btn{background:none;border:none;cursor:pointer;font-size:18px;position:relative;color:var(--text2);padding:4px}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--error);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.noti-panel{display:none;position:absolute;right:0;top:38px;width:344px;max-width:88vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:50;overflow:hidden}
+.noti-panel.open{display:block}
+.noti-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border2);font-weight:600;font-size:14px}
+.noti-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border2);font-size:13px;align-items:flex-start}
+.noti-item:hover{background:#FAFCFC}.noti-item .di{font-size:16px;flex-shrink:0}
+.noti-item a{font-weight:600;display:block}.noti-item .tm{font-size:11px;color:var(--text3);margin-top:2px}
+.noti-item .ack{margin-left:auto;color:var(--text3);cursor:pointer;font-size:15px;flex-shrink:0}
+.noti-f{padding:10px 14px;text-align:center;font-size:12px}
+.pager{display:flex;justify-content:space-between;align-items:center;padding-top:14px;flex-wrap:wrap;gap:10px}
+.pager .pages{display:flex;gap:6px}.pgbtn{min-width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;font-size:13px;font-family:inherit}
+.pgbtn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.drill{margin-top:8px}
+.refbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.switch{width:38px;height:22px;border-radius:12px;background:var(--primary);position:relative;cursor:pointer;flex-shrink:0}
+.switch::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.switch.off{background:#C4CDD5}.switch.off::after{right:auto;left:2px}
+.tile{cursor:pointer;transition:.12s;position:relative}.tile:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(14,124,123,.14)}
+.tile.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}.tile .dr{position:absolute;top:12px;right:14px;color:var(--text3);font-size:12px}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
@@ -122,21 +143,26 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="po-list.html">ใบสั่งซื้อ</a> › <b>PO-202607-000181</b></div><div class="title">PO-202607-000181</div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
-   <div class="right"><span class="tiny">🔔</span><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
+   <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">4</span></button>
+ <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (4)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
+ <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">QC ไม่ผ่าน: งานผลิต PRD-000091 ตีกลับให้ผลิตใหม่</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000031 (กลีเซอรีนขาด 6 กก.)</a><div class="tm">15 นาทีที่แล้ว · จากการเปิด PO-188</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000181 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000138 เกินกำหนดชำระ +6 วัน</a><div class="tm">วันนี้ 00:05 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
+ <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>PO-202607-000181</h1><div class="sub">บริษัท เดอร์มา แคร์ จำกัด · Sale: สมหญิง · เปิด 02/07/2569 · กำหนดส่ง 15/07/2569</div></div><a class="btn btn-ghost" href="po-list.html">← ย้อนกลับ</a></div>
+ <div class="pagehead"><div><h1>PO-202607-000181</h1><div class="sub">บริษัท เดอร์มา แคร์ จำกัด · Sale: สมหญิง · เปิด 02/07/2569 · กำหนดส่ง 15/07/2569</div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="po-list.html">← ย้อนกลับ</a><button class="btn">✎ แก้ไข PO</button><button class="btn btn-danger">✕ ยกเลิก PO</button></div></div>
+ <div class="alert alert-warn"><span class="ai">⏸️</span><div>งานผลิตของ PO นี้ติด <b>Hold</b> (ฝ่ายผลิต raise มา) — ลูกค้าขอแก้สูตร · Sale <b>แก้ไข PO ได้ทุกอย่าง</b> (จำนวน/สินค้า/ราคา/วันส่ง) ทุกช่องมี trace แล้วส่งกลับผลิต · ลูกค้าถูกตั้งเป็น "ต้องติดตาม" แล้ว</div></div>
  <div class="card"><div class="card-b">
    <div class="tiny" style="margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">ราง 1 · การผลิต/จัดส่ง</div>
    <div class="flow"><div class="s done"><span class="n">✓</span>ยืนยัน</div><div class="line"></div><div class="s cur"><span class="n">2</span>กำลังผลิต</div><div class="line"></div><div class="s "><span class="n">3</span>พร้อมจัดส่ง</div><div class="line"></div><div class="s "><span class="n">4</span>กำลังจัดส่ง</div><div class="line"></div><div class="s "><span class="n">5</span>ส่งถึงแล้ว</div></div>
    <div style="border-top:1px dashed var(--border);margin:16px 0"></div>
    <div class="tiny" style="margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">ราง 2 · การวางบิล/ชำระ</div>
    <div class="flow"><div class="s cur"><span class="n">1</span>ยังไม่วางบิล</div><div class="line"></div><div class="s "><span class="n">2</span>วางบิลแล้ว</div><div class="line"></div><div class="s "><span class="n">3</span>ชำระแล้ว</div></div>
-   <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">ℹ️</span><div>ออกใบแจ้งหนี้ได้ตลอด (ตั้งแต่ยืนยัน PO) — หน้าใบแจ้งหนี้จะแสดง stage การผลิตควบคู่เสมอ</div></div>
+   <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">ℹ️</span><div>ออกใบแจ้งหนี้ได้ตลอด (ตั้งแต่ยืนยัน PO) · <b>ยกเลิก PO ได้ทุกขั้น</b> (บังคับใส่เหตุผล) และ PO ที่ยกเลิกแล้ว <b>เปิดใหม่กลับเป็น "ร่าง" ได้ โดยคงเลข PO เดิม</b> — ทุกการเปลี่ยนมี trace</div></div>
  </div></div>
  <div class="split">
   <div class="card"><div class="card-h"><h3>รายการสินค้า</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>สินค้า</th><th class="num">จำนวน</th><th class="num">ราคา/หน่วย</th><th class="num">รวม</th><th>สถานะผลิต</th></tr></thead><tbody>
     <tr><td><b>โลชั่นบำรุงผิว</b></td><td class="num tnum">200</td><td class="num tnum">180.00</td><td class="num strong tnum">36,000.00</td><td><span class="badge b-processing">กำลังผลิต</span></td></tr>
     <tr><td><b>โฟมล้างหน้า</b></td><td class="num tnum">300</td><td class="num tnum">176.67</td><td class="num strong tnum">53,000.00</td><td><span class="badge b-warning">รอ QC</span></td></tr>
    </tbody></table></div><div style="padding:14px 16px;text-align:right"><span class="muted">รวม+VAT7% </span><b class="tnum" style="font-size:17px">95,230.00 บาท</b></div></div></div>
-  <div class="card"><div class="card-h"><h3>ประวัติสถานะ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">กำลังผลิต — สร้างงานผลิต PRD-000091</div><div class="tm">04/07 09:12 · ระบบ (จาก PO ยืนยัน)</div><div class="tc">เชื่อมไป Production</div></div><div class="t"><div class="th">ยืนยัน PO + จองสต็อก</div><div class="tm">02/07 15:40 · สมหญิง</div></div><div class="t"><div class="th">สร้าง PO (ร่าง)</div><div class="tm">02/07 15:20 · สมหญิง</div></div></div></div></div>
+  <div class="card"><div class="card-h"><h3>ประวัติสถานะ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">แก้ไข PO: วันส่ง 15/07→18/07 · ราคาโลชั่น 180→175</div><div class="tm">08/07 10:25 · สมหญิง</div><div class="tc">จาก Hold — บันทึกทุกช่องที่แก้</div></div><div class="t"><div class="th">งานผลิตติด Hold → raise Sale</div><div class="tm">08/07 09:40 · วิชัย (ผลิต)</div><div class="tc">ลูกค้าขอแก้สูตร</div></div><div class="t"><div class="th">กำลังผลิต — สร้างงานผลิต PRD-000091</div><div class="tm">04/07 09:12 · ระบบ (จาก PO ยืนยัน)</div><div class="tc">เชื่อมไป Production</div></div><div class="t"><div class="th">ยืนยัน PO + จองสต็อก</div><div class="tm">02/07 15:40 · สมหญิง</div></div><div class="t"><div class="th">สร้าง PO (ร่าง)</div><div class="tm">02/07 15:20 · สมหญิง</div></div></div></div></div>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

@@ -98,6 +98,27 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .chk{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
 .chk.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .uprow{display:flex;align-items:center;gap:12px;border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--text2);font-size:13px}
+.noti-wrap{position:relative}
+.noti-btn{background:none;border:none;cursor:pointer;font-size:18px;position:relative;color:var(--text2);padding:4px}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--error);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.noti-panel{display:none;position:absolute;right:0;top:38px;width:344px;max-width:88vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:50;overflow:hidden}
+.noti-panel.open{display:block}
+.noti-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border2);font-weight:600;font-size:14px}
+.noti-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border2);font-size:13px;align-items:flex-start}
+.noti-item:hover{background:#FAFCFC}.noti-item .di{font-size:16px;flex-shrink:0}
+.noti-item a{font-weight:600;display:block}.noti-item .tm{font-size:11px;color:var(--text3);margin-top:2px}
+.noti-item .ack{margin-left:auto;color:var(--text3);cursor:pointer;font-size:15px;flex-shrink:0}
+.noti-f{padding:10px 14px;text-align:center;font-size:12px}
+.pager{display:flex;justify-content:space-between;align-items:center;padding-top:14px;flex-wrap:wrap;gap:10px}
+.pager .pages{display:flex;gap:6px}.pgbtn{min-width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;font-size:13px;font-family:inherit}
+.pgbtn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.drill{margin-top:8px}
+.refbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.switch{width:38px;height:22px;border-radius:12px;background:var(--primary);position:relative;cursor:pointer;flex-shrink:0}
+.switch::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.switch.off{background:#C4CDD5}.switch.off::after{right:auto;left:2px}
+.tile{cursor:pointer;transition:.12s;position:relative}.tile:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(14,124,123,.14)}
+.tile.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}.tile .dr{position:absolute;top:12px;right:14px;color:var(--text3);font-size:12px}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
@@ -122,25 +143,64 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>ตั้งค่าระบบ</b></div><div class="title">ตั้งค่าระบบ</div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
-   <div class="right"><span class="tiny">🔔</span><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ผู้ดูแลระบบ</div></div></div></div></div>
+   <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">4</span></button>
+ <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (4)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
+ <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">QC ไม่ผ่าน: งานผลิต PRD-000091 ตีกลับให้ผลิตใหม่</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000031 (กลีเซอรีนขาด 6 กก.)</a><div class="tm">15 นาทีที่แล้ว · จากการเปิด PO-188</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000181 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000138 เกินกำหนดชำระ +6 วัน</a><div class="tm">วันนี้ 00:05 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
+ <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ผู้ดูแลระบบ</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>ตั้งค่าระบบ</h1><div class="sub">สิทธิ์ราย module (RUCDA) · สร้าง Role ได้ไม่จำกัด · User อยู่ใต้ Role · VAT · ข้อมูลบริษัท</div></div></div>
- <div class="tabs"><a class="active">🔑 Role & สิทธิ์</a><a>👥 ผู้ใช้งาน</a><a>🧾 VAT</a><a>🏢 ข้อมูลบริษัท</a><a>📜 Audit log</a></div>
- <div class="split">
+ <div class="pagehead"><div><h1>ตั้งค่าระบบ</h1><div class="sub">5 หน้าจอ: สิทธิ์ราย module (RUCDAA 6 ระดับ) · ผู้ใช้ · VAT + วันมีผล · ข้อมูลบริษัท · Audit log</div></div></div>
+ <div class="tabs"><a class="active" onclick="setTab(0,this)">🔑 Role & สิทธิ์</a><a class="" onclick="setTab(1,this)">👥 ผู้ใช้งาน</a><a class="" onclick="setTab(2,this)">🧾 VAT</a><a class="" onclick="setTab(3,this)">🏢 ข้อมูลบริษัท</a><a class="" onclick="setTab(4,this)">📜 Audit log</a></div>
+ <script>function setTab(i,el){document.querySelectorAll('.tabs a').forEach(function(a){a.classList.remove('active')});el.classList.add('active');for(var j=0;j<5;j++)document.getElementById('st-'+j).style.display=j===i?'block':'none';}</script>
+ <div id="st-0"><div class="split">
   <div class="card"><div class="card-h"><div><h3>สิทธิ์ของ Role: Sale Manager</h3><div class="tiny">6 ระดับต่อเมนู — R=ดู · U=แก้ · C=สร้าง · D=ลบ · A=อนุมัติ · <b>Admin=สิทธิ์พิเศษ</b></div></div><button class="btn btn-sm btn-primary">บันทึก</button></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เมนู/โมดูล</th><th style="text-align:center">R</th><th style="text-align:center">U</th><th style="text-align:center">C</th><th style="text-align:center">D</th><th style="text-align:center">A</th><th style="text-align:center;color:var(--primary)">Admin</th></tr></thead><tbody>
     <tr><td><b>ลูกค้า</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td></tr><tr><td><b>ใบสั่งซื้อ (PO)</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr><tr><td><b>สต็อก</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr><tr><td><b>การผลิต</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr><tr><td><b>ใบแจ้งหนี้</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr><tr><td><b>สืบย้อนกลับ</b></td><td style="text-align:center"><span class="chk on">✓</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr><tr><td><b>ตั้งค่าระบบ</b></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td><td style="text-align:center"><span class="chk ">&nbsp;</span></td></tr>
    </tbody></table></div>
-   <div style="padding:16px 20px;border-top:1px solid var(--border2)"><div class="alert alert-info" style="margin:0;font-size:13px"><span class="ai">🔑</span><div>คอลัมน์ <b>Admin</b> = สิทธิ์พิเศษเฉพาะโมดูลนั้น (case พิเศษ) เช่น <b>ลูกค้า</b> → reassign / ปลดบัญชีดำ · <b>สืบย้อนกลับ</b> → archive ลงไฟล์ (Super User) · <b>ทุกโมดูล</b> → force เปลี่ยนสถานะข้ามลำดับ</div></div></div>
+   <div style="padding:16px 20px;border-top:1px solid var(--border2)"><div class="alert alert-info" style="margin:0;font-size:13px"><span class="ai">🔑</span><div>คอลัมน์ <b>Admin</b> = สิทธิ์พิเศษเฉพาะโมดูลนั้น เช่น <b>ลูกค้า</b> → reassign / ปลดบัญชีดำ · <b>สืบย้อนกลับ</b> → archive (Super User) · <b>ทุกโมดูล</b> → force เปลี่ยนสถานะ</div></div></div>
   </div></div>
-  <div>
-   <div class="card"><div class="card-h"><h3>Roles (ไม่จำกัด)</h3><button class="btn btn-sm">➕ สร้าง Role</button></div><div class="card-b" style="padding:0"><nav class="menu" style="background:none">
+  <div class="card"><div class="card-h"><h3>Roles (ไม่จำกัด)</h3><button class="btn btn-sm btn-primary">➕ สร้าง Role</button></div><div class="card-b" style="padding:0"><nav class="menu" style="background:none">
      <a href="#" style="color:var(--text);">System Admin</a><a href="#" style="color:var(--text);">Super User</a><a href="#" style="color:var(--text);background:var(--primary-bg);color:var(--primary);font-weight:500">Sale Manager</a><a href="#" style="color:var(--text);">Sale</a><a href="#" style="color:var(--text);">Stock</a><a href="#" style="color:var(--text);">Production</a><a href="#" style="color:var(--text);">QA/QC</a><a href="#" style="color:var(--text);">Shipping</a><a href="#" style="color:var(--text);">Finance</a>
-   </nav></div></div>
-   <div class="card"><div class="card-h"><h3>ข้อมูลบริษัท (ผู้ออกเอกสาร)</h3></div><div class="card-b">
-     <div class="field"><label>ชื่อบริษัท</label><input class="inp" value="บริษัท เอสเซนส์ แฟคทอรี จำกัด"></div>
-     <div class="field"><label>ที่อยู่</label><textarea class="inp" rows="2">99/1 หมู่ 5 ถ.บางนา-ตราด จ.สมุทรปราการ 10570</textarea></div>
-     <div class="field"><label>เลขผู้เสียภาษี</label><input class="inp tnum" value="0105558000123"></div>
-     <button class="btn btn-primary btn-sm">บันทึก</button>
-   </div></div>
-  </div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+   </nav><div style="padding:12px 16px;border-top:1px solid var(--border2)"><div class="field" style="margin:0"><label>ชื่อ Role ใหม่</label><div style="display:flex;gap:8px"><input class="inp" placeholder="เช่น หัวหน้าคลัง"><button class="btn">สร้าง</button></div></div></div></div></div>
+ </div></div>
+ <div id="st-1" style="display:none"><div class="card"><div class="card-h"><h3>ผู้ใช้งาน (24)</h3><button class="btn btn-sm btn-primary">➕ สร้างผู้ใช้</button></div><div class="card-b">
+   <div class="split">
+    <div><div class="tblwrap"><table class="tbl"><thead><tr><th>ชื่อ</th><th>Username</th><th>Role</th><th>สถานะ</th><th></th></tr></thead><tbody>
+     <tr><td><b>สมชาย ใจดี</b></td><td>somchai.j</td><td>Sale</td><td><span class="badge b-success">ใช้งาน</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
+     <tr><td><b>สมหญิง รักดี</b></td><td>somying.r</td><td>Sale Manager</td><td><span class="badge b-success">ใช้งาน</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
+     <tr><td><b>วิชัย ผลิตงาน</b></td><td>wichai.p</td><td>Production</td><td><span class="badge b-neutral">ปิดใช้งาน</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
+    </tbody></table></div><div class="pager"><span class="tiny">แสดง 1–3 จาก 24 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn ">2</button><button class="pgbtn ">3</button><button class="pgbtn">›</button></div></div></div>
+    <div class="card" style="box-shadow:none;border-color:var(--primary-bg)"><div class="card-h"><h3>สร้างผู้ใช้ใหม่</h3></div><div class="card-b">
+      <div class="field"><label>ชื่อ-นามสกุล <span class="req">*</span></label><input class="inp" placeholder="ชื่อจริง"></div>
+      <div class="field"><label>Username <span class="req">*</span></label><input class="inp" placeholder="เช่น somchai.j"><div class="help">รหัสผู้ใช้ (USR-xxxx) ระบบสร้างให้อัตโนมัติ</div></div>
+      <div class="field"><label>รหัสผ่านชั่วคราว <span class="req">*</span></label><input class="inp" type="password" placeholder="ผู้ใช้เปลี่ยนเมื่อเข้าครั้งแรก"></div>
+      <div class="grid2"><div class="field"><label>Role <span class="req">*</span></label><select class="sel"><option>Sale</option><option>Sale Manager</option><option>Stock</option><option>Production</option><option>QA/QC</option><option>Shipping</option><option>Finance</option><option>Super User</option><option>System Admin</option></select></div>
+       <div class="field"><label>สถานะ</label><select class="sel"><option>ใช้งาน</option><option>ปิดใช้งาน</option></select></div></div>
+      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกผู้ใช้</button></div>
+    </div></div>
+   </div>
+ </div></div></div>
+ <div id="st-2" style="display:none"><div class="split">
+  <div class="card"><div class="card-h"><h3>ภาษีมูลค่าเพิ่ม (VAT)</h3></div><div class="card-b">
+    <div class="grid2"><div class="field"><label>อัตรา VAT ที่จะใช้ (%) <span class="req">*</span></label><input class="inp tnum" value="7"></div>
+     <div class="field"><label>วันที่มีผล (effective date) <span class="req">*</span></label><input class="inp" type="date" value="2026-01-01"></div></div>
+    <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>ใบแจ้งหนี้ใช้เรตที่มีผล ณ วันที่ออกเอกสาร · ใบที่ออกไปแล้วยังใช้เรตเดิม (snapshot) ไม่ย้อนหลัง</div></div>
+    <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกเรต VAT</button></div>
+  </div></div>
+  <div class="card"><div class="card-h"><h3>ประวัติเรต VAT</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>อัตรา</th><th>วันที่มีผล</th><th>สถานะ</th></tr></thead><tbody>
+    <tr><td class="strong tnum">7%</td><td class="tnum">01/01/2569</td><td><span class="badge b-success">ใช้อยู่</span></td></tr>
+    <tr><td class="tnum">7%</td><td class="tnum">01/01/2560</td><td><span class="badge b-neutral">เดิม</span></td></tr>
+   </tbody></table></div></div></div>
+ </div></div>
+ <div id="st-3" style="display:none"><div class="card" style="max-width:640px"><div class="card-h"><h3>ข้อมูลบริษัท (ผู้ออกเอกสาร)</h3></div><div class="card-b">
+    <div class="field"><label>ชื่อบริษัท <span class="req">*</span></label><input class="inp" value="บริษัท เอสเซนส์ แฟคทอรี จำกัด"></div>
+    <div class="field"><label>ที่อยู่จดทะเบียน <span class="req">*</span></label><textarea class="inp" rows="2">99/1 หมู่ 5 ถ.บางนา-ตราด ต.บางเสาธง อ.บางเสาธง จ.สมุทรปราการ 10570</textarea></div>
+    <div class="grid2"><div class="field"><label>เลขประจำตัวผู้เสียภาษี <span class="req">*</span></label><input class="inp tnum" value="0105558000123"></div>
+     <div class="field"><label>โทรศัพท์</label><input class="inp" value="02-100-2000"></div></div>
+    <div class="field"><label>โลโก้บริษัท (พิมพ์บนใบกำกับภาษี)</label><div class="uprow">📎 <span>อัปโหลดโลโก้ หรือ <a href="#">เลือกไฟล์</a> (PNG/SVG)</span></div></div>
+    <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกข้อมูลบริษัท</button></div>
+ </div></div></div>
+ <div id="st-4" style="display:none"><div class="card"><div class="card-h"><h3>Audit log (บันทึกกิจกรรมทั้งระบบ)</h3><div class="searchbox" style="max-width:240px"><span class="si">🔍</span><input class="inp" placeholder="ค้นผู้ใช้ / โมดูล"></div></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>โมดูล</th><th>การกระทำ</th></tr></thead><tbody>
+    <tr><td class="tnum">08/07 10:25</td><td>สมหญิง</td><td>PO</td><td>แก้ไข PO-181 (วันส่ง, ราคา)</td></tr>
+    <tr><td class="tnum">08/07 10:20</td><td>สมหญิง</td><td>ลูกค้า</td><td>เปลี่ยนสถานะ CUS-21 → ต้องติดตาม</td></tr>
+    <tr><td class="tnum">08/07 09:40</td><td>วิชัย</td><td>การผลิต</td><td>PRD-091 → Hold (raise Sale)</td></tr>
+    <tr><td class="tnum">08/07 08:31</td><td>สมชาย</td><td>ระบบ</td><td>เข้าสู่ระบบ</td></tr>
+   </tbody></table></div><div class="pager"><span class="tiny">แสดง 1–4 จาก 1,204 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn ">2</button><button class="pgbtn ">3</button><button class="pgbtn">›</button></div></div></div></div></div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
