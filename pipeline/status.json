@@ -1,3 +1,30 @@
 {
-  "features": {}
+  "features": {
+    "erp-v2-ui-first": {
+      "title": "ERP v2 — UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
+      "created_at": "2026-07-08T10:00:00+07:00",
+      "current_agent": "ux-ui",
+      "status": "IN_PROGRESS",
+      "human_gates": {
+        "gate1_look": {
+          "approved": false,
+          "approved_at": null,
+          "note": "Gate 1 ของ feature นี้ = ปอนด์อนุมัติหน้าตา (design system + mockups) ไม่ใช่ architecture"
+        },
+        "gate2_release": {
+          "approved": false,
+          "approved_at": null,
+          "note": null
+        }
+      },
+      "overrides": [
+        {
+          "step": "po,ba skipped",
+          "overridden_by": "pond",
+          "reason": "ปอนด์สั่งเริ่มที่ UX/UI โดยใช้ functional scope เดิมจาก prototype-v1"
+        }
+      ],
+      "history": []
+    }
+  }
 }
