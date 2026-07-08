@@ -7,6 +7,10 @@
 - **UX/UI**: ปรึกษา PO แล้วทำ UI ทุกหน้าให้ครบ 100%
 - ปอนด์จะ review UI อีกครั้ง (Gate 1 รอบ 2)
 
+## เพิ่มเติมจากปอนด์ (2026-07-08 หลังส่ง feedback)
+- **ชื่อระบบอย่างเป็นทางการ: "ESSENCE Hub System"** — ใช้ในทุก UI (login, header, browser title),
+  placeholder logo/icon ต้องออกแบบจากชื่อนี้ให้เข้ากับ theme Clean Clinical
+
 ## คำตอบคำถามเดิม
 1. **Theme: A — Clean Clinical (teal)** ✅ อนุมัติ
 2. **Logo**: ยังไม่มีไฟล์จริง — ให้เตรียม placeholder logo + **icon file (favicon/app icon)** ให้เข้ากับ theme ไว้ก่อน
