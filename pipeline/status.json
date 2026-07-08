@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ERP v2 — UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
+      "current_agent": "ux-ui + po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -19,9 +19,9 @@
       },
       "overrides": [
         {
-          "step": "po,ba skipped",
+          "step": "ba skipped",
           "overridden_by": "pond",
-          "reason": "ปอนด์สั่งเริ่มที่ UX/UI โดยใช้ functional scope เดิมจาก prototype-v1"
+          "reason": "ปอนด์สั่ง flow ใหม่: UX/UI + PO ทำ design phase คู่กัน (แก้จากเดิมที่ข้าม po ด้วย) — functional scope อ้างอิง prototype-v1"
         }
       ],
       "history": []
