@@ -2,75 +2,44 @@
 
 ผู้ review: PO (ปอนด์มอบอำนาจให้ review แทน — "ให้ PO review แล้ว feedback ได้มั้ย แต่อยากให้ละเอียดที่สุด")
 วันที่: 2026-07-08 · ทบทวน mockups ที่ `docs/design/erp-v2-ui-first/mockups/`
-รอบ 2 = ตรวจครั้งแรก (ผลด้านล่าง §1–§6) · **รอบ 3 = ตรวจซ้ำหลัง UX/UI แก้ (ดู §7 ท้ายไฟล์ — ผ่านทั้งหมด)**
+รอบ 2 = ตรวจครั้งแรก (§1–§6) · รอบ 3 = ตรวจซ้ำ ผ่าน (§7) · **รอบ 3 feedback ปอนด์ → รายการสั่งงานรอบ 4 (§8 ท้ายไฟล์)**
 
 ## สรุปภาษาไทย
-รอบ 2: mockup คุณภาพสูง ครบหน้า แต่สร้างก่อน feedback รอบ 2 จึงมี flow ที่ยังไม่ตรง (production, state "รอวัตถุดิบ", supplier, dashboard, trace, settings ฯลฯ) — ออกรายการสั่งงาน P0/P1/P2. **รอบ 3: UX/UI ปิดครบทุกข้อ** (production flow ใหม่, ลูกค้า 6 สถานะ, Shipment/DN 2 ชั้น, PO cancel/reopen, goods-receipt เต็มจอ, supplier active/inactive+price matrix, dashboard drill-down+auto-refresh, BOM snapshot+badge, trace field-audit, settings 5 หน้าจอ, notification panel + deep link) → **ผ่าน เปิด Gate 1 รอบ 3 ให้ปอนด์**
+รอบ 2: ออกรายการ P0/P1/P2. รอบ 3: UX/UI ปิดครบ, PO ตรวจผ่าน (§7). แต่ปอนด์ review รอบ 3 แล้ว**ยังไม่ approve** — มี feedback ใหม่ (4 ประเด็นวิเคราะห์ 🔍PO + งาน UX หลายจุด) → รายการสั่งงานรอบ 4 อยู่ §8
 
 ---
 
-## 5. รายการสั่งงาน UX/UI (จากรอบ 2) — สถานะปิดในรอบ 3
+## 5. รายการสั่งงาน UX/UI (จากรอบ 2) — ปิดครบในรอบ 3
+P0 (4/4), P1 (10/10), P2 (§15–20) — **✅ ปิดทั้งหมด** (รายละเอียดยืนยันใน §7)
 
-### P0 — flow ผิด/ยกเลิกไปแล้วยังโผล่
-1. production flow (ตัด "ส่งมอบแล้ว" + เพิ่ม QC/QC-fail/Hold-แก้PO) — **✅ ปิด (§7)**
-2. ลบ state "รอวัตถุดิบ" ทุกจุด — **✅ ปิด**
-3. supplier: ลบฟอร์มรับเข้าคลัง — **✅ ปิด**
-4. po-detail: cancel ทุก case + reopen (Cancelled→Draft) — **✅ ปิด**
-
-### P1
-5. stock Goods Receipt เต็มจอ + อ้าง/ปิด PR — **✅ ปิด (หน้าใหม่ goods-receipt.html)**
-6. supplier active/inactive + price matrix + search วัตถุดิบ — **✅ ปิด**
-7. customer-detail ตั้ง "ต้องติดตาม" + comment — **✅ ปิด**
-8. purchase-request สร้างตรง — **✅ ปิด**
-9. dashboard refresh + auto-refresh 15s + drill-down + pagination — **✅ ปิด**
-10. bom cost = max active supplier + snapshot + badge — **✅ ปิด**
-11. trace field-level audit + date range + entity selector — **✅ ปิด**
-12. settings 5 หน้าจอจริง — **✅ ปิด**
-13. shipping search-by-customer + Shipment/DN — **✅ ปิด**
-14. po-list search 3 วันที่ + pagination — **✅ ปิด**
-
-### P2
-15. notification panel จริง (bell→list→deep link+ack) — **✅ ปิด (ทุกหน้า)**
-16. home dedupe "หน้าหลัก" — **✅ ปิด**
-17. qc batch-fail→กลับกำลังผลิต+feedback — **✅ ปิด**
-18. VAT effective date — **✅ ปิด (settings แท็บ VAT)**
-19. pagination/empty/loading ทุก list — **✅ ปิด (pagination ครบ; empty/loading มี pattern)**
-20. index เพิ่มลิงก์หน้าใหม่ + mapping — **✅ ปิด (มีป้าย 🔴แก้/🟢ใหม่)**
+## 7. ผลตรวจรอบ 3 — ผ่าน (ก่อนปอนด์ review)
+ตรวจ 15+ หน้า + grep: production flow ใหม่, po-detail cancel/reopen+field trace, supplier active/inactive+price matrix, goods-receipt เต็มจอ, customer 6 สถานะ, shipping/DN 2 ชั้น, dashboard drill-down+auto-refresh, bom snapshot+badge, trace field-audit, settings 5 หน้าจอ, notification panel — ทุกข้อ + คำตอบปอนด์ 5 ข้อ + feedback ร2 13/13 ครบ
 
 ---
 
-## 7. ผลตรวจรอบ 3 (2026-07-08) — ตรวจซ้ำหลัง UX/UI แก้
+## 8. รายการสั่งงาน UX/UI รอบ 4 (จาก `pond-gate1-r3-feedback.md` + วิเคราะห์ PO)
+อ้างอิงกติกาที่อัปเดตใน `status-journeys.md` (§3.1 Batch, §3.2 QC ราย line, §5 GR multi-line, §12 dashboard filter) + `brief.md` §2.5
 
-**วิธี:** เปิดอ่านเชิงลึก 20+ หน้า (production, po-detail, supplier, goods-receipt, customer-detail, shipping, delivery-note, dashboard, bom, trace, settings, po-list, purchase-request, qc, home) + grep ยืนยัน marker ทั้งชุด
+### P0 — flow/พฤติกรรมผิด (ต้องแก้ก่อน ไม่งั้น BA/Engineer ทำผิด)
+1. **production.html**: **เอาตัวเลือก "QC ไม่ผ่าน" ออกจากหน้าผลิต** — การตัดสิน QC อยู่หน้า QC เท่านั้น; หน้าผลิตแค่แสดงผล QC + รับ Batch กลับเมื่อถูกตีกลับ (ตัวเปลี่ยนสถานะเหลือ: เริ่มผลิต / ส่งตรวจ QC / Hold)
+2. **qc.html**: ทำ **QC ราย line item / ราย Batch** — แต่ละ line มีผล ผ่าน/ไม่ผ่าน; ไม่ผ่าน = ตีกลับเฉพาะ line นั้น + feedback (บังคับ); PO พร้อมจัดส่งเมื่อทุก line ผ่าน (แสดง reconcile ที่ PO) + แสดง **Batch + Lot ที่ใช้** ต่อ line
+3. **production.html + qc.html**: แสดง **Batch lifecycle** — เลข Batch สร้างตอนกด "เริ่มผลิต" (1 line = 1 Batch), Batch ผูก PO/line/Lot; หน้า QC เห็น PO↔Batch↔Lot
+4. **หน้า create ที่ยังเป็น edit/กดไม่ได้ → ทำเป็น create จริง กดได้:** เพิ่มลูกค้า (customers), เพิ่มผู้ติดต่อ (customer-detail), เพิ่ม Supplier, สร้างคำขอใหม่ (PR), สร้างสูตรใหม่ (BOM), **สร้างรอบจัดส่ง (shipping)**
 
-### 7.1 คำตอบปอนด์ 5 ข้อ — ฝังถูกต้องครบ
-| คำตอบปอนด์ | หลักฐานใน mockup | ผล |
-|---|---|---|
-| ลูกค้า "ต้องติดตาม" = สถานะที่ 6 | customer-detail: badge "ต้องติดตาม" + dropdown 6 สถานะ + comment บังคับ + alert โยงจาก Production Hold (PO-181) + dashboard tile "ต้องติดตาม" + drill-down | ✅ |
-| การจัดส่ง 2 ชั้น Shipment→DN, DN=1 PO | shipping: สร้าง "รอบจัดส่ง (Shipment)" + list SHP-xxxx (จำนวน DN, สถานะรอบ); delivery-note: รอบ SHP มี DN table "1 ใบ/ออเดอร์" print รายใบ + สถานะรอบ (รับ→นำส่ง→เสร็จรอบ) | ✅ |
-| PO reopen คงเลขเดิม | po-detail: "ยกเลิก PO ได้ทุกขั้น + เปิดใหม่กลับเป็นร่าง คงเลข PO เดิม" | ✅ |
-| Hold แก้ PO ได้หมด + trace | po-detail: ปุ่ม ✎แก้ไข PO + alert "Sale แก้ไข PO ได้ทุกอย่าง" + trace timeline โชว์ field เปลี่ยน (วันส่ง 15→18, ราคา 180→175) | ✅ |
-| BOM snapshot + badge เตือน | bom: badge "ราคาทุนอาจล้าสมัย" (snapshot 11.60 vs active max 12.40) + ปุ่มคำนวณใหม่ + pill "snapshot" | ✅ |
+### P1 — requirement รอบ 3
+5. **goods-receipt.html**: เปลี่ยนเป็น **multi-line** — header (supplier/เลขใบรับ/วันที่/แนบไฟล์) + ตาราง line (วัตถุดิบ×จำนวน×ราคา×lot gen รายบรรทัด×อ้าง PR รายบรรทัด); รองรับ **1 GR อ้างหลาย PR**
+6. **dashboard.html**: เพิ่ม **date filter** (preset วันนี้/สัปดาห์นี้/เดือนนี้[default]/กำหนดเอง) มีผลทุก tile + **caption ต่อ tile** อธิบายความหมายกับช่วง (event vs state ตาม `status-journeys.md` §12)
+7. **shipping.html**: หน้า **"สร้างรอบจัดส่ง" จริง 2 ทาง** (เลือก PO ก่อน / สร้างรอบเปล่าแล้ว search PO) + ฟอร์มข้อมูลรอบ: **คนขับ, เบอร์คนขับ, Route, ประเภทรถ (เก๋ง/motorcycle/กระบะ/10 ล้อ — dropdown)**
+8. **supplier.html**: **layout หน้าแก้ไขใหม่** — เลิกใช้ panel ขวา (เลื่อนดูวัตถุดิบลำบาก); ทำเป็นหน้าเต็ม/ตารางที่จัดการ price matrix ได้สะดวก + หน้า "เพิ่ม Supplier" แยกจริง
+9. **po-detail.html**: เพิ่ม **UI เปลี่ยนสถานะ PO ชัดเจน** (ปุ่ม/กล่องเปลี่ยนสถานะ + เหตุผล + trace) — ปอนด์ยังไม่เห็น case แก้ไขสถานะ PO
 
-### 7.2 flow ใน status-journeys.md — มีหน้าจอรองรับครบ
-- **Production** รับงาน→กำลังผลิต→**QC**→พร้อมส่งมอบ (ตัด "ส่งมอบแล้ว") + QC-fail→กำลังผลิต+feedback + Hold→raise Sale+แก้ PO — ✅ (production.html status changer + flow bar + qc.html batch tab)
-- **PO 2 ราง + cancel/reopen** — ✅ (po-detail)
-- **Customer 6 สถานะ + Follow-up↔Hold** — ✅
-- **Shipment/DN 2 ชั้น + Reject→raise Sale + Postpone flag+วันที่ ค้างคิว** — ✅ (shipping/delivery-note/dashboard shipping drill)
-- **PR สร้างตรง + ของเข้าครบ auto จาก Goods Receipt** — ✅ (purchase-request + goods-receipt C4)
-- **Notification/Inbox + deep link** — ✅ (bell + panel + per-item acknowledge + deep links ทุกหน้า)
-- **RUCDAA 6 ระดับ + Admin bit** — ✅ (settings)
+### P2 — UX/คุณภาพ (สำคัญต่อการอนุมัติ)
+10. **ตรวจ label ซ้ำ "ทุกหน้า"** — ปอนด์เจอ "Dashboard" 3 จุดในหน้าเดียว; ให้ UX ไล่ scan ทุกหน้า เหลือ label จุดเดียว/หน้า (title vs crumb vs heading)
+11. **test data สมจริงตรง use case ทุกหน้า** — เช่น ลูกค้า Follow-up ต้องมีเคส Hold ประกอบ, Blacklist มี comment เหตุผล, GR/Batch/QC มีข้อมูลที่เล่าเรื่องต่อเนื่องกัน (กัน BA/QA งง)
+12. **dropdown ทุกจุด search ได้** — เลือก supplier/วัตถุดิบ/PO/ลูกค้า ฯลฯ เป็น searchable select
+13. **empty/loading/error state** ให้ครบทุก list (ยืนยัน pattern)
 
-### 7.3 feedback รอบ 2 ครบ 13/13 หมวด
-1 Home dedup ✅ · 2 Dashboard refresh/auto-15s/drill-down/pagination ✅ · 3 ลูกค้า Follow-up+comment ✅ · 4 PO 3-date search+ราคา0+cancel/reopen ✅ · 5 Stock ราคา0+Goods Receipt+ปิด PR ✅ · 6 PR สร้างตรง+สถานะ ✅ · 7 Supplier price matrix+active/inactive+ไม่มีรับเข้า ✅ · 8 BOM max-active+snapshot ✅ · 9 การผลิต flow ใหม่ ✅ · 10 QC fail→ผลิต+feedback ✅ · 11 จัดส่ง/DN 2 ชั้น+Postpone ✅ · 12 Trace entity+date range+field audit ✅ · 13 Settings 5 หน้าจอ ✅
+### เกณฑ์ตรวจรอบ 4 (PO จะ re-review)
+ทุกข้อ P0/P1/P2 ปิด + 4 ประเด็น 🔍PO สะท้อนใน mockup ตรงกับ `status-journeys.md` (§3.1/§3.2/§5/§12) + หน้า create กดได้จริง + ไม่มี label ซ้ำ + test data สมจริง → เปิด Gate 1 รอบ 4
 
-### 7.4 เกณฑ์ "ละเอียดพอให้ BA/Engineer/QA"
-ผ่าน — ทุกหน้ามี field+validation (req/ไม่บังคับ), ปุ่ม/action, สถานะ+trace timeline, pagination, deep link, กติกา cross-module เขียนกำกับ (C-codes) ตรง `status-journeys.md`
-
-### 7.5 ข้อสังเกตเล็กน้อย (ไม่ใช่ blocker — polish ตอน implement)
-- bom.html: subtitle ยังเขียน "ราคาทุนคำนวณจากราคาซื้อ" (กว้าง) แต่ field detail ถูกต้องแล้ว (max active supplier + snapshot) — ปรับถ้อยคำ subtitle ให้ตรงได้
-- customer-detail dropdown แสดง 5 ตัวเลือก (ไม่รวม Lead/ผู้สนใจ ในตัวเลือกเปลี่ยนสถานะ) — สมเหตุสมผล (ลูกค้า active ไม่ย้อนเป็น Lead) แต่ถ้าต้องการครบ 6 ให้เพิ่มเป็นทางเลือก
-- empty/loading state มี pattern ใน design-system แต่บางหน้าโชว์เฉพาะ filled — ยืนยันตอน implement
-
-### 7.6 คำตัดสิน: **ผ่าน** → เปิด Gate 1 รอบ 3 ให้ปอนด์
-ทุกข้อ P0/P1/P2 ปิดครบ, คำตอบปอนด์ 5 ข้อฝังถูก, journeys ครบ, feedback 13/13 — พร้อมให้ปอนด์อนุมัติหน้าตา
+> คำถามยืนยันปอนด์ 5 ข้อ (QC ราย line, Batch granularity, dashboard default, GR/PR many-to-many, BOM no-active-supplier) อยู่ใน `status-journeys.md` §13 + status.json — ตั้ง default แล้ว UX/UI เริ่มได้เลย ไม่ต้องรอ
