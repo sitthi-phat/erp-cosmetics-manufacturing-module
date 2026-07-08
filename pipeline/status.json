@@ -4,17 +4,27 @@
       "title": "ERP v2 — UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "ux-ui + po",
-      "status": "IN_PROGRESS",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Gate 1 ของ feature นี้ = ปอนด์อนุมัติหน้าตา (design system + mockups) ไม่ใช่ architecture"
+          "note": "Stage 1: UX/UI + PO — ปอนด์อนุมัติหน้าตา (design system + mockups)"
         },
-        "gate2_release": {
+        "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": null
+          "note": "Stage 2: PO+BA+Tech-Lead — ปอนด์อนุมัติ requirements + NFR; ถ้า UI ขาด/flow ไม่ครบ วนกลับ UX/UI แบบ incremental"
+        },
+        "gate3_app_review": {
+          "approved": false,
+          "approved_at": null,
+          "note": "Stage 3 จบ: PO/BA/UX-UI เล่นแอปจริงแล้วสรุปให้ปอนด์อนุมัติ (Test Env: local PC)"
+        },
+        "gate4_deploy": {
+          "approved": false,
+          "approved_at": null,
+          "note": "Stage 4: DevOps deploy GCP + QA sanity test ส่งผลให้ปอนด์"
         }
       },
       "overrides": [
@@ -30,16 +40,50 @@
           "phase": "design-brief",
           "status": "IN_PROGRESS",
           "gate_checklist": [
-            {"item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)", "pass": true, "missing": null},
-            {"item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)", "pass": true, "missing": null},
-            {"item": "Gate 1 'approve the look' defined with verifiable pass criteria", "pass": true, "missing": null},
-            {"item": "Screen business-priority tiers defined", "pass": true, "missing": null},
-            {"item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)", "pass": true, "missing": null},
-            {"item": "Feature-level Definition of Done to Gate 2 complete", "pass": true, "missing": null},
-            {"item": "Scope in/out specified", "pass": true, "missing": null},
-            {"item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)", "pass": true, "missing": null}
+            {
+              "item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Gate 1 'approve the look' defined with verifiable pass criteria",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Screen business-priority tiers defined",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Feature-level Definition of Done to Gate 2 complete",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Scope in/out specified",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)",
+              "pass": true,
+              "missing": null
+            }
           ],
-          "output_files": ["docs/requirements/erp-v2-ui-first/brief.md"],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/brief.md"
+          ],
           "questions_for_pond": [
             {
               "q": "ยืนยันหน้าจอ Tier 1 (ต้องเนี้ยบสุด) ที่ผมเสนอ: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, stock — ตรงกับจุดที่ปอนด์ feedback หนักสุดไหม?",
@@ -74,6 +118,68 @@
           "summary": "Wrote v2 design-brief and tied it to the real 10 prototype feedback points (prototype-feedback-reference.md): added section 3.1 mapping each of the 10 items to the mockup evidence required, making BKV-4/Gate-1 fully verifiable, and enriched the Thai tax-invoice spec (discount field, Thai baht text, 2 signature boxes). 5 measurable Business Key Values (first-time-user task speed & adoption). Q1 (feedback list) resolved via Dispatcher-supplied reference; 3 business questions remain, batched for Pond at Gate 1 — not blocking. Did not touch feature-level status/current_agent (UX/UI owns it this phase).",
           "overridden_by": null,
           "updated_at": "2026-07-08T12:10:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "design",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {"item": "Design-system tokens are concrete values (hex, px, weights) — not adjectives", "pass": true, "missing": null},
+            {"item": "Thai status-label map covers every enum (PO/ProductionOrder/Batch/Lot/QC/Shipment/Invoice/Customer/User) — no raw enum shown", "pass": true, "missing": null},
+            {"item": "Print stylesheet spec for Thai tax invoice (structure, Thai baht text, 2 signatures, VAT snapshot, Superseded watermark)", "pass": true, "missing": null},
+            {"item": "Proposals stay inside antd + wrapper-layer constraints (ADR-008); new wrapper components spec'd with API", "pass": true, "missing": null},
+            {"item": "Backlog vs this-round scope explicit, each spec item maps to a story/AC or tagged polish", "pass": true, "missing": null},
+            {"item": "mockup ครอบทุกหน้าหลัก (17 หน้า: login/home/customers/PO list-create-detail/stock+goods-receipt/BOM/production/QC/shipping/invoices+detail+print/trace/admin/dashboard)", "pass": true, "missing": null},
+            {"item": "มี theme options ให้ปอนด์เลือก (3 directions + 1 recommended)", "pass": true, "missing": null},
+            {"item": "index.html เปิดดูได้ (self-contained, inline CSS, no CDN) — verified via Playwright render", "pass": true, "missing": null},
+            {"item": "Pond's 10 prototype complaints addressed in mockups (readable PO lines+delete, stock search+goods-receipt, BOM UI, production auto-calc, QC incoming, customer tax fields, invoice detail+Thai tax print, trace single-search+Lot/Batch legend, humanized Thai statuses, responsive desktop+tablet)", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/design-system.md",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/mockups/login.html",
+            "docs/design/erp-v2-ui-first/mockups/home.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/mockups/po-list.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/bom.html",
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/invoices.html",
+            "docs/design/erp-v2-ui-first/mockups/invoice-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/invoice-print.html",
+            "docs/design/erp-v2-ui-first/mockups/trace.html",
+            "docs/design/erp-v2-ui-first/mockups/admin.html"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "เลือกโทนสี (theme) ไหนสำหรับทั้งระบบ? (ดู swatch + preview ใน index.html หัวข้อ 1) ผมแนะนำ Clean Clinical เพราะสื่อความสะอาด/มาตรฐาน GMP ของโรงงานเครื่องสำอาง คอนทราสต์ดีใช้ทั้งวัน",
+              "options": ["Clean Clinical — teal #0E7C7B (แนะนำ ใช้ใน mockups อยู่แล้ว)", "Warm Cosmetic — rose #B0546E", "Corporate Blue — #1F5EDB", "มีสีแบรนด์เฉพาะ ขอส่ง hex ให้"],
+              "answer": null
+            },
+            {
+              "q": "มีไฟล์โลโก้จริงสำหรับหัวเว็บและหัวใบกำกับภาษีไหม? (ตอนนี้ mockup ใช้กล่อง placeholder 'LOGO')",
+              "options": ["มี จะส่งไฟล์ให้", "ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน"],
+              "answer": null
+            },
+            {
+              "q": "ข้อมูลบริษัทผู้ออกเอกสารบนใบกำกับภาษี (ชื่อ/ที่อยู่/เลขผู้เสียภาษี) — ตอนนี้ใส่ตัวอย่าง 'บริษัท คอสเมดิก แฟคทอรี จำกัด'",
+              "options": ["จะส่งข้อมูลจริงให้ใส่", "ให้ Admin กรอกเองในหน้าตั้งค่าระบบ (มี field รองรับแล้ว)"],
+              "answer": null
+            },
+            {
+              "q": "ความหนาแน่นของ UI (density) — ผมตั้งปุ่ม/ช่องกรอกสูง 40px และแถวตาราง ~48px ให้กดง่ายบนแท็บเล็ต เหมาะกับพนักงานโรงงานไหม หรืออยากได้แน่นกว่านี้เพื่อเห็นข้อมูลต่อจอมากขึ้น?",
+              "options": ["40px กำลังดี (แนะนำ)", "อยากให้แน่นกว่านี้ (compact 32px)", "อยากให้ใหญ่กว่านี้อีก"],
+              "answer": null
+            }
+          ],
+          "summary": "Delivered v2 design system (concrete antd ConfigProvider tokens: IBM Plex Sans Thai, Clean Clinical teal palette, 40px density, breakpoints, component/print rules, full Thai status-label map) + 17 self-contained clickable HTML mockups covering every main page + index.html gallery with 3 theme options (Clean Clinical recommended). Directly fixes all 10 Pond prototype complaints (readable+deletable PO lines, stock search+goods receipt, BOM UI, production BOM auto-calc, QC incoming form, customer tax fields, invoice detail+Thai tax-invoice print with baht-text & 2 signatures, trace single-search + Lot/Batch legend, humanized Thai statuses, desktop+tablet responsive). Verified render via Playwright. Set feature to WAITING_HUMAN_GATE (Gate 1 = Pond approves the look). 4 taste questions batched for Pond.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T14:45:00+07:00"
         }
       ]
     }

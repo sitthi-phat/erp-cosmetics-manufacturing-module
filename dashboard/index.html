@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Team Dashboard — ERP Cosmetics Factory</title>
+<style>
+  :root{
+    --bg:#F5F7F4; --card:#FFFFFF; --ink:#1B2420; --muted:#68746D;
+    --line:#DDE3DC; --accent:#166944; --accent-soft:#E3F0E8;
+    --wait:#B26B12; --wait-soft:#F8EDDC; --fail:#B03A2A; --fail-soft:#F8E4E0;
+    --info:#2456A6; --info-soft:#E3EBF8; --hold:#6B7570; --hold-soft:#EBEEEA;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#141917; --card:#1D2421; --ink:#E8ECE9; --muted:#94A09A;
+      --line:#313B36; --accent:#4CC08A; --accent-soft:#1C3529;
+      --wait:#E0A050; --wait-soft:#3A2E1A; --fail:#E07A6A; --fail-soft:#3C221E;
+      --info:#7AA6E8; --info-soft:#1E2A40; --hold:#8A948E; --hold-soft:#272E2B;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;font-size:15px;line-height:1.6;padding:24px 16px 80px}
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:20px}
+  h1{font-size:22px;font-weight:700}
+  h1 small{display:block;font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+  .refresh{margin-left:auto;font-size:12px;color:var(--muted);font-family:monospace}
+  .refresh b{color:var(--accent)}
+  .error-box{background:var(--fail-soft);border:1px solid var(--fail);border-radius:10px;padding:16px 20px;margin:20px 0}
+  .error-box code{background:var(--card);padding:2px 8px;border-radius:4px;font-size:13px}
+
+  .feature{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:24px}
+  .feature > h2{font-size:17px;margin-bottom:2px}
+  .slug{font-family:monospace;font-size:12px;color:var(--muted)}
+  .now{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:13.5px;font-weight:600;border:1px solid transparent}
+  .pill .dot{width:8px;height:8px;border-radius:50%}
+  .p-run{background:var(--accent-soft);color:var(--accent)} .p-run .dot{background:var(--accent);animation:pulse 1.6s infinite}
+  .p-wait{background:var(--wait-soft);color:var(--wait)} .p-wait .dot{background:var(--wait)}
+  .p-fail{background:var(--fail-soft);color:var(--fail)} .p-fail .dot{background:var(--fail)}
+  .p-info{background:var(--info-soft);color:var(--info)} .p-info .dot{background:var(--info)}
+  .p-hold{background:var(--hold-soft);color:var(--hold)} .p-hold .dot{background:var(--hold)}
+  @keyframes pulse{50%{opacity:.35}}
+
+  .stages{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 6px}
+  .stage{flex:1 1 150px;min-width:150px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;position:relative}
+  .stage h4{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+  .stage p{font-size:13px;font-weight:600;margin-top:2px}
+  .stage .g{font-size:11px;font-family:monospace;margin-top:6px;display:block}
+  .stage.done{border-color:var(--accent);background:var(--accent-soft)}
+  .stage.active{border-color:var(--wait);background:var(--wait-soft);box-shadow:0 0 0 3px var(--wait-soft)}
+  .stage.gate-open{border-color:var(--fail);border-style:dashed}
+
+  h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;padding:6px 10px;border-bottom:1.5px solid var(--line)}
+  td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .table-scroll{overflow-x:auto}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .t-ok{background:var(--accent-soft);color:var(--accent)}
+  .t-wait{background:var(--wait-soft);color:var(--wait)}
+  .t-fail{background:var(--fail-soft);color:var(--fail)}
+  .t-info{background:var(--info-soft);color:var(--info)}
+  a{color:var(--info);text-decoration:none;word-break:break-all}
+  a:hover{text-decoration:underline}
+  .q{background:var(--wait-soft);border-left:3px solid var(--wait);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:13.5px}
+  .q .ans{color:var(--accent);font-weight:600}
+  .q .noans{color:var(--fail);font-weight:600}
+  ul.files{list-style:none;font-size:13px}
+  ul.files li{padding:2px 0}
+  ul.files li::before{content:"📄 "}
+  details{margin:4px 0}
+  summary{cursor:pointer;font-size:13.5px;font-weight:600}
+  .agent-group{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:8px 0}
+  .agent-group h4{font-size:14px}
+  .agent-group .meta{font-size:12px;color:var(--muted)}
+  footer{margin-top:30px;font-size:12px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🏭 AI Team Dashboard<small>ERP COSMETICS FACTORY — PIPELINE BOARD</small></h1>
+    <div class="refresh">อัปเดตล่าสุด: <b id="last-refresh">—</b> · รีเฟรชอัตโนมัติทุก 15 วิ</div>
+  </header>
+  <div id="app">กำลังโหลด…</div>
+  <footer>อ่านข้อมูลสดจาก <code>pipeline/status.json</code> — เปิดผ่าน HTTP server เช่น <code>npx serve .</code> หรือ <code>python -m http.server</code> ที่ root ของ repo</footer>
+</div>
+
+<script>
+const STAGES = [
+  {key:'s1', title:'Stage 1', label:'UX/UI + PO · Design', gate:'gate1_look',        gateLabel:'GATE 1 หน้าตา',       agents:['ux-ui','po']},
+  {key:'s2', title:'Stage 2', label:'PO+BA+TechLead · Requirements', gate:'gate2_requirements', gateLabel:'GATE 2 requirements', agents:['ba','tech-lead']},
+  {key:'s3', title:'Stage 3', label:'Engineer ∥ QA ∥ BA · Build', gate:'gate3_app_review',  gateLabel:'GATE 3 เล่นแอปจริง',   agents:['engineer','qa']},
+  {key:'s4', title:'Stage 4', label:'DevOps · Deploy GCP + Sanity', gate:'gate4_deploy',   gateLabel:'GATE 4 ส่งมอบ',        agents:['devops']},
+];
+const AGENT_ICONS = {po:'📋', ba:'📝', 'tech-lead':'🏗️', 'ux-ui':'🎨', engineer:'🔧', qa:'🧪', devops:'🚀'};
+
+function statusPill(status){
+  if(!status) return ['p-hold','—'];
+  if(status==='DONE') return ['p-run','✅ DONE'];
+  if(status==='IN_PROGRESS'||status.startsWith('READY_FOR')) return ['p-run', status==='IN_PROGRESS' ? 'กำลังทำงาน' : status];
+  if(status==='WAITING_HUMAN_GATE') return ['p-wait','🚧 รอปอนด์อนุมัติ'];
+  if(status==='BLOCKED_NEED_INPUT') return ['p-fail','⛔ รอปอนด์ตอบคำถาม'];
+  if(status==='FAILED') return ['p-fail','❌ FAILED — ตีกลับแก้'];
+  if(status==='ON_HOLD') return ['p-hold','⏸ พักไว้'];
+  return ['p-info',status];
+}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function fileLink(p){ return '<a href="../'+esc(p)+'" target="_blank">'+esc(p)+'</a>'; }
+
+function stageOfFeature(f){
+  const g = f.human_gates||{};
+  if(!(g.gate1_look&&g.gate1_look.approved)) return 0;
+  if(!(g.gate2_requirements&&g.gate2_requirements.approved)) return 1;
+  if(!(g.gate3_app_review&&g.gate3_app_review.approved)) return 2;
+  if(!(g.gate4_deploy&&g.gate4_deploy.approved)) return 3;
+  return 4;
+}
+
+function render(data){
+  const feats = Object.entries(data.features||{});
+  if(!feats.length){ document.getElementById('app').innerHTML = '<p>ยังไม่มี feature ใน pipeline — สั่ง <code>/new-feature</code> เพื่อเริ่ม</p>'; return; }
+  let html='';
+  for(const [slug,f] of feats){
+    const [pcls,ptxt] = statusPill(f.status);
+    const curStage = stageOfFeature(f);
+    const gates = f.human_gates||{};
+
+    // stage strip
+    let stages='<div class="stages">';
+    STAGES.forEach((s,i)=>{
+      const g = gates[s.gate];
+      let cls='';
+      if(g&&g.approved) cls='done';
+      else if(i===curStage) cls = (f.status==='WAITING_HUMAN_GATE') ? 'active gate-open' : 'active';
+      stages += '<div class="stage '+cls+'"><h4>'+s.title+(g&&g.approved?' ✅':'')+'</h4><p>'+esc(s.label)+'</p><span class="g">🚧 '+esc(s.gateLabel)+(g&&g.approved?' — ผ่าน '+esc((g.approved_at||'').slice(0,10)):'')+'</span></div>';
+    });
+    stages+='</div>';
+
+    // who is doing what now
+    const hist = f.history||[];
+    const last = hist[hist.length-1];
+    let nowLine = '';
+    if(f.status==='WAITING_HUMAN_GATE'){
+      nowLine = '🚧 <b>รอปอนด์</b> — เปิด gate ที่ Stage '+(curStage+1)+' · current_agent: <b>'+esc(f.current_agent)+'</b>';
+    } else if(f.status==='BLOCKED_NEED_INPUT'){
+      nowLine = '⛔ <b>รอปอนด์ตอบคำถาม</b> จาก <b>'+esc(f.current_agent)+'</b> (ดูหัวข้อคำถามด้านล่าง)';
+    } else {
+      nowLine = '🔄 <b>'+esc(f.current_agent)+'</b> กำลังทำงาน · Stage '+(curStage+1);
+    }
+
+    // pending questions across history
+    let qhtml='';
+    hist.forEach(h=>{
+      (h.questions_for_pond||[]).forEach(q=>{
+        if(q.answer===null||q.answer===undefined||q.answer===''){
+          qhtml += '<div class="q">❓ <b>['+esc(h.agent)+']</b> '+esc(q.q)+
+            (q.options?'<br><small>'+q.options.map(esc).join(' · ')+'</small>':'')+
+            '<br><span class="noans">ยังไม่ตอบ</span></div>';
+        }
+      });
+    });
+
+    // outputs grouped by agent
+    const byAgent={};
+    hist.forEach(h=>{
+      const k=h.agent+(h.phase?' ('+h.phase+')':'');
+      (h.output_files||[]).forEach(p=>{
+        (byAgent[h.agent]=byAgent[h.agent]||new Map()).set(p,k);
+      });
+    });
+    let outputs='';
+    Object.entries(byAgent).forEach(([agent,files])=>{
+      outputs += '<div class="agent-group"><h4>'+(AGENT_ICONS[agent]||'🤖')+' '+esc(agent)+' <span class="meta">('+files.size+' ไฟล์)</span></h4><ul class="files">';
+      files.forEach((phase,p)=>{ outputs+='<li>'+fileLink(p)+' <span class="meta">— '+esc(phase)+'</span></li>'; });
+      outputs+='</ul></div>';
+    });
+    if(!outputs) outputs='<p class="meta" style="color:var(--muted);font-size:13px">ยังไม่มี output</p>';
+
+    // timeline
+    let timeline='';
+    [...hist].reverse().forEach(h=>{
+      const tag = h.status==='FAILED'?'t-fail':(h.status==='WAITING_HUMAN_GATE'?'t-wait':(h.status&&(h.status.startsWith('READY')||h.status==='DONE')?'t-ok':'t-info'));
+      timeline += '<tr><td style="white-space:nowrap;font-family:monospace;font-size:12px">'+esc((h.updated_at||'').replace('T',' ').slice(0,16))+'</td>'+
+        '<td><b>'+(AGENT_ICONS[h.agent]||'')+' '+esc(h.agent)+'</b>'+(h.phase?' <span style="color:var(--muted)">· '+esc(h.phase)+'</span>':'')+'</td>'+
+        '<td><span class="tag '+tag+'">'+esc(h.status)+'</span></td>'+
+        '<td><details><summary>สรุป</summary>'+esc(h.summary||'')+'</details></td></tr>';
+    });
+
+    html += '<section class="feature">'+
+      '<h2>'+esc(f.title||slug)+'</h2><span class="slug">'+esc(slug)+' · เริ่ม '+esc((f.created_at||'').slice(0,10))+'</span>'+
+      '<div class="now"><span class="pill '+pcls+'"><span class="dot"></span>'+ptxt+'</span><span style="align-self:center;font-size:13.5px">'+nowLine+'</span></div>'+
+      stages+
+      (qhtml?'<h3>คำถามค้างถึงปอนด์</h3>'+qhtml:'')+
+      '<h3>Outputs ของแต่ละ Agent</h3>'+outputs+
+      '<h3>Timeline ('+hist.length+' รายการ)</h3><div class="table-scroll"><table><tr><th>เวลา</th><th>agent</th><th>ผล</th><th>รายละเอียด</th></tr>'+timeline+'</table></div>'+
+      '</section>';
+  }
+  document.getElementById('app').innerHTML = html;
+  document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString('th-TH');
+}
+
+async function load(){
+  try{
+    const r = await fetch('../pipeline/status.json?t='+Date.now());
+    if(!r.ok) throw new Error(r.status);
+    render(await r.json());
+  }catch(e){
+    document.getElementById('app').innerHTML =
+      '<div class="error-box"><b>โหลด pipeline/status.json ไม่ได้</b> ('+esc(e.message)+')<br>'+
+      'ถ้าเปิดไฟล์ตรงๆ (file://) เบราว์เซอร์จะบล็อก fetch — ให้รัน HTTP server ที่ root ของ repo ก่อน:<br>'+
+      '<code>npx serve .</code> แล้วเปิด <code>http://localhost:3000/dashboard/</code><br>'+
+      'หรือ <code>python -m http.server 8088</code> แล้วเปิด <code>http://localhost:8088/dashboard/</code></div>';
+  }
+}
+load();
+setInterval(load, 15000);
+</script>
+</body>
+</html>

@@ -14,21 +14,30 @@ auto-chain on pass, stop on BLOCKED, and report status.
 - Business-facing docs (brief.md, stories.md): English body, with a short Thai summary
   (3–5 lines, heading `## สรุปภาษาไทย`) at the top of the file
 
-## Standard Pipeline
+## Standard Pipeline (v2 — defined by Pond, 2026-07-08)
 
 ```
-Pond → PO → BA → Tech-Lead → [HUMAN GATE 1] → Engineer ∥ QA → DevOps → [HUMAN GATE 2] → Done
-                     ↑                                ↑
-              UX/UI (spec phase)              UX/UI (visual audit)
+Stage 1  UX/UI + PO ─────────── design system + mockups of every page
+   🚧 GATE 1  Pond approves the "look" (NOT architecture)
+Stage 2  PO + BA + Tech-Lead ── full requirements: functional + non-functional
+                                (batch questions to Pond anytime during this stage)
+   🚧 GATE 2  Pond approves requirements + NFRs
+              └─ if any UI is missing / flow incomplete → back to UX/UI →
+                 Pond re-reviews the look → return to GATE 2
+Stage 3  Implementation ─────── Engineer ∥ QA (functional + regression) ∥ BA
+                                (runs on Dev Environment = local PC)
+   🚧 GATE 3  PO / BA / UX-UI play the app themselves and send Pond a findings
+              summary; Pond approves (Test Environment = local PC)
+Stage 4  DevOps ─────────────── deploy to GCP; QA runs sanity test
+   🚧 GATE 4  results sent to Pond → Done
 ```
 
-- **UX/UI agent** (added by Pond, 2026-07-07): writes the design system + page-level UX
-  specs after BA (feeding Tech-Lead/Engineer), and visually audits the running app
-  (Playwright screenshots) before Human Gate 2. UI-heavy features should include both
-  phases; backend-only features may skip UX/UI.
-
-- **HUMAN GATE 1**: Pond must approve architecture + task breakdown before Engineer writes code
-- **HUMAN GATE 2**: Pond must approve before merge to main / deploy
+- **Escalation during Stage 3**: when Engineer/QA/BA cannot resolve something, route it
+  to PO, who sends it back to the stage that owns the fix — UX/UI issues → Stage 1
+  (look re-approval), requirement issues → Stage 2 (PO+BA+Tech-Lead).
+- **Work smart on rework**: a small change must NOT restart everything — rerun only the
+  affected stage/artifacts, keep everything else intact, and diff against the approved
+  version so Pond reviews only what changed.
 - Engineer and QA work in parallel (QA writes test plan/automation from AC without waiting for code)
 
 ## Dispatcher Rules
