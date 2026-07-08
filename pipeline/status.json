@@ -3,13 +3,13 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "READY_FOR_PO_REVIEW",
+      "current_agent": "ux-ui",
+      "status": "READY_FOR_UXUI",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 3 (2026-07-08): NOT approved. pond-gate1-r3-feedback.md — 4 PO-analysis items (dashboard date-filter per-tile semantics; Goods Receipt multi-line; QC per-line-item; Batch lifecycle) + UX work (real create pages, duplicate labels, realistic test data, searchable dropdowns, supplier edit layout, shipment round data driver/phone/route/vehicle). PO analyzed all 4 (status-journeys.md §3.1 Batch, §3.2 QC-per-line, §5 GR multi-line, §12 dashboard filter) + issued round-4 action list (po-mockup-review.md §8) + 5 confirm questions w/ defaults. Handoff READY_FOR_UXUI. Prior: R1 theme A approved; R2 13-cat feedback closed in R3; PO's 5 r2 flow answers embedded."
+          "note": "Round 4 (2026-07-08): UX/UI closed all PO §8 P0/P1/P2 + folded Pond's r3 answers (Batch B-{PO}-{line}-{run}; rework loop unambiguous; QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→block). PO re-reviewed round-4 (28 pages) = PASS (po-mockup-review-r4.md): 9/9 Pond categories + Batch/rework loop verified. FINALIZED mock-data-spec.md (single dataset, 8 production use cases, screen↔data table). Remaining = round 4.5 data-embed (make sample data identical across pages) → then open Gate 1. Prior: R1 theme A approved; R2 13-cat closed R3; R3 4 PO-analysis + create pages done R4."
         },
         "gate2_requirements": {
           "approved": false,
@@ -35,273 +35,36 @@
         }
       ],
       "history": [
-        {
-          "agent": "po",
-          "phase": "design-brief",
-          "status": "IN_PROGRESS",
-          "gate_checklist": [
-            {
-              "item": "Business problem concrete + measurable BKVs + Gate1 criteria + scope + DoD",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md"
-          ],
-          "questions_for_pond": [
-            {
-              "q": "ยืนยัน Tier 1 / เป้าเวลา BKV-1 / เกณฑ์ UAT BKV-5",
-              "options": [
-                "-"
-              ],
-              "answer": "Tier1 ยืนยัน; BKV-1 เชิงคุณภาพ ลดคลิก; BKV-5 Function 0 defect + UX>=3.5 (2026-07-08)"
-            }
-          ],
-          "summary": "Wrote v2 design-brief tied to the real 10 prototype feedback points; 5 measurable BKVs; questions batched.",
-          "overridden_by": null,
-          "updated_at": "2026-07-08T12:10:00+07:00"
-        },
-        {
-          "agent": "ux-ui",
-          "phase": "design",
-          "status": "WAITING_HUMAN_GATE",
-          "gate_checklist": [
-            {
-              "item": "Design system + 17 self-contained mockups + 3 theme options; fixes 10 prototype complaints; Playwright-verified",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/design/erp-v2-ui-first/design-system.md",
-            "docs/design/erp-v2-ui-first/mockups/index.html"
-          ],
-          "questions_for_pond": [
-            {
-              "q": "theme / logo / company info / density",
-              "options": [
-                "-"
-              ],
-              "answer": "A Clean Clinical teal อนุมัติ; placeholder logo; Admin กรอกบริษัท; 40px (2026-07-08)"
-            }
-          ],
-          "summary": "Delivered v2 design system + 17 clickable mockups + theme options. Set WAITING_HUMAN_GATE.",
-          "overridden_by": null,
-          "updated_at": "2026-07-08T14:45:00+07:00"
-        },
-        {
-          "agent": "po",
-          "phase": "gate1-feedback-analysis",
-          "status": "READY_FOR_UXUI",
-          "gate_checklist": [
-            {
-              "item": "Gate1 r1 feedback absorbed; status-journeys.md (7 machines + 14-row continuity + RUCDAA); notification/deep-link; 6 rules confirmed",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md",
-            "docs/requirements/erp-v2-ui-first/status-journeys.md",
-            "docs/requirements/erp-v2-ui-first/status-summary-for-pond.md"
-          ],
-          "questions_for_pond": [
-            {
-              "q": "6 business rules (material shortage, low-stock default, DN partial, PO reject, RUCDAA, invoice stage)",
-              "options": [
-                "-"
-              ],
-              "answer": "warning-not-block; no default; Partially Delivered; Ready+Sale; RUCDAA Admin; from Confirmed (2026-07-08) — folded"
-            }
-          ],
-          "summary": "Authored status-journeys.md + folded 6 Pond confirmations + Notification/Inbox + status-summary-for-pond.md. READY_FOR_UXUI.",
-          "overridden_by": null,
-          "updated_at": "2026-07-08T17:35:00+07:00"
-        },
-        {
-          "agent": "ux-ui",
-          "phase": "design-r2",
-          "status": "WAITING_HUMAN_GATE",
-          "gate_checklist": [
-            {
-              "item": "Rebranded ESSENCE Hub; 23 mockups + index; responsive; covered Gate1 r1 + 6 corrections; RUCDAA; Thai tax invoice",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/design/erp-v2-ui-first/design-system.md",
-            "docs/design/erp-v2-ui-first/mockups/index.html"
-          ],
-          "questions_for_pond": [
-            {
-              "q": "logo placeholder / click budget / customer cycle / completeness",
-              "options": [
-                "-"
-              ],
-              "answer": "placeholder ok; ≤10/≤6; 3 เดือน; PO review completeness (2026-07-08)"
-            }
-          ],
-          "summary": "Round-2 rebuild. 23 mockups + index. NOTE: built before Pond's round-2 feedback -> superseded by po-mockup-review round-3 list.",
-          "overridden_by": null,
-          "updated_at": "2026-07-08T17:20:00+07:00"
-        },
-        {
-          "agent": "po",
-          "phase": "gate1-r2-analysis",
-          "status": "READY_FOR_UXUI",
-          "gate_checklist": [
-            {
-              "item": "Gate1 r2 (13 categories) absorbed; journeys updated (Production QC/Hold, PO cancel/reopen, Customer 6-status, 2-tier Shipment/DN, PR direct, BOM snapshot); full mockup review + P0/P1/P2 list",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md",
-            "docs/requirements/erp-v2-ui-first/status-journeys.md",
-            "docs/requirements/erp-v2-ui-first/po-mockup-review.md"
-          ],
-          "questions_for_pond": [
-            {
-              "q": "5 flow: Follow-up status, PO reopen number, Hold edit scope, BOM snapshot, DN structure",
-              "options": [
-                "-"
-              ],
-              "answer": "6th status; keep number; edit all+trace; snapshot+badge; 2-tier Shipment/DN DN=1 PO (2026-07-08) — folded"
-            }
-          ],
-          "summary": "Folded Pond's 5 flow answers. Customer Follow-up=6th real status; Delivery=2-tier Shipment->DN. Updated brief + journeys. READY_FOR_UXUI for round-3.",
-          "overridden_by": null,
-          "updated_at": "2026-07-08T20:30:00+07:00"
-        },
+        {"agent": "po", "phase": "design-brief", "status": "IN_PROGRESS", "gate_checklist": [{"item": "Business problem concrete + measurable BKVs + Gate1 criteria + scope + DoD", "pass": true, "missing": null}], "output_files": ["docs/requirements/erp-v2-ui-first/brief.md"], "questions_for_pond": [{"q": "ยืนยัน Tier 1 / เป้าเวลา BKV-1 / เกณฑ์ UAT BKV-5", "options": ["-"], "answer": "Tier1 ยืนยัน; BKV-1 เชิงคุณภาพ ลดคลิก; BKV-5 Function 0 defect + UX>=3.5 (2026-07-08)"}], "summary": "Wrote v2 design-brief tied to the real 10 prototype feedback points; 5 measurable BKVs; questions batched.", "overridden_by": null, "updated_at": "2026-07-08T12:10:00+07:00"},
+        {"agent": "ux-ui", "phase": "design", "status": "WAITING_HUMAN_GATE", "gate_checklist": [{"item": "Design system + 17 self-contained mockups + 3 theme options; fixes 10 prototype complaints; Playwright-verified", "pass": true, "missing": null}], "output_files": ["docs/design/erp-v2-ui-first/design-system.md", "docs/design/erp-v2-ui-first/mockups/index.html"], "questions_for_pond": [{"q": "theme / logo / company info / density", "options": ["-"], "answer": "A Clean Clinical teal อนุมัติ; placeholder logo; Admin กรอกบริษัท; 40px (2026-07-08)"}], "summary": "Delivered v2 design system + 17 clickable mockups + theme options. Set WAITING_HUMAN_GATE.", "overridden_by": null, "updated_at": "2026-07-08T14:45:00+07:00"},
+        {"agent": "po", "phase": "gate1-feedback-analysis", "status": "READY_FOR_UXUI", "gate_checklist": [{"item": "Gate1 r1 feedback absorbed; status-journeys.md (7 machines + 14-row continuity + RUCDAA); notification/deep-link; 6 rules confirmed", "pass": true, "missing": null}], "output_files": ["docs/requirements/erp-v2-ui-first/brief.md", "docs/requirements/erp-v2-ui-first/status-journeys.md", "docs/requirements/erp-v2-ui-first/status-summary-for-pond.md"], "questions_for_pond": [{"q": "6 business rules (material shortage, low-stock default, DN partial, PO reject, RUCDAA, invoice stage)", "options": ["-"], "answer": "warning-not-block; no default; Partially Delivered; Ready+Sale; RUCDAA Admin; from Confirmed (2026-07-08) — folded"}], "summary": "Authored status-journeys.md + folded 6 Pond confirmations + Notification/Inbox + status-summary-for-pond.md. READY_FOR_UXUI.", "overridden_by": null, "updated_at": "2026-07-08T17:35:00+07:00"},
+        {"agent": "ux-ui", "phase": "design-r2", "status": "WAITING_HUMAN_GATE", "gate_checklist": [{"item": "Rebranded ESSENCE Hub; 23 mockups + index; responsive; covered Gate1 r1 + 6 corrections; RUCDAA; Thai tax invoice", "pass": true, "missing": null}], "output_files": ["docs/design/erp-v2-ui-first/design-system.md", "docs/design/erp-v2-ui-first/mockups/index.html"], "questions_for_pond": [{"q": "logo placeholder / click budget / customer cycle / completeness", "options": ["-"], "answer": "placeholder ok; ≤10/≤6; 3 เดือน; PO review completeness (2026-07-08)"}], "summary": "Round-2 rebuild. 23 mockups + index. NOTE: built before Pond's round-2 feedback -> superseded by po-mockup-review round-3 list.", "overridden_by": null, "updated_at": "2026-07-08T17:20:00+07:00"},
+        {"agent": "po", "phase": "gate1-r2-analysis", "status": "READY_FOR_UXUI", "gate_checklist": [{"item": "Gate1 r2 (13 categories) absorbed; journeys updated (Production QC/Hold, PO cancel/reopen, Customer 6-status, 2-tier Shipment/DN, PR direct, BOM snapshot); full mockup review + P0/P1/P2 list", "pass": true, "missing": null}], "output_files": ["docs/requirements/erp-v2-ui-first/brief.md", "docs/requirements/erp-v2-ui-first/status-journeys.md", "docs/requirements/erp-v2-ui-first/po-mockup-review.md"], "questions_for_pond": [{"q": "5 flow: Follow-up status, PO reopen number, Hold edit scope, BOM snapshot, DN structure", "options": ["-"], "answer": "6th status; keep number; edit all+trace; snapshot+badge; 2-tier Shipment/DN DN=1 PO (2026-07-08) — folded"}], "summary": "Folded Pond's 5 flow answers. Customer Follow-up=6th real status; Delivery=2-tier Shipment->DN. Updated brief + journeys. READY_FOR_UXUI for round-3.", "overridden_by": null, "updated_at": "2026-07-08T20:30:00+07:00"},
         {
           "agent": "tech-lead",
           "phase": "stage2-prep",
           "status": "IN_PROGRESS",
           "gate_checklist": [
-            {
-              "item": "Read all Stage 2 inputs (directives, brief, status-journeys, Gate1 r1+r2 feedback, ADR-000, mockups, status.json)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "PREP ROUND ONLY — no ADR/design/schema/API written yet (Pond's iron rule: understand + ask, do not build until Gate 1 approved)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Stage 2 design plan drafted mentally (Security / API Spec / DB Schema) covering all cases",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Technical risks / hard cases identified (generic field-level audit, PO reopen keeps number + audit chain, stock-cut concurrency DEF-09, BOM snapshot, 2-tier shipment reconcile, notification fan-out by Read-bit)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Open NFR/business questions batched for Pond (Thai)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Did NOT touch feature-level current_agent/status (still UX/UI + Gate1 pending)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Read all Stage 2 inputs (directives, brief, status-journeys, Gate1 r1+r2 feedback, ADR-000, mockups, status.json)", "pass": true, "missing": null},
+            {"item": "PREP ROUND ONLY — no ADR/design/schema/API written yet (Pond's iron rule)", "pass": true, "missing": null},
+            {"item": "Stage 2 design plan drafted mentally (Security / API Spec / DB Schema) covering all cases", "pass": true, "missing": null},
+            {"item": "Technical risks / hard cases identified (field-level audit, PO reopen keeps number + audit chain, stock-cut concurrency DEF-09, BOM snapshot, 2-tier shipment reconcile, notification fan-out by Read-bit)", "pass": true, "missing": null},
+            {"item": "Open NFR/business questions batched for Pond (Thai)", "pass": true, "missing": null},
+            {"item": "Did NOT touch feature-level current_agent/status", "pass": true, "missing": null}
           ],
           "output_files": [],
           "questions_for_pond": [
-            {
-              "q": "เป้าหมาย performance ของหน้าจอหลัก?",
-              "options": [
-                "< 2 วิ / trace < 5 วิ (แนะนำ)",
-                "เข้มกว่า",
-                "ผ่อนได้"
-              ],
-              "answer": "ทำ index ดีๆ แล้วอยากให้ <2 วิ — ห้ามเกิน 3 วิ (hard limit) (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "จำนวนผู้ใช้พร้อมกันสูงสุด Phase 2?",
-              "options": [
-                "≤10",
-                "10–30",
-                "30–60",
-                "มากกว่า"
-              ],
-              "answer": "สูงสุด 50 คนพร้อมกัน (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "ปริมาณข้อมูลต่อวัน?",
-              "options": [
-                "<50 PO",
-                "50–200",
-                ">200",
-                "ยังไม่แน่"
-              ],
-              "answer": ">200 PO/วัน และ Goods Receipt >50/วัน (โหลดสูง) (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "Retention ของ field-level audit?",
-              "options": [
-                "online ตลอด",
-                "1–2 ปี archive",
-                "Super User archive เอง",
-                "อื่นๆ"
-              ],
-              "answer": "online 1 ปี หลังจากนั้น Super User manual purge/archive — ไม่มี auto-purge (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "นโยบาย backup/กู้คืน?",
-              "options": [
-                "รายวัน 7–30 วัน",
-                "+สำเนานอกเครื่อง",
-                "ยังไม่ต้อง",
-                "อื่นๆ"
-              ],
-              "answer": "ขึ้น GCP — ใช้ Cloud SQL backup ทุกวัน ไม่ต้องสำเนานอกเครื่อง (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "Authentication?",
-              "options": [
-                "local+JWT เผื่อ SSO",
-                "Google แต่แรก",
-                "AD/LDAP",
-                "อื่นๆ"
-              ],
-              "answer": "สร้าง account เอง (MySQL) + รองรับ Google Login — ผูก user ในหน้า admin (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "นโยบายรหัสผ่าน/session?",
-              "options": [
-                "bcrypt + session 8 ชม.",
-                "2FA",
-                "อื่นๆ"
-              ],
-              "answer": "พื้นฐาน — session expire 24 ชม. + ทุกเช้า 06:00 reset session ทั้งหมด (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "Timezone/วันที่?",
-              "options": [
-                "UTC เก็บ + พ.ศ. แสดง",
-                "ไทยล้วน",
-                "อื่นๆ"
-              ],
-              "answer": "Asia/Bangkok + พ.ศ. บนเอกสาร — เก็บ UTC แสดงเวลาไทย (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "เลขเอกสาร gapless?",
-              "options": [
-                "gapless ต่อปี/เดือน",
-                "unique+เรียงได้",
-                "อื่นๆ"
-              ],
-              "answer": "ต้อง gapless ต่อปี/เดือน (เข้มตามสรรพากร) (ปอนด์ตอบ 2026-07-08)"
-            }
+            {"q": "เป้าหมาย performance ของหน้าจอหลัก?", "options": ["< 2 วิ / trace < 5 วิ (แนะนำ)", "เข้มกว่า", "ผ่อนได้"], "answer": "ทำ index ดีๆ แล้วอยากให้ <2 วิ — ห้ามเกิน 3 วิ (hard limit) (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "จำนวนผู้ใช้พร้อมกันสูงสุด Phase 2?", "options": ["≤10", "10–30", "30–60", "มากกว่า"], "answer": "สูงสุด 50 คนพร้อมกัน (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "ปริมาณข้อมูลต่อวัน?", "options": ["<50 PO", "50–200", ">200", "ยังไม่แน่"], "answer": ">200 PO/วัน และ Goods Receipt >50/วัน (โหลดสูง) (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "Retention ของ field-level audit?", "options": ["online ตลอด", "1–2 ปี archive", "Super User archive เอง", "อื่นๆ"], "answer": "online 1 ปี หลังจากนั้น Super User manual purge/archive — ไม่มี auto-purge (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "นโยบาย backup/กู้คืน?", "options": ["รายวัน 7–30 วัน", "+สำเนานอกเครื่อง", "ยังไม่ต้อง", "อื่นๆ"], "answer": "ขึ้น GCP — ใช้ Cloud SQL backup ทุกวัน ไม่ต้องสำเนานอกเครื่อง (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "Authentication?", "options": ["local+JWT เผื่อ SSO", "Google แต่แรก", "AD/LDAP", "อื่นๆ"], "answer": "สร้าง account เอง (MySQL) + รองรับ Google Login — ผูก user ในหน้า admin (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "นโยบายรหัสผ่าน/session?", "options": ["bcrypt + session 8 ชม.", "2FA", "อื่นๆ"], "answer": "พื้นฐาน — session expire 24 ชม. + ทุกเช้า 06:00 reset session ทั้งหมด (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "Timezone/วันที่?", "options": ["UTC เก็บ + พ.ศ. แสดง", "ไทยล้วน", "อื่นๆ"], "answer": "Asia/Bangkok + พ.ศ. บนเอกสาร — เก็บ UTC แสดงเวลาไทย (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "เลขเอกสาร gapless?", "options": ["gapless ต่อปี/เดือน", "unique+เรียงได้", "อื่นๆ"], "answer": "ต้อง gapless ต่อปี/เดือน (เข้มตามสรรพากร) (ปอนด์ตอบ 2026-07-08)"}
           ],
-          "summary": "STAGE 2 PREP (understand + ask only, per Pond's iron rule — no ADR/design/schema/API written). Read all inputs. Produced a Stage-2 design plan (Security / API Spec / DB Schema) + technical risk register + effort estimate, returned to dispatcher. Batched 9 NFR/business questions for Pond (now answered). Deliverables deferred until Gate 1 (look) approved. Did NOT modify feature-level current_agent/status.",
+          "summary": "STAGE 2 PREP (understand + ask only, per Pond's iron rule — no ADR/design/schema/API written). Read all inputs. Produced a Stage-2 design plan + technical risk register + effort estimate. Batched 9 NFR/business questions for Pond (now answered). Deferred until Gate 1. Did NOT modify feature-level status.",
           "overridden_by": null,
           "updated_at": "2026-07-08T21:30:00+07:00"
         },
@@ -310,121 +73,17 @@
           "phase": "design-r3",
           "status": "READY_FOR_PO_REVIEW",
           "gate_checklist": [
-            {
-              "item": "P0-1 Production flow fixed: รับงาน→กำลังผลิต→QC→พร้อมส่งมอบ (dropped 'ส่งมอบแล้ว'); changer has QC / QC-fail→กลับกำลังผลิต+feedback(mandatory) / Hold→raise Sale + 'แก้ไข PO'",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-2 Removed cancelled state 'รอวัตถุดิบ' everywhere",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-3 Supplier: goods-receipt form removed (moved to stock)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-4 po-detail: ยกเลิก PO (any stage) + เปิดใหม่ Cancelled→Draft (same PO number) + แก้ไข PO (Hold) + trace entries",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-5 New full-screen goods-receipt.html: supplier→auto lot, qty, buy-price(0 ok), receipt no, upload, PR reference search → auto-close PR",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-6 Supplier: Active/Inactive toggle + price matrix + material search to link",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-7 customer-detail: 'ต้องติดตาม' as 6th real status + mandatory comment; customers list adds 6th chip+row+pagination",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-8 purchase-request: direct create + 'ของเข้าครบ = auto from Goods Receipt'",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-9 dashboard: refresh + auto-refresh 15s (preserves view) + tile drill-down list + pagination",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-10 bom: cost = max ACTIVE-supplier + snapshot + stale badge + recompute",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-11 trace: entity selector + date-range+time + field-level audit table + pagination",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-12 settings: 5 real tab screens (Role/Users/VAT+effective/Company/Audit)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-13 shipping: create Shipment from ready POs → 1 DN per order; search PO by customer data; Postpone stays in queue",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-14 po-list: search by 3 date types + pagination",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P2-15 Notification panel (bell→list→deep link+ack) on every page",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P2-16..20 home dedupe; QC batch-fail→production+feedback; VAT effective date; pagination/empty/loading; index updated + goods-receipt link",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's 5 answers embedded (6th status; DN=1/order + Shipment; reopen same number; Hold edits all+trace; BOM snapshot+badge)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Responsive re-verified; design system/theme unchanged (incremental only)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "P0-1 Production flow fixed: รับงาน→กำลังผลิต→QC→พร้อมส่งมอบ; changer QC/QC-fail loop/Hold", "pass": true, "missing": null},
+            {"item": "P0-2 Removed 'รอวัตถุดิบ' everywhere", "pass": true, "missing": null},
+            {"item": "P0-3 Supplier: goods-receipt form removed (moved to stock)", "pass": true, "missing": null},
+            {"item": "P0-4 po-detail: cancel + reopen same number + Hold edit PO + trace", "pass": true, "missing": null},
+            {"item": "P1-5..14 goods-receipt full screen; supplier active/inactive+price matrix; customer 6th status; PR direct; dashboard drill-down+auto-15s; BOM snapshot+badge; trace field-audit; settings 5 tabs; shipping Shipment; po-list 3-date", "pass": true, "missing": null},
+            {"item": "P2-15..20 notification panel; home dedupe; QC batch-fail loop; VAT effective; pagination; index+goods-receipt", "pass": true, "missing": null},
+            {"item": "Pond's 5 answers embedded; responsive re-verified", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/design/erp-v2-ui-first/design-system.md",
-            "docs/design/erp-v2-ui-first/mockups/index.html",
-            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
-            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
-            "docs/design/erp-v2-ui-first/mockups/production.html",
-            "docs/design/erp-v2-ui-first/mockups/qc.html",
-            "docs/design/erp-v2-ui-first/mockups/supplier.html",
-            "docs/design/erp-v2-ui-first/mockups/customers.html",
-            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
-            "docs/design/erp-v2-ui-first/mockups/po-list.html",
-            "docs/design/erp-v2-ui-first/mockups/po-create.html",
-            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
-            "docs/design/erp-v2-ui-first/mockups/stock.html",
-            "docs/design/erp-v2-ui-first/mockups/bom.html",
-            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
-            "docs/design/erp-v2-ui-first/mockups/shipping.html",
-            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
-            "docs/design/erp-v2-ui-first/mockups/invoices.html",
-            "docs/design/erp-v2-ui-first/mockups/trace.html",
-            "docs/design/erp-v2-ui-first/mockups/settings.html"
-          ],
+          "output_files": ["docs/design/erp-v2-ui-first/design-system.md", "docs/design/erp-v2-ui-first/mockups/index.html", "docs/design/erp-v2-ui-first/mockups/goods-receipt.html", "docs/design/erp-v2-ui-first/mockups/dashboard.html", "docs/design/erp-v2-ui-first/mockups/production.html", "docs/design/erp-v2-ui-first/mockups/qc.html", "docs/design/erp-v2-ui-first/mockups/supplier.html", "docs/design/erp-v2-ui-first/mockups/customers.html", "docs/design/erp-v2-ui-first/mockups/customer-detail.html", "docs/design/erp-v2-ui-first/mockups/po-list.html", "docs/design/erp-v2-ui-first/mockups/po-create.html", "docs/design/erp-v2-ui-first/mockups/po-detail.html", "docs/design/erp-v2-ui-first/mockups/stock.html", "docs/design/erp-v2-ui-first/mockups/bom.html", "docs/design/erp-v2-ui-first/mockups/purchase-request.html", "docs/design/erp-v2-ui-first/mockups/shipping.html", "docs/design/erp-v2-ui-first/mockups/delivery-note.html", "docs/design/erp-v2-ui-first/mockups/invoices.html", "docs/design/erp-v2-ui-first/mockups/trace.html", "docs/design/erp-v2-ui-first/mockups/settings.html"],
           "questions_for_pond": [],
-          "summary": "Round-3 incremental rework (design system/theme locked). Applied all P0/P1/P2 from po-mockup-review.md + all 13 หมวด of pond-gate1-r2-feedback + the 5 Pond answers. Production flow ...→QC→พร้อมส่งมอบ; removed 'รอวัตถุดิบ'; Customer 6th real status; PO cancel+reopen same number; Shipping 'รอบจัดส่ง (Shipment)' → 1 DN per order; new Goods Receipt; Supplier active/inactive + price matrix; BOM snapshot+stale badge; Trace field-level audit; Settings 5 tabs; Dashboard refresh+auto-15s+drill-down; Notification panel. 24 pages + index. Verified via Playwright. Handoff: READY_FOR_PO_REVIEW.",
+          "summary": "Round-3 incremental rework. Applied all P0/P1/P2 + 13 หมวด of r2 feedback + 5 Pond answers. Production ...→QC→พร้อมส่งมอบ; Customer 6th status; PO cancel+reopen same number; Shipment→1 DN/order; Goods Receipt; Supplier active/inactive+price matrix; BOM snapshot+badge; Trace field-audit; Settings 5 tabs; Dashboard auto-15s+drill-down; Notification panel. 24 pages+index. Verified via Playwright. Handoff READY_FOR_PO_REVIEW.",
           "overridden_by": null,
           "updated_at": "2026-07-08T23:10:00+07:00"
         },
@@ -433,229 +92,46 @@
           "phase": "stage2-prep",
           "status": "IN_PROGRESS",
           "gate_checklist": [
-            {
-              "item": "Read all Stage-2 inputs (stage2-directives, brief, status-journeys, Gate1 r1+r2 feedback, po-mockup-review, mockups, status.json history)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Confirmed round-3 mockups reflect revised flows — usable as spec",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Stage-2 work plan: 16 epics + story<->mockup<->journey<->continuity mapping + Given/When/Then AC (happy+edge+error incl trace/notification/mandatory-comment)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Exception/edge inventory (30 cases)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "No deliverable authored (stories.md held until Gate 1)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Open business rules for measurable AC batched to Pond (no rule invented)",
-              "pass": true,
-              "missing": "answered by Pond (partial-GR, auto-PR qty, BOM no-active-supplier, VAT-by-date, credit-term, doc-numbering)"
-            }
+            {"item": "Read all Stage-2 inputs (stage2-directives, brief, status-journeys, Gate1 r1+r2 feedback, po-mockup-review, mockups, status.json)", "pass": true, "missing": null},
+            {"item": "Confirmed round-3 mockups reflect revised flows — usable as spec", "pass": true, "missing": null},
+            {"item": "Stage-2 work plan: 16 epics + story<->mockup<->journey<->continuity mapping + Given/When/Then AC (happy+edge+error incl trace/notification/mandatory-comment)", "pass": true, "missing": null},
+            {"item": "Exception/edge inventory (30 cases)", "pass": true, "missing": null},
+            {"item": "No deliverable authored (stories.md held until Gate 1)", "pass": true, "missing": null},
+            {"item": "Open business rules for measurable AC batched to Pond (no rule invented)", "pass": true, "missing": "answered by Pond (partial-GR, auto-PR qty, BOM no-active-supplier, VAT-by-date, credit-term, doc-numbering)"}
           ],
           "output_files": [],
           "questions_for_pond": [
-            {
-              "q": "Goods Receipt รับน้อยกว่า PR (partial) → PR สถานะใด?",
-              "options": [
-                "Open/รับบางส่วน จนครบ",
-                "ครบทันทีครั้งแรก",
-                "เพิ่มสถานะรับบางส่วน"
-              ],
-              "answer": "partial receipt: ส่วนที่ขาด = สร้าง PR ใบใหม่แยกทุกครั้ง (ใบเดิมปิดตามของที่รับ); ผูก PR↔PO↔Lot ให้ครบ (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "auto-PR จาก PO วัตถุดิบขาด — จำนวน + dedupe กับ PR ค้าง?",
-              "options": [
-                "ส่วนที่ขาด รวมกับ PR ค้าง",
-                "ส่วนที่ขาด สร้างใบใหม่แยก",
-                "ความต้องการเต็ม + ใหม่แยก"
-              ],
-              "answer": "จำนวน = ส่วนที่ขาด + สร้าง PR ใบใหม่แยกทุกครั้ง (ผูก PR↔PO ให้ชัด) (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "BOM component ไม่มี supplier active — ราคาทุน?",
-              "options": [
-                "0 + badge เตือน",
-                "บล็อกจนกรอก override",
-                "ใช้เฉพาะ override"
-              ],
-              "answer": "บล็อกไม่ให้บันทึกสูตรจนกว่า user กรอกราคาทุน override เอง — ตัวนั้นใช้เฉพาะ override (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "ใบกำกับภาษีเลือก VAT rate ตาม effective date ยึดวันใด?",
-              "options": [
-                "invoice date",
-                "PO date",
-                "DN Delivered"
-              ],
-              "answer": "ยึดวันที่ออกใบกำกับภาษี (invoice date) (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "overdue ใช้เครดิตจากที่ใด?",
-              "options": [
-                "ระดับลูกค้า + แก้ต่อใบ",
-                "ต่อใบ invoice เท่านั้น",
-                "กลางระบบ settings"
-              ],
-              "answer": "เครดิตตั้งที่ระดับลูกค้า (default) + แก้ต่อใบ invoice ได้ (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "รูปแบบเลขเอกสาร?",
-              "options": [
-                "prefix+ปี+running (BA เสนอ)",
-                "ปอนด์กำหนดเอง",
-                "Tech-Lead กำหนด"
-              ],
-              "answer": "prefix+ปี+running (PO-2026-0001, DN-2026-0001) — Lot prefix ต่อ supplier + gapless ต่อปี/เดือน (ปอนด์ตอบ 2026-07-08)"
-            }
+            {"q": "Goods Receipt รับน้อยกว่า PR (partial) → PR สถานะใด?", "options": ["Open/รับบางส่วน จนครบ", "ครบทันทีครั้งแรก", "เพิ่มสถานะรับบางส่วน"], "answer": "partial: ส่วนที่ขาด = สร้าง PR ใบใหม่แยก (ใบเดิมปิดตามของที่รับ); ผูก PR↔PO↔Lot (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "auto-PR จาก PO วัตถุดิบขาด — จำนวน + dedupe?", "options": ["ส่วนที่ขาด รวมกับ PR ค้าง", "ส่วนที่ขาด สร้างใบใหม่แยก", "เต็ม + ใหม่แยก"], "answer": "จำนวน = ส่วนที่ขาด + สร้างใบใหม่แยกทุกครั้ง (ผูก PR↔PO) (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "BOM component ไม่มี supplier active — ราคาทุน?", "options": ["0 + badge", "บล็อกจนกรอก override", "ใช้เฉพาะ override"], "answer": "บล็อกจนกรอก override (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "VAT rate ตาม effective date ยึดวันใด?", "options": ["invoice date", "PO date", "DN Delivered"], "answer": "invoice date (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "overdue ใช้เครดิตจากที่ใด?", "options": ["ระดับลูกค้า + แก้ต่อใบ", "ต่อใบเท่านั้น", "กลางระบบ"], "answer": "เครดิตระดับลูกค้า (default) + แก้ต่อใบได้ (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "รูปแบบเลขเอกสาร?", "options": ["prefix+ปี+running", "ปอนด์กำหนดเอง", "Tech-Lead กำหนด"], "answer": "prefix+ปี+running + Lot prefix ต่อ supplier + gapless ต่อปี/เดือน (ปอนด์ตอบ 2026-07-08)"}
           ],
-          "summary": "STAGE 2 PREP ONLY (no stories/AC authored). Verified round-3 mockups usable as spec. Stage-2 plan: 16 epics + mapping method (story<->mockup+journey+continuity) + Given/When/Then AC (trace/notification-by-Read/mandatory-comment) + 30-case exception inventory. Batched 6 business rules to Pond (now answered). Did NOT touch feature-level current_agent/status.",
+          "summary": "STAGE 2 PREP ONLY. Verified round-3 mockups usable as spec. 16 epics + mapping + Given/When/Then AC + 30-case exception inventory. Batched 6 business rules to Pond (now answered). Did NOT touch feature-level status.",
           "overridden_by": null,
           "updated_at": "2026-07-08T22:15:00+07:00"
-        },
-        {
-          "agent": "po",
-          "phase": "mockup-review-r3",
-          "status": "WAITING_HUMAN_GATE",
-          "gate_checklist": [
-            {
-              "item": "All P0/P1/P2 verified CLOSED (round-3)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's 5 flow answers embedded correctly; journeys have supporting screens; r2 13/13 satisfied; detail sufficient for BA/Engineer/QA",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "po-mockup-review.md §7 round-3 results recorded",
-              "pass": true,
-              "missing": null
-            }
-          ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/po-mockup-review.md"
-          ],
-          "questions_for_pond": [],
-          "summary": "PO RE-REVIEW of round-3 mockups — VERDICT PASS (superseded by Pond's own round-3 review which added new feedback). Deep-read 15+ pages + grep. Set WAITING_HUMAN_GATE for Gate 1. NOTE: Pond subsequently reviewed and gave round-3 feedback -> see po/gate1-r3-analysis entry.",
-          "overridden_by": null,
-          "updated_at": "2026-07-09T09:30:00+07:00"
         },
         {
           "agent": "po",
           "phase": "gate1-r3-analysis",
           "status": "READY_FOR_UXUI",
           "gate_checklist": [
-            {
-              "item": "Read pond-gate1-r3-feedback.md fully; 4 PO-analysis (🔍PO) items answered with practical proposals + defaults",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "🔍1 Dashboard date-filter: preset (day/week/month-default/custom) affects all tiles; per-tile semantics split event vs state/activity + caption per tile (status-journeys §12)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "🔍2 Goods Receipt multi-line: header (supplier/receipt-no/date/attach) + lines (material×qty×price×lot-gen per line×PR-ref per line); 1 GR many PR / 1 PR many GR (status-journeys §5)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "🔍3 QC per line-item: PROPOSE rework only failed line/Batch (not whole PO) + feedback; PO Ready when all lines pass; QC decided on QC page only (production page drops 'QC fail'); asked Pond to confirm vs whole-PO (status-journeys §3.2)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "🔍4 Batch lifecycle: Batch generated at 'เริ่มผลิต'; DEFAULT 1 line item = 1 Batch; Batch links PO/line/Lot; QC sees PO<->Batch<->Lot (GMP chain Lot->Batch->line->PO->customer) (status-journeys §3.1)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Other r3 feedback folded: PO status-change UI+trace; real create pages (customer/contact/supplier/PR/BOM/shipment-round); shipment round data (driver/phone/route/vehicle type); duplicate-label scan; realistic test data; searchable dropdowns; supplier edit layout",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "brief.md updated (§2.5 round-3 + scope §6 + entities §9 + Gate1 criteria) and status-journeys.md updated (§3.1/§3.2/§4/§5/§12/§13)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "po-mockup-review.md updated with round-4 UX/UI action list (§8, P0/P1/P2)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "5 confirm questions to Pond with sensible defaults (not blocking — UX/UI proceeds on defaults)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Read pond-gate1-r3-feedback.md; 4 PO-analysis (🔍PO) items answered with proposals + defaults", "pass": true, "missing": null},
+            {"item": "🔍1 Dashboard date-filter per-tile semantics (§12); 🔍2 GR multi-line + many-PR (§5); 🔍3 QC per-line rework only failed line, QC on QC page only (§3.2); 🔍4 Batch at 'เริ่มผลิต' 1 line=1 Batch, GMP chain (§3.1)", "pass": true, "missing": null},
+            {"item": "Other r3 folded: PO status-change UI; real create pages; shipment round data; duplicate-label scan; realistic test data; searchable dropdowns; supplier layout", "pass": true, "missing": null},
+            {"item": "brief.md + status-journeys.md + po-mockup-review.md §8 round-4 action list updated", "pass": true, "missing": null},
+            {"item": "5 confirm questions to Pond with defaults (not blocking)", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md",
-            "docs/requirements/erp-v2-ui-first/status-journeys.md",
-            "docs/requirements/erp-v2-ui-first/po-mockup-review.md"
-          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/brief.md", "docs/requirements/erp-v2-ui-first/status-journeys.md", "docs/requirements/erp-v2-ui-first/po-mockup-review.md"],
           "questions_for_pond": [
-            {
-              "q": "QC ราย line item: line ใดไม่ผ่าน → ตีกลับผลิตแบบไหน?",
-              "options": [
-                "[DEFAULT] ตีกลับเฉพาะ line/Batch ที่ไม่ผ่าน (ผลิตซ้ำเฉพาะตัวเสีย, practical) — PO พร้อมจัดส่งเมื่อทุก line ผ่าน",
-                "ตีกลับทั้ง PO (ผลิตซ้ำทั้งใบ)"
-              ],
-              "answer": "ตีกลับเฉพาะ line/Batch ที่ไม่ผ่าน (ผลิตซ้ำเฉพาะตัวเสีย — practical) — แต่ต้องแน่ใจว่าการตีกลับบางส่วนไม่ทำให้ฝ่ายผลิตงง (UI/flow ต้องชัด) (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "เลข Batch: granularity เท่าไร?",
-              "options": [
-                "[DEFAULT] 1 line item = 1 Batch (สร้างตอนเริ่มผลิต)",
-                "1 PO = 1 Batch",
-                "อื่นๆ (ระบุ)"
-              ],
-              "answer": "ปอนด์ตัดสิน: ใช้เลข Batch แยกตามเหตุผล GMP (1 PO หลาย line ผลิตคนละครั้งใช้ lot ต่างกัน, rework = Batch ใหม่, recall trace Batch→Lot, เลขรุ่นบนฉลากตาม อย.) รูปแบบ B-{PO}-{line}-{run} อ่านแล้วรู้ทันทีว่ามาจาก PO ไหน — คำกำชับ: ตอน QC ไม่ผ่าน Batch ไหน การจัดการต้องไม่ทำให้ฝ่ายผลิตงง และแก้ไขส่งกลับมา QC ต่อได้ลื่น (2026-07-08)"
-            },
-            {
-              "q": "Dashboard date filter: default + การตีความ metric?",
-              "options": [
-                "[DEFAULT] default 'เดือนนี้' + แยก event (PO/ค้างชำระ/ห่างหาย=ในช่วง) vs state/activity (ลูกค้าประจำ=มี order ในช่วง; คิวผลิต=ตอนนี้) + caption ต่อ tile",
-                "ตีความอื่น (ระบุ)"
-              ],
-              "answer": "default \"เดือนนี้\" + แยก event vs state ตามเสนอ — และต้องเลือกได้อิสระ: เดือนไหน ปีไหน หรือช่วงวันที่กำหนดเอง (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "Goods Receipt/PR ความสัมพันธ์?",
-              "options": [
-                "[DEFAULT] 1 GR อ้างหลาย PR (รายบรรทัด) + 1 PR ปิดด้วยหลาย GR (partial สะสม)",
-                "1 GR = 1 PR เท่านั้น",
-                "อื่นๆ"
-              ],
-              "answer": "1 GR อ้างหลาย PR (รายบรรทัด) — ถ้ารับได้ไม่ครบตาม PR ให้สร้าง PR ใหม่เหลือเฉพาะ item ที่ขาด โดยให้ user review ก่อนสร้างใหม่เสมอ (ปอนด์ตอบ 2026-07-08)"
-            },
-            {
-              "q": "BOM: component ไม่มี supplier active เลย ราคาทุน?",
-              "options": [
-                "[DEFAULT] 0 + badge เตือน 'ไม่มีราคา supplier'",
-                "บล็อกจนกรอก override",
-                "ใช้เฉพาะ override"
-              ],
-              "answer": "บล็อกจนกรอกราคาทุน override (ยืนยันซ้ำ) (ปอนด์ตอบ 2026-07-08)"
-            }
+            {"q": "QC ราย line: ตีกลับแบบไหน?", "options": ["[DEFAULT] เฉพาะ line/Batch ที่เสีย", "ทั้ง PO"], "answer": "ตีกลับเฉพาะ line/Batch ที่เสีย (practical) — แต่ UI ต้องไม่ทำให้ฝ่ายผลิตงง (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "เลข Batch granularity?", "options": ["[DEFAULT] 1 line = 1 Batch", "1 PO = 1 Batch", "อื่นๆ"], "answer": "ใช้ Batch แยก (GMP) รูปแบบ B-{PO}-{line}-{run} — rework=Batch ใหม่, กันฝ่ายผลิตงง + ส่งกลับ QC ลื่น (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "Dashboard filter default + ตีความ?", "options": ["[DEFAULT] เดือนนี้ + event/state + caption", "อื่นๆ"], "answer": "เดือนนี้ + event/state + เลือกอิสระ เดือน/ปี/date range (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "GR/PR ความสัมพันธ์?", "options": ["[DEFAULT] 1 GR หลาย PR + partial", "1 GR = 1 PR", "อื่นๆ"], "answer": "1 GR หลาย PR; รับไม่ครบ → สร้าง PR ใหม่เฉพาะที่ขาด + user review ก่อน (ปอนด์ตอบ 2026-07-08)"},
+            {"q": "BOM ไม่มี supplier active?", "options": ["[DEFAULT] 0 + badge", "บล็อกจนกรอก override", "เฉพาะ override"], "answer": "บล็อกจนกรอก override (ปอนด์ตอบ 2026-07-08)"}
           ],
-          "summary": "Absorbed Gate-1 round-3 feedback (pond-gate1-r3-feedback.md). Analyzed all 4 🔍PO items and updated status-journeys.md: (1) Dashboard date-filter (§12) — preset day/week/month(default)/custom affecting every tile, with per-tile semantics split into EVENT metrics (PO created-in-range, overdue due-in-range, Inactive became-in-range, Follow-up set-in-range) vs STATE/ACTIVITY metrics (Active = ordered-in-range; production queue = now) + a caption per tile so BA/QA don't misread. (2) Goods Receipt multi-line (§5) — header + repeatable lines (material×qty×price×per-line lot-gen×per-line PR ref); 1 GR references many PR / 1 PR closed by many GR (partial). (3) QC per line-item (§3.2) — PROPOSED practical rule: fail a line/Batch reworks ONLY that line (not whole PO) with mandatory feedback; PO becomes Ready-to-Deliver only when ALL lines pass; QC decided on QC page ONLY, so production page's 'QC ไม่ผ่าน' option is removed; asked Pond to confirm vs whole-PO rework. (4) Batch lifecycle (§3.1) — Batch number generated when Production presses 'เริ่มผลิต'; DEFAULT 1 line item = 1 Batch; Batch links PO+line+consumed Lots; QC sees PO<->Batch<->Lot (GMP chain Lot->Batch->line->PO->customer). Also folded other r3 items: PO status-change UI + trace; convert edit-only screens to real CREATE pages (add customer, add contact, add supplier, create PR, create BOM, create Shipment); shipment round fields (driver/phone/route/vehicle type เก๋ง-motorcycle-กระบะ-10ล้อ); scan duplicate labels every page; realistic use-case test data; searchable dropdowns everywhere; new supplier edit layout (drop right panel). Updated brief.md (§2.5 + scope §6 + entities §9 + Gate1 criteria) and po-mockup-review.md (§8 round-4 UX/UI action list P0/P1/P2). Batched 5 confirm questions to Pond with defaults (not blocking). Handoff: READY_FOR_UXUI for round-4 build.",
+          "summary": "Absorbed Gate-1 round-3 feedback. Analyzed 4 🔍PO items → status-journeys.md §3.1 (Batch B-{PO}-{line}-{run}), §3.2 (QC per-line rework loop), §5 (GR multi-line + partial→PR-review), §12 (dashboard date-filter event/state). Folded other r3 items (PO status-change UI, real create pages, shipment round data, duplicate-label scan, realistic data, searchable dropdowns, supplier layout). Updated brief.md + po-mockup-review.md §8. Batched 5 confirm questions (now answered by Pond incl Batch format B-{PO}-{line}-{run}). Handoff READY_FOR_UXUI for round-4.",
           "overridden_by": null,
           "updated_at": "2026-07-09T11:00:00+07:00"
         },
@@ -664,111 +140,46 @@
           "phase": "design-r4",
           "status": "READY_FOR_PO_REVIEW",
           "gate_checklist": [
-            {
-              "item": "P0-1 production.html: removed 'QC ไม่ผ่าน' from status changer (options = เริ่มผลิต/ส่งตรวจ QC/พักงาน); QC decided on QC page only; info alert states this",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-2 qc.html: decide per line/Batch; fail reworks ONLY that Batch + mandatory feedback; PO Ready when all lines pass (reconcile note); shows PO<->Batch<->Lot (material-Lot table per batch)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-3 Batch lifecycle across production/qc/po-detail/trace: created at 'เริ่มผลิต', 1 line=1 Batch, format B-{PO}-{line}-{run} (Pond final); rework badge + previous-run history + QC feedback inline (rework loop unambiguous per Pond)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P0-4 Real CREATE pages (create != edit), clickable: customer-create.html, contact-create.html, supplier create-mode, pr-create.html, bom-create.html, shipping create-round; source buttons rewired",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-5 goods-receipt.html: multi-line (header supplier/receipt-no/date/upload + lines material×qty×price×per-line lot×per-line PR); 1 GR many PR; partial → confirm-dialog 'สร้าง PR ใหม่สำหรับของที่ขาด' (Pond)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-6 dashboard.html: date-filter presets (วันนี้/สัปดาห์/เดือนนี้=default/กำหนดเอง free month/year/range) affecting all tiles + per-tile caption tagged ในช่วง(event)/ตอนนี้(state); refresh+auto-15s+drill-down retained",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-7 shipping.html: 2-way create (select-PO-first / empty-round-then-search-PO) + round fields คนขับ/เบอร์/Route/ประเภทรถ (รถกระบะ/เก๋ง/Motorcycle/10ล้อ); PO search by id or customer data",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-8 supplier.html: retired cramped right panel → full-width stacked layout (list + full-width edit card, price matrix full width) + real add-Supplier create mode (JS-verified)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P1-9 po-detail.html: explicit 'เปลี่ยนสถานะ PO' card (select + mandatory reason + save→notify+trace; Admin-force note) + per-line latest Batch + QC status + reconcile x/N",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P2-10 Duplicate-label scan ALL pages: removed redundant header .title on every shell page → each page = breadcrumb (nav) + ONE h1 heading (fixes 'Dashboard 3×')",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P2-11 Realistic linked test data: Follow-up customer tied to PO-181 rework case; Blacklist row has reason comment; PO↔Batch↔Lot↔PR consistent across production/qc/po-detail/GR",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "P2-12 Searchable dropdowns represented everywhere (supplier/material/customer/PO/Sale/driver/route/PR) via .searchbox pattern; spec'd as antd Select showSearch",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's latest answers folded: Batch format B-{PO}-{line}-{run}; rework loop clarity (badge+run+feedback, other lines proceed); QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→BLOCK until cost entered (bom-create shows blocking state)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "index.html updated (round-4 tag/summary, 🔵แก้รอบ4 + 🟢ใหม่ badges, 4 new create-page cards, counts) + design-system.md ADDENDUM Round 4 (R4.1–R4.11, new wrapper specs)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Playwright-verified render + interactions at desktop 1440x900 / tablet 768x1024 / mobile 390x844 — no page JS errors; date-filter, supplier-create, shipping-way, qc-tab interactions pass; screenshots in ux-audit/",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Incremental only — theme/design-system tokens unchanged (ADR-008 antd + wrapper constraints respected)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "P0-1 production.html: removed 'QC ไม่ผ่าน' from status changer (เริ่มผลิต/ส่งตรวจ QC/พักงาน); QC on QC page only", "pass": true, "missing": null},
+            {"item": "P0-2 qc.html: decide per line/Batch; fail reworks ONLY that Batch + mandatory feedback; PO Ready when all lines pass; PO<->Batch<->Lot table", "pass": true, "missing": null},
+            {"item": "P0-3 Batch B-{PO}-{line}-{run} across production/qc/po-detail/trace; rework badge + previous-run history + QC feedback inline", "pass": true, "missing": null},
+            {"item": "P0-4 Real CREATE pages (create != edit): customer-create, contact-create, supplier create-mode, pr-create, bom-create, shipping create-round", "pass": true, "missing": null},
+            {"item": "P1-5 goods-receipt multi-line; 1 GR many PR; partial → confirm-dialog สร้าง PR ใหม่", "pass": true, "missing": null},
+            {"item": "P1-6 dashboard date-filter presets (default เดือนนี้ + free month/year/range) + per-tile event/state caption", "pass": true, "missing": null},
+            {"item": "P1-7 shipping 2-way create + round fields คนขับ/เบอร์/Route/ประเภทรถ", "pass": true, "missing": null},
+            {"item": "P1-8 supplier full-width layout (retired right panel) + real add-Supplier create mode", "pass": true, "missing": null},
+            {"item": "P1-9 po-detail 'เปลี่ยนสถานะ PO' card + per-line Batch/QC reconcile", "pass": true, "missing": null},
+            {"item": "P2 duplicate-label scan all pages (breadcrumb + single h1); realistic linked test data; searchable dropdowns everywhere", "pass": true, "missing": null},
+            {"item": "Pond's latest answers folded (Batch format; rework clarity; QC only failed line; GR partial→dialog; BOM block); index + design-system ADDENDUM R4", "pass": true, "missing": null},
+            {"item": "Playwright-verified at desktop/tablet/mobile with interaction checks; screenshots in ux-audit/; incremental only (ADR-008 respected)", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/design/erp-v2-ui-first/design-system.md",
-            "docs/design/erp-v2-ui-first/mockups/index.html",
-            "docs/design/erp-v2-ui-first/mockups/production.html",
-            "docs/design/erp-v2-ui-first/mockups/qc.html",
-            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
-            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
-            "docs/design/erp-v2-ui-first/mockups/shipping.html",
-            "docs/design/erp-v2-ui-first/mockups/supplier.html",
-            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
-            "docs/design/erp-v2-ui-first/mockups/customers.html",
-            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
-            "docs/design/erp-v2-ui-first/mockups/bom.html",
-            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
-            "docs/design/erp-v2-ui-first/mockups/customer-create.html",
-            "docs/design/erp-v2-ui-first/mockups/contact-create.html",
-            "docs/design/erp-v2-ui-first/mockups/bom-create.html",
-            "docs/design/erp-v2-ui-first/mockups/pr-create.html",
-            "docs/design/erp-v2-ui-first/ux-audit/"
-          ],
+          "output_files": ["docs/design/erp-v2-ui-first/design-system.md", "docs/design/erp-v2-ui-first/mockups/index.html", "docs/design/erp-v2-ui-first/mockups/production.html", "docs/design/erp-v2-ui-first/mockups/qc.html", "docs/design/erp-v2-ui-first/mockups/dashboard.html", "docs/design/erp-v2-ui-first/mockups/goods-receipt.html", "docs/design/erp-v2-ui-first/mockups/shipping.html", "docs/design/erp-v2-ui-first/mockups/supplier.html", "docs/design/erp-v2-ui-first/mockups/po-detail.html", "docs/design/erp-v2-ui-first/mockups/customers.html", "docs/design/erp-v2-ui-first/mockups/customer-detail.html", "docs/design/erp-v2-ui-first/mockups/bom.html", "docs/design/erp-v2-ui-first/mockups/purchase-request.html", "docs/design/erp-v2-ui-first/mockups/customer-create.html", "docs/design/erp-v2-ui-first/mockups/contact-create.html", "docs/design/erp-v2-ui-first/mockups/bom-create.html", "docs/design/erp-v2-ui-first/mockups/pr-create.html", "docs/design/erp-v2-ui-first/ux-audit/"],
           "questions_for_pond": [],
-          "summary": "Round-4 incremental rework (theme/design-system locked). Closed all PO §8 P0/P1/P2 + folded Pond's mid-task answers (Batch format B-{PO}-{line}-{run}; rework loop must be unambiguous; QC returns only failed line; GR partial→review dialog to create PR for shortfall; BOM no-active-supplier→BLOCK until manual cost). KEY CHANGES: production drops 'QC ไม่ผ่าน' (QC decides on QC page only) + shows Batch per line + Rework badge/feedback; QC decides per line/Batch with PO↔Batch↔Lot GMP chain + previous-run history; po-detail gains explicit status-change card + per-line Batch/QC reconcile. NEW create pages that actually work (create≠edit): customer-create, contact-create, supplier create-mode, pr-create, bom-create, shipping 2-way round create with driver/phone/route/vehicle-type. Goods-receipt rebuilt multi-line (header + lines, per-line lot & PR, many-PR, partial dialog). Dashboard gains date-filter presets (default เดือนนี้, free month/year/range) affecting all tiles + per-tile event/state captions. Supplier retired the cramped right panel for a full-width layout. Removed duplicate header title on every page (fixes 'Dashboard 3×') → breadcrumb + single h1. Realistic linked test data. Searchable dropdowns everywhere. 28 pages + index; index + design-system ADDENDUM R4 updated. Verified via Playwright at desktop/tablet/mobile with interaction checks; screenshots in ux-audit/. Known polish (backlog): 5-tile Sale dashboard density at tablet width. Handoff: READY_FOR_PO_REVIEW.",
+          "summary": "Round-4 incremental rework (theme/design-system locked). Closed all PO §8 P0/P1/P2 + folded Pond's answers (Batch B-{PO}-{line}-{run}; rework loop unambiguous; QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→BLOCK). production drops 'QC ไม่ผ่าน' + Batch per line + Rework badge/feedback; QC decides per line/Batch with PO<->Batch<->Lot GMP chain + previous-run history; po-detail status-change card + per-line reconcile. NEW create pages (create≠edit): customer-create, contact-create, supplier create-mode, pr-create, bom-create, shipping 2-way create with driver/phone/route/vehicle. Goods-receipt multi-line + partial dialog. Dashboard date-filter + event/state captions. Supplier full-width layout. Removed duplicate title on every page. Realistic linked test data. Searchable dropdowns. 28 pages+index; design-system ADDENDUM R4. Playwright-verified desktop/tablet/mobile; screenshots ux-audit/. Handoff READY_FOR_PO_REVIEW.",
           "overridden_by": null,
           "updated_at": "2026-07-09T15:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "review-r4+mock-data",
+          "status": "READY_FOR_UXUI",
+          "gate_checklist": [
+            {"item": "Round-4 mockup review = PASS: all PO §8 P0/P1/P2 verified closed (deep-read production/qc/po-detail/goods-receipt/supplier/dashboard/customer-create + grep across 28)", "pass": true, "missing": null},
+            {"item": "Pond r3 9 categories all satisfied (label dedupe, create≠edit, GR multi-line+partial dialog, dropdown search, supplier layout, no 'QC ไม่ผ่าน' on production, QC per-line/Batch+run history, PO status-change card, dashboard filter+caption)", "pass": true, "missing": null},
+            {"item": "Batch format B-{PO}-{line}-{run} + rework loop (ก badge+run+feedback, ข ผลิตซ้ำ gen run+1, ค คิว QC เห็นรายการใหม่+ประวัติ run, ง line อื่นเดินต่อ + po-detail overview) verified vs journeys §3.1/§3.2", "pass": true, "missing": null},
+            {"item": "GMP chain visible (qc shows Lot→Batch→line→PO); Follow-up↔Hold link; Shipment/DN reconcile present", "pass": true, "missing": null},
+            {"item": "mock-data-spec.md FINALIZED to real round-4 numbering (PO-{YYYYMM}-{NNNNNN}, B-{PO}-{line}-{run}, DN/SHP/INV/PR/GR/Lot) — single dataset, 8 production use cases, screen↔data table + cross-page consistency notes", "pass": true, "missing": null},
+            {"item": "po-mockup-review-r4.md written (per-item results + focus-points for embed)", "pass": true, "missing": null},
+            {"item": "Only remaining work = round 4.5 data-embed (make sample data identical across all pages) — no structural/flow gaps", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/po-mockup-review-r4.md",
+            "docs/requirements/erp-v2-ui-first/mock-data-spec.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "TWO TASKS DONE. (1) Reviewed round-4 mockups on Pond's behalf — VERDICT PASS: deep-read production (Batch per line + Rework badge + run-history + feedback; status changer has NO 'QC ไม่ผ่าน'), qc (decide per line/Batch, fail reworks only that Batch, previous-run history, Lot→Batch GMP chain, reconcile x/N), po-detail (explicit 'เปลี่ยนสถานะ PO' card with mandatory reason + per-line Batch/QC overview + trace), goods-receipt (multi-line header+lines, 1 GR many PR, partial→confirm-dialog to create PR for shortfall), supplier (full-width layout replacing cramped right panel + create/edit mode + price matrix + Active toggle), dashboard (date-filter presets incl custom range + per-tile ในช่วง/ตอนนี้ captions), customer-create (empty real create form). All PO §8 P0/P1/P2 closed; Pond's 9 r3 categories 9/9; Batch format B-{PO}-{line}-{run} + rework loop (ก-ง) verified vs status-journeys §3.1/§3.2. Recorded po-mockup-review-r4.md. (2) FINALIZED mock-data-spec.md (was draft, deferred) now aligned to real round-4 doc numbering: one interconnected dataset (3 suppliers incl 1 inactive, 8 materials+lots, 4 BOM, 7 customers covering all 6 statuses, PR/GR multi-line+partial) driving all 8 production use cases — UC1 PO Draft (PO-202607-000191), UC2 Hold→Follow-up (PO-...000188), UC3 QC pass-all (PO-...000176), UC4 QC fail per-line rework in progress (PO-...000181, matches embedded mockup), UC5 rework full loop run1 fail→run2 pass (PO-...000170), UC6 single ship success (SHP-20260708-0044→DN-...00119→INV-2026-000135), UC7 multi-PO round all delivered (SHP-...0045), UC8 partial round 1 delivered+1 rejected+1 postponed (SHP-...0046) — plus a 'which screen shows which data' table + cross-page consistency checklist. REMAINING = round 4.5: UX embeds this single dataset to replace each page's own samples so data is identical across modules; then Gate 1 opens. Set current_agent=ux-ui, status=READY_FOR_UXUI. Did not edit mockups.",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T17:00:00+07:00"
         }
       ]
     }
