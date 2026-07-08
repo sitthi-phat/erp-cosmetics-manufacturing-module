@@ -12,6 +12,11 @@
   placeholder logo/icon ต้องออกแบบจากชื่อนี้ให้เข้ากับ theme Clean Clinical
 - **ต้องเป็น responsive** (ฝากย้ำถึง PO และ UX/UI โดยตรง) — เป็น requirement ระดับ Must
   ของ Gate 1 รอบ 2: mockup ต้องแสดงการ responsive ให้เห็นจริง ไม่ใช่แค่ desktop
+- **ระบบ Notification/Inbox สำหรับการส่งงานข้ามแผนก** (สั่งถึง PO, 2026-07-08):
+  ทุกการส่งงานต่อระหว่างแผนกต้องมี noti เตือนว่ามี inbox ค้างกี่รายการ —
+  **แยก noti ตาม role** ที่ถูก assign โดยยึดจากสิทธิ์ **Read ของ module นั้น**
+  (role ไหนอ่าน module นั้นได้ = ได้รับ noti ของ module นั้น) —
+  กดดูรายการไหน = **acknowledge** แล้ว noti ตัวนั้นหายไป (มี 5 alerts กดไป 1 เหลือ 4)
 
 ## คำตอบคำถามเดิม
 1. **Theme: A — Clean Clinical (teal)** ✅ อนุมัติ
