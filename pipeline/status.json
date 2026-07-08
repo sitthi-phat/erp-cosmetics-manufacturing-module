@@ -769,6 +769,103 @@
           "summary": "Round-3 incremental rework (design system/theme locked). Applied all P0/P1/P2 from po-mockup-review.md + all 13 หมวด of pond-gate1-r2-feedback + the 5 Pond answers. Key: Production flow now ...→QC→พร้อมส่งมอบ (QC-fail loop + Hold→แก้ไข PO); removed obsolete 'รอวัตถุดิบ' everywhere; Customer 6th real status 'ต้องติดตาม'+comment; PO cancel any stage + reopen keeping same number; Shipping = create 'รอบจัดส่ง (Shipment)' → 1 DN per order (print each) with 2-level reconcile; new full-screen Goods Receipt (ref PR→auto-close); Supplier active/inactive + price matrix (no receipt form); BOM cost=max active-supplier+snapshot+stale badge; Trace entity selector+date-range+field-level audit; Settings = 5 real tab screens; Dashboard refresh+auto-15s+drill-down list+pagination (view-preserving); global Notification panel (bell→deep link+ack). Added goods-receipt.html (24 pages + index). Verified rendering AND interactivity (notification open, dashboard drill-down) via Playwright at desktop/tablet/mobile. No src/ touched, no git. Handoff: READY_FOR_PO_REVIEW (PO re-reviews completeness before Gate 1 look approval).",
           "overridden_by": null,
           "updated_at": "2026-07-08T23:10:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "stage2-prep",
+          "status": "IN_PROGRESS",
+          "gate_checklist": [
+            {
+              "item": "Read all Stage-2 inputs (stage2-directives, brief, status-journeys, Gate1 r1+r2 feedback, po-mockup-review, mockups, status.json history)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Confirmed round-3 mockups exist and reflect revised flows (production QC step + Hold/แก้ไข PO, goods-receipt full screen + PR close, settings tabs, supplier active/inactive + price matrix, trace field-audit) — mockups usable as spec",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Stage-2 work plan drafted: 16 epics + story<->mockup(element)<->journey(section)<->continuity(C#) mapping method + Given/When/Then AC format w/ happy+edge+error incl. trace/notification/mandatory-comment assertions",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Exception/edge inventory extracted from journeys + mockups (30 cases) — every business/system exception has a target story",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No deliverable authored (stories.md not written) — held until Gate 1 approved, per Pond's Stage-2 directive",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Open business rules needed for MEASURABLE AC identified and batched to Pond (no rule invented)",
+              "pass": false,
+              "missing": "6 undecided business rules: (1) partial goods-receipt vs PR state, (2) auto-PR quantity basis + dedupe with existing open PR, (3) BOM cost when component has no active supplier, (4) VAT-rate selection date under effective-date config, (5) credit-term source for overdue + where set, (6) document numbering formats (PO/Shipment/DN/Invoice/PR/Lot)"
+            }
+          ],
+          "output_files": [],
+          "questions_for_pond": [
+            {
+              "q": "เมื่อรับของเข้า (Goods Receipt) น้อยกว่าจำนวนที่ขอใน PR (รับบางส่วน) ควรให้ PR เป็นสถานะใด?",
+              "options": [
+                "PR ยังคง Open/รับบางส่วน จนของเข้าครบจึงเปลี่ยนเป็น 'ของเข้าครบ' อัตโนมัติ",
+                "เปลี่ยนเป็น 'ของเข้าครบ' ทันทีที่รับครั้งแรก แล้วให้ผู้ใช้ปิดคำขอเอง",
+                "เพิ่มสถานะ 'รับบางส่วน' แยกต่างหากใน PR"
+              ],
+              "answer": null
+            },
+            {
+              "q": "PR ที่ระบบสร้างอัตโนมัติจาก PO วัตถุดิบขาด — ใช้จำนวนเท่าไร และถ้ามี PR เปิดค้างของวัตถุดิบเดิมอยู่แล้วให้ทำอย่างไร?",
+              "options": [
+                "จำนวน = ส่วนที่ขาด (ความต้องการ − คงคลัง) และรวมเข้ากับ PR ที่เปิดค้างอยู่ของวัตถุดิบนั้น",
+                "จำนวน = ส่วนที่ขาด แต่สร้าง PR ใบใหม่แยกทุกครั้ง",
+                "จำนวน = ความต้องการเต็มของ PO ใบนั้น + สร้างใบใหม่แยก"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ในสูตร BOM ถ้าวัตถุดิบส่วนประกอบไม่มี supplier ที่ active เลย (หรือยังไม่ผูก supplier) ราคาทุนของวัตถุดิบตัวนั้นควรเป็นเท่าไร?",
+              "options": [
+                "ถือเป็น 0 + ขึ้น badge เตือน 'ไม่มีราคา supplier'",
+                "บล็อกไม่ให้บันทึกสูตรจนกว่าผู้ใช้จะกรอกราคาทุน override เอง",
+                "ใช้เฉพาะราคาทุน override ที่ผู้ใช้กรอก (ไม่คิดอัตโนมัติ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ใบกำกับภาษีเลือกอัตรา VAT ตาม effective date โดยยึดวันใด?",
+              "options": [
+                "ยึดวันที่ออกใบกำกับภาษี (invoice date)",
+                "ยึดวันที่สร้าง PO",
+                "ยึดวันที่ส่งของจริง (DN Delivered)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "การนับ overdue ใช้เครดิต (จำนวนวัน) จากที่ใด และตั้งค่าที่ไหน?",
+              "options": [
+                "เครดิตตั้งที่ระดับลูกค้า (default) + แก้ต่อใบ invoice ได้",
+                "กรอกเครดิตต่อใบ invoice เท่านั้น",
+                "ตั้งค่าเครดิตกลางของระบบใน settings"
+              ],
+              "answer": null
+            },
+            {
+              "q": "รูปแบบเลขเอกสาร (PO / Shipment / DN / Invoice / PR / Lot) ให้ใช้แบบใด เพื่อให้ AC ระบุผลลัพธ์ที่ตรวจสอบได้?",
+              "options": [
+                "ใช้รูปแบบ prefix+ปี+running ที่ BA เสนอ (เช่น PO-2026-0001, DN-2026-0001) — Lot ใช้ prefix ต่อ supplier ตามที่ตกลงไว้",
+                "ปอนด์กำหนดรูปแบบเอง (โปรดระบุ)",
+                "ปล่อยให้ Tech-Lead กำหนดในขั้นออกแบบ"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "STAGE 2 PREP ONLY (no stories/AC authored, per Pond directive to wait for Gate 1). Read every input incl. mockups; verified round-3 mockups already reflect revised flows (production QC step + Hold/แก้ไข PO, goods-receipt.html full screen + PR auto-close, settings 5 tabs, supplier active/inactive + price matrix, trace field-level audit) so they are usable as spec. Produced Stage-2 plan: 16 epics (A platform/identity/notification, B dashboards x7, C customer 6-status, D PO, E stock/goods-receipt, F PR, G supplier+price-matrix, H BOM, I production, J QC, K shipping 2-tier, L return, M invoice/finance, N traceability, O settings, P cross-module continuity C1-C14). Mapping method: each story cites mockup file+element + status-journeys section + continuity row/scope item; AC in Given/When/Then covering happy+edge+error with explicit trace, notification-by-Read-permission, and mandatory-comment assertions. Extracted a 30-case exception inventory. Batched 6 undecided business rules to Pond (partial GR vs PR, auto-PR qty+dedupe, BOM cost w/o active supplier, VAT-rate-by-date, credit-term source, doc numbering) — needed for measurable AC; none invented. Did NOT touch feature-level current_agent/status (UX/UI holds).",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T22:15:00+07:00"
         }
       ]
     }
