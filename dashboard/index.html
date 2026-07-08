@@ -182,6 +182,12 @@ function render(data){
 
     // timeline
     let timeline='';
+    if(f.status!=='WAITING_HUMAN_GATE' && f.status!=='BLOCKED_NEED_INPUT' && f.status!=='DONE' && f.status!=='ON_HOLD'){
+      timeline += '<tr style="opacity:.85"><td style="white-space:nowrap;font-family:monospace;font-size:12px">ตอนนี้</td>'+
+        '<td><b>'+(AGENT_ICONS[f.current_agent]||'🤖')+' '+esc(f.current_agent)+'</b></td>'+
+        '<td><span class="tag t-wait">⏳ กำลังทำงาน…</span></td>'+
+        '<td style="color:var(--muted)">ยังไม่ส่งงาน — แถวจะกลายเป็นผลจริงเมื่อ agent ปิดงาน</td></tr>';
+    }
     [...hist].reverse().forEach(h=>{
       const tag = h.status==='FAILED'?'t-fail':(h.status==='WAITING_HUMAN_GATE'?'t-wait':(h.status&&(h.status.startsWith('READY')||h.status==='DONE')?'t-ok':'t-info'));
       timeline += '<tr><td style="white-space:nowrap;font-family:monospace;font-size:12px">'+esc((h.updated_at||'').replace('T',' ').slice(0,16))+'</td>'+
