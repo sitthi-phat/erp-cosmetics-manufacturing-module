@@ -92,7 +92,7 @@
                 "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)",
                 "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"
               ],
-              "answer": null
+              "answer": "ยืนยัน — และสั่งเพิ่ม: เอาให้เนี๊ยบที่สุด มีโอกาสเสนองานครั้งเดียว ต้องดีที่สุด (2026-07-08)"
             },
             {
               "q": "เป้าเวลาทำงานของ user มือใหม่ (BKV-1) ควรตั้งที่เท่าไรจึงถือว่า 'ใช้ง่ายพอ'? (ใช้วัดตอน UAT)",
@@ -102,7 +102,7 @@
                 "ผ่อนกว่านี้ (ระบุเวลา)",
                 "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"
               ],
-              "answer": null
+              "answer": "เชิงคุณภาพ: ใช้ง่ายโดยไม่มีคนสอน + เสร็จเร็ว + อ่านง่าย + ลดจำนวนการกด/จำนวนหน้าให้น้อยที่สุด — ผู้ใช้ทำงาน routine ถ้ากรอกนาน/กดหลายหน้าจะไม่ใช้และพลาดสูง → ตัวเลข ≤3/≤5 นาทีใช้เป็น proxy ได้ แต่เกณฑ์จริงคือ minimize clicks/pages (2026-07-08)"
             },
             {
               "q": "เกณฑ์คะแนน UAT 'ดู professional + ใช้ง่าย' (BKV-5) ควรผ่านที่เท่าไร?",
@@ -112,7 +112,7 @@
                 "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)",
                 "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"
               ],
-              "answer": null
+              "answer": "Function ต้องเต็ม 5 — ไม่มี defect เหลือเลยทุกระดับ (minor/major/critical = 0) / UX-UI ผ่านที่ ≥3.5 แต่ต้องใช้ง่าย (2026-07-08)"
             }
           ],
           "summary": "Wrote v2 design-brief and tied it to the real 10 prototype feedback points (prototype-feedback-reference.md): added section 3.1 mapping each of the 10 items to the mockup evidence required, making BKV-4/Gate-1 fully verifiable, and enriched the Thai tax-invoice spec (discount field, Thai baht text, 2 signature boxes). 5 measurable Business Key Values (first-time-user task speed & adoption). Q1 (feedback list) resolved via Dispatcher-supplied reference; 3 business questions remain, batched for Pond at Gate 1 — not blocking. Did not touch feature-level status/current_agent (UX/UI owns it this phase).",
