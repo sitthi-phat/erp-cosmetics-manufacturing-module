@@ -148,27 +148,37 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">QC ไม่ผ่าน: งานผลิต PRD-000091 ตีกลับให้ผลิตใหม่</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000031 (กลีเซอรีนขาด 6 กก.)</a><div class="tm">15 นาทีที่แล้ว · จากการเปิด PO-188</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000181 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000138 เกินกำหนดชำระ +6 วัน</a><div class="tm">วันนี้ 00:05 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">คลังสินค้า</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>ผู้จำหน่าย (Supplier)</h1><div class="sub">กำหนด prefix เลข Lot ต่อ supplier · ผูกวัตถุดิบรายตัว + ราคารับซื้อ (ต่อ supplier ต่อวัตถุดิบ) · เปิด/ปิดใช้งานได้ · <b>การรับเข้าคลังอยู่ที่หน้าสต็อก</b></div></div><button class="btn btn-primary">➕ เพิ่ม Supplier</button></div>
- <div class="split">
-  <div class="card"><div class="card-b"><h3 style="margin-bottom:12px">รายชื่อ Supplier</h3>
-    <div class="tblwrap"><table class="tbl"><thead><tr><th>Supplier</th><th>Lot prefix</th><th>วัตถุดิบที่ผูก</th><th>สถานะ</th><th></th></tr></thead><tbody>
-     <tr style="background:var(--primary-bg)"><td><b>เคมีภัณฑ์ ไทยเทค</b></td><td><span class="pill">L-TT-</span></td><td>แอลกอฮอล์, สารกันเสีย</td><td><span class="badge b-success">Active</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
-     <tr><td><b>กลีเซอรีนไทย</b></td><td><span class="pill">L-GLY-</span></td><td>กลีเซอรีน</td><td><span class="badge b-success">Active</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
-     <tr><td><b>อโรมา เฮ้าส์</b></td><td><span class="pill">L-ARM-</span></td><td>น้ำหอม, น้ำมันหอมระเหย</td><td><span class="badge b-neutral">Inactive</span></td><td class="num"><a href="#">แก้ไข</a></td></tr>
-    </tbody></table></div>
-    <div class="alert alert-info" style="margin-top:14px;font-size:13px"><span class="ai">ℹ️</span><div>วัตถุดิบ "กลีเซอรีน" มาได้จากหลาย supplier · ราคาทุน BOM ใช้ราคารับซื้อ<b>สูงสุดของ supplier ที่ Active เท่านั้น</b> (supplier Inactive ไม่ถูกนับ)</div></div>
-  </div></div>
-  <div class="card"><div class="card-h"><div><h3>แก้ไข Supplier: เคมีภัณฑ์ ไทยเทค</h3></div><div style="display:flex;align-items:center;gap:8px"><span class="tiny">ใช้งาน</span><span class="switch"></span></div></div><div class="card-b">
-    <div class="grid2"><div class="field"><label>ชื่อ Supplier <span class="req">*</span></label><input class="inp" value="เคมีภัณฑ์ ไทยเทค"></div>
-     <div class="field"><label>Lot prefix <span class="req">*</span></label><input class="inp" value="L-TT-"></div></div>
-    <div class="field"><label>เบอร์ติดต่อ</label><input class="inp" value="02-390-1122"></div>
-    <div style="border-top:1px dashed var(--border);margin:6px 0 14px;padding-top:12px"><b style="font-size:14px">วัตถุดิบที่ผูก + ราคารับซื้อ</b></div>
-    <div class="searchbox" style="max-width:none;margin-bottom:10px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาวัตถุดิบเพื่อผูกเพิ่ม เช่น 'กลีเซอรีน'"></div>
-    <div class="tblwrap"><table class="tbl"><thead><tr><th>วัตถุดิบ</th><th class="num">ราคารับซื้อ/หน่วย</th><th></th></tr></thead><tbody>
-     <tr><td><b>แอลกอฮอล์</b></td><td class="num"><input class="inp tnum" style="height:32px;width:110px;text-align:right" value="42.00"></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
-     <tr><td><b>สารกันเสีย Phenoxyethanol</b></td><td class="num"><input class="inp tnum" style="height:32px;width:110px;text-align:right" value="185.00"></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
+ <div class="pagehead"><div><h1>ผู้จำหน่าย (Supplier)</h1><div class="sub">กำหนด prefix เลข Lot ต่อ supplier · ผูกวัตถุดิบรายตัว + ราคารับซื้อ (ต่อ supplier ต่อวัตถุดิบ) · เปิด/ปิดใช้งานได้ · <b>การรับเข้าคลังอยู่ที่หน้าสต็อก</b></div></div><button class="btn btn-primary" onclick="supMode('create')">➕ เพิ่ม Supplier</button></div>
+ <div class="card"><div class="card-b"><h3 style="margin-bottom:12px">รายชื่อ Supplier</h3>
+   <div class="searchbox" style="max-width:360px;margin-bottom:12px"><span class="si">🔍</span><input class="inp" placeholder="ค้นชื่อ supplier / วัตถุดิบที่ผูก"></div>
+   <div class="tblwrap"><table class="tbl"><thead><tr><th>Supplier</th><th>Lot prefix</th><th>วัตถุดิบที่ผูก</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    <tr id="suprow-tt" style="background:var(--primary-bg)"><td><b>เคมีภัณฑ์ ไทยเทค</b></td><td><span class="pill">L-TT-</span></td><td>แอลกอฮอล์, สารกันเสีย</td><td><span class="badge b-success">Active</span></td><td class="num"><a href="#supform" onclick="supMode('edit')">แก้ไข</a></td></tr>
+    <tr><td><b>กลีเซอรีนไทย</b></td><td><span class="pill">L-GLY-</span></td><td>กลีเซอรีน, น้ำหอมกุหลาบ</td><td><span class="badge b-success">Active</span></td><td class="num"><a href="#supform" onclick="supMode('edit')">แก้ไข</a></td></tr>
+    <tr><td><b>อโรมา เฮ้าส์</b></td><td><span class="pill">L-ARM-</span></td><td>น้ำหอม, น้ำมันหอมระเหย</td><td><span class="badge b-neutral">Inactive</span></td><td class="num"><a href="#supform" onclick="supMode('edit')">แก้ไข</a></td></tr>
+   </tbody></table></div>
+   <div class="alert alert-info" style="margin-top:14px;font-size:13px"><span class="ai">ℹ️</span><div>วัตถุดิบ "กลีเซอรีน" มาได้จากหลาย supplier · ราคาทุน BOM ใช้ราคารับซื้อ<b>สูงสุดของ supplier ที่ Active เท่านั้น</b> (supplier Inactive ไม่ถูกนับ)</div></div>
+ </div></div>
+ <div class="card" id="supform"><div class="card-h"><div><h3 id="supTitle">แก้ไข Supplier: เคมีภัณฑ์ ไทยเทค</h3><div class="tiny" id="supSub">จัดการข้อมูล + ราคารับซื้อรายวัตถุดิบได้เต็มความกว้าง (ไม่ต้องเลื่อนในพาเนลแคบ)</div></div><div style="display:flex;align-items:center;gap:8px"><span class="tiny">ใช้งาน (Active)</span><span class="switch" id="supActive"></span></div></div><div class="card-b">
+    <div style="font-weight:600;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border2)">ข้อมูลทั่วไป</div>
+    <div class="grid3"><div class="field"><label>ชื่อ Supplier <span class="req">*</span></label><input class="inp" id="supName" value="เคมีภัณฑ์ ไทยเทค"></div>
+     <div class="field"><label>Lot prefix <span class="req">*</span></label><input class="inp" id="supPrefix" value="L-TT-"><div class="help">ใช้ตั้งต้นเลข Lot ตอนรับเข้า</div></div>
+     <div class="field"><label>เบอร์ติดต่อ</label><input class="inp" id="supPhone" value="02-390-1122"></div></div>
+    <div class="grid2"><div class="field"><label>ผู้ติดต่อ</label><input class="inp" id="supContact" value="คุณมานพ (ฝ่ายขาย)"></div>
+     <div class="field"><label>เลขผู้เสียภาษี</label><input class="inp tnum" id="supTax" value="0105540012345"></div></div>
+    <div class="field"><label>ที่อยู่</label><textarea class="inp" id="supAddr" rows="2">88/12 ถ.บางนา-ตราด กม.18 ต.บางเสาธง อ.บางเสาธง สมุทรปราการ 10570</textarea></div>
+    <div style="font-weight:600;margin:8px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center"><span>วัตถุดิบที่ผูก + ราคารับซื้อ (price matrix)</span><span class="count" id="supMatCount">2 รายการ</span></div>
+    <div class="searchbox" style="max-width:none;margin-bottom:10px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาวัตถุดิบเพื่อผูกเพิ่ม เช่น 'กลีเซอรีน' (ค้นหาได้)"></div>
+    <div class="tblwrap"><table class="tbl" id="supMatTbl" style="min-width:640px"><thead><tr><th>วัตถุดิบ</th><th class="num">ราคารับซื้อ/หน่วย</th><th>หน่วย</th><th class="num">ราคาที่รับล่าสุด (GR)</th><th>อัปเดตเมื่อ</th><th></th></tr></thead><tbody>
+     <tr><td><b>แอลกอฮอล์</b></td><td class="num"><input class="inp tnum" style="height:32px;width:110px;text-align:right" value="42.00"></td><td>ลิตร</td><td class="num tnum">42.00</td><td class="tnum">05/07/2569</td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
+     <tr><td><b>สารกันเสีย Phenoxyethanol</b></td><td class="num"><input class="inp tnum" style="height:32px;width:110px;text-align:right" value="185.00"></td><td>กก.</td><td class="num tnum">180.00</td><td class="tnum">28/06/2569</td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
     </tbody></table></div>
     <p class="tiny" style="margin-top:8px">ราคานี้ใช้คำนวณราคาทุน BOM (ค่าสูงสุดของ supplier ที่ Active)</p>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึก Supplier</button></div>
-  </div></div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+    <div class="footerbar"><button class="btn" onclick="supMode('edit')">ยกเลิก</button><button class="btn btn-primary" id="supSave">บันทึก Supplier</button></div>
+ </div></div>
+ <script>function supMode(m){var create=m==='create';
+   document.getElementById('supTitle').textContent=create?'เพิ่ม Supplier ใหม่':'แก้ไข Supplier: เคมีภัณฑ์ ไทยเทค';
+   document.getElementById('supSub').textContent=create?'สร้าง supplier ใหม่ (คนละหน้ากับแก้ไข) — กรอกข้อมูล + ผูกวัตถุดิบ/ราคา':'จัดการข้อมูล + ราคารับซื้อรายวัตถุดิบได้เต็มความกว้าง (ไม่ต้องเลื่อนในพาเนลแคบ)';
+   ['supName','supPrefix','supPhone','supContact','supTax','supAddr'].forEach(function(id){var e=document.getElementById(id);if(create)e.value='';});
+   if(create){document.getElementById('supName').placeholder='เช่น เคมีภัณฑ์สยาม';document.getElementById('supPrefix').placeholder='เช่น L-CS-';document.getElementById('supMatTbl').querySelector('tbody').innerHTML='<tr><td colspan="6" class="tiny" style="text-align:center;padding:20px">ยังไม่ผูกวัตถุดิบ — ค้นหาด้านบนเพื่อเพิ่ม</td></tr>';document.getElementById('supMatCount').textContent='0 รายการ';document.getElementById('supActive').classList.remove('off');document.getElementById('supSave').textContent='สร้าง Supplier';}
+   document.getElementById('supform').scrollIntoView({behavior:'smooth'});}
+ </script></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

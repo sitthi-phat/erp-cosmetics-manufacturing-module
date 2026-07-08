@@ -150,7 +150,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="content">
  <div class="pagehead"><div><h1>การจัดส่ง</h1><div class="sub">สร้าง <b>"รอบจัดส่ง (Shipment)"</b> โดยเลือก PO ที่พร้อมจัดส่ง → ระบบออกใบจัดส่ง (DN) <b>1 ใบต่อออเดอร์</b> อัตโนมัติ · ค้น PO ด้วยเลข PO หรือข้อมูลลูกค้า</div></div></div>
  <div class="stats" style="grid-template-columns:repeat(3,1fr)"><div class="stat"><div class="k">รอจัดส่ง (พร้อมจัดส่ง)</div><div class="v">4</div></div><div class="stat"><div class="k">รอบกำลังนำส่ง</div><div class="v">2</div></div><div class="stat"><div class="k">DN ส่งถึงแล้ว (เดือนนี้)</div><div class="v">38</div></div></div>
- <div class="card"><div class="card-h"><h3>สร้างรอบจัดส่งใหม่ (Shipment)</h3><button class="btn btn-primary btn-sm">📦 สร้างรอบจัดส่งจากที่เลือก</button></div><div class="card-b">
+ <div class="card"><div class="card-h"><h3>สร้างรอบจัดส่งใหม่ (Shipment)</h3></div><div class="card-b">
+   <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><span class="chip on" onclick="shipWay(this,0)">① เลือก PO ก่อน แล้วสร้างรอบ</span><span class="chip" onclick="shipWay(this,1)">② สร้างรอบเปล่าก่อน แล้ว search เพิ่ม PO</span></div>
+   <div id="wayhint" class="notify" style="margin-bottom:14px">📋 <b>วิธี ①:</b> ติ๊กเลือก PO ที่ "พร้อมจัดส่ง" จากคิวด้านล่าง → กรอกข้อมูลรอบ (คนขับ/รถ/route) → กดสร้างรอบ · ระบบออก DN 1 ใบต่อออเดอร์อัตโนมัติ</div>
+   <div style="font-weight:600;margin-bottom:8px">คิว PO พร้อมจัดส่ง <span class="tiny" style="font-weight:400">(ค้นได้ด้วยเลข PO หรือข้อมูลลูกค้า)</span></div>
    <div class="searchbox" style="max-width:none;margin-bottom:12px"><span class="si">🔍</span><input class="inp" placeholder="ค้น PO: เลข PO / ชื่อ-นามสกุล / ชื่อบริษัท / เบอร์โทร / ชื่อผู้ติดต่อ"></div>
    <div class="tblwrap"><table class="tbl"><thead><tr><th style="width:40px"><span class="chk on">✓</span></th><th>PO</th><th>ลูกค้า / ผู้ติดต่อ</th><th>สินค้า</th><th>สถานะ</th></tr></thead><tbody>
     <tr><td><span class="chk on">✓</span></td><td class="strong">PO-202607-000181</td><td>เดอร์มา แคร์ · คุณวันเพ็ญ</td><td>โลชั่น 200</td><td><span class="badge b-processing">พร้อมจัดส่ง</span></td></tr>
@@ -158,8 +161,17 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <tr><td><span class="chk">&nbsp;</span></td><td class="strong">PO-202607-000170</td><td>กลอรี่ · คุณเอก</td><td>โฟม 300</td><td><span class="badge b-warning">พร้อมจัดส่ง · เลื่อน 10/07</span></td></tr>
     <tr style="opacity:.5"><td><span class="chk" style="border-style:dashed">&nbsp;</span></td><td class="strong">PO-202607-000165</td><td>สวยใส · คุณนก</td><td>เซรั่ม 120</td><td><span class="badge b-neutral">กำลังผลิต — ยังเลือกไม่ได้</span></td></tr>
    </tbody></table></div>
-   <div class="notify" style="margin-top:12px">เลือกได้เฉพาะ PO สถานะ <b>"พร้อมจัดส่ง"</b> (แต่ search เห็นได้ทั้งหมด) · PO ที่ <b>เลื่อน (Postpone)</b> ยังค้างในคิวนี้พร้อมวันใหม่ให้ฝ่ายจัดส่งเห็น · กดสร้าง → ระบบออก DN 1 ใบต่อออเดอร์</div>
+   <div class="notify" style="margin-top:12px">เลือกได้เฉพาะ PO สถานะ <b>"พร้อมจัดส่ง"</b> (แต่ search เห็นได้ทั้งหมด) · PO ที่ <b>เลื่อน (Postpone)</b> ยังค้างในคิวนี้พร้อมวันใหม่ · กดสร้าง → ระบบออก DN 1 ใบต่อออเดอร์</div>
+   <h3 style="margin:18px 0 10px;font-size:15px">รายละเอียดรอบจัดส่ง</h3>
+   <div class="grid2"><div class="field"><label>คนขับ <span class="req">*</span> <span class="tiny">(ค้น/เลือกได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" value="ประเสริฐ มั่นคง" placeholder="ค้น/เลือกคนขับ…"></div></div>
+    <div class="field"><label>เบอร์ติดต่อคนขับ <span class="req">*</span></label><input class="inp tnum" value="081-234-5678" placeholder="08x-xxx-xxxx"></div></div>
+   <div class="grid2"><div class="field"><label>Route / เส้นทาง <span class="req">*</span> <span class="tiny">(ค้น/เลือกได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" value="สายบางนา–ตราด" placeholder="ค้น/เลือกเส้นทาง…"></div></div>
+    <div class="field"><label>ประเภทรถ <span class="req">*</span></label><select class="sel"><option>รถกระบะ</option><option>รถเก๋ง</option><option>Motorcycle (มอเตอร์ไซค์)</option><option>รถ 10 ล้อ</option></select><div class="help">เพิ่ม/แก้ประเภทรถได้ในตั้งค่า</div></div></div>
+   <div class="grid2"><div class="field"><label>ทะเบียนรถ</label><input class="inp" value="1กก 2345 กรุงเทพฯ" placeholder="เช่น 1กก 2345"></div>
+    <div class="field"><label>วันที่/เวลา ออกรอบ</label><input class="inp" type="datetime-local" value="2026-07-08T13:00"></div></div>
+   <div class="footerbar" style="position:static;margin:8px -20px -20px;border-top:1px solid var(--border2)"><button class="btn">ยกเลิก</button><button class="btn btn-primary">📦 สร้างรอบจัดส่ง (2 PO → 2 ใบจัดส่ง)</button></div>
  </div></div>
+ <script>function shipWay(el,i){document.querySelectorAll('.card .chip').forEach(function(c){c.classList.remove('on')});el.classList.add('on');document.getElementById('wayhint').innerHTML=i===0?'📋 <b>วิธี ①:</b> ติ๊กเลือก PO ที่ "พร้อมจัดส่ง" จากคิวด้านล่าง → กรอกข้อมูลรอบ (คนขับ/รถ/route) → กดสร้างรอบ · ระบบออก DN 1 ใบต่อออเดอร์อัตโนมัติ':'📦 <b>วิธี ②:</b> กรอกข้อมูลรอบ (คนขับ/รถ/route) สร้าง <b>รอบเปล่า</b> ก่อน → แล้วค่อย <b>search เพิ่ม PO</b> ที่พร้อมจัดส่งเข้ารอบทีหลัง (ใช้ช่องค้นด้านล่าง เพิ่มได้เรื่อย ๆ)';}</script>
  <div class="card"><div class="card-h"><h3>รอบจัดส่ง (Shipment) ล่าสุด</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลขรอบ</th><th class="num">จำนวน DN</th><th>คนขับ</th><th>สถานะรอบ</th><th></th></tr></thead><tbody>
     <tr><td class="strong">SHP-20260708-0007</td><td class="num tnum">3</td><td>ประเสริฐ</td><td><span class="badge b-processing">กำลังนำส่ง</span></td><td class="num"><a href="delivery-note.html">เปิด</a></td></tr>
     <tr><td class="strong">SHP-20260707-0006</td><td class="num tnum">2</td><td>สมพงษ์</td><td><span class="badge b-success">เสร็จรอบ</span></td><td class="num"><a href="delivery-note.html">เปิด</a></td></tr>

@@ -153,32 +153,36 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้น PO / ลูกค้า / วันที่จัดส่ง"></div></div>
     <div class="r"><span class="tiny">เรียงตาม:</span><span class="chip on">วันจัดส่ง</span><span class="chip">PO</span><span class="chip">สถานะ</span></div></div>
    <div class="tblwrap"><table class="tbl"><thead><tr><th>งานผลิต</th><th>ลูกค้า</th><th>วันจัดส่ง</th><th>สถานะ</th><th></th></tr></thead><tbody>
-    <tr><td><b>PRD-000091</b> โลชั่นบำรุงผิว<div class="id">PO-202607-000181 · 200 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">09/07/2569 <span class="badge b-error" style="height:20px">เสี่ยงล่าช้า</span></td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
-    <tr><td><b>PRD-000088</b> โฟมล้างหน้า<div class="id">PO-202607-000181 · 300 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">12/07/2569</td><td><span class="badge b-warning">พักงาน</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
-    <tr><td><b>PRD-000085</b> ครีมกันแดด SPF50<div class="id">PO-202607-000185 · 100 หน่วย</div></td><td>กลอรี่</td><td class="tnum">15/07/2569</td><td><span class="badge b-neutral">รับงานแล้ว</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
+    <tr><td><b>PRD-000091</b> โลชั่นบำรุงผิว<div class="id">PO-202607-000181 · line #1 · แบตช์ B-PO-202607-000181-1-1 · 200 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">09/07/2569 <span class="badge b-error" style="height:20px">เสี่ยงล่าช้า</span></td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
+    <tr style="background:#FFF7F7"><td><b>PRD-000088</b> โฟมล้างหน้า <span class="badge b-error" style="height:20px">Rework</span><div class="id">PO-202607-000181 · line #2 · แบตช์ใหม่ B-PO-202607-000181-2-2 (ผลิตครั้งที่ 2) · 300 หน่วย</div><div class="tiny" style="color:#B02A2A;margin-top:2px">🔁 QC ตีกลับ run 1 (B-…-2-1): "เนื้อโฟมเป็นก้อน ปั๊มไม่ออก — ต้องผสมใหม่"</div></td><td>เดอร์มา แคร์</td><td class="tnum">12/07/2569</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
+    <tr><td><b>PRD-000082</b> เซรั่มวิตซี<div class="id">PO-202607-000188 · line #1 · แบตช์ B-PO-202607-000188-1-1 · 120 หน่วย</div></td><td>บิวตี้ เอเชีย</td><td class="tnum">14/07/2569</td><td><span class="badge b-warning">พักงาน</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
+    <tr><td><b>PRD-000085</b> ครีมกันแดด SPF50<div class="id">PO-202607-000185 · line #1 · ยังไม่สร้างแบตช์ (กด "เริ่มผลิต" เพื่อ gen run 1) · 100 หน่วย</div></td><td>กลอรี่</td><td class="tnum">15/07/2569</td><td><span class="badge b-neutral">รับงานแล้ว</span></td><td class="num"><a href="#prd">จัดการ</a></td></tr>
    </tbody></table></div>
  </div></div>
  <div class="split" id="prd">
   <div class="card"><div class="card-h"><h3>PRD-000091 · โลชั่นบำรุงผิว</h3><span class="badge b-error" style="height:22px">เสี่ยงล่าช้า</span></div><div class="card-b">
     <div class="flow"><div class="s done"><span class="n">✓</span>รับงาน</div><div class="line"></div><div class="s cur"><span class="n">2</span>กำลังผลิต</div><div class="line"></div><div class="s "><span class="n">3</span>ตรวจคุณภาพ (QC)</div><div class="line"></div><div class="s "><span class="n">4</span>พร้อมส่งมอบ</div></div>
-    <div class="tiny" style="margin-top:6px;color:var(--text3)">หน้าผลิตจบที่ "พร้อมส่งมอบ" แล้วส่งต่อฝ่ายจัดส่ง — "ส่งมอบแล้ว/ส่งถึง" เป็นสถานะของใบจัดส่ง ไม่อยู่หน้านี้</div>
-    <div class="alert alert-ok" style="margin-top:16px;font-size:13px"><span class="ai">✓</span><div>ระบบคำนวณวัตถุดิบจากสูตร (BOM) × 200 หน่วยให้แล้ว — ฝ่ายผลิตแค่ตรวจทาน + เลือกล็อต (FIFO)</div></div>
+    <div class="tiny" style="margin-top:6px;color:var(--text3)">หน้าผลิตจบที่ "พร้อมส่งมอบ" แล้วส่งต่อฝ่ายจัดส่ง — "ส่งมอบแล้ว/ส่งถึง" เป็นสถานะของใบจัดส่ง ไม่อยู่หน้านี้ · การตัดสิน QC ผ่าน/ไม่ผ่าน อยู่ที่หน้า <a href="qc.html">ตรวจคุณภาพ (QC)</a></div>
+    <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">🧫</span><div><b>แบตช์ B-PO-202607-000181-1-1</b> — สร้างอัตโนมัติเมื่อกด "เริ่มผลิต" (<b>1 line item = 1 แบตช์</b> · รูปแบบเลข = B-{PO}-{line}-{ครั้งที่ผลิต}) · ผูก <a href="po-detail.html">PO-202607-000181</a> line #1 โลชั่นบำรุงผิว × 200 · ใช้ Lot วัตถุดิบ (FIFO) ตามตารางล่าง → ไล่ย้อน Lot→แบตช์→line→PO ได้ที่ <a href="trace.html">สืบย้อนกลับ</a></div></div>
+    <div class="alert alert-warn" style="margin-top:12px;font-size:13px"><span class="ai">🔁</span><div><b>Rework (ผลิตซ้ำ) ราย line:</b> ถ้า QC ตีกลับ line ใด → line นั้นได้ Batch run ใหม่ (เช่น line #2: run1 <b>B-…-2-1</b> ไม่ผ่าน → run2 <b>B-…-2-2</b>) พร้อม feedback ติดกับ line · <b>line อื่นเดินต่อปกติ ไม่ผลิตซ้ำ</b> · กด "ผลิตซ้ำ" ระบบ gen run ถัดไปให้อัตโนมัติ</div></div>
+    <div class="alert alert-ok" style="margin-top:12px;font-size:13px"><span class="ai">✓</span><div>ระบบคำนวณวัตถุดิบจากสูตร (BOM) × 200 หน่วยให้แล้ว — ฝ่ายผลิตแค่ตรวจทาน + เลือกล็อต (FIFO)</div></div>
     <div class="tblwrap"><table class="tbl"><thead><tr><th>วัตถุดิบ</th><th class="num">ต้องใช้</th><th>ล็อต (FIFO)</th><th>QC</th></tr></thead><tbody>
      <tr><td>กลีเซอรีน</td><td class="num strong tnum">8.0 กก.</td><td><select class="sel" style="height:32px"><option>L-GLY-2506 · 60 กก.</option></select></td><td><span class="badge b-success">ผ่าน</span></td></tr>
      <tr><td>น้ำมันมะกอก</td><td class="num strong tnum">4.0 กก.</td><td><select class="sel" style="height:32px"><option>L-OLV-2604 · 22 กก.</option></select></td><td><span class="badge b-success">ผ่าน</span></td></tr>
     </tbody></table></div>
-    <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกการผลิต + สร้างแบตช์</button></div>
+    <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกการผลิต → ส่งตรวจ QC</button></div>
   </div></div>
   <div>
    <div class="card"><div class="card-h"><h3>เปลี่ยนสถานะ (inline + trace)</h3></div><div class="card-b">
+     <div class="alert alert-info" style="font-size:12px;margin-bottom:12px;padding:10px 12px"><span class="ai">ℹ️</span><div>หน้าผลิตเปลี่ยนได้แค่ <b>เริ่มผลิต / ส่งตรวจ QC / พักงาน</b> — <b>การตัดสิน QC ผ่าน/ไม่ผ่าน ทำที่หน้า <a href="qc.html">ตรวจคุณภาพ (QC)</a> เท่านั้น</b></div></div>
      <div class="pop" style="max-width:none;box-shadow:none;border-color:var(--primary-bg)">
-      <select class="sel" style="margin-bottom:10px" onchange="document.getElementById('hbox').style.display=this.selectedIndex===3?'block':'none'"><option>กำลังผลิต (ปัจจุบัน)</option><option>ส่งตรวจคุณภาพ (QC)</option><option>QC ไม่ผ่าน → กลับกำลังผลิต</option><option>พักงาน (Hold)</option><option>พร้อมส่งมอบ</option></select>
+      <select class="sel" style="margin-bottom:10px" onchange="document.getElementById('hbox').style.display=this.selectedIndex===2?'block':'none'"><option>กำลังผลิต (สถานะปัจจุบัน)</option><option>ส่งตรวจคุณภาพ (QC)</option><option>พักงาน (Hold)</option></select>
       <div id="hbox" style="display:none" class="field"><label style="font-size:12px">ถ้า Hold — raise ไปที่</label><div style="display:flex;gap:8px"><span class="chip on">แจ้ง Sale (ติดที่ลูกค้า)</span><span class="chip">แจ้ง Stock (ติดวัตถุดิบ)</span></div></div>
-      <textarea class="inp" rows="2" placeholder="เหตุผล / feedback (บังคับเมื่อ QC ไม่ผ่าน และเมื่อ Hold)"></textarea>
+      <textarea class="inp" rows="2" placeholder="เหตุผล (บังคับเมื่อพักงาน Hold)"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary btn-sm" style="flex:1;justify-content:center">บันทึก + แจ้ง</button><a class="btn btn-sm" href="po-detail.html" title="กรณี Hold ให้ Sale แก้ไข PO">✎ แก้ไข PO</a></div>
      </div>
-     <div class="notify" style="margin-top:12px">✅ QC ผ่าน → "พร้อมส่งมอบ" → PO เป็น "พร้อมจัดส่ง" โผล่หน้า <a href="shipping.html">จัดส่ง</a> (C8)</div>
-     <div class="notify" style="margin-top:8px">🔁 QC ไม่ผ่าน → กลับ "กำลังผลิต" พร้อม feedback (บังคับ) · ⏸️ Hold → raise Sale ให้แก้ไข PO แล้วผลิตต่อ (C6/C7)</div>
+     <div class="notify" style="margin-top:12px">🔁 เมื่อ QC (หน้า QC) <b>ตีกลับ</b> แบตช์นี้ → ระบบเปลี่ยนกลับเป็น "กำลังผลิต" พร้อม feedback อัตโนมัติ — ฝ่ายผลิตแค่รับงานกลับมาแก้ (ไม่ตัดสิน QC เอง) · C6</div>
+     <div class="notify" style="margin-top:8px">✅ QC ผ่านครบทุก line → PO "พร้อมจัดส่ง" โผล่หน้า <a href="shipping.html">จัดส่ง</a> (C8) · ⏸️ Hold → raise Sale แก้ไข PO แล้วผลิตต่อ (C7)</div>
    </div></div>
    <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">เสี่ยงล่าช้า (auto)</div><div class="tm">08/07 00:05 · scheduler</div><div class="tc">เหลือเวลาน้อยกว่า lead time 3 วัน · แจ้ง Sale+Stock</div></div><div class="t"><div class="th">เริ่มผลิต (รับงาน→กำลังผลิต)</div><div class="tm">06/07 08:40 · วิชัย</div></div><div class="t"><div class="th">รับงานจาก PO-181</div><div class="tm">04/07 09:12 · ระบบ</div></div></div></div></div>
   </div>
