@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "READY_FOR_UXUI",
+      "current_agent": "po",
+      "status": "READY_FOR_PO_REVIEW",
       "human_gates": {
         "gate1_look": {
           "approved": false,
@@ -658,6 +658,117 @@
           "summary": "Absorbed Gate-1 round-3 feedback (pond-gate1-r3-feedback.md). Analyzed all 4 🔍PO items and updated status-journeys.md: (1) Dashboard date-filter (§12) — preset day/week/month(default)/custom affecting every tile, with per-tile semantics split into EVENT metrics (PO created-in-range, overdue due-in-range, Inactive became-in-range, Follow-up set-in-range) vs STATE/ACTIVITY metrics (Active = ordered-in-range; production queue = now) + a caption per tile so BA/QA don't misread. (2) Goods Receipt multi-line (§5) — header + repeatable lines (material×qty×price×per-line lot-gen×per-line PR ref); 1 GR references many PR / 1 PR closed by many GR (partial). (3) QC per line-item (§3.2) — PROPOSED practical rule: fail a line/Batch reworks ONLY that line (not whole PO) with mandatory feedback; PO becomes Ready-to-Deliver only when ALL lines pass; QC decided on QC page ONLY, so production page's 'QC ไม่ผ่าน' option is removed; asked Pond to confirm vs whole-PO rework. (4) Batch lifecycle (§3.1) — Batch number generated when Production presses 'เริ่มผลิต'; DEFAULT 1 line item = 1 Batch; Batch links PO+line+consumed Lots; QC sees PO<->Batch<->Lot (GMP chain Lot->Batch->line->PO->customer). Also folded other r3 items: PO status-change UI + trace; convert edit-only screens to real CREATE pages (add customer, add contact, add supplier, create PR, create BOM, create Shipment); shipment round fields (driver/phone/route/vehicle type เก๋ง-motorcycle-กระบะ-10ล้อ); scan duplicate labels every page; realistic use-case test data; searchable dropdowns everywhere; new supplier edit layout (drop right panel). Updated brief.md (§2.5 + scope §6 + entities §9 + Gate1 criteria) and po-mockup-review.md (§8 round-4 UX/UI action list P0/P1/P2). Batched 5 confirm questions to Pond with defaults (not blocking). Handoff: READY_FOR_UXUI for round-4 build.",
           "overridden_by": null,
           "updated_at": "2026-07-09T11:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "design-r4",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "P0-1 production.html: removed 'QC ไม่ผ่าน' from status changer (options = เริ่มผลิต/ส่งตรวจ QC/พักงาน); QC decided on QC page only; info alert states this",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P0-2 qc.html: decide per line/Batch; fail reworks ONLY that Batch + mandatory feedback; PO Ready when all lines pass (reconcile note); shows PO<->Batch<->Lot (material-Lot table per batch)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P0-3 Batch lifecycle across production/qc/po-detail/trace: created at 'เริ่มผลิต', 1 line=1 Batch, format B-{PO}-{line}-{run} (Pond final); rework badge + previous-run history + QC feedback inline (rework loop unambiguous per Pond)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P0-4 Real CREATE pages (create != edit), clickable: customer-create.html, contact-create.html, supplier create-mode, pr-create.html, bom-create.html, shipping create-round; source buttons rewired",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1-5 goods-receipt.html: multi-line (header supplier/receipt-no/date/upload + lines material×qty×price×per-line lot×per-line PR); 1 GR many PR; partial → confirm-dialog 'สร้าง PR ใหม่สำหรับของที่ขาด' (Pond)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1-6 dashboard.html: date-filter presets (วันนี้/สัปดาห์/เดือนนี้=default/กำหนดเอง free month/year/range) affecting all tiles + per-tile caption tagged ในช่วง(event)/ตอนนี้(state); refresh+auto-15s+drill-down retained",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1-7 shipping.html: 2-way create (select-PO-first / empty-round-then-search-PO) + round fields คนขับ/เบอร์/Route/ประเภทรถ (รถกระบะ/เก๋ง/Motorcycle/10ล้อ); PO search by id or customer data",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1-8 supplier.html: retired cramped right panel → full-width stacked layout (list + full-width edit card, price matrix full width) + real add-Supplier create mode (JS-verified)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1-9 po-detail.html: explicit 'เปลี่ยนสถานะ PO' card (select + mandatory reason + save→notify+trace; Admin-force note) + per-line latest Batch + QC status + reconcile x/N",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P2-10 Duplicate-label scan ALL pages: removed redundant header .title on every shell page → each page = breadcrumb (nav) + ONE h1 heading (fixes 'Dashboard 3×')",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P2-11 Realistic linked test data: Follow-up customer tied to PO-181 rework case; Blacklist row has reason comment; PO↔Batch↔Lot↔PR consistent across production/qc/po-detail/GR",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P2-12 Searchable dropdowns represented everywhere (supplier/material/customer/PO/Sale/driver/route/PR) via .searchbox pattern; spec'd as antd Select showSearch",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pond's latest answers folded: Batch format B-{PO}-{line}-{run}; rework loop clarity (badge+run+feedback, other lines proceed); QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→BLOCK until cost entered (bom-create shows blocking state)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "index.html updated (round-4 tag/summary, 🔵แก้รอบ4 + 🟢ใหม่ badges, 4 new create-page cards, counts) + design-system.md ADDENDUM Round 4 (R4.1–R4.11, new wrapper specs)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Playwright-verified render + interactions at desktop 1440x900 / tablet 768x1024 / mobile 390x844 — no page JS errors; date-filter, supplier-create, shipping-way, qc-tab interactions pass; screenshots in ux-audit/",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Incremental only — theme/design-system tokens unchanged (ADR-008 antd + wrapper constraints respected)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/design-system.md",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/supplier.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/bom.html",
+            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-create.html",
+            "docs/design/erp-v2-ui-first/mockups/contact-create.html",
+            "docs/design/erp-v2-ui-first/mockups/bom-create.html",
+            "docs/design/erp-v2-ui-first/mockups/pr-create.html",
+            "docs/design/erp-v2-ui-first/ux-audit/"
+          ],
+          "questions_for_pond": [],
+          "summary": "Round-4 incremental rework (theme/design-system locked). Closed all PO §8 P0/P1/P2 + folded Pond's mid-task answers (Batch format B-{PO}-{line}-{run}; rework loop must be unambiguous; QC returns only failed line; GR partial→review dialog to create PR for shortfall; BOM no-active-supplier→BLOCK until manual cost). KEY CHANGES: production drops 'QC ไม่ผ่าน' (QC decides on QC page only) + shows Batch per line + Rework badge/feedback; QC decides per line/Batch with PO↔Batch↔Lot GMP chain + previous-run history; po-detail gains explicit status-change card + per-line Batch/QC reconcile. NEW create pages that actually work (create≠edit): customer-create, contact-create, supplier create-mode, pr-create, bom-create, shipping 2-way round create with driver/phone/route/vehicle-type. Goods-receipt rebuilt multi-line (header + lines, per-line lot & PR, many-PR, partial dialog). Dashboard gains date-filter presets (default เดือนนี้, free month/year/range) affecting all tiles + per-tile event/state captions. Supplier retired the cramped right panel for a full-width layout. Removed duplicate header title on every page (fixes 'Dashboard 3×') → breadcrumb + single h1. Realistic linked test data. Searchable dropdowns everywhere. 28 pages + index; index + design-system ADDENDUM R4 updated. Verified via Playwright at desktop/tablet/mobile with interaction checks; screenshots in ux-audit/. Known polish (backlog): 5-tile Sale dashboard density at tablet width. Handoff: READY_FOR_PO_REVIEW.",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T15:30:00+07:00"
         }
       ]
     }

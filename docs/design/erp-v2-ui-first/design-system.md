@@ -432,3 +432,71 @@ Incremental only — design system/theme locked. Adds flows from `pond-gate1-r2-
 ## R3.6 Common
 - All list pages carry `<Pager/>` (wraps antd `Pagination`); empty/loading/error states per §6. Prices accept **0**.
 - `<Switch/>` styling for toggles (auto-refresh, supplier active). All interactive mockups verified via Playwright (notification open, dashboard drill-down, tab switches).
+
+---
+
+# ADDENDUM — Round 4 (Gate 1 r3 rework + PO §8 + Pond Batch/rework answers, 2026-07-08)
+
+Incremental only — theme/design system locked. Adds the r3 feedback items, PO `po-mockup-review.md §8`,
+and Pond's finalized answers (Batch format, rework loop, GR partial, BOM block). New/changed specs for Engineer:
+
+## R4.1 Label de-duplication (every page)
+- **Rule:** each page shows **breadcrumb (navigation trail) + exactly ONE prominent heading (`h1` in content)**.
+  The old app-shell **header `.title`** (a second heading duplicating the crumb terminal + `h1`) is **removed on all pages**
+  — this is what caused Pond's "Dashboard appears 3×". The breadcrumb terminal (small, gray) is nav, not a heading, and may repeat the page name.
+- Engineer: `<PageHeader>` renders breadcrumb + page `h1` only; do not render a separate sticky-header title label.
+
+## R4.2 Batch identity + rework loop (production / QC / PO / trace)
+- **Batch number format (Pond, final): `B-{PO}-{line}-{run}`** e.g. `B-PO-202607-000181-2-1` (PO, line #2, production run #1).
+  Rework = next run → `…-2-2`. Use this exact format in ALL test data & UI (production, QC, po-detail, trace).
+- **Batch created when** production presses "เริ่มผลิต" (Received→InProgress); **1 line item = 1 Batch (per run)**; binds PO + line + material Lots (FIFO).
+- **QC decides per line/Batch only (on QC page).** Production status changer options = **เริ่มผลิต / ส่งตรวจ QC / พักงาน** — **no "QC ไม่ผ่าน"**.
+- **Rework visibility (must be unambiguous):**
+  - Production list/detail: rejected line shows a **`Rework` badge** (`b-error` badge, `#FFF7F7` row tint) + new run Batch no. + **QC feedback inline next to that line**; other lines proceed normally. "ผลิตซ้ำ" gen next run.
+  - QC queue: rework Batch returns with **previous-run history** ("run 1 (…-2-1) ไม่ผ่าน: <reason>").
+  - PO detail: **per-line table → latest Batch + QC status**, with reconcile line "PO พร้อมจัดส่ง เมื่อทุก line ผ่าน QC — ตอนนี้ผ่าน x/N".
+- New wrapper: `<ReworkBadge run reason />` (wraps `Tag`); `<BatchChip no />` (wraps `Tag` pill, ellipsizes as `B-…-{line}-{run}`).
+
+## R4.3 Searchable dropdowns (everywhere) — mockup pattern
+- All "select" pickers are **searchable** (antd `Select showSearch` / `AutoComplete`). Applies to: supplier, material, customer, PO, Sale, driver, route, PR.
+- **Mockup representation** = a `.searchbox` (left 🔍 icon) wrapping an input with the chosen value + placeholder "ค้น/เลือก…". Engineer implements as antd `Select showSearch optionFilterProp="label"`.
+
+## R4.4 Goods Receipt — multi-line (header + lines)
+- **Header (1 supplier / 1 receipt):** supplier (searchable) · supplier-receipt-no · date · file upload. Supplier drives Lot prefix for all lines.
+- **Lines table (repeatable rows):** material (searchable) × qty+unit × buy-price (0 ok) × **Lot auto-gen per line** (pill) × **PR ref per line** (searchable) × remove. "+ เพิ่มรายการวัตถุดิบ".
+- **1 GR → many PR** (lines reference different PRs); **1 PR ← many GR** (partial accumulation). On full receipt → PR "ของเข้าครบ" auto.
+- **Partial receipt (Pond):** if received < PR qty → PR "รับบางส่วน" **and open a confirm dialog "สร้าง PR ใหม่สำหรับของที่ขาด?"** for user review (never silent). New wrapper `<GRLineTable/>` (wraps `Form.List + Table`).
+
+## R4.5 Dashboard date filter + per-tile caption
+- **Preset chips on top:** วันนี้ / สัปดาห์นี้ / **เดือนนี้ (default)** / กำหนดเอง (date-range, free month/year/range). Affects **all tiles**; view + open drill preserved on refresh.
+- **Every tile carries a caption** (`.stat .cap`, 11px, dashed top border) stating what the number means for the range, tagged:
+  - `<span class="evtag">ในช่วง</span>` = **event/flow** counted within range (PO created, invoices due, became Inactive, Follow-up set, QC passed, delivered).
+  - `<span class="nowtag">ตอนนี้</span>` = **state/snapshot** now, range-independent (queues, low-stock, open PR, users/roles).
+  - Activity-state (ลูกค้าประจำ = has order in range) uses `ในช่วง`.
+- New wrapper `<RangeFilter presets default="month" onChange />` (wraps `Segmented + RangePicker`); `<TileCaption text kind="event|now" />`.
+
+## R4.6 Shipment round — 2-way create + round fields
+- **Two creation paths (both real):** ① select "พร้อมจัดส่ง" PO(s) from queue then create round; ② create empty round then **search-add PO** later. Toggle chips switch the guidance; PO search by PO id or customer data.
+- **Round (Shipment) fields:** **คนขับ (searchable) · เบอร์คนขับ · Route (searchable) · ประเภทรถ (Select: รถกระบะ / รถเก๋ง / Motorcycle / รถ 10 ล้อ — configurable)** · ทะเบียนรถ · วันเวลาออกรอบ. System issues DN 1-per-PO on create.
+- **Vehicle-type list** is a config table (Settings). Status labels unchanged (§R2.4 Shipping).
+
+## R4.7 Supplier — full-width edit layout (retire right panel)
+- Replaces the cramped 340px right panel with a **full-width stacked page**: list card (top) → **full-width edit/create card** with two titled sections: **ข้อมูลทั่วไป** (grid) + **price matrix** (full-width table: material · buy-price · unit · last-GR price · updated-at · remove).
+- **Create vs edit are distinct modes:** "➕ เพิ่ม Supplier" opens an **empty create** (title/sub/save-label all switch, price table empty-state); row "แก้ไข" opens edit. New wrapper `<SupplierForm mode="create|edit" />`.
+
+## R4.8 PO status-change UI (po-detail)
+- Dedicated **"เปลี่ยนสถานะ PO"** card: `Select` (ยกเลิก PO / เปิดใหม่ Cancelled→ร่าง คงเลขเดิม / force override statuses) + **mandatory reason** + save→notify+trace.
+- Note that fulfilment track is mostly **auto-driven**; manual force = **Admin bit (RUCDAA)** only. Reuses `<StatusChanger>` (§R2.5) in card form + `<TraceTimeline>`.
+
+## R4.9 BOM create (real, full-screen)
+- "➕ สร้างสูตรใหม่" → **empty create page** (product info + ingredient table + cost/sell). Ingredient rows show max-active-supplier buy-price + snapshot cost + mandatory sell-price.
+- **Pond rule:** component with **no active supplier → BLOCK save until a manual cost is entered** for that row (row tinted `#FFF7F7`, inline override price input, `b-error` "ไม่มี supplier active" badge, blocking `alert-err`). (Supersedes the earlier "0 + badge" default.)
+
+## R4.10 New Thai status/label additions
+- **Vehicle type** (`Shipment.vehicle_type`): รถกระบะ / รถเก๋ง / Motorcycle / รถ 10 ล้อ (config; humanized, never raw enum).
+- **PurchaseRequest.status** add: `PartiallyReceived` → **"รับบางส่วน"** (warning badge).
+- **Batch/QC per-line badges:** `Rework` → "Rework" (error). Reconcile helper text "ผ่าน x/N line".
+
+## R4.11 Scope split — Round 4
+**This round (all mocked + Playwright-verified desktop/tablet/mobile):** label de-dup all pages; batch format + rework loop (production/QC/po-detail); QC per-line decision; GR multi-line + partial-PR dialog; dashboard date-filter + captions; shipment 2-way create + round fields; supplier full-width layout + real add; PO status-change UI; real create pages (customer/contact/supplier/PR/BOM/round); searchable dropdowns everywhere; realistic linked test data.
+**Backlog (polish):** phone-width 5-tile dashboard density (tile caption/drill-affordance overlap when 5 Sale tiles are forced at tablet width — collapse to 2–3 cols); config UIs for vehicle-type & route master lists; dark mode; charting. Tagged "polish".
