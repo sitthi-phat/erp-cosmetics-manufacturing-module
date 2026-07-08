@@ -347,18 +347,66 @@
           "phase": "design-r2",
           "status": "WAITING_HUMAN_GATE",
           "gate_checklist": [
-            {"item": "Product identity: ESSENCE Hub System name on login/header/browser-title + placeholder logo + favicon/app icon (inline SVG, theme teal) on every page", "pass": true, "missing": null},
-            {"item": "Responsive = Must on every page — real CSS media queries desktop(>=992)/tablet(576-991)/mobile(<576) with hamburger drawer + mobile bottom tab-bar; responsive.html device demo; verified via Playwright at 1440/1024/768/390/375", "pass": true, "missing": null},
-            {"item": "100% page coverage: 23 mockups + index (login, home[dedup user], 7-dept dashboard+switcher, customers[5-status]+customer-detail[contacts/notes/reassign/PO-history/search], po-list/po-create/po-detail[2-track], stock, purchase-request, supplier, bom, production, qc, return, shipping, delivery-note, invoices, invoice-detail, invoice-print, trace, settings)", "pass": true, "missing": null},
-            {"item": "Every Customer status mocked (Lead/Active/Inactive/Disabled/Blacklist) — humanized Thai, no raw enum", "pass": true, "missing": null},
-            {"item": "All status-journeys states shown with StatusFlowBar + TraceTimeline (PO 2-track, Production 5+delay, Delivery Note 5+partial, Purchase Request, Return, Invoice overdue)", "pass": true, "missing": null},
-            {"item": "Cross-module continuity 14 rows shown source+destination (C3 PR on po-create+purchase-request+prod-dash, C8 prod->shipping, C9/C10 DN reconcile+reject->Sale, C11 overdue, C12 receipt->lot, C13 return stock-adjust, C1/C2/C14 customer lifecycle+reassign)", "pass": true, "missing": null},
-            {"item": "New status-label maps (Customer/PO-fulfilment/PO-billing/Production/DeliveryNote/PurchaseRequest/Return) added to design-system.md; no raw enum anywhere", "pass": true, "missing": null},
-            {"item": "Minimize-clicks reflected: single-page PO form, inline status-changer with comment, smart defaults (price from BOM/lot FIFO/supplier from lot), global header search", "pass": true, "missing": null},
-            {"item": "Thai tax invoice fields complete (issuer from settings, tax id, VAT7%, discount, baht-text, 2 signatures)", "pass": true, "missing": null},
-            {"item": "RUCDA matrix per module + 6th 'Admin' column (per Pond) + roles unlimited + company profile in settings", "pass": true, "missing": null},
-            {"item": "Pond's 6 mid-task corrections applied: (1) material-short = warning not block + 'สร้าง PO ต่อ' + auto-PR, (2) low-stock threshold no default = 'ยังไม่ตั้งเกณฑ์เตือน', (3) DN partial + 'create new DN from pending POs', (4) reject notifies Sale to decide, (5) RUCDA 6th Admin column, (6) invoice from PO=Confirmed", "pass": true, "missing": null},
-            {"item": "index.html grouped by department with per-page 'fixes feedback #' notes + theme-A-approved banner + confirm-questions; self-contained (inline CSS/SVG, no CDN); admin.html round-1 orphan removed", "pass": true, "missing": null}
+            {
+              "item": "Product identity: ESSENCE Hub System name on login/header/browser-title + placeholder logo + favicon/app icon (inline SVG, theme teal) on every page",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Responsive = Must on every page — real CSS media queries desktop(>=992)/tablet(576-991)/mobile(<576) with hamburger drawer + mobile bottom tab-bar; responsive.html device demo; verified via Playwright at 1440/1024/768/390/375",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "100% page coverage: 23 mockups + index (login, home[dedup user], 7-dept dashboard+switcher, customers[5-status]+customer-detail[contacts/notes/reassign/PO-history/search], po-list/po-create/po-detail[2-track], stock, purchase-request, supplier, bom, production, qc, return, shipping, delivery-note, invoices, invoice-detail, invoice-print, trace, settings)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Every Customer status mocked (Lead/Active/Inactive/Disabled/Blacklist) — humanized Thai, no raw enum",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "All status-journeys states shown with StatusFlowBar + TraceTimeline (PO 2-track, Production 5+delay, Delivery Note 5+partial, Purchase Request, Return, Invoice overdue)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Cross-module continuity 14 rows shown source+destination (C3 PR on po-create+purchase-request+prod-dash, C8 prod->shipping, C9/C10 DN reconcile+reject->Sale, C11 overdue, C12 receipt->lot, C13 return stock-adjust, C1/C2/C14 customer lifecycle+reassign)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "New status-label maps (Customer/PO-fulfilment/PO-billing/Production/DeliveryNote/PurchaseRequest/Return) added to design-system.md; no raw enum anywhere",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Minimize-clicks reflected: single-page PO form, inline status-changer with comment, smart defaults (price from BOM/lot FIFO/supplier from lot), global header search",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Thai tax invoice fields complete (issuer from settings, tax id, VAT7%, discount, baht-text, 2 signatures)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "RUCDA matrix per module + 6th 'Admin' column (per Pond) + roles unlimited + company profile in settings",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pond's 6 mid-task corrections applied: (1) material-short = warning not block + 'สร้าง PO ต่อ' + auto-PR, (2) low-stock threshold no default = 'ยังไม่ตั้งเกณฑ์เตือน', (3) DN partial + 'create new DN from pending POs', (4) reject notifies Sale to decide, (5) RUCDA 6th Admin column, (6) invoice from PO=Confirmed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "index.html grouped by department with per-page 'fixes feedback #' notes + theme-A-approved banner + confirm-questions; self-contained (inline CSS/SVG, no CDN); admin.html round-1 orphan removed",
+              "pass": true,
+              "missing": null
+            }
           ],
           "output_files": [
             "docs/design/erp-v2-ui-first/design-system.md",
@@ -388,10 +436,38 @@
             "docs/design/erp-v2-ui-first/mockups/responsive.html"
           ],
           "questions_for_pond": [
-            {"q": "Logo/แบรนด์: ตอนนี้ใช้ placeholder (สัญลักษณ์หยดน้ำ teal + ชื่อ ESSENCE Hub System) เป็น logo + favicon/app icon — โอเคใช้ไปก่อนไหม หรือมีไฟล์โลโก้จริงจะส่งให้?", "options": ["ใช้ placeholder นี้ไปก่อน", "มีไฟล์โลโก้จริง จะส่งให้"], "answer": null},
-            {"q": "Click budget: ยืนยันเป้า เปิด PO <= 10 คลิก / ออกใบแจ้งหนี้ <= 6 คลิก (ใช้วัด UAT) ตามนี้ไหม?", "options": ["ใช้ตามนี้", "ปรับตัวเลข (ระบุ)"], "answer": null},
-            {"q": "รอบ 'ลูกค้าประจำ/ห่างหาย' ค่าเริ่มต้น 3 เดือน (ปรับต่อลูกค้าได้ 1/3/6/8) ยืนยันไหม?", "options": ["ยืนยัน 3 เดือน", "เปลี่ยนค่าเริ่มต้น (ระบุ)"], "answer": null},
-            {"q": "ความครบถ้วน: มีหน้า/สถานะไหนอยากเห็นเพิ่มก่อนอนุมัติหน้าตาและเริ่ม implement ไหม?", "options": ["ครบแล้ว อนุมัติหน้าตา", "ขอเพิ่ม/แก้ (ระบุ)"], "answer": null}
+            {
+              "q": "Logo/แบรนด์: ตอนนี้ใช้ placeholder (สัญลักษณ์หยดน้ำ teal + ชื่อ ESSENCE Hub System) เป็น logo + favicon/app icon — โอเคใช้ไปก่อนไหม หรือมีไฟล์โลโก้จริงจะส่งให้?",
+              "options": [
+                "ใช้ placeholder นี้ไปก่อน",
+                "มีไฟล์โลโก้จริง จะส่งให้"
+              ],
+              "answer": "ใช้ placeholder ไปก่อน (2026-07-08)"
+            },
+            {
+              "q": "Click budget: ยืนยันเป้า เปิด PO <= 10 คลิก / ออกใบแจ้งหนี้ <= 6 คลิก (ใช้วัด UAT) ตามนี้ไหม?",
+              "options": [
+                "ใช้ตามนี้",
+                "ปรับตัวเลข (ระบุ)"
+              ],
+              "answer": "ปอนด์ถามกลับว่า \"เร็วสุดแล้วใช่มั้ย\" — Dispatcher ชี้แจง: ตัวเลขเป็นเพดานสูงสุดสำหรับวัด UAT, flow จริงใน mockup ออกแบบให้น้อยกว่านั้น (PO happy path ~7-8 คลิก, invoice ~4-5) — ใช้เพดาน ≤10/≤6 ไปก่อน (2026-07-08)"
+            },
+            {
+              "q": "รอบ 'ลูกค้าประจำ/ห่างหาย' ค่าเริ่มต้น 3 เดือน (ปรับต่อลูกค้าได้ 1/3/6/8) ยืนยันไหม?",
+              "options": [
+                "ยืนยัน 3 เดือน",
+                "เปลี่ยนค่าเริ่มต้น (ระบุ)"
+              ],
+              "answer": "ยืนยัน 3 เดือน — อาจเปลี่ยนทีหลัง (ต้อง config ได้ตามที่ออกแบบไว้) (2026-07-08)"
+            },
+            {
+              "q": "ความครบถ้วน: มีหน้า/สถานะไหนอยากเห็นเพิ่มก่อนอนุมัติหน้าตาและเริ่ม implement ไหม?",
+              "options": [
+                "ครบแล้ว อนุมัติหน้าตา",
+                "ขอเพิ่ม/แก้ (ระบุ)"
+              ],
+              "answer": null
+            }
           ],
           "summary": "Round-2 rebuild (one-shot pitch). Rebranded to ESSENCE Hub System (inline-SVG logo+favicon, name on login/header/title). 23 self-contained clickable mockups + index gallery grouped by department with per-page feedback-mapping notes. Real responsive on every page (desktop/tablet/mobile: hamburger drawer + mobile bottom tab-bar) + responsive.html device demo — verified via Playwright at 1440/1024/768/390/375. Covers all 12 Gate-1 feedback areas: home dedupe, 7 per-dept dashboards+switcher, customer 5-status+unlimited-contacts+notes+sale-reassign+PO-history/search, PO summary(2-track)+create(suggest/material-check/PR/sell-raw/editable-price)+detail(StatusFlowBar+TraceTimeline), stock add-material+UOM+per-material-threshold+dual-price+receipt, BOM builder(cost default+sell mandatory), production(sort/search by delivery+PotentialDelay+5-status+inline cross-notify Sale/Stock+trace), QC incoming, Supplier(lot-prefix+multi-supplier+upload), Return(lot->supplier+stock-adjust+mandatory reason), Shipping queue + multi-PO Delivery Note(partial reconcile+reject->Sale), Invoice(from Confirmed+overdue+PO-stage)+Thai tax-invoice print, Trace(all-module+archive SuperUser), Settings RUCDA+Admin 6-col+unlimited roles+company profile. Cross-module continuity 14/14 shown both ends + trace. Applied all 6 of Pond's mid-task corrections. Extended design-system.md (ADDENDUM R2: identity, responsive tiers, new status maps, 10 new wrapper-component API specs, cross-module UI rules). No dev server used (prototype deleted); no src/ touched. Set feature WAITING_HUMAN_GATE (Gate 1 round 2 = Pond approves the look). 4 confirm-questions batched.",
           "overridden_by": null,
