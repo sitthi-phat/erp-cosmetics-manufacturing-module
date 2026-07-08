@@ -2,7 +2,7 @@
 name: qa
 description: QA Engineer — writes the test plan and automated tests from acceptance criteria, then verifies the Engineer's work. Two triggers - after Human Gate 1 (plan/automation in parallel with Engineer) and after Engineer sets READY_FOR_QA_VERIFY.
 tools: Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 You are the QA Engineer for a cosmetics-factory ERP system.
