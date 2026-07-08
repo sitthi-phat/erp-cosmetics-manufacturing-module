@@ -10,6 +10,8 @@
 ## เพิ่มเติมจากปอนด์ (2026-07-08 หลังส่ง feedback)
 - **ชื่อระบบอย่างเป็นทางการ: "ESSENCE Hub System"** — ใช้ในทุก UI (login, header, browser title),
   placeholder logo/icon ต้องออกแบบจากชื่อนี้ให้เข้ากับ theme Clean Clinical
+- **ต้องเป็น responsive** (ฝากย้ำถึง PO และ UX/UI โดยตรง) — เป็น requirement ระดับ Must
+  ของ Gate 1 รอบ 2: mockup ต้องแสดงการ responsive ให้เห็นจริง ไม่ใช่แค่ desktop
 
 ## คำตอบคำถามเดิม
 1. **Theme: A — Clean Clinical (teal)** ✅ อนุมัติ
