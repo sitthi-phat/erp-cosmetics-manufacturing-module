@@ -1,185 +1,185 @@
 # Status Journeys — ESSENCE Hub System (ERP v2, UI-First Rebuild)
 
-slug: `erp-v2-ui-first` · เขียนโดย PO (design phase) เพื่อให้ UX/UI ทำ mockup ทุกสถานะ และ BA แตก story ต่อ
-ที่มา requirement: `docs/requirements/erp-v2-ui-first/pond-gate1-feedback.md` (Gate 1 รอบ 1, 2026-07-08) + คำตอบยืนยันของปอนด์ 6 ข้อ (2026-07-08) + requirement Notification/Inbox + deep-link (2026-07-08)
+slug: `erp-v2-ui-first` · เขียนโดย PO (design phase) เพื่อให้ UX/UI ทำ mockup ทุกสถานะ และ BA/Engineer/QA ทำครบ
+ที่มา: `pond-gate1-feedback.md` (รอบ1) + คำตอบ 6 ข้อ + `pond-gate1-r2-feedback.md` (รอบ2, 2026-07-08) + Notification/deep-link
 
 ## สรุปภาษาไทย
-เอกสารนี้คือ "แผนที่สถานะ" ของทั้งระบบตามคำสั่งเน้นของปอนด์: **ทุกสถานะต้องต่อเนื่องกันข้าม module ห้ามหลุด journey** ครอบคลุม 7 สาย — Customer, PO (แยก 2 ราง: การผลิต/จัดส่ง กับ การวางบิล), Production, Shipping/Delivery Note, Purchase Request, Return, Invoice/Payment — แต่ละสายมี diagram, กติกาการเปลี่ยนสถานะ, ใครมีสิทธิ์เปลี่ยน, จุดที่ comment/trace บังคับ และ "สะกิดข้าม module" (เช่น PO Confirmed → สร้างงานผลิต, วัตถุดิบขาด → **เตือน + ส่ง Purchase Request ไป Stock แต่ไม่บล็อกการสร้าง PO**, ผลิตเสร็จ+QC ผ่าน → ไปโผล่หน้าจัดส่ง, ส่งของแล้วยังไม่จ่าย → overdue) ตาราง cross-module (§8) คือหัวใจ และทุกแถวยิง **Notification/Inbox** ตาม role + **deep link** (§10). สรุปสถานะฉบับย่อสำหรับปอนด์อยู่ที่ `status-summary-for-pond.md`
+"แผนที่สถานะ" ของทั้งระบบ — ทุกสถานะต้องต่อเนื่องข้าม module ห้ามหลุด journey. รอบ 2 ปอนด์แก้ flow หลายจุด (อัปเดตแล้วในเอกสารนี้): **การผลิตจบที่ "พร้อมส่งมอบ"** ("ส่งมอบแล้ว" เป็นของฝ่ายจัดส่ง), เพิ่ม loop **QC ไม่ผ่าน→กลับกำลังผลิต** และ **Hold→แก้ไข PO→ผลิตต่อ (raise Sale)**, **PO cancel ได้ทุก case + กลับ Draft รับงานต่อได้**, **Shipping/Delivery Note redesign**, **Purchase Request สร้างตรงได้ + ของเข้าครบ auto จาก goods receipt**, **BOM cost = ราคาสูงสุดของ supplier ที่ active + snapshot ตอนบันทึก**, ลูกค้าเพิ่มกลไก **"ต้องติดตาม" + comment**. จุดที่ flow ยังกำกวมถามปอนด์ (ดู §12 + questions ใน status.json). สรุปย่อสำหรับปอนด์: `status-summary-for-pond.md`
 
-**หลักการร่วม (ใช้ทุกสาย):**
-1. **ทุกการเปลี่ยนสถานะมี trace เสมอ** — ใคร / จากสถานะอะไร → เป็นอะไร / เมื่อไหร่ / เหตุผล (ห้ามเปลี่ยนแบบไม่มีร่องรอย)
-2. **comment ได้ทุกสถานะ** และ **บังคับ comment** ในจุดที่ระบุ (manual disable/blacklist, return, hold, override, cross-notify)
-3. **สถานะข้าม module ต้อง reconcile กัน** — สถานะ "แม่" (PO) ต้องสะท้อนสถานะ "ลูก" (production/shipping/invoice) และเห็นได้จากทุกหน้าที่เกี่ยวข้อง
-4. สถานะที่คำนวณอัตโนมัติ (Active/Inactive, Potential Delay, Overdue) มี **scheduler/rule** กำกับ และแสดง badge ให้ผู้ใช้เข้าใจว่าทำไม
-5. **Minimize clicks (คำสั่งปอนด์):** การเปลี่ยนสถานะ + ใส่ comment ต้องทำได้ **inline คลิกน้อยสุด** ไม่พาผู้ใช้ออกหลายหน้า (ดู brief §2.1 / BKV-1)
-6. **สถานะต้องอ่านออกด้วยภาษาคน** — ใช้ป้าย/สีสื่อความหมาย ห้ามโชว์ enum ดิบ
-7. **ทุกการส่งงานข้าม module ยิง Notification/Inbox + deep link** — ดู §10
+**หลักการร่วม (ทุกสาย):**
+1. **ทุกการเปลี่ยนสถานะมี trace เสมอ** (ใคร/จากอะไร→เป็นอะไร/เมื่อไหร่/เหตุผล) — รวม cancel/reopen
+2. **comment ได้ทุกสถานะ** + **บังคับ comment** ในจุดที่ระบุ (QC fail feedback, Hold, disable/blacklist, return, follow-up, override)
+3. **สถานะข้าม module reconcile กัน** — PO (แม่) สะท้อนสถานะ production/shipping/invoice และเห็นทุกหน้าที่เกี่ยว
+4. สถานะ auto (Active/Inactive, Potential Delay, Overdue, PR ของเข้าครบ) มี rule/scheduler กำกับ + badge อธิบายเหตุผล
+5. **Minimize clicks** — เปลี่ยนสถานะ+comment แบบ inline, deep link พาไปหน้าทำงานต่อ (ดู §10)
+6. **สถานะอ่านออกด้วยภาษาคน** — ห้ามโชว์ enum ดิบ
+7. **ทุกการส่งงานข้าม module ยิง Notification/Inbox + deep link** (§10)
 
-> คำตอบปอนด์ (2026-07-08) ยืนยันทั้ง 6 ข้อแล้ว — เอกสารนี้อัปเดตให้ตรงคำตอบจริง (ไม่มี [DEFAULT] ค้างในจุดที่ถามแล้ว)
-> ⚠ **Gate 1 รอบ 2 = การเสนองานจริงครั้งเดียว ต้องเนี๊ยบที่สุด** — mockup ทุกสถานะ/ทุก transition + noti ในเอกสารนี้ต้องครบ ห้ามครึ่งๆ กลางๆ
+> ⚠ เอกสารชุดนี้เป็น input ของ BA/Engineer/QA — ต้องละเอียดพอให้ทำครบ. จุดที่ยังกำกวมติดป้าย **[ถามปอนด์]** พร้อม **[DEFAULT]** ที่ผมเสนอ เพื่อไม่ block UX/UI
 
 ---
 
 ## 1. Customer Lifecycle
-สถานะ: `Lead` → `Active` ↔ `Inactive` → `Disabled` / `Blacklist`
+สถานะหลัก 5 สถานะ: `Lead` → `Active` ↔ `Inactive` → `Disabled` / `Blacklist`
+**เพิ่มกลไก "ต้องติดตาม (Follow-up)"** — [DEFAULT] ออกแบบเป็น **flag ซ้อน** (overlay) เหนือสถานะหลัก ไม่ใช่สถานะที่ 6 เพราะลูกค้าที่ต้องติดตามอาจยัง Active/Inactive อยู่ — user เปลี่ยนเป็น "ต้องติดตาม" ได้พร้อม **comment free text** ว่าติดตามเรื่องอะไร; Sale Dashboard มี tile "ต้องติดตาม" (พฤติกรรมเหมือน tile ลูกค้าประจำ) **[ถามปอนด์: เป็น flag ซ้อน หรือ สถานะที่ 6 แยกจริง]**
 
 ```mermaid
 stateDiagram-v2
     [*] --> Lead
-    Lead --> Active: มี PO ใบแรก + ข้อมูลครบ (Sale, auto)
-    Active --> Inactive: ไม่มี order ในรอบเวลา (auto scheduler)
-    Inactive --> Active: มี order ใหม่เข้ามา (auto)
-    Lead --> Disabled: manual (Sale Manager / System Admin)
+    Lead --> Active: มี PO ใบแรก + ข้อมูลครบ (auto)
+    Active --> Inactive: ไม่มี order ในรอบ (auto scheduler, default 3 เดือน)
+    Inactive --> Active: มี order ใหม่ (auto)
+    Lead --> Disabled: manual
     Active --> Disabled: manual
     Inactive --> Disabled: manual
-    Lead --> Blacklist: manual (Sale Manager / System Admin)
+    Lead --> Blacklist: manual
     Active --> Blacklist: manual
     Inactive --> Blacklist: manual
-    Disabled --> Active: re-enable (manual)
-    Disabled --> Lead: re-enable (manual)
-    Blacklist --> Active: ปลด blacklist (System Admin เท่านั้น)
+    Disabled --> Active: re-enable
+    Blacklist --> Active: ปลด (Admin เท่านั้น)
 ```
+> Follow-up flag: on/off ได้ทุกสถานะหลัก, บังคับ comment ตอนติดธง, เก็บใน note timeline + trace, โผล่ tile "ต้องติดตาม" ใน Sale Dashboard
 
 | Transition | ทริกเกอร์ | ใครเปลี่ยนได้ | comment | สะกิดข้าม module |
 |---|---|---|---|---|
-| Lead → Active | สร้าง PO ใบแรกสำเร็จ + ข้อมูลลูกค้าครบ | ระบบ (auto) จาก action ของ Sale | optional (logged) | ขึ้น Sale Dashboard เป็นลูกค้า active |
-| Active → Inactive | ไม่มี order ภายในรอบเวลา (config ต่อลูกค้า: 1/3/6/8 เดือน, **default 3 เดือน**) | scheduler (auto รายวัน) | auto note | แจ้ง Sale ที่ดูแล + Sale Dashboard |
-| Inactive → Active | มี order ใหม่ในรอบเวลา | scheduler/auto เมื่อสร้าง PO | auto note | Sale Dashboard |
-| any → Disabled | ผู้ใช้กด disable | Sale Manager / System Admin | **บังคับ** | ซ่อนจากรายการสั่งซื้อปกติ |
-| any → Blacklist | ลูกค้ามีปัญหา | Sale Manager / System Admin | **บังคับ** | เตือนเมื่อพยายามเปิด PO ให้ลูกค้ารายนี้ |
-| Disabled/Blacklist → กลับมา | ปลดสถานะ | Disabled: Sale Manager/Admin · Blacklist: Admin | **บังคับ** | Sale Dashboard |
+| Lead → Active | PO ใบแรก + ข้อมูลครบ | ระบบ (auto) | optional | Sale Dashboard |
+| Active → Inactive | ไม่มี order ในรอบ (config 1/3/6/8 ด. default 3) | scheduler | auto note | แจ้ง Sale + Dashboard |
+| Inactive → Active | มี order ใหม่ | auto | auto note | Sale Dashboard |
+| any → Disabled/Blacklist | manual | Sale Manager/Admin | **บังคับ** | ซ่อน/เตือนตอนเปิด PO |
+| ติดธง "ต้องติดตาม" | manual | Sale/Sale Manager | **บังคับ (free text)** | tile "ต้องติดตาม" ใน Sale Dashboard |
 
-**ข้อมูล/หน้าที่ผูกกับสถานะ:** contact ไม่จำกัดต่อลูกค้า · comment/note timeline (ประวัติการจัดการ) · sale ที่ดูแล (reassign โดย Sale Manager/Admin) · ประวัติ PO ทั้งหมด · search ลูกค้าด้วยเลข PO / วันที่สั่งซื้อ · ทุกสถานะไปแสดงบน Sale Dashboard
+**ผูกกับหน้า:** contact ไม่จำกัด · note/comment timeline · sale ที่ดูแล (reassign) · ประวัติ PO · search ลูกค้าด้วย PO/วันที่
 
 ---
 
-## 2. PO Lifecycle (2 รางขนานกัน — reconcile กัน)
-ปอนด์: "ออกใบแจ้งหนี้ได้ตลอดเวลา แต่ต้องเห็น status PO เสมอ" → แยก **ราง Fulfilment** (ผลิต→ส่ง) ออกจาก **ราง Billing** (วางบิล→จ่าย) แล้วแสดงคู่กันในหน้า Invoice และทุกหน้าที่อ้าง PO
-
-**★ คำตอบปอนด์ (ข้อ 1): วัตถุดิบขาด "ไม่บล็อก"** — ระบบแค่ **เตือน (warning)** ให้ผู้ใช้ตัดสินใจสร้าง PO ต่อได้ตามปกติ และ **ส่ง Purchase Request ไป Stock อัตโนมัติ** → **ไม่มีสถานะ `Awaiting Materials` ในเส้นบังคับอีกต่อไป** (PO เดินหน้า Draft → Confirmed ได้เลย)
+## 2. PO Lifecycle (2 ราง — reconcile กัน) + Cancel/Reopen
+วัตถุดิบขาด = **WARNING ไม่บล็อก** + auto Purchase Request ไป Stock (ไม่มี Awaiting Materials)
 
 ### 2A. Fulfilment track
 ```mermaid
 stateDiagram-v2
     [*] --> Draft
-    Draft --> Confirmed: ยืนยัน (Sale) — ถ้าวัตถุดิบขาดจะ "เตือน" แต่สร้าง/ยืนยันต่อได้
-    Confirmed --> InProduction: สร้างงานผลิต (Production=Received)
-    InProduction --> ReadyToDeliver: Production=Ready to Delivery + QC ผ่าน
-    ReadyToDeliver --> InDelivery: ถูกใส่ใน Delivery Note (In-Route)
-    InDelivery --> Delivered: ยืนยันส่งถึง
+    Draft --> Confirmed: ยืนยัน (Sale) — วัตถุดิบขาดแค่เตือน
+    Confirmed --> InProduction: สร้างงานผลิต (Production=รับงาน)
+    InProduction --> ReadyToDeliver: Production=พร้อมส่งมอบ (ผ่าน QC)
+    ReadyToDeliver --> InDelivery: ถูกใส่ในใบจัดส่ง (กำลังนำส่ง)
+    InDelivery --> Delivered: ใบจัดส่งยืนยันส่งถึง
     Draft --> Cancelled
     Confirmed --> Cancelled
     InProduction --> Cancelled
+    ReadyToDeliver --> Cancelled
+    InDelivery --> Cancelled
+    Cancelled --> Draft: เปิดใหม่ รับงานต่อได้ (trace เต็ม)
 ```
-> วัตถุดิบขาด = **warning + auto Purchase Request ไป Stock** (ดู §5) ไม่หยุด PO. Production จะรอวัตถุดิบเข้าตาม PR ก่อนเริ่มผลิตจริงได้ แต่ **สถานะ PO ไม่ถูกบล็อก**
+- **Cancel ได้ทุก case** (ยืนยันปอนด์ ร2 ข้อ4) — บังคับ comment เหตุผล
+- **Cancelled → Draft (เปิดใหม่)**: กลับมารับงานต่อได้ — **ต้องเก็บ trace เต็ม** ว่าเคย cancel เมื่อไหร่/ใคร/เหตุผล แล้ว reopen เมื่อไหร่ **[ถามปอนด์: เลขที่ PO เดิมคงไว้ หรือออกเลขใหม่ผูกกับเลขเดิม]** — [DEFAULT] คงเลข PO เดิม + บันทึก lifecycle event (cancelled→reopened) ใน trace/versioning เพื่อไม่ให้เลขเอกสารกระโดด
 
 ### 2B. Billing track
 ```mermaid
 stateDiagram-v2
     [*] --> NotInvoiced
-    NotInvoiced --> Invoiced: ออกใบแจ้งหนี้ (ได้ตั้งแต่ PO=Confirmed ขึ้นไป — ยืนยันโดยปอนด์ ข้อ 6)
+    NotInvoiced --> Invoiced: ออกใบแจ้งหนี้ (ตั้งแต่ PO=Confirmed)
     Invoiced --> Paid: รับชำระครบ
     Invoiced --> Overdue: ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย
     Overdue --> Paid: รับชำระ
 ```
 
-| Transition | ทริกเกอร์ | ใครเปลี่ยนได้ | comment/trace | สะกิดข้าม module |
-|---|---|---|---|---|
-| (ตอนสร้าง/ยืนยัน) วัตถุดิบขาด | add-product เจอวัตถุดิบไม่พอ | ระบบ (warning) | auto (ระบุว่าขาดตัวไหน) | **ส่ง Purchase Request → Stock + Production Dashboard (PO ไม่ถูกบล็อก)** |
-| Draft → Confirmed | ยืนยัน PO | Sale | trace | **สร้างงานผลิต Production=Received** |
-| InProduction → ReadyToDeliver | ผลิตเสร็จ + QC ผ่าน | ระบบ (จาก Production) | trace | **โผล่หน้า Shipping** |
-| InDelivery → Delivered | Delivery Note ยืนยันส่ง | Shipping | trace | เริ่มนับ overdue (ราง Billing) |
-| NotInvoiced → Invoiced | ออกใบแจ้งหนี้ (ตั้งแต่ Confirmed) | Finance/Sale | trace + versioning | หน้า Invoice โชว์ PO fulfilment stage |
-| Invoiced → Overdue | delivered + เลยเครดิต ยังไม่จ่าย | scheduler | auto | **แจ้งเตือน Finance (+ Sale ที่ดูแล)** |
-
-**หน้า PO/Invoice ต้องแสดงพร้อมกัน:** ราคา, VAT, sale ที่ดูแล, สถานะ fulfilment, สถานะ billing, ประวัติ trace. ขายได้ทั้งสินค้า BOM และวัตถุดิบตรง; ราคา default = ราคาขายใน BOM/ราคาขายวัตถุดิบ แต่แก้ได้
+**หน้า PO — เพิ่มตามรอบ2:** search ด้วย **วันที่สร้าง / วันที่จัดส่งจริง / วันที่ต้องการรับสินค้า** (3 แบบ) · เพิ่มสินค้า (BOM/วัตถุดิบ) **แก้จำนวน+ราคา/หน่วยได้เสมอ ราคา = 0 ได้** · แสดง 2 ราง + sale ที่ดูแล + trace
 
 ---
 
-## 3. Production Lifecycle
-สถานะ: `Received` → `In-Progress` → `Hold` → `Ready to Delivery` → `Delivered` + overlay `Potential Delay`
+## 3. Production Lifecycle (redesign รอบ2 — จบที่ "พร้อมส่งมอบ")
+สถานะ: `รับงาน (Received)` → `กำลังผลิต (In Progress)` → `ตรวจคุณภาพ (QC)` → `พร้อมส่งมอบ (Ready to Deliver)` + `พักงาน (Hold)` + overlay `เสี่ยงล่าช้า (Potential Delay)`
+**"ส่งมอบแล้ว (Delivered)" ไม่อยู่ในหน้าผลิตแล้ว** — เป็นของฝ่ายจัดส่ง (คำวินิจฉัยปอนด์ ร2 ข้อ9) หน้าผลิตส่งต่อที่ "พร้อมส่งมอบ"
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Received
-    Received --> InProgress
-    InProgress --> Hold: ติดปัญหา (comment + cross-notify)
-    Hold --> InProgress: แก้ปัญหาแล้ว
-    InProgress --> ReadyToDelivery: ผลิตเสร็จ (ต้อง QC ผ่านจึง release)
-    ReadyToDelivery --> Delivered: ส่งมอบให้ฝ่ายจัดส่ง
+    [*] --> Received: รับงาน (จาก PO Confirmed)
+    Received --> InProgress: เริ่มผลิต
+    InProgress --> QC: ผลิตเสร็จ ส่งตรวจคุณภาพ
+    QC --> ReadyToDeliver: QC ผ่าน
+    QC --> InProgress: QC ไม่ผ่าน (+ feedback บังคับ)
+    InProgress --> Hold: ติดปัญหา (raise Sale, บังคับ comment)
+    Hold --> InProgress: แก้ไข PO แล้วกลับมาผลิตต่อ
+    ReadyToDeliver --> [*]: ส่งต่อฝ่ายจัดส่ง
 ```
 
-- **Potential Delay** = overlay badge (ไม่ใช่ state แยก): เกณฑ์ lead time = **2 วันผลิต + 1 วันส่ง**; ถ้าเวลาที่เหลือถึงวันจัดส่ง < lead time และยังไม่ Ready → ติดป้าย `Potential Delay` มิฉะนั้นปกติ
-- **ทุกสถานะ comment ได้** · **Hold บังคับ comment + เลือกปลายทางแจ้ง**: ติดที่ลูกค้า → notify **Sale**; ติดที่ stock → notify **Stock**
-- **ปรับสถานะได้ตลอด แต่ trace เสมอ** (ใครเปลี่ยนจากอะไรเป็นอะไร เมื่อไหร่)
-- รายการเรียง/ค้นด้วย **วันจัดส่ง / PO / ลูกค้า**
+- **Normal:** รับงาน → กำลังผลิต → QC → พร้อมส่งมอบ
+- **QC ไม่ผ่าน:** QC → กลับ กำลังผลิต **พร้อม feedback (บังคับ comment)** (ยืนยันปอนด์ ร2 ข้อ10)
+- **Hold:** กำลังผลิต → Hold → **แก้ไข PO** → กำลังผลิต → QC → พร้อมส่งมอบ; Hold **raise ไปที่ Sale** (บังคับ comment)
+  - **[ถามปอนด์: "แก้ไข PO" ใน Hold แก้อะไรได้บ้าง (จำนวน/สินค้า/ราคา/วันส่ง) และใครแก้ (Sale?)]** — [DEFAULT] Sale เป็นผู้แก้ (จำนวน/สินค้า/ราคา/วันที่) ผ่านหน้า PO, ทุกการแก้มี trace, ผลิตกลับมาต่อหลังแก้เสร็จ
+- **Potential Delay** = overlay badge: เกณฑ์ 2 วันผลิต + 1 วันส่ง (ไม่ใช่ state แยก)
+- ปรับสถานะได้ตลอด **แต่ trace เสมอ** · เรียง/ค้นด้วย วันจัดส่ง/PO/ลูกค้า
 
-| Transition | ใครเปลี่ยนได้ | comment | สะกิดข้าม module |
+| Transition | ใครเปลี่ยน | comment | สะกิดข้าม module |
 |---|---|---|---|
-| Received (เข้ามา) | ระบบ (จาก PO Confirmed) | — | มาจาก PO |
-| → Hold | Production | **บังคับ** + เลือก Sale/Stock | cross-notify Sale หรือ Stock |
-| → Ready to Delivery | Production (ต้อง QC pass) | optional | **PO → ReadyToDeliver, โผล่ Shipping** |
-| Potential Delay (badge) | scheduler/rule | auto | **notify Sale + Stock** |
+| Received (เข้ามา) | ระบบ (PO Confirmed) | — | มาจาก PO |
+| → QC | Production | optional | — |
+| QC ผ่าน → ReadyToDeliver | QC | optional | **PO → พร้อมจัดส่ง, โผล่หน้าจัดส่ง** |
+| QC ไม่ผ่าน → InProgress | QC | **บังคับ (feedback)** | กลับสายผลิต |
+| → Hold | Production | **บังคับ** | **raise Sale** |
+| Hold → InProgress | Sale แก้ PO เสร็จ | trace | Sale ↔ Production |
 
 ---
 
-## 4. Shipping / Delivery Note Lifecycle
-สถานะใบจัดส่ง: `Received` → `In-Route` → `Delivered` / `Rejected` / `Postponed`
-1 Delivery Note รวมได้หลาย PO → **สถานะระดับใบ vs ระดับ PO ต้อง reconcile**
+## 4. Shipping / Delivery Note (redesign รอบ2)
+แยก 2 หน้าให้ชัด:
+- **หน้าการจัดส่ง (Shipping)** = ที่ **สร้างใบจัดส่ง**: เลือก PO ก่อนแล้วสร้าง หรือ สร้างใบเปล่าแล้ว search PO เพิ่ม — **เลือกได้เฉพาะ PO สถานะ "พร้อมจัดส่ง" เท่านั้น** (แต่ search มองเห็นได้ทั้งหมด) · search PO ด้วย **PO ID หรือข้อมูลลูกค้า** (ชื่อ/นามสกุล/ชื่อบริษัท/เบอร์ contact/ชื่อ contact) · เป็น**คิวจัดส่ง** ที่เห็น PO ที่รอส่ง (รวม PO ที่ Postpone)
+- **หน้าใบจัดส่ง (Delivery Note)** = ใบจัดส่งราย order **print ได้ทีละใบ ให้ลูกค้าเซ็น**
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Received
-    Received --> InRoute
-    InRoute --> Delivered
-    InRoute --> Rejected
-    InRoute --> Postponed
-    Postponed --> InRoute
+    [*] --> Created: สร้างใบจัดส่ง (จาก PO พร้อมจัดส่ง)
+    Created --> InRoute: เริ่มนำส่ง
+    InRoute --> Delivered: ส่งถึง (ราย order)
+    InRoute --> Rejected: ลูกค้าปฏิเสธ (ราย order)
+    InRoute --> Postponed: เลื่อนส่ง (ราย order)
 ```
 
-**กติกา reconcile ใบ ↔ PO (ยืนยันปอนด์ ข้อ 3):**
-- แต่ละ PO ในใบมีสถานะรายบรรทัด (Delivered / Rejected / Postponed)
-- สถานะ "ระดับใบ" = aggregate: ทุก PO Delivered → ใบ `Delivered`; ถ้ามีบางส่วน Rejected/Postponed → ใบ `Partially Delivered` (แสดง breakdown รายบรรทัด) และใบยังไม่ปิดจนกว่าจะเคลียร์ทุก PO
-- **PO ที่ `Postponed` → สร้าง Delivery Note ใบใหม่ได้** สำหรับรอบส่งถัดไป (มี flow "สร้างใบใหม่จาก PO ที่เลื่อน")
-- **PO ที่ `Rejected` (ยืนยันปอนด์ ข้อ 4):** กลับไป Production = `Ready to Delivery` **และแจ้ง Sale ให้ตัดสินใจ** (ติดต่อลูกค้าเพื่อส่งใหม่ / ยกเลิก) — เป็นลำดับเดียว: Rejected → Production Ready to Delivery + notify Sale → Sale ตัดสินใจ
-- ใส่ comment ได้ · แก้สถานะได้ตลอด · **trace เสมอ**
+**กติกา reconcile ใบ ↔ PO:**
+- แต่ละ order (PO) ในใบมีสถานะรายบรรทัด: Delivered / Rejected / Postponed
+- ระดับใบ: ทุก order Delivered → `Delivered`; มีบางส่วน Reject/Postpone → `Partially Delivered` (แสดง breakdown, ใบยังไม่ปิดจนเคลียร์)
+- **Reject → PO กลับ "พร้อมจัดส่ง" + raise ไปที่ Sale** (Sale ตัดสินใจ ติดต่อลูกค้า/ยกเลิก) (ยืนยันปอนด์ ร2 ข้อ11)
+- **Postpone → PO = "พร้อมจัดส่ง" + flag "กันจัดส่ง Postpone" พร้อมวันที่** — **ค้างอยู่ในคิวจัดส่ง** ให้ฝ่ายจัดส่งเห็นว่ามี PO เลื่อน (ยืนยันปอนด์ ร2 ข้อ11)
+- print ใบจัดส่งราย order สำหรับลูกค้าเซ็น · comment ได้ · trace เสมอ
+- **[ถามปอนด์: 1 ใบจัดส่งรวมได้หลาย order/PO ไหม (แล้ว print แยกราย order) หรือ 1 ใบ = 1 order]** — [DEFAULT] 1 ใบสร้างรวมหลาย PO ได้ตอนสร้าง แต่ print เป็นสลิปราย order เพื่อให้ลูกค้าแต่ละรายเซ็น
 
-| Transition | ทริกเกอร์ | ใครเปลี่ยนได้ | สะกิดข้าม module |
-|---|---|---|---|
-| (สร้างใบ) | PO = ReadyToDeliver + QC ผ่าน | Shipping | ดึง PO จาก Production |
-| Received → In-Route | เริ่มจัดส่ง | Shipping | PO → InDelivery |
-| In-Route → Delivered | ส่งถึง | Shipping | PO → Delivered → เริ่มนับ overdue |
-| In-Route → Rejected | ลูกค้าปฏิเสธ | Shipping | PO กลับ Production Ready to Delivery + **notify Sale ให้ตัดสินใจ (ติดต่อ/ยกเลิก)** |
-| In-Route → Postponed | เลื่อนส่ง | Shipping | PO คงค้าง + **เปิด flow สร้าง Delivery Note ใบใหม่** สำหรับรอบถัดไป |
+| Transition | ใครเปลี่ยน | สะกิดข้าม module |
+|---|---|---|
+| สร้างใบ | Shipping (เลือก PO พร้อมจัดส่ง) | PO → กำลังนำส่ง เมื่อออกวิ่ง |
+| InRoute → Delivered | Shipping | PO → Delivered → เริ่มนับ overdue |
+| InRoute → Rejected | Shipping | PO กลับ พร้อมจัดส่ง + **raise Sale** |
+| InRoute → Postponed | Shipping | PO = พร้อมจัดส่ง + flag Postpone(+วันที่) ค้างคิวจัดส่ง |
 
 ---
 
-## 5. Purchase Request Flow
-เกิดเมื่อ: เปิด PO แล้ววัตถุดิบขาด → ระบบ **เตือน user + สร้าง PR ส่งไป Stock อัตโนมัติ** และไปโชว์บน **Production Dashboard** — **PO ไม่ถูกบล็อก** (ยืนยันปอนด์ ข้อ 1)
+## 5. Purchase Request Flow (redesign รอบ2)
+เกิดได้ 2 ทาง: **(ก) auto จาก PO วัตถุดิบขาด** หรือ **(ข) user สร้างตรงจากหน้า PR เอง** (ยืนยันปอนด์ ร2 ข้อ6)
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Open
-    Open --> Acknowledged: Stock รับทราบ
-    Acknowledged --> Fulfilled: วัตถุดิบเข้า (ผ่าน QC incoming)
-    Fulfilled --> Closed
+    [*] --> Open: สร้าง (auto จาก PO / manual จากหน้า PR)
+    Open --> Acknowledged: รับทราบ (manual)
+    Open --> Fulfilled: ของเข้าครบ (AUTO จาก goods receipt ผูก lot)
+    Acknowledged --> Fulfilled: ของเข้าครบ (AUTO)
+    Fulfilled --> Closed: ปิดคำขอ (manual)
     Open --> Cancelled
     Acknowledged --> Cancelled
 ```
 
-| Transition | ใครเปลี่ยนได้ | comment | สะกิดข้าม module |
-|---|---|---|---|
-| (สร้าง) | ระบบ จาก PO material shortage (warning) | auto (ระบุวัตถุดิบ+จำนวนขาด) | โผล่ Stock Dashboard + Production Dashboard · **PO เดินหน้าได้ตามปกติ ไม่บล็อก** |
-| Open → Acknowledged | Stock | optional | — |
-| Acknowledged → Fulfilled | รับเข้าของครบ (QC incoming / lot receipt) | trace | **Stock เพิ่ม → Production มีวัตถุดิบพอเริ่มผลิต** (PO ไม่ต้องปลดบล็อกเพราะไม่เคยถูกบล็อก) |
-| Fulfilled → Closed | ปิดคำขอ | Stock | — |
-| → Cancelled | ยกเลิก | Stock/Sale | **บังคับ** |
+| สถานะ/Transition | ใครเปลี่ยน | หมายเหตุ |
+|---|---|---|
+| สร้าง (Open) | ระบบ (จาก PO) หรือ Stock (manual หน้า PR) | ระบุวัตถุดิบ+จำนวน; โผล่ Stock + Production Dashboard |
+| รับทราบ (Acknowledged) | Stock | **manual** |
+| ของเข้าครบ (Fulfilled) | ระบบ | **AUTO** จากการทำ Goods Receipt ใน stock (ผูก lot) — เห็นว่ารับจาก lot ไหน |
+| ปิดคำขอ (Closed) | Stock | **manual** |
+| ยกเลิก (Cancelled) | Stock/Sale | บังคับ comment |
+
+> การรับเข้า (Goods Receipt) หน้า stock **อ้างอิงเลข PR ได้ (search PR)** → เมื่อรับครบ **ปิด/เปลี่ยน PR เป็น "ของเข้าครบ" อัตโนมัติ** พร้อมเหตุผลว่ารับจาก lot ไหน (ยืนยันปอนด์ ร2 ข้อ5)
 
 ---
 
 ## 6. Return Flow (คืนของ supplier)
-เกิดเมื่อ: รับวัตถุดิบมาแล้ว QC เจอเสียหาย → ทำใบส่งคืน
-
 ```mermaid
 stateDiagram-v2
     [*] --> Draft
@@ -187,105 +187,88 @@ stateDiagram-v2
     Returned --> Closed
     Draft --> Cancelled
 ```
-
-- ระบุ **เลข lot** → ระบบ auto แสดง supplier → แก้จำนวน return → **ตัด stock พร้อม comment บังคับ** (เหตุผลการ adjust stock ที่ไม่มี PO)
-- ผูก lot ↔ supplier ↔ รายการ adjust stock; **trace เสมอ**
-
-| Transition | ใครเปลี่ยนได้ | comment | สะกิดข้าม module |
-|---|---|---|---|
-| Draft → Returned | QC/Stock | **บังคับ** | **ตัด stock (lot)** + บันทึก adjust แบบไม่มี PO |
-| Returned → Closed | Stock | optional | ปิดรายการ |
+- ระบุ lot → auto แสดง supplier → แก้จำนวน return → **ตัด stock + comment บังคับ** (เหตุผล adjust ที่ไม่มี PO) · trace เสมอ
 
 ---
 
 ## 7. Invoice / Payment
-- **ออกใบแจ้งหนี้ได้ตั้งแต่ PO = Confirmed ขึ้นไป** (ยืนยันปอนด์ ข้อ 6) แต่หน้า Invoice ต้อง**แสดง PO fulfilment stage เสมอ**
-- **Overdue alert**: ส่งของแล้ว (PO=Delivered) + เลยเครดิต + ยังไม่จ่าย → แสดง **จำนวนวันค้าง** บน Finance Dashboard (+ Sale ที่ดูแล)
-- คง versioning + โครงสร้างใบกำกับภาษีไทยจาก `prototype-feedback-reference.md` / brief §5 (discount, VAT7%, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง)
-
-Billing states ดูราง 2B. Overdue = scheduler คำนวณจาก (delivery date + credit terms)
+- ออกใบแจ้งหนี้ได้ตั้งแต่ **PO = Confirmed** แต่แสดง PO fulfilment stage เสมอ
+- Overdue: ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย → โชว์จำนวนวันค้าง (Finance Dashboard + Sale)
+- คง versioning + ใบกำกับภาษีไทย (issuer จาก settings, เลขผู้เสียภาษี, VAT7%, discount, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง)
 
 ---
 
-## 8. ตารางความต่อเนื่องข้าม module (Cross-module continuity — หัวใจ ห้ามหลุด)
+## 8. ตารางความต่อเนื่องข้าม module (Cross-module continuity — หัวใจ)
 
-| # | เหตุการณ์ต้นทาง | ผลลัพธ์ปลายทาง (module อื่น) |
+| # | เหตุการณ์ต้นทาง | ผลลัพธ์ปลายทาง |
 |---|---|---|
-| C1 | Customer สร้าง PO ใบแรก | Customer: Lead → Active; Sale Dashboard update |
-| C2 | Customer ไม่มี order ในรอบ config | Customer: Active → Inactive; แจ้ง Sale |
-| C3 | PO add-product เจอวัตถุดิบขาด | **เตือน user (ไม่บล็อก)** + สร้าง Purchase Request → Stock Dashboard **และ** Production Dashboard; PO เดินหน้าได้ตามปกติ |
-| C4 | Purchase Request Fulfilled (ของเข้า via QC incoming) | Stock เพิ่ม (lot ใหม่ prefix supplier); Production มีวัตถุดิบพอเริ่มผลิต |
-| C5 | PO Confirmed | สร้างงานผลิต Production = Received |
-| C6 | Production Hold (เหตุลูกค้า/stock) | cross-notify Sale หรือ Stock (บังคับ comment) |
-| C7 | Production Potential Delay | notify Sale + Stock |
-| C8 | Production Ready to Delivery + QC ผ่าน | PO → ReadyToDeliver; โผล่หน้า Shipping |
-| C9 | Delivery Note = Delivered | PO → Delivered; เริ่มนับ overdue clock (Billing) |
-| C10 | Delivery PO Rejected | PO กลับ Production Ready to Delivery + **notify Sale ให้ตัดสินใจ (ติดต่อลูกค้า/ยกเลิก)** |
-| C10b | Delivery PO Postponed | เปิด flow สร้าง Delivery Note ใบใหม่สำหรับรอบถัดไป |
-| C11 | Invoice Issued + Delivered + เลยเครดิต ยังไม่จ่าย | PO Billing → Overdue; แจ้ง Finance (+Sale) |
-| C12 | QC incoming รับเข้า | Stock เพิ่ม (lot + supplier prefix); อาจปิด PR (C4) |
-| C13 | Return Issued | Stock ลด (lot) + adjust ไม่มี PO + comment บังคับ |
-| C14 | Sale reassign ลูกค้า | customer.sale เปลี่ยน; Sale Dashboard ทั้ง 2 ฝั่ง update; trace |
+| C1 | Customer สร้าง PO ใบแรก | Lead → Active; Sale Dashboard |
+| C2 | Customer ไม่มี order ในรอบ | Active → Inactive; แจ้ง Sale |
+| C2b | Sale ติดธง "ต้องติดตาม" | tile ต้องติดตาม (Sale Dashboard) + note |
+| C3 | PO วัตถุดิบขาด | WARNING (ไม่บล็อก) + สร้าง PR → Stock + Production Dashboard |
+| C4 | Goods Receipt รับของครบ (ผูก lot) | PR → "ของเข้าครบ" อัตโนมัติ; Stock เพิ่ม (lot prefix supplier) |
+| C5 | PO Confirmed | Production = รับงาน |
+| C6 | Production QC ไม่ผ่าน | กลับ กำลังผลิต + feedback |
+| C7 | Production Hold | raise Sale (แก้ไข PO) |
+| C7b | Production Potential Delay | notify Sale + Stock |
+| C8 | Production พร้อมส่งมอบ (QC ผ่าน) | PO → พร้อมจัดส่ง; โผล่คิวจัดส่ง |
+| C9 | ใบจัดส่ง Delivered | PO → Delivered; เริ่มนับ overdue |
+| C10 | ใบจัดส่ง order Rejected | PO กลับ พร้อมจัดส่ง + raise Sale |
+| C10b | ใบจัดส่ง order Postponed | PO = พร้อมจัดส่ง + flag Postpone(+วันที่) ค้างคิวจัดส่ง |
+| C11 | Invoice Overdue | แจ้ง Finance (+Sale) |
+| C12 | Return Issued | Stock ลด (lot) + adjust ไม่มี PO + comment |
+| C13 | PO Cancelled → Draft (reopen) | รับงานต่อได้; trace lifecycle เต็ม |
+| C14 | Sale reassign ลูกค้า | customer.sale เปลี่ยน; Dashboard 2 ฝั่ง + trace |
 
-**เกณฑ์ตรวจ (สำหรับ UX/UI + QA):** ทุกแถวในตารางนี้ต้องมี mockup ที่แสดง "ทั้งต้นทางและปลายทาง" เห็นความต่อเนื่อง และทุก transition ต้องมี trace entry + ยิง Notification ตาม §10
-
----
-
-## 9. Roles / Permission (RUCDAA) — ผลจาก feedback + คำตอบปอนด์ ข้อ 5
-
-**★ คำตอบปอนด์ (ข้อ 5): RUCDA → RUCDAA** — เพิ่ม permission ระดับที่ 6 **"Admin"** สำหรับ special capabilities แทน capability-layer แยกที่ PO เสนอไว้เดิม
-
-**Role ใหม่:**
-- **Sale Manager** — reassign ลูกค้าให้ sale แต่ละคน, เห็นลูกค้า/ยอดของทีม, ปลด Disabled
-- **Super User** — สิทธิ์ **archive traceability ลง text file**, มองเห็น trace ทุก module
-
-**โมเดลสิทธิ์ (หน้า Settings):**
-- สิทธิ์ราย **module ตามเมนูซ้าย** × **6 ระดับ: R**ead, **U**pdate, **C**reate, **D**elete, **A**pprove, **A**dmin (RUCDAA)
-  - ระดับที่ 6 **Admin** = ความสามารถพิเศษของ module นั้น เช่น reassign customer, archive trace, ปลด Blacklist, force เปลี่ยนสถานะ (status override) — **ไม่ต้องมี capability layer แยกอีกต่อไป** ใช้ bit ที่ 6 นี้แทน
-  - **Read bit** = ตัวกำหนดว่าใครเห็น module นั้น รวมถึง**ได้รับ Notification ของ module นั้น** (ดู §10)
-- **สร้าง Role ได้ไม่จำกัด**; User อยู่ใต้ Role; แก้ company profile ได้
-- Role เดิมจาก prototype (7 roles) ยังคงอยู่เป็น seed + เพิ่ม Sale Manager, Super User
-
-| Role (seed) | จุดเด่นสิทธิ์ (ผูกกับ Admin-bit ของ module ที่เกี่ยว) |
-|---|---|
-| System Admin | company profile, settings, สร้าง role/permission, ปลด Blacklist (Admin bit หลาย module) |
-| Super User [ใหม่] | archive trace, เห็น trace ทุก module (Admin bit ของ Traceability) |
-| Sale Manager [ใหม่] | reassign customer, dashboard ทีม sale (Admin bit ของ Customer/Sale) |
-| Sale / Stock / Production / QC / Shipping / Finance | ตาม module + RUCDAA ที่กำหนด |
+**เกณฑ์ตรวจ (UX/UI + QA):** ทุกแถวต้องมี mockup แสดงต้นทาง+ปลายทาง + trace + ยิง Notification (§10)
 
 ---
 
-## 10. Notification / Inbox (การส่งงานข้ามแผนก) — requirement ปอนด์ (2026-07-08)
+## 9. Roles / Permission (RUCDAA)
+- สิทธิ์ราย module × 6 ระดับ: **R**ead, **U**pdate, **C**reate, **D**elete, **A**pprove, **A**dmin (RUCDAA) — bit "Admin" = special capabilities (reassign customer, archive trace, ปลด Blacklist, force override, cancel/reopen PO)
+- สร้าง role ไม่จำกัด; user อยู่ใต้ role; company profile ใน settings
+- Role ใหม่: **Sale Manager** (reassign, dashboard ทีม), **Super User** (archive trace)
+- **Read bit** = เห็น module + ได้รับ Notification ของ module นั้น (§10)
 
-**กติกาหลัก (ตามที่ปอนด์สั่ง):**
-1. **ทุกการส่งงานต่อระหว่างแผนก = ทุกแถวในตาราง continuity §8** ต้องยิง **Notification** เข้า **Inbox ของ module ปลายทาง** พร้อม **badge บอกจำนวน inbox ค้าง**
-2. **แยก noti ตาม role โดยยึด Read permission:** role ที่มีสิทธิ์ **Read ของ module ปลายทาง** = ได้รับ noti ของ module นั้น (ผูกกับ RUCDAA Read bit §9)
-3. **Acknowledge ราย user:** กดเข้าดูรายการ = acknowledge → noti ตัวนั้นหายจาก badge ของ user คนนั้น (มี 5 alerts กด 1 เหลือ 4) — **นับต่อ user** ไม่ใช่ต่อ role (user A กดแล้ว ไม่ทำให้ badge ของ user B ที่ role เดียวกันลด)
+---
 
-**UI spec (ยืนยันโดยปอนด์ 2026-07-08) — ส่งให้ UX/UI:**
-- ใช้ **bell icon ที่มุมบนขวา (ตัวที่มีอยู่แล้วใน mockup)** — แสดง **badge ตัวเลขรวม** ของ noti ค้างของ user (ข้ามทุก module ที่ตนมีสิทธิ์ Read)
-- **กด bell → expand เป็นรายการเตือน (dropdown/panel)** เห็นแต่ละ noti: เหตุการณ์, เอกสารอ้างอิง (PO/DN/PR/Invoice no.), เวลา
-- **กดแต่ละรายการ = (ก) deep link พาไปหน้า flow นั้นต่อทันที + (ข) acknowledge รายการนั้น** (badge ลด 1 ราย user)
-- (เสริม) แสดง **badge ราย module บนเมนูซ้าย** ให้เห็นว่างานค้างอยู่ module ไหน — ตัวเลขเดียวกับที่รวมในกระดิ่ง
+## 10. Notification / Inbox + Deep link
+- **bell มุมบนขวา** → badge รวม → กด expand เป็นรายการ → **กดแต่ละรายการ = deep link ไปหน้าทำงานต่อ + acknowledge** (นับ badge ราย user)
+- ผู้รับ = ผู้มีสิทธิ์ **Read** ของ module ปลายทาง
+- (เสริม) badge ราย module บนเมนูซ้าย
 
-**ตาราง mapping: transition → noti เข้า module ไหน → role ที่เห็น (Read) → deep link ปลายทาง:**
-
-| อ้าง §8 | เหตุการณ์ (ส่งงาน) | Noti เข้า module | Role ที่เห็น (Read) | Deep link ไปหน้า (flow ต่อ) |
+| อ้าง §8 | เหตุการณ์ | Noti เข้า module | Role ที่เห็น (Read) | Deep link |
 |---|---|---|---|---|
-| C1 | Customer Lead → Active | Customer / Sale | Sale (เจ้าของ), Sale Manager | หน้า Customer detail ของลูกค้ารายนั้น |
-| C2 | Customer Active → Inactive | Customer / Sale | Sale (เจ้าของ), Sale Manager | หน้า Customer detail (ปุ่มติดตาม/บันทึก note) |
-| C3 | วัตถุดิบขาด → Purchase Request | Stock **และ** Production | Read Stock, Read Production | หน้า Purchase Request detail |
-| C4 | Purchase Request Fulfilled | Production (+ Stock) | Read Production, Read Stock | หน้า Production order ที่รอวัตถุดิบ |
-| C5 | PO Confirmed → งานผลิต | Production | Read Production | หน้า Production order (คิวผลิต) ของ PO นั้น |
-| C6 | Production Hold (ลูกค้า/stock) | Sale **หรือ** Stock (ตามเหตุ) | Read Sale หรือ Read Stock | หน้า Production order ที่ Hold (เห็น comment) |
-| C7 | Production Potential Delay | Sale + Stock | Read Sale, Read Stock | หน้า Production order ที่ติดป้าย Delay |
-| C8 | Ready to Delivery + QC ผ่าน | Shipping | Read Shipping | หน้า Shipping — PO พร้อมส่ง (สร้าง Delivery Note) |
-| C9 | Delivery Note Delivered | Finance + Sale | Read Finance, Read Sale (เจ้าของ) | หน้า Invoice/PO billing ของ PO นั้น |
-| C10 | Delivery PO Rejected | Sale | Read Sale (เจ้าของ), Sale Manager | หน้า PO detail (ปุ่มตัดสินใจ ส่งใหม่/ยกเลิก) |
-| C10b | Delivery PO Postponed | Shipping | Read Shipping | หน้า Shipping — สร้าง Delivery Note ใบใหม่ |
-| C11 | Invoice Overdue | Finance + Sale | Read Finance, Read Sale (เจ้าของ) | หน้า Invoice detail (ยอดค้าง + จำนวนวัน) |
-| C12 | QC incoming รับเข้า | Stock (+ Production ถ้าปิด PR) | Read Stock, Read Production | หน้า Stock/lot ที่รับเข้า (หรือ PR ที่ปิด) |
-| C13 | Return Issued | Stock | Read Stock | หน้า Return/stock adjust detail |
-| C14 | Sale reassign ลูกค้า | Sale (ทั้ง sale เดิม+ใหม่) | sale เดิม, sale ใหม่, Sale Manager | หน้า Customer detail ที่ถูก reassign |
+| C2b | ต้องติดตาม | Customer/Sale | Sale(เจ้าของ), Sale Manager | Customer detail |
+| C3 | PR (วัตถุดิบขาด) | Stock + Production | Read Stock/Production | Purchase Request detail |
+| C4 | ของเข้าครบ (auto) | Production + Stock | Read Production/Stock | Production order / PR ที่ปิด |
+| C5 | PO Confirmed | Production | Read Production | Production order (คิว) |
+| C6 | QC ไม่ผ่าน | Production | Read Production | Production order (feedback) |
+| C7 | Hold (raise Sale) | Sale | Read Sale | PO detail (แก้ไข PO) |
+| C7b | เสี่ยงล่าช้า | Sale + Stock | Read Sale/Stock | Production order |
+| C8 | พร้อมส่งมอบ | Shipping | Read Shipping | หน้าจัดส่ง (สร้างใบ) |
+| C9 | Delivered | Finance + Sale | Read Finance/Sale | Invoice/PO billing |
+| C10 | order Rejected | Sale | Read Sale, Sale Manager | PO detail (ตัดสินใจ) |
+| C10b | order Postponed | Shipping | Read Shipping | คิวจัดส่ง (PO flag Postpone) |
+| C11 | Overdue | Finance + Sale | Read Finance/Sale | Invoice detail |
+| C12 | Return | Stock | Read Stock | Return/stock adjust |
+| C13 | PO reopen (Cancelled→Draft) | Production/Sale | Read Production/Sale | PO detail |
+| C14 | reassign | Sale (เดิม+ใหม่) | sale เดิม/ใหม่, Sale Manager | Customer detail |
 
-> หมายเหตุการออกแบบ: "เจ้าของ" = sale ที่ดูแลลูกค้า/PO นั้นโดยตรง ควรเห็นเป็นลำดับแรก แต่ทุก user ที่มี Read module ปลายทางก็เห็น noti ได้ตามกติกาข้อ 2 · acknowledge เป็น per-user read-state (ตาราง user × notification) · deep link ต้องพาไปที่ "หน้าให้ทำงานต่อ" ไม่ใช่แค่หน้า list (ลด clicks ตาม brief §2.1)
+---
+
+## 11. BOM Cost Rule (ยืนยันปอนด์ ร2 ข้อ8)
+- **ราคาทุน = ราคารับซื้อ "สูงสุด" ของ supplier ที่ active เท่านั้น** (ไม่นับ supplier inactive) คำนวณ ณ ตอนสร้าง/แก้สูตร
+- **user แก้ทับได้** (override ค่าที่คำนวณ)
+- **เมื่อบันทึกสูตร → snapshot ราคาทุนไว้ ไม่คำนวณใหม่อัตโนมัติ** แม้ราคา supplier เปลี่ยนภายหลัง — จนกว่าจะเปิดแก้แล้ว save ใหม่
+- **ราคาขายใน BOM = mandatory** (ยังคงเดิม)
+- **[ถามปอนด์: เมื่อราคา supplier เปลี่ยนภายหลัง สูตรเดิมใช้ราคา snapshot ตลอดจนกว่าจะ save ใหม่ใช่ไหม + ควรมี badge เตือน "ราคาทุนอาจล้าสมัย" ไหม]** — [DEFAULT] ใช้ snapshot จนกว่า save ใหม่ + แสดง badge เตือนเมื่อราคา active supplier ปัจจุบันต่างจาก snapshot
+
+---
+
+## 12. คำถามถึงปอนด์ (flow ยังกำกวม — ปอนด์เปิดทางให้ถามเต็มที่)
+1. **"ต้องติดตาม"** = flag ซ้อนสถานะเดิม (default ผม) หรือ สถานะที่ 6 แยกจริง?
+2. **PO cancel → reopen (Draft)**: คงเลข PO เดิม (default ผม) หรือออกเลขใหม่ผูกเลขเดิม?
+3. **"แก้ไข PO" ใน Hold**: แก้อะไรได้บ้าง (จำนวน/สินค้า/ราคา/วันส่ง) + ใครแก้ (default: Sale แก้ได้ทั้งหมด + trace)?
+4. **BOM snapshot**: ราคา supplier เปลี่ยนภายหลัง → สูตรเดิมใช้ snapshot จนกว่า save ใหม่ (default ผม) + badge เตือน?
+5. **ใบจัดส่ง**: 1 ใบรวมหลาย order/PO แล้ว print แยกราย order (default ผม) หรือ 1 ใบ = 1 order?

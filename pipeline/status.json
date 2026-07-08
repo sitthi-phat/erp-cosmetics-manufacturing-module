@@ -3,13 +3,13 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "current_agent": "ux-ui",
+      "status": "READY_FOR_UXUI",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 2 (2026-07-08): NOT approved. Detailed per-page feedback in docs/requirements/erp-v2-ui-first/pond-gate1-r2-feedback.md — dashboard drill-down+auto-refresh w/ context, customer follow-up status, PO search by dates + price editable/zero + cancel->draft, stock goods-receipt full screen + PR closing, PR page (create/manual statuses), supplier-material price binding + active/inactive, BOM cost = max price among active suppliers + snapshot on save, production flow revised (ends at Ready to Deliver; QC fail loop; Hold->แก้ไข PO), shipping/DN flow redesign (DN per order printable, postpone flag w/ date), trace = full field-level audit search, settings 5 concrete screens. Pond: mockups feed BA/Engineer/QA so must be detailed; PO may ask Pond anytime."
+          "note": "Round 2 (2026-07-08): NOT approved. Detailed per-page feedback in docs/requirements/erp-v2-ui-first/pond-gate1-r2-feedback.md — dashboard drill-down+auto-refresh w/ context, customer follow-up status, PO search by dates + price editable/zero + cancel->draft, stock goods-receipt full screen + PR closing, PR page (create/manual statuses), supplier-material price binding + active/inactive, BOM cost = max price among active suppliers + snapshot on save, production flow revised (ends at Ready to Deliver; QC fail loop; Hold->แก้ไข PO), shipping/DN flow redesign (DN per order printable, postpone flag w/ date), trace = full field-level audit search, settings 5 concrete screens. Pond: mockups feed BA/Engineer/QA so must be detailed; PO may ask Pond anytime. PO ran a full mockup-completeness review (po-mockup-review.md) -> round-3 action list P0/P1/P2."
         },
         "gate2_requirements": {
           "approved": false,
@@ -40,82 +40,22 @@
           "phase": "design-brief",
           "status": "IN_PROGRESS",
           "gate_checklist": [
-            {
-              "item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Gate 1 'approve the look' defined with verifiable pass criteria",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Screen business-priority tiers defined",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Feature-level Definition of Done to Gate 2 complete",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Scope in/out specified",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)", "pass": true, "missing": null},
+            {"item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)", "pass": true, "missing": null},
+            {"item": "Gate 1 'approve the look' defined with verifiable pass criteria", "pass": true, "missing": null},
+            {"item": "Screen business-priority tiers defined", "pass": true, "missing": null},
+            {"item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)", "pass": true, "missing": null},
+            {"item": "Feature-level Definition of Done to Gate 2 complete", "pass": true, "missing": null},
+            {"item": "Scope in/out specified", "pass": true, "missing": null},
+            {"item": "The 10 prototype feedback points confirmed and mapped to mockup criteria (BKV-4 / Gate-1 verifiable)", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/brief.md"
-          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/brief.md"],
           "questions_for_pond": [
-            {
-              "q": "ยืนยันหน้าจอ Tier 1 (ต้องเนี้ยบสุด) ที่ผมเสนอ: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, stock — ตรงกับจุดที่ปอนด์ feedback หนักสุดไหม?",
-              "options": [
-                "ตรงแล้ว ใช้ 4 หน้านี้เป็น Tier 1",
-                "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)",
-                "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"
-              ],
-              "answer": "ยืนยัน — และสั่งเพิ่ม: เอาให้เนี๊ยบที่สุด มีโอกาสเสนองานครั้งเดียว ต้องดีที่สุด (2026-07-08)"
-            },
-            {
-              "q": "เป้าเวลาทำงานของ user มือใหม่ (BKV-1) ควรตั้งที่เท่าไรจึงถือว่า 'ใช้ง่ายพอ'? (ใช้วัดตอน UAT)",
-              "options": [
-                "เปิด PO ≤ 3 นาที / ออก invoice+ใบกำกับภาษี ≤ 5 นาที (ค่าที่ผมเสนอ)",
-                "เข้มกว่านี้ (ระบุเวลา)",
-                "ผ่อนกว่านี้ (ระบุเวลา)",
-                "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"
-              ],
-              "answer": "เชิงคุณภาพ: ใช้ง่ายโดยไม่มีคนสอน + เสร็จเร็ว + อ่านง่าย + ลดจำนวนการกด/จำนวนหน้าให้น้อยที่สุด — ผู้ใช้ทำงาน routine ถ้ากรอกนาน/กดหลายหน้าจะไม่ใช้และพลาดสูง → ตัวเลข ≤3/≤5 นาทีใช้เป็น proxy ได้ แต่เกณฑ์จริงคือ minimize clicks/pages (2026-07-08)"
-            },
-            {
-              "q": "เกณฑ์คะแนน UAT 'ดู professional + ใช้ง่าย' (BKV-5) ควรผ่านที่เท่าไร?",
-              "options": [
-                "เฉลี่ย ≥ 4 จาก 5 (ค่าที่ผมเสนอ)",
-                "≥ 3.5 จาก 5",
-                "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)",
-                "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"
-              ],
-              "answer": "Function ต้องเต็ม 5 — ไม่มี defect เหลือเลยทุกระดับ (minor/major/critical = 0) / UX-UI ผ่านที่ ≥3.5 แต่ต้องใช้ง่าย (2026-07-08)"
-            }
+            {"q": "ยืนยันหน้าจอ Tier 1 (ต้องเนี้ยบสุด) ที่ผมเสนอ: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, stock — ตรงกับจุดที่ปอนด์ feedback หนักสุดไหม?", "options": ["ตรงแล้ว ใช้ 4 หน้านี้เป็น Tier 1", "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)", "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"], "answer": "ยืนยัน — และสั่งเพิ่ม: เอาให้เนี๊ยบที่สุด มีโอกาสเสนองานครั้งเดียว ต้องดีที่สุด (2026-07-08)"},
+            {"q": "เป้าเวลาทำงานของ user มือใหม่ (BKV-1) ควรตั้งที่เท่าไรจึงถือว่า 'ใช้ง่ายพอ'? (ใช้วัดตอน UAT)", "options": ["เปิด PO ≤ 3 นาที / ออก invoice+ใบกำกับภาษี ≤ 5 นาที (ค่าที่ผมเสนอ)", "เข้มกว่านี้ (ระบุเวลา)", "ผ่อนกว่านี้ (ระบุเวลา)", "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"], "answer": "เชิงคุณภาพ: ใช้ง่ายโดยไม่มีคนสอน + เสร็จเร็ว + อ่านง่าย + ลดจำนวนการกด/จำนวนหน้าให้น้อยที่สุด (2026-07-08)"},
+            {"q": "เกณฑ์คะแนน UAT 'ดู professional + ใช้ง่าย' (BKV-5) ควรผ่านที่เท่าไร?", "options": ["เฉลี่ย ≥ 4 จาก 5 (ค่าที่ผมเสนอ)", "≥ 3.5 จาก 5", "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)", "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"], "answer": "Function ต้องเต็ม 5 — ไม่มี defect เหลือเลยทุกระดับ / UX-UI ผ่านที่ ≥3.5 แต่ต้องใช้ง่าย (2026-07-08)"}
           ],
-          "summary": "Wrote v2 design-brief and tied it to the real 10 prototype feedback points (prototype-feedback-reference.md): added section 3.1 mapping each of the 10 items to the mockup evidence required, making BKV-4/Gate-1 fully verifiable, and enriched the Thai tax-invoice spec (discount field, Thai baht text, 2 signature boxes). 5 measurable Business Key Values (first-time-user task speed & adoption). Q1 (feedback list) resolved via Dispatcher-supplied reference; 3 business questions remain, batched for Pond at Gate 1 — not blocking. Did not touch feature-level status/current_agent (UX/UI owns it this phase).",
+          "summary": "Wrote v2 design-brief and tied it to the real 10 prototype feedback points; 5 measurable BKVs; 3 questions batched for Pond. Did not touch feature-level status.",
           "overridden_by": null,
           "updated_at": "2026-07-08T12:10:00+07:00"
         },
@@ -124,51 +64,15 @@
           "phase": "design",
           "status": "WAITING_HUMAN_GATE",
           "gate_checklist": [
-            {
-              "item": "Design-system tokens are concrete values (hex, px, weights) — not adjectives",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Thai status-label map covers every enum (PO/ProductionOrder/Batch/Lot/QC/Shipment/Invoice/Customer/User) — no raw enum shown",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Print stylesheet spec for Thai tax invoice (structure, Thai baht text, 2 signatures, VAT snapshot, Superseded watermark)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Proposals stay inside antd + wrapper-layer constraints (ADR-008); new wrapper components spec'd with API",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Backlog vs this-round scope explicit, each spec item maps to a story/AC or tagged polish",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "mockup ครอบทุกหน้าหลัก (17 หน้า: login/home/customers/PO list-create-detail/stock+goods-receipt/BOM/production/QC/shipping/invoices+detail+print/trace/admin/dashboard)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "มี theme options ให้ปอนด์เลือก (3 directions + 1 recommended)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "index.html เปิดดูได้ (self-contained, inline CSS, no CDN) — verified via Playwright render",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's 10 prototype complaints addressed in mockups (readable PO lines+delete, stock search+goods-receipt, BOM UI, production auto-calc, QC incoming, customer tax fields, invoice detail+Thai tax print, trace single-search+Lot/Batch legend, humanized Thai statuses, responsive desktop+tablet)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Design-system tokens are concrete values (hex, px, weights) — not adjectives", "pass": true, "missing": null},
+            {"item": "Thai status-label map covers every enum — no raw enum shown", "pass": true, "missing": null},
+            {"item": "Print stylesheet spec for Thai tax invoice", "pass": true, "missing": null},
+            {"item": "Proposals stay inside antd + wrapper-layer constraints (ADR-008)", "pass": true, "missing": null},
+            {"item": "Backlog vs this-round scope explicit", "pass": true, "missing": null},
+            {"item": "mockup ครอบทุกหน้าหลัก (17 หน้า)", "pass": true, "missing": null},
+            {"item": "มี theme options ให้ปอนด์เลือก (3 directions + 1 recommended)", "pass": true, "missing": null},
+            {"item": "index.html เปิดดูได้ (self-contained) — verified via Playwright render", "pass": true, "missing": null},
+            {"item": "Pond's 10 prototype complaints addressed in mockups", "pass": true, "missing": null}
           ],
           "output_files": [
             "docs/design/erp-v2-ui-first/design-system.md",
@@ -192,43 +96,12 @@
             "docs/design/erp-v2-ui-first/mockups/admin.html"
           ],
           "questions_for_pond": [
-            {
-              "q": "เลือกโทนสี (theme) ไหนสำหรับทั้งระบบ? (ดู swatch + preview ใน index.html หัวข้อ 1) ผมแนะนำ Clean Clinical เพราะสื่อความสะอาด/มาตรฐาน GMP ของโรงงานเครื่องสำอาง คอนทราสต์ดีใช้ทั้งวัน",
-              "options": [
-                "Clean Clinical — teal #0E7C7B (แนะนำ ใช้ใน mockups อยู่แล้ว)",
-                "Warm Cosmetic — rose #B0546E",
-                "Corporate Blue — #1F5EDB",
-                "มีสีแบรนด์เฉพาะ ขอส่ง hex ให้"
-              ],
-              "answer": "A — Clean Clinical (teal) อนุมัติ"
-            },
-            {
-              "q": "มีไฟล์โลโก้จริงสำหรับหัวเว็บและหัวใบกำกับภาษีไหม? (ตอนนี้ mockup ใช้กล่อง placeholder 'LOGO')",
-              "options": [
-                "มี จะส่งไฟล์ให้",
-                "ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน"
-              ],
-              "answer": "ยังไม่มีไฟล์จริง — เตรียม placeholder logo + icon file (favicon/app icon) ให้เข้ากับ theme ไว้ก่อน"
-            },
-            {
-              "q": "ข้อมูลบริษัทผู้ออกเอกสารบนใบกำกับภาษี (ชื่อ/ที่อยู่/เลขผู้เสียภาษี) — ตอนนี้ใส่ตัวอย่าง 'บริษัท คอสเมดิก แฟคทอรี จำกัด'",
-              "options": [
-                "จะส่งข้อมูลจริงให้ใส่",
-                "ให้ Admin กรอกเองในหน้าตั้งค่าระบบ (มี field รองรับแล้ว)"
-              ],
-              "answer": "ให้ Admin กรอกเองในหน้าตั้งค่า"
-            },
-            {
-              "q": "ความหนาแน่นของ UI (density) — ผมตั้งปุ่ม/ช่องกรอกสูง 40px และแถวตาราง ~48px ให้กดง่ายบนแท็บเล็ต เหมาะกับพนักงานโรงงานไหม หรืออยากได้แน่นกว่านี้เพื่อเห็นข้อมูลต่อจอมากขึ้น?",
-              "options": [
-                "40px กำลังดี (แนะนำ)",
-                "อยากให้แน่นกว่านี้ (compact 32px)",
-                "อยากให้ใหญ่กว่านี้อีก"
-              ],
-              "answer": "ปอนด์ไม่ได้ตอบ — ใช้ 40px ตามแนะนำไปก่อน (รอยืนยัน)"
-            }
+            {"q": "เลือกโทนสี (theme) ไหนสำหรับทั้งระบบ?", "options": ["Clean Clinical — teal #0E7C7B (แนะนำ)", "Warm Cosmetic — rose #B0546E", "Corporate Blue — #1F5EDB", "มีสีแบรนด์เฉพาะ ขอส่ง hex ให้"], "answer": "A — Clean Clinical (teal) อนุมัติ"},
+            {"q": "มีไฟล์โลโก้จริงไหม?", "options": ["มี จะส่งไฟล์ให้", "ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน"], "answer": "ยังไม่มีไฟล์จริง — เตรียม placeholder logo + icon file ไว้ก่อน"},
+            {"q": "ข้อมูลบริษัทผู้ออกเอกสารบนใบกำกับภาษี", "options": ["จะส่งข้อมูลจริงให้ใส่", "ให้ Admin กรอกเองในหน้าตั้งค่าระบบ"], "answer": "ให้ Admin กรอกเองในหน้าตั้งค่า"},
+            {"q": "ความหนาแน่นของ UI (density) 40px ok ไหม?", "options": ["40px กำลังดี (แนะนำ)", "compact 32px", "ใหญ่กว่านี้"], "answer": "ปอนด์ไม่ได้ตอบ — ใช้ 40px ตามแนะนำไปก่อน (รอยืนยัน)"}
           ],
-          "summary": "Delivered v2 design system (concrete antd ConfigProvider tokens: IBM Plex Sans Thai, Clean Clinical teal palette, 40px density, breakpoints, component/print rules, full Thai status-label map) + 17 self-contained clickable HTML mockups covering every main page + index.html gallery with 3 theme options (Clean Clinical recommended). Directly fixes all 10 Pond prototype complaints (readable+deletable PO lines, stock search+goods receipt, BOM UI, production BOM auto-calc, QC incoming form, customer tax fields, invoice detail+Thai tax-invoice print with baht-text & 2 signatures, trace single-search + Lot/Batch legend, humanized Thai statuses, desktop+tablet responsive). Verified render via Playwright. Set feature to WAITING_HUMAN_GATE (Gate 1 = Pond approves the look). 4 taste questions batched for Pond.",
+          "summary": "Delivered v2 design system + 17 self-contained clickable HTML mockups + index gallery with 3 theme options. Fixes all 10 Pond prototype complaints. Verified via Playwright. Set WAITING_HUMAN_GATE.",
           "overridden_by": null,
           "updated_at": "2026-07-08T14:45:00+07:00"
         },
@@ -237,56 +110,16 @@
           "phase": "gate1-feedback-analysis",
           "status": "READY_FOR_UXUI",
           "gate_checklist": [
-            {
-              "item": "Gate 1 round-1 feedback (12 pages + system-level issues) fully absorbed into brief scope",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Status-journeys documented as state machines with transitions/owners/comment+trace rules (Customer, PO 2-track, Production, Shipping/Delivery Note, Purchase Request, Return, Invoice/Payment)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Cross-module continuity map complete (14 rows, source->downstream) — Pond's 'no broken journey' directive is verifiable",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "New roles (Sale Manager, Super User) + RUCDAA per-module model (6th 'Admin' level replaces separate capability layer per Pond)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Gate 1 round-2 criteria updated (100% pages + every status, per-dept dashboards, all customer statuses, cross-module continuity, responsive Must, product identity, notification center)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's answers folded in: Tier1 confirmed + one-shot pitch, minimize-clicks as first design principle, BKV-5 functional zero-defect + UX>=3.5, ESSENCE Hub System name, responsive=Must",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Product identity (ESSENCE Hub System) handed to UX/UI as requirement (login/header/title + placeholder logo/icon in theme teal)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "All 6 open business rules confirmed by Pond and reflected (material-shortage=warning-not-block, no low-stock default, Partially-Delivered+new-note, Rejected->Ready+Sale-decides, RUCDAA Admin bit, invoice from Confirmed)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Notification/Inbox designed: every cross-module handoff fires a role-scoped (Read-permission) noti, per-user acknowledge, top-right bell -> expand -> click = deep link + ack (status-journeys section 10)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Plain-Thai status summary for Pond delivered (PO 2-track + Delivery Note statuses, meaning/owner/where-shown, status x module matrix, noti routing)",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Gate 1 round-1 feedback (12 pages + system-level issues) fully absorbed into brief scope", "pass": true, "missing": null},
+            {"item": "Status-journeys documented as state machines (Customer, PO 2-track, Production, Shipping/DN, PR, Return, Invoice)", "pass": true, "missing": null},
+            {"item": "Cross-module continuity map complete (14 rows) — 'no broken journey' verifiable", "pass": true, "missing": null},
+            {"item": "New roles (Sale Manager, Super User) + RUCDAA per-module model (6th 'Admin' level)", "pass": true, "missing": null},
+            {"item": "Gate 1 round-2 criteria updated (100% pages + every status, dashboards, continuity, responsive, identity, notification)", "pass": true, "missing": null},
+            {"item": "Pond's answers folded in (Tier1, minimize-clicks, BKV-5 zero-defect, ESSENCE Hub name, responsive=Must)", "pass": true, "missing": null},
+            {"item": "Product identity handed to UX/UI as requirement", "pass": true, "missing": null},
+            {"item": "All 6 open business rules confirmed by Pond and reflected", "pass": true, "missing": null},
+            {"item": "Notification/Inbox designed (role-scoped noti, per-user ack, bell->deep link)", "pass": true, "missing": null},
+            {"item": "Plain-Thai status summary for Pond delivered", "pass": true, "missing": null}
           ],
           "output_files": [
             "docs/requirements/erp-v2-ui-first/brief.md",
@@ -294,62 +127,14 @@
             "docs/requirements/erp-v2-ui-first/status-summary-for-pond.md"
           ],
           "questions_for_pond": [
-            {
-              "q": "เมื่อเปิด PO แล้ววัตถุดิบขาด ควรให้ระบบทำอย่างไร? (มีผลต่อความต่อเนื่องของ journey — ผมตั้ง default ไว้แล้วเพื่อไม่ block UX/UI)",
-              "options": [
-                "[DEFAULT] บันทึก PO เป็นสถานะ 'รอวัตถุดิบ (Awaiting Materials)' + เปิด Purchase Request อัตโนมัติ แล้วปลดบล็อกเมื่อของเข้า",
-                "block ไม่ให้ save PO เลยจนกว่าวัตถุดิบจะพอ (แต่ยังส่ง Purchase Request ให้)",
-                "ให้ Sale เลือกเองต่อ PO ว่าจะค้างไว้หรือยกเลิก"
-              ],
-              "answer": "แค่มี WARNING ว่าวัตถุดิบอาจไม่พอ — ให้ user ตัดสินใจเองว่าจะสร้าง PO ไหม (ไม่ block) แต่ระบบส่ง Purchasing Request ให้แผนก Stock ไปสั่งซื้อ (2026-07-08) — folded: ตัด Awaiting Materials ออกจากเส้นบังคับ"
-            },
-            {
-              "q": "ใบจัดส่ง (Delivery Note) 1 ใบมีหลาย PO ถ้าบาง PO ถูก Reject/เลื่อน สถานะ 'ระดับใบ' ควรเป็นแบบไหน?",
-              "options": [
-                "[DEFAULT] ใบ = 'ส่งบางส่วน (Partially Delivered)' แสดง breakdown ราย PO และยังไม่ปิดจนเคลียร์ครบ",
-                "ใบยังเป็น In-Route จนกว่าทุก PO จะจบ",
-                "แตกใบใหม่อัตโนมัติสำหรับ PO ที่เหลือ"
-              ],
-              "answer": "แสดงเป็น Partially Delivered และ PO ที่ถูกเลื่อนสามารถนำไปสร้างใบจัดส่งใหม่ได้ (2026-07-08) — folded"
-            },
-            {
-              "q": "PO ที่ลูกค้าปฏิเสธตอนส่ง (Rejected) ควรวิ่งกลับไปไหน?",
-              "options": [
-                "[DEFAULT] กลับไป Production = Ready to Delivery + แจ้ง Sale",
-                "ไปที่ Sale ให้ตัดสินใจก่อน (ติดต่อลูกค้า/ยกเลิก)",
-                "ยกเลิก PO ทันที (ต้องเปิดใหม่)"
-              ],
-              "answer": "Production = Ready to Delivery + แจ้ง Sale — และให้ Sale ตัดสินใจก่อน (ติดต่อลูกค้า/ยกเลิก) (2026-07-08) — folded"
-            },
-            {
-              "q": "เกณฑ์ 'ใกล้หมด' ของวัตถุดิบ config ต่อตัวได้ (% หรือจำนวน) — ถ้า Admin ไม่ตั้งค่า ควร default เป็นอะไร?",
-              "options": [
-                "[DEFAULT] เตือนที่ 10% ของยอดคงเหลือ",
-                "บังคับต้องตั้งค่าตอนเพิ่มวัตถุดิบ (ไม่มี default)",
-                "ไม่เตือนจนกว่าจะตั้งค่าเอง"
-              ],
-              "answer": "ไม่เตือนจนกว่าจะตั้งค่าเอง (no default threshold) (2026-07-08) — folded"
-            },
-            {
-              "q": "สิทธิ์บางอย่างเป็น 'ความสามารถพิเศษ' ที่เกินกรอบ RUCDA ราย module (reassign ลูกค้า, archive trace, ปลด Blacklist, force เปลี่ยนสถานะ) — จะจัดการอย่างไร?",
-              "options": [
-                "[DEFAULT] มี capability layer แยกนอกเหนือ RUCDA ผูกกับ role (เช่น Sale Manager, Super User, System Admin)",
-                "ยัดทุกอย่างให้เป็นสิทธิ์ Approve ของ module ที่เกี่ยวข้อง",
-                "ให้เฉพาะ System Admin ทำได้ทั้งหมด (ไม่แยก Sale Manager/Super User)"
-              ],
-              "answer": "เพิ่ม permission ที่ 6: \"Admin\" ต่อจาก Read, Update, Create, Delete, Approve (RUCDAA) — ใช้จัดการ case พิเศษ (reassign, archive, ปลด Blacklist, force เปลี่ยนสถานะ) (2026-07-08) — folded: เลิกใช้ capability layer แยก"
-            },
-            {
-              "q": "ออกใบแจ้งหนี้ได้ 'ตลอดเวลา' หมายถึงเร็วสุดตั้งแต่ stage ไหนของ PO?",
-              "options": [
-                "[DEFAULT] ตั้งแต่ PO = Confirmed ขึ้นไป",
-                "ได้ตั้งแต่ Draft เลย (ก่อนยืนยัน PO)",
-                "ได้ต่อเมื่อ Delivered แล้วเท่านั้น"
-              ],
-              "answer": "ตั้งแต่ PO = Confirmed (= ส่งไปที่การผลิตแล้ว) ก็ออก invoice ได้เลย (2026-07-08) — folded"
-            }
+            {"q": "เมื่อเปิด PO แล้ววัตถุดิบขาด ควรให้ระบบทำอย่างไร?", "options": ["[DEFAULT] Awaiting Materials + auto PR", "block ไม่ให้ save", "ให้ Sale เลือกเอง"], "answer": "WARNING ไม่บล็อก + ส่ง Purchasing Request ให้ Stock (2026-07-08) — folded"},
+            {"q": "ใบจัดส่ง 1 ใบหลาย PO ถ้าบาง PO Reject/เลื่อน สถานะระดับใบ?", "options": ["[DEFAULT] Partially Delivered", "In-Route จนจบ", "แตกใบใหม่อัตโนมัติ"], "answer": "Partially Delivered + PO เลื่อนสร้างใบใหม่ได้ (2026-07-08) — folded"},
+            {"q": "PO Rejected ตอนส่ง กลับไปไหน?", "options": ["[DEFAULT] Ready to Delivery + แจ้ง Sale", "Sale ตัดสินใจก่อน", "ยกเลิกทันที"], "answer": "Ready to Delivery + แจ้ง Sale ให้ตัดสินใจ (2026-07-08) — folded"},
+            {"q": "เกณฑ์ใกล้หมด ถ้าไม่ตั้งค่า default?", "options": ["[DEFAULT] 10%", "บังคับตั้งค่า", "ไม่เตือนจนกว่าตั้งค่า"], "answer": "ไม่เตือนจนกว่าตั้งค่าเอง (2026-07-08) — folded"},
+            {"q": "สิทธิ์พิเศษเกิน RUCDA จัดการอย่างไร?", "options": ["[DEFAULT] capability layer แยก", "ยัดเป็น Approve", "เฉพาะ System Admin"], "answer": "เพิ่ม permission ที่ 6 'Admin' (RUCDAA) (2026-07-08) — folded"},
+            {"q": "ออกใบแจ้งหนี้เร็วสุดตั้งแต่ stage ไหน?", "options": ["[DEFAULT] Confirmed", "Draft", "Delivered"], "answer": "ตั้งแต่ PO=Confirmed (2026-07-08) — folded"}
           ],
-          "summary": "Absorbed Gate-1 round-1 feedback into an expanded brief + authored status-journeys.md (7 state machines + 14-row cross-module continuity map + RUCDAA roles). FOLLOW-UP (2026-07-08): folded all 6 Pond confirmations into brief.md + status-journeys.md — 2 differ from my defaults: (a) material shortage = WARNING not block (removed 'Awaiting Materials' forced state; PO proceeds, auto Purchase Request to Stock), (b) low-stock threshold has NO default (no alert until configured per material); plus Partially-Delivered + postponed->new note, Rejected->Ready-to-Delivery+Sale decides, RUCDA->RUCDAA (6th 'Admin' bit replaces capability layer), invoice from Confirmed. Added Notification/Inbox (status-journeys section 10): every cross-module handoff fires a role-scoped noti (visibility = who has Read on target module), per-user acknowledge, top-right bell -> expand list -> click item = deep link to the continue-work page + acknowledge that item; each of the 14 continuity rows mapped to target module/roles/deep-link. Created status-summary-for-pond.md (plain Thai): all PO statuses (fulfilment + billing) and Delivery Note statuses with meaning/owner/where-shown + status x module matrix + noti routing, for Pond's direct review. Did not touch feature-level status (UX/UI owns it).",
+          "summary": "Authored status-journeys.md (7 state machines + 14-row continuity + RUCDAA) and folded all 6 Pond confirmations; added Notification/Inbox + deep link; created status-summary-for-pond.md. Handoff READY_FOR_UXUI.",
           "overridden_by": null,
           "updated_at": "2026-07-08T17:35:00+07:00"
         },
@@ -358,66 +143,18 @@
           "phase": "design-r2",
           "status": "WAITING_HUMAN_GATE",
           "gate_checklist": [
-            {
-              "item": "Product identity: ESSENCE Hub System name on login/header/browser-title + placeholder logo + favicon/app icon (inline SVG, theme teal) on every page",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Responsive = Must on every page — real CSS media queries desktop(>=992)/tablet(576-991)/mobile(<576) with hamburger drawer + mobile bottom tab-bar; responsive.html device demo; verified via Playwright at 1440/1024/768/390/375",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "100% page coverage: 23 mockups + index (login, home[dedup user], 7-dept dashboard+switcher, customers[5-status]+customer-detail[contacts/notes/reassign/PO-history/search], po-list/po-create/po-detail[2-track], stock, purchase-request, supplier, bom, production, qc, return, shipping, delivery-note, invoices, invoice-detail, invoice-print, trace, settings)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Every Customer status mocked (Lead/Active/Inactive/Disabled/Blacklist) — humanized Thai, no raw enum",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "All status-journeys states shown with StatusFlowBar + TraceTimeline (PO 2-track, Production 5+delay, Delivery Note 5+partial, Purchase Request, Return, Invoice overdue)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Cross-module continuity 14 rows shown source+destination (C3 PR on po-create+purchase-request+prod-dash, C8 prod->shipping, C9/C10 DN reconcile+reject->Sale, C11 overdue, C12 receipt->lot, C13 return stock-adjust, C1/C2/C14 customer lifecycle+reassign)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "New status-label maps (Customer/PO-fulfilment/PO-billing/Production/DeliveryNote/PurchaseRequest/Return) added to design-system.md; no raw enum anywhere",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Minimize-clicks reflected: single-page PO form, inline status-changer with comment, smart defaults (price from BOM/lot FIFO/supplier from lot), global header search",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Thai tax invoice fields complete (issuer from settings, tax id, VAT7%, discount, baht-text, 2 signatures)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "RUCDA matrix per module + 6th 'Admin' column (per Pond) + roles unlimited + company profile in settings",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Pond's 6 mid-task corrections applied: (1) material-short = warning not block + 'สร้าง PO ต่อ' + auto-PR, (2) low-stock threshold no default = 'ยังไม่ตั้งเกณฑ์เตือน', (3) DN partial + 'create new DN from pending POs', (4) reject notifies Sale to decide, (5) RUCDA 6th Admin column, (6) invoice from PO=Confirmed",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "index.html grouped by department with per-page 'fixes feedback #' notes + theme-A-approved banner + confirm-questions; self-contained (inline CSS/SVG, no CDN); admin.html round-1 orphan removed",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Product identity: ESSENCE Hub System name + placeholder logo + favicon (inline SVG, theme teal) on every page", "pass": true, "missing": null},
+            {"item": "Responsive = Must on every page — media queries desktop/tablet/mobile + hamburger + mobile tab-bar; verified via Playwright", "pass": true, "missing": null},
+            {"item": "100% page coverage: 23 mockups + index", "pass": true, "missing": null},
+            {"item": "Every Customer status mocked (Lead/Active/Inactive/Disabled/Blacklist) — humanized Thai", "pass": true, "missing": null},
+            {"item": "All status-journeys states shown with StatusFlowBar + TraceTimeline", "pass": true, "missing": null},
+            {"item": "Cross-module continuity 14 rows shown source+destination", "pass": true, "missing": null},
+            {"item": "New status-label maps added to design-system.md; no raw enum anywhere", "pass": true, "missing": null},
+            {"item": "Minimize-clicks reflected (single-page PO form, inline status changer, smart defaults, global search)", "pass": true, "missing": null},
+            {"item": "Thai tax invoice fields complete", "pass": true, "missing": null},
+            {"item": "RUCDA matrix per module + 6th 'Admin' column + roles unlimited + company profile", "pass": true, "missing": null},
+            {"item": "Pond's 6 mid-task corrections applied", "pass": true, "missing": null},
+            {"item": "index.html grouped by department; self-contained; admin.html orphan removed", "pass": true, "missing": null}
           ],
           "output_files": [
             "docs/design/erp-v2-ui-first/design-system.md",
@@ -447,42 +184,45 @@
             "docs/design/erp-v2-ui-first/mockups/responsive.html"
           ],
           "questions_for_pond": [
-            {
-              "q": "Logo/แบรนด์: ตอนนี้ใช้ placeholder (สัญลักษณ์หยดน้ำ teal + ชื่อ ESSENCE Hub System) เป็น logo + favicon/app icon — โอเคใช้ไปก่อนไหม หรือมีไฟล์โลโก้จริงจะส่งให้?",
-              "options": [
-                "ใช้ placeholder นี้ไปก่อน",
-                "มีไฟล์โลโก้จริง จะส่งให้"
-              ],
-              "answer": "ใช้ placeholder ไปก่อน (2026-07-08)"
-            },
-            {
-              "q": "Click budget: ยืนยันเป้า เปิด PO <= 10 คลิก / ออกใบแจ้งหนี้ <= 6 คลิก (ใช้วัด UAT) ตามนี้ไหม?",
-              "options": [
-                "ใช้ตามนี้",
-                "ปรับตัวเลข (ระบุ)"
-              ],
-              "answer": "ปอนด์ถามกลับว่า \"เร็วสุดแล้วใช่มั้ย\" — Dispatcher ชี้แจง: ตัวเลขเป็นเพดานสูงสุดสำหรับวัด UAT, flow จริงใน mockup ออกแบบให้น้อยกว่านั้น (PO happy path ~7-8 คลิก, invoice ~4-5) — ใช้เพดาน ≤10/≤6 ไปก่อน (2026-07-08)"
-            },
-            {
-              "q": "รอบ 'ลูกค้าประจำ/ห่างหาย' ค่าเริ่มต้น 3 เดือน (ปรับต่อลูกค้าได้ 1/3/6/8) ยืนยันไหม?",
-              "options": [
-                "ยืนยัน 3 เดือน",
-                "เปลี่ยนค่าเริ่มต้น (ระบุ)"
-              ],
-              "answer": "ยืนยัน 3 เดือน — อาจเปลี่ยนทีหลัง (ต้อง config ได้ตามที่ออกแบบไว้) (2026-07-08)"
-            },
-            {
-              "q": "ความครบถ้วน: มีหน้า/สถานะไหนอยากเห็นเพิ่มก่อนอนุมัติหน้าตาและเริ่ม implement ไหม?",
-              "options": [
-                "ครบแล้ว อนุมัติหน้าตา",
-                "ขอเพิ่ม/แก้ (ระบุ)"
-              ],
-              "answer": "ปอนด์มอบให้ PO เป็นคน review ความครบถ้วนแทน — ขอให้ละเอียดที่สุด (2026-07-08)"
-            }
+            {"q": "Logo/แบรนด์: ใช้ placeholder (หยดน้ำ teal + ชื่อ ESSENCE Hub System) ไปก่อนไหม?", "options": ["ใช้ placeholder นี้ไปก่อน", "มีไฟล์โลโก้จริง จะส่งให้"], "answer": "ใช้ placeholder ไปก่อน (2026-07-08)"},
+            {"q": "Click budget: เปิด PO <= 10 คลิก / ออกใบแจ้งหนี้ <= 6 คลิก ตามนี้ไหม?", "options": ["ใช้ตามนี้", "ปรับตัวเลข (ระบุ)"], "answer": "ใช้เพดาน ≤10/≤6 (flow จริงน้อยกว่า: PO ~7-8, invoice ~4-5) (2026-07-08)"},
+            {"q": "รอบ 'ลูกค้าประจำ/ห่างหาย' ค่าเริ่มต้น 3 เดือน ยืนยันไหม?", "options": ["ยืนยัน 3 เดือน", "เปลี่ยนค่าเริ่มต้น (ระบุ)"], "answer": "ยืนยัน 3 เดือน — config ได้ (2026-07-08)"},
+            {"q": "ความครบถ้วน: มีหน้า/สถานะไหนอยากเห็นเพิ่มก่อนอนุมัติไหม?", "options": ["ครบแล้ว อนุมัติหน้าตา", "ขอเพิ่ม/แก้ (ระบุ)"], "answer": "ปอนด์มอบให้ PO เป็นคน review ความครบถ้วนแทน — ขอให้ละเอียดที่สุด (2026-07-08)"}
           ],
-          "summary": "Round-2 rebuild (one-shot pitch). Rebranded to ESSENCE Hub System (inline-SVG logo+favicon, name on login/header/title). 23 self-contained clickable mockups + index gallery grouped by department with per-page feedback-mapping notes. Real responsive on every page (desktop/tablet/mobile: hamburger drawer + mobile bottom tab-bar) + responsive.html device demo — verified via Playwright at 1440/1024/768/390/375. Covers all 12 Gate-1 feedback areas: home dedupe, 7 per-dept dashboards+switcher, customer 5-status+unlimited-contacts+notes+sale-reassign+PO-history/search, PO summary(2-track)+create(suggest/material-check/PR/sell-raw/editable-price)+detail(StatusFlowBar+TraceTimeline), stock add-material+UOM+per-material-threshold+dual-price+receipt, BOM builder(cost default+sell mandatory), production(sort/search by delivery+PotentialDelay+5-status+inline cross-notify Sale/Stock+trace), QC incoming, Supplier(lot-prefix+multi-supplier+upload), Return(lot->supplier+stock-adjust+mandatory reason), Shipping queue + multi-PO Delivery Note(partial reconcile+reject->Sale), Invoice(from Confirmed+overdue+PO-stage)+Thai tax-invoice print, Trace(all-module+archive SuperUser), Settings RUCDA+Admin 6-col+unlimited roles+company profile. Cross-module continuity 14/14 shown both ends + trace. Applied all 6 of Pond's mid-task corrections. Extended design-system.md (ADDENDUM R2: identity, responsive tiers, new status maps, 10 new wrapper-component API specs, cross-module UI rules). No dev server used (prototype deleted); no src/ touched. Set feature WAITING_HUMAN_GATE (Gate 1 round 2 = Pond approves the look). 4 confirm-questions batched.",
+          "summary": "Round-2 rebuild (one-shot pitch). Rebranded to ESSENCE Hub System. 23 self-contained clickable mockups + index gallery. Real responsive every page. Covers Gate-1 round-1 feedback areas + applied Pond's 6 mid-task corrections. Set WAITING_HUMAN_GATE. NOTE: built before Pond's round-2 feedback -> superseded by po-mockup-review.md round-3 action list.",
           "overridden_by": null,
           "updated_at": "2026-07-08T17:20:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "gate1-r2-analysis",
+          "status": "READY_FOR_UXUI",
+          "gate_checklist": [
+            {"item": "Gate 1 round-2 feedback (13 categories) fully absorbed into brief.md (new section 2.3) + Gate-1 criteria updated", "pass": true, "missing": null},
+            {"item": "status-journeys.md updated to Pond's revised flows: Production ends at Ready-to-Deliver (removed Delivered) + QC step + QC-fail->InProgress feedback loop + Hold->edit PO->resume (raise Sale)", "pass": true, "missing": null},
+            {"item": "PO cancel any-case + Cancelled->Draft reopen with full trace; material-shortage no longer a blocking state (warning-only)", "pass": true, "missing": null},
+            {"item": "Shipping/Delivery Note redesign (create-note page vs per-order printable note; Reject->Ready+raise Sale; Postpone flag+date in queue)", "pass": true, "missing": null},
+            {"item": "Purchase Request lifecycle redesign (manual direct-create; Fulfilled auto from goods-receipt; Acknowledge/Close manual)", "pass": true, "missing": null},
+            {"item": "BOM cost rule (max active-supplier price + user override + snapshot on save) + Customer follow-up flag/comment documented", "pass": true, "missing": null},
+            {"item": "Brief scope expanded (dashboard drill-down+pagination+auto-refresh 15s keep-context, PO 3-date search, price 0, stock goods-receipt+PR close, supplier price matrix+active/inactive, settings 5 screens, trace field-level audit+date range+entity)", "pass": true, "missing": null},
+            {"item": "Full mockup-completeness review of all 24 mockups vs r2 feedback + journeys + noti/deep-link (po-mockup-review.md) with per-page verdicts and prioritized UX/UI round-3 action list (P0/P1/P2)", "pass": true, "missing": null},
+            {"item": "Ambiguous flows raised to Pond with options + proposed defaults (not blocking; UX/UI uses defaults)", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/brief.md",
+            "docs/requirements/erp-v2-ui-first/status-journeys.md",
+            "docs/requirements/erp-v2-ui-first/po-mockup-review.md"
+          ],
+          "questions_for_pond": [
+            {"q": "ลูกค้า 'ต้องติดตาม' — เป็น flag ซ้อนสถานะเดิม (ทำติดธงบน Active/Inactive ได้) หรือเป็นสถานะที่ 6 แยกจริง?", "options": ["[DEFAULT] flag ซ้อน + comment (ทำได้ทุกสถานะ)", "สถานะที่ 6 แยกจริง (mutually exclusive)"], "answer": null},
+            {"q": "PO ที่ cancel แล้วเปิดใหม่ (Cancelled->Draft) — เลขที่ PO เดิมคงไว้ไหม?", "options": ["[DEFAULT] คงเลข PO เดิม + trace lifecycle (cancelled->reopened)", "ออกเลขใหม่ ผูกอ้างอิงเลขเดิม", "ออกเลขใหม่แบบ revision suffix (-R2)"], "answer": null},
+            {"q": "'แก้ไข PO' ในเคส Hold — แก้อะไรได้บ้าง และใครแก้?", "options": ["[DEFAULT] Sale แก้ จำนวน/สินค้า/ราคา/วันส่ง ได้ (trace ทุกช่อง)", "แก้ได้เฉพาะจำนวน/วันส่ง (ไม่แตะสินค้า/ราคา)", "อื่น ๆ (ระบุ)"], "answer": null},
+            {"q": "BOM ราคาทุน snapshot — ถ้าราคา supplier เปลี่ยนภายหลัง สูตรเดิมใช้ snapshot จนกว่าจะ save ใหม่ใช่ไหม + ควรมี badge เตือน 'ราคาทุนอาจล้าสมัย' ไหม?", "options": ["[DEFAULT] ใช้ snapshot จนกว่า save ใหม่ + มี badge เตือน", "ใช้ snapshot จนกว่า save ใหม่ ไม่ต้องมี badge", "คำนวณใหม่อัตโนมัติทุกครั้ง (ไม่ snapshot)"], "answer": null},
+            {"q": "ใบจัดส่ง (Delivery Note) — 1 ใบรวมได้หลาย order/PO แล้ว print แยกสลิปราย order เพื่อให้ลูกค้าเซ็น หรือ 1 ใบ = 1 order?", "options": ["[DEFAULT] 1 ใบรวมหลาย PO ได้ตอนสร้าง แต่ print เป็นสลิปราย order", "1 ใบ = 1 order เสมอ", "อื่น ๆ (ระบุ)"], "answer": null}
+          ],
+          "summary": "Absorbed Gate-1 round-2 feedback (13 categories) into brief.md (added section 2.3 + expanded scope + updated Gate-1 criteria) and rewrote status-journeys.md to Pond's revised flows: Production now ends at 'Ready to Deliver' (Delivered belongs to Shipping) with an explicit QC step, QC-fail->back-to-InProgress with mandatory feedback, and Hold->edit-PO->resume raising to Sale; PO can be cancelled in any state and reopened Cancelled->Draft with full trace; material shortage is warning-only (no blocking state); Shipping/DN redesigned (shipping page creates notes from Ready POs searchable by PO/customer, DN page prints per-order slips, Reject->Ready+raise Sale, Postpone flag+date stays in queue); PR can be created directly and auto-fulfils from goods receipt; added BOM cost rule (max active-supplier price + override + snapshot) and Customer 'follow-up' flag+comment. THEN performed a full mockup-completeness review of all 24 mockups (po-mockup-review.md): no page missing entirely, but the r2 mockups predate r2 feedback so several flows are outdated — produced per-page verdicts and a prioritized UX/UI round-3 action list (P0: fix production flow / remove cancelled 'Awaiting Materials' state everywhere / remove goods-receipt from supplier / add PO cancel+reopen; P1: stock goods-receipt screen, supplier active-inactive+price-matrix, customer follow-up control, PR direct-create, dashboard auto-refresh+drill-down, BOM snapshot, trace field-audit+date-range+entity, settings 5 screens, shipping customer-search, PO 3-date search; P2: real notification panel, home dedupe, qc batch-fail loop, VAT effective-date, list pagination/empty/loading). 5 ambiguous flows raised to Pond with options+defaults (not blocking). Handoff: feature -> READY_FOR_UXUI for round-3 build.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T19:10:00+07:00"
         }
       ]
     }
