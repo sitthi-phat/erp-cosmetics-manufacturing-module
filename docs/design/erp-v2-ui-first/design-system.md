@@ -268,4 +268,127 @@ These wrap antd `Tag/Breadcrumb/Button/Empty/Statistic/Input.Search` — no new 
 
 **This round (maps to ECP stories):** all core pages restyled to this system (ECP-043 consistency, ECP-044 responsive desktop+tablet); Thai status labels everywhere (ECP-004/006/etc.); readable PO lines (ECP-004); BOM UI (ECP-039); production auto-calc layout (ECP-013); QC incoming (ECP-017); customer tax fields (ECP-001); invoice detail (ECP-040) + Thai tax-invoice print (ECP-041/042); trace single-search + Lot/Batch legend (ECP-014); stock search + goods receipt (ECP-007/008); dashboards per role (ECP-027–033); onboarding home (ECP-034/035).
 
-**Backlog (polish / not this round):** full phone (<576) layouts; dark mode; per-user theme; animated transitions; CSV/print of every list; advanced dashboard charting; RTL. Tagged "polish" in page specs.
+**Backlog (polish / not this round):** dark mode; per-user theme; animated transitions; CSV/print of every list; advanced dashboard charting; RTL. Tagged "polish" in page specs.
+
+---
+
+# ADDENDUM — Round 2 (Gate 1 rework, 2026-07-08)
+
+Theme A (Clean Clinical teal) approved. This addendum extends the system for the Gate-1-round-2
+requirements in `pond-gate1-feedback.md` + `status-journeys.md` + `brief.md §2.1`. Nothing above is rewritten.
+
+## R2.1 Product identity — ESSENCE Hub System
+
+- **System name** "ESSENCE Hub System" appears on: login, app header brand, and `<title>` of every page.
+- **Logo / app mark (placeholder, inline SVG — no external file):** teal rounded-square (gradient `#10322F→#0E7C7B`),
+  white essence droplet + wordmark "ESSENCE / Hub System" beside it. Mark alone = favicon/app icon.
+  - Favicon delivered as inline SVG data-URI `<link rel="icon">` (Engineer: ship `public/favicon.svg` + PNG fallbacks 32/180).
+  - SVG source of truth: any mockup `<head>` + sidebar `.brand`.
+
+## R2.2 Minimize-clicks rules (brief §2.1 / BKV-1)
+
+- **Click budget:** open PO ≤ 10 clicks, issue invoice ≤ 6 clicks [DEFAULT — awaiting Pond number].
+- Single-page forms (no forced wizard); **inline status change + comment** (Popover from the status badge, never a new page).
+- **Smart defaults filled, user only reviews:** price from BOM sell-price, lot FIFO, supplier from lot, VAT from VATConfig, low-stock threshold suggested.
+- Global command/search in header (jump to PO/customer/lot/invoice) — reduces navigation hops.
+
+## R2.3 Responsive — Must, every page (3 tiers)
+
+| Range | Layout |
+|---|---|
+| **Desktop ≥992** | Sider 240 visible; multi-column grids; tables full. |
+| **Tablet 576–991** | Sider → hamburger drawer; `grid2/grid3/split → 1–2 col stacked`; tables scroll inside `.tblwrap`; sticky primary action. |
+| **Mobile <576** | Everything 1 col; stat grid 1 col; **top hamburger + bottom tab-bar** for the 4 primary role actions; tables wrap in horizontal-scroll or collapse to stacked "record cards"; page title truncates; footerbar buttons full-width stacked. |
+
+- Implement with antd `Grid`/`useBreakpoint` + CSS media queries in the wrapper layout. Mockups use real CSS media queries; `responsive.html` shows a side-by-side device demo.
+
+## R2.4 New status-label maps (Thai — extend §7, humanized, never raw enum)
+
+### Customer lifecycle
+| enum | ป้ายไทย | badge |
+|---|---|---|
+| Lead | ผู้สนใจ (ข้อมูลยังไม่ครบ) | neutral |
+| Active | ลูกค้าประจำ | success |
+| Inactive | ห่างหาย | warning |
+| Disabled | ปิดใช้งาน | neutral |
+| Blacklist | บัญชีดำ | error |
+
+*Active/Inactive computed by scheduler from per-customer "regular" window (1/3/6/8 เดือน, default 3) — badge tooltip explains why.*
+
+### PO — Fulfilment track
+| Draft | ร่าง | neutral |
+| AwaitingMaterials | รอวัตถุดิบ | warning |
+| Confirmed | ยืนยันแล้ว | processing |
+| InProduction | กำลังผลิต | processing |
+| ReadyToDeliver | พร้อมจัดส่ง | processing |
+| InDelivery | กำลังจัดส่ง | processing |
+| Delivered | ส่งถึงแล้ว | success |
+| Cancelled | ยกเลิก | error |
+
+### PO — Billing track (shown alongside fulfilment)
+| NotInvoiced | ยังไม่วางบิล | neutral |
+| Invoiced | วางบิลแล้ว | processing |
+| Paid | ชำระแล้ว | success |
+| Overdue | เกินกำหนดชำระ (+N วัน) | error |
+
+### Production
+| Received | รับงานแล้ว | neutral |
+| InProgress | กำลังผลิต | processing |
+| Hold | พักงาน | warning |
+| ReadyToDelivery | พร้อมส่งมอบ | processing |
+| Delivered | ส่งมอบแล้ว | success |
+| *(overlay)* PotentialDelay | เสี่ยงล่าช้า | error (badge overlay, not a state) |
+
+### Delivery Note / Shipping
+| Received | รับจากฝ่ายผลิต | neutral |
+| InRoute | กำลังนำส่ง | processing |
+| Delivered | ส่งถึงแล้ว | success |
+| Rejected | ถูกปฏิเสธ | error |
+| Postponed | เลื่อนส่ง | warning |
+| PartiallyDelivered | ส่งบางส่วน | warning |
+
+### Purchase Request
+| Open | เปิดคำขอ | warning |
+| Acknowledged | รับทราบแล้ว | processing |
+| Fulfilled | ของเข้าครบ | success |
+| Closed | ปิดคำขอ | neutral |
+| Cancelled | ยกเลิก | error |
+
+### Return
+| Draft | ร่าง | neutral |
+| Returned | คืนแล้ว (ตัดสต็อก) | processing |
+| Closed | ปิดรายการ | success |
+
+## R2.5 New wrapper components (spec for Engineer — all wrap antd)
+
+- `<StatusFlowBar steps current />` — horizontal lifecycle bar (done/current/upcoming), wraps antd `Steps`. On PO/Production/Shipping/PR detail. Mobile → vertical.
+- `<TraceTimeline entries />` — vertical audit log: actor · from→to · timestamp · reason/comment. wraps `Timeline`. Every status change appends one; read-only, always on detail pages.
+- `<StatusChanger badge options onChange requireComment notifyTargets />` — inline change: click badge → Popover with next-status options + comment box (mandatory where flagged) + optional cross-notify target. wraps `Popover+Select+Input`. Core of minimize-clicks.
+- `<CrossNotifyBadge to reason />` — "แจ้ง Sale/Stock" chip with arrow; wraps `Tag`.
+- `<ContactList value onAdd />` — repeatable customer-contact rows (name/role/phone/email, primary flag), unlimited. wraps `List+Form.List`.
+- `<NoteTimeline entries onAdd />` — customer note/comment feed with author+time. wraps `Timeline+Input`.
+- `<RucdaMatrix modules value />` — Settings grid: menu-module rows × R/U/C/D/A checkbox columns + capability-flags section. wraps `Table+Checkbox`.
+- `<FileUploadRow />` — supplier receipt/document upload. wraps `Upload`.
+- `<OverdueBadge days />` — red pill "เกินกำหนด +N วัน". wraps `Tag`.
+- `<DeptDashboardSwitcher roles active />` — chips to switch department dashboard for multi-role users. wraps `Segmented`.
+
+## R2.6 Cross-module continuity in UI (status-journeys §8 — 14 rows)
+
+Every status change affecting another module is **visible on both ends** + leaves a trace entry:
+origin page shows a `CrossNotifyBadge`/alert; destination page shows the incoming item with a back-link; both share the trace ref id.
+Mockups covering the 14 rows: `po-create` (C3 PR), `purchase-request` (C3/C4), `po-detail` (C5 tracks), `production` (C6 Hold notify, C7 delay, C8 ready→shipping), `delivery-note` (C9/C10 reconcile), `invoices`/`invoice-detail` (C11 overdue), `qc`/`supplier` (C12 receipt→lot), `return` (C13 stock adjust), `customer-detail` (C1/C2/C14 lifecycle+reassign).
+
+## R2.7 New roles / permission model
+
+- New roles: **Sale Manager** (reassign customer, team dashboard, unblock Disabled), **Super User** (archive trace, all-module trace) + 7 seed roles.
+- Settings uses **RUCDA per left-menu module** (Read/Update/Create/Delete/Approve) + **capability layer** for cross-RUCDA powers. Unlimited roles; users nested under a role.
+
+## R2.8 Scope split — Round 2
+
+**This round (all mocked):** identity/logo/favicon; responsive desktop+tablet+mobile every page; Home dedupe;
+7 department dashboards + switcher; customer 5-status + contacts + notes + sale assignment + PO history/search;
+PO summary+create(suggest/material-check/PR/sell-raw/editable-price)+2-track detail; stock add-material/UOM/threshold/dual-price/receipt;
+BOM builder; production sort/search/delay/5-status/cross-notify/trace; QC+Supplier+Return; shipping+multi-PO delivery note;
+invoice overdue+PO-stage+Thai tax print; trace all-module+archive; settings RUCDA+roles+company profile; Purchase Request.
+
+**Backlog (polish):** dark mode, dashboard charting library, offline, i18n beyond Thai, drag-drop BOM ordering, bulk CSV. Tagged "polish".

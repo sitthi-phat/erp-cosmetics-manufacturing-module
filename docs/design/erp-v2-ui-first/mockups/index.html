@@ -1,93 +1,68 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ERP v2 — Mockups Gallery</title><style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:#F4F6F8;color:#1F2933;line-height:1.55}
-.hero{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;padding:48px 40px}
-.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
-.hero h1{font-size:30px;margin-bottom:10px}
-.hero p{opacity:.9;max-width:720px}
-.hero .tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:13px;margin-bottom:18px}
-section{padding:36px 0}
-h2{font-size:22px;margin-bottom:6px}.sub{color:#52606D;margin-bottom:22px}
-.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.theme{background:#fff;border:1px solid #E4E7EB;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(16,25,40,.06)}
-.theme.rec{border:2px solid #0E7C7B;box-shadow:0 6px 20px rgba(14,124,123,.18)}
-.theme .prev{height:120px;display:flex}
-.theme .prev .side{width:64px}
-.theme .prev .body{flex:1;padding:14px;background:#F4F6F8}
-.theme .prev .bar{height:14px;border-radius:6px;margin-bottom:8px;background:#fff;border:1px solid #E4E7EB}
-.theme .prev .btn{height:26px;width:96px;border-radius:8px;color:#fff;font-size:12px;display:grid;place-items:center;margin-top:10px}
-.theme .info{padding:16px 18px}
-.theme .info h3{font-size:16px;display:flex;align-items:center;gap:8px}
-.theme .info .rectag{background:#E6F5EC;color:#1E7A44;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px}
-.theme .why{color:#52606D;font-size:13px;margin-top:8px}
-.swatch{display:flex;gap:6px;margin-top:12px}
-.swatch span{width:26px;height:26px;border-radius:6px;border:1px solid rgba(0,0,0,.08)}
+<title>ESSENCE Hub System — Mockups (Gate 1 รอบ 2)</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3Cpath%20d%3D'M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E"><style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:#F4F6F8;color:#1F2933;line-height:1.55}
+.hero{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;padding:44px 40px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+.hero .brand{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600;margin-bottom:16px}
+.hero h1{font-size:28px;margin-bottom:10px}.hero p{opacity:.9;max-width:760px}
+.tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:13px;margin-bottom:16px}
+section{padding:30px 0}h2{font-size:20px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+h2 .dot{width:12px;height:12px;border-radius:3px}.sub{color:#52606D;margin-bottom:18px;font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.pg{display:block;background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:18px;text-decoration:none;color:inherit;transition:.15s;box-shadow:0 1px 3px rgba(16,25,40,.06)}
+.pg{display:block;background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:16px;text-decoration:none;color:inherit;box-shadow:0 1px 3px rgba(16,25,40,.06);transition:.15s}
 .pg:hover{border-color:#0E7C7B;box-shadow:0 6px 16px rgba(14,124,123,.14);transform:translateY(-2px)}
-.pg .i{font-size:26px}
-.pg h3{font-size:15px;margin:10px 0 4px}
-.pg p{font-size:13px;color:#52606D}
-.pg .go{color:#0E7C7B;font-weight:600;font-size:13px;margin-top:10px;display:inline-block}
-.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;border-radius:10px;padding:14px 16px;margin-top:24px;font-size:14px}
-.q{background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:20px;margin-top:16px}
-.q b{color:#0E7C7B}
-footer{padding:30px 0;color:#7B8794;font-size:13px}
-@media(max-width:800px){.themes,.grid{grid-template-columns:1fr}}
+.pg .i{font-size:24px}.pg h3{font-size:15px;margin:8px 0 4px}.pg p{font-size:13px;color:#52606D;min-height:34px}
+.pg .fx{margin-top:10px;font-size:11px;background:#E6F4F3;color:#0B6360;border-radius:6px;padding:4px 8px;display:inline-block}
+.pg .go{color:#0E7C7B;font-weight:600;font-size:13px;margin-top:8px;display:inline-block}
+.banner{background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:18px 20px;margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.swatch{display:flex;gap:6px}.swatch span{width:26px;height:26px;border-radius:6px;border:1px solid rgba(0,0,0,.08)}
+.ok{background:#E6F5EC;color:#1E7A44;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px}
+.q{background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:18px;margin-top:14px}.q b{color:#0E7C7B}
+footer{padding:28px 0;color:#7B8794;font-size:13px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
 </style></head><body>
 <div class="hero"><div class="wrap">
- <span class="tag">ERP v2 · UI-First Rebuild · Gate 1 = ปอนด์อนุมัติหน้าตา</span>
- <h1>Mockups — ระบบ ERP โรงงานเครื่องสำอาง</h1>
- <p>ชุดหน้าจอตัวอย่างทั้งหมด (คลิกได้ทันที ไม่ต้องรันแอป) ออกแบบตาม design system กลาง แก้ตามฟีดแบ็คของปอนด์จาก prototype:
-  บรรทัดสินค้าอ่านออก, สถานะเป็นภาษาไทยไม่ใช่ enum ดิบ, มี BOM/QC ขาเข้า/ใบกำกับภาษีไทย, ใช้ง่ายสำหรับคนไม่เคยใช้ ERP</p>
+ <div class="brand"><svg viewBox="0 0 40 40" width="34" height="34" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/></svg> ESSENCE Hub System</div>
+ <span class="tag">Gate 1 · รอบ 2 · การเสนองานจริง — ครบ 100% ทุกหน้า/ทุกสถานะ</span>
+ <h1>Mockups — ระบบบริหารโรงงานเครื่องสำอาง</h1>
+ <p>ปรับตาม feedback ปอนด์ 12 หมวด + status journeys 7 สาย + cross-module continuity 14 แถว · responsive จริงทุกหน้า (desktop/tablet/mobile) · ทุกสถานะเป็นภาษาไทย มี trace เสมอ · เปิดคลิกได้ทันที ไม่ต้องรันแอป</p>
+ <div class="banner" style="background:rgba(255,255,255,.1);border:none;margin-top:18px">
+   <span class="ok">✓ Theme A — Clean Clinical (teal) อนุมัติแล้ว</span>
+   <div class="swatch"><span style="background:#10322F"></span><span style="background:#0E7C7B"></span><span style="background:#E6F4F3"></span><span style="background:#2E9E5B"></span><span style="background:#E0912F"></span><span style="background:#D64545"></span></div>
+   <span style="color:#fff;opacity:.85;font-size:13px">logo + favicon ออกแบบจากชื่อ ESSENCE Hub System (placeholder)</span>
+ </div>
 </div></div>
 
 <section><div class="wrap">
- <h2>1) เลือกโทนสี (Theme)</h2>
- <p class="sub">มี 3 ทางเลือก ทุกหน้าใช้ token ชุดเดียวกัน เปลี่ยนโทนได้ที่จุดเดียว — <b>Mockups ทั้งชุดใช้ธีมแนะนำ "Clean Clinical"</b></p>
- <div class="themes">
-  <div class="theme rec">
-    <div class="prev"><div class="side" style="background:#10322F"></div>
-     <div class="body"><div class="bar" style="width:70%"></div><div class="bar" style="width:100%"></div><div class="bar" style="width:85%"></div>
-      <div class="btn" style="background:#0E7C7B">ปุ่มหลัก</div></div></div>
-    <div class="info"><h3>Clean Clinical <span class="rectag">แนะนำ</span></h3>
-     <div class="why">สื่อความสะอาด/มาตรฐาน GMP ของโรงงานเครื่องสำอาง ดูเป็นแล็บ/คุณภาพ คอนทราสต์ดีใช้ได้ทั้งวัน</div>
-     <div class="swatch"><span style="background:#10322F"></span><span style="background:#0E7C7B"></span><span style="background:#E6F4F3"></span><span style="background:#2E9E5B"></span><span style="background:#E0912F"></span><span style="background:#D64545"></span></div>
-    </div></div><div class="theme ">
-    <div class="prev"><div class="side" style="background:#3A2230"></div>
-     <div class="body"><div class="bar" style="width:70%"></div><div class="bar" style="width:100%"></div><div class="bar" style="width:85%"></div>
-      <div class="btn" style="background:#B0546E">ปุ่มหลัก</div></div></div>
-    <div class="info"><h3>Warm Cosmetic </h3>
-     <div class="why">ใกล้ภาพลักษณ์แบรนด์ความงาม อบอุ่น แต่เสี่ยงดูไม่เป็นระบบโรงงาน + คอนทราสต์ตัวหนังสือต่ำกว่า</div>
-     <div class="swatch"><span style="background:#3A2230"></span><span style="background:#B0546E"></span><span style="background:#F7E9EE"></span><span style="background:#2E9E5B"></span><span style="background:#E0912F"></span><span style="background:#D64545"></span></div>
-    </div></div><div class="theme ">
-    <div class="prev"><div class="side" style="background:#152444"></div>
-     <div class="body"><div class="bar" style="width:70%"></div><div class="bar" style="width:100%"></div><div class="bar" style="width:85%"></div>
-      <div class="btn" style="background:#1F5EDB">ปุ่มหลัก</div></div></div>
-    <div class="info"><h3>Corporate Blue </h3>
-     <div class="why">ปลอดภัย คุ้นเคยแบบองค์กร แต่ดู generic ไม่มีเอกลักษณ์เฉพาะตัว</div>
-     <div class="swatch"><span style="background:#152444"></span><span style="background:#1F5EDB"></span><span style="background:#E8F0FE"></span><span style="background:#2E9E5B"></span><span style="background:#E0912F"></span><span style="background:#D64545"></span></div>
-    </div></div>
- </div>
- <div class="note">💡 โทนที่เห็นใน mockups คือ <b>Clean Clinical</b> หากปอนด์อยากลองโทนอื่น เปลี่ยนได้ที่ Gate 1 — Engineer สลับได้ที่ ConfigProvider จุดเดียว ไม่ต้องแก้ทุกหน้า</div>
-</div></section>
-
-<section style="background:#fff;border-top:1px solid #E4E7EB;border-bottom:1px solid #E4E7EB"><div class="wrap">
- <h2>2) หน้าจอทั้งหมด (17 หน้า)</h2>
- <p class="sub">คลิกเปิดดูได้เลย · เปิดบน desktop (1440) และย่อจอเป็น tablet (768) เพื่อดู responsive</p>
- <div class="grid">
-  <a class="pg" href="login.html"><div class="i">🔐</div><h3>เข้าสู่ระบบ</h3><p>หน้า login แบ่งจอ 2 ฝั่ง + แบรนด์</p><span class="go">เปิดดู →</span></a><a class="pg" href="home.html"><div class="i">🏠</div><h3>หน้าหลัก (Onboarding)</h3><p>การ์ดงานหลักตาม role + อธิบาย Lot/Batch สำหรับมือใหม่</p><span class="go">เปิดดู →</span></a><a class="pg" href="dashboard.html"><div class="i">📊</div><h3>แดชบอร์ด</h3><p>ภาพรวมตามส่วนงาน สลับมุมมอง role ได้</p><span class="go">เปิดดู →</span></a><a class="pg" href="customers.html"><div class="i">👥</div><h3>ลูกค้า</h3><p>รายชื่อ + ค้นหา + ฟอร์มเพิ่มลูกค้า (มีฟิลด์ใบกำกับภาษี)</p><span class="go">เปิดดู →</span></a><a class="pg" href="po-list.html"><div class="i">📄</div><h3>ใบสั่งซื้อ (รายการ)</h3><p>ตาราง PO + ฟิลเตอร์สถานะเป็นภาษาไทย</p><span class="go">เปิดดู →</span></a><a class="pg" href="po-create.html"><div class="i">➕</div><h3>เปิด PO ใหม่</h3><p>บรรทัดสินค้าอ่านง่าย ลบได้ + ตรวจสต็อกอัตโนมัติ</p><span class="go">เปิดดู →</span></a><a class="pg" href="po-detail.html"><div class="i">🔎</div><h3>รายละเอียด PO</h3><p>แถบ progress + รายการ + แบตช์ที่ผูก</p><span class="go">เปิดดู →</span></a><a class="pg" href="stock.html"><div class="i">🗄️</div><h3>สต็อกวัตถุดิบ</h3><p>ค้นหา + รับวัตถุดิบเข้าคลัง (Goods Receipt)</p><span class="go">เปิดดู →</span></a><a class="pg" href="bom.html"><div class="i">🧬</div><h3>สูตรการผลิต (BOM)</h3><p>เลือกสินค้า → ดู/แก้สูตร + คงเหลือวัตถุดิบ</p><span class="go">เปิดดู →</span></a><a class="pg" href="production.html"><div class="i">🏭</div><h3>บันทึกการผลิต</h3><p>คำนวณวัตถุดิบจาก BOM ให้ review + เลือกล็อต FIFO</p><span class="go">เปิดดู →</span></a><a class="pg" href="qc.html"><div class="i">🛡️</div><h3>ตรวจสอบคุณภาพ (QC)</h3><p>แท็บ ตรวจรับขาเข้า + ตรวจแบตช์</p><span class="go">เปิดดู →</span></a><a class="pg" href="shipping.html"><div class="i">🚚</div><h3>การจัดส่ง</h3><p>สรุป + ตารางใบจัดส่งจากแบตช์ที่ผ่าน QC</p><span class="go">เปิดดู →</span></a><a class="pg" href="invoices.html"><div class="i">💳</div><h3>ใบแจ้งหนี้ (รายการ)</h3><p>ตาราง + versioning + สถานะการชำระ</p><span class="go">เปิดดู →</span></a><a class="pg" href="invoice-detail.html"><div class="i">🧾</div><h3>รายละเอียดใบแจ้งหนี้</h3><p>รายการ + สรุป VAT + รับชำระ + ประวัติเวอร์ชัน</p><span class="go">เปิดดู →</span></a><a class="pg" href="invoice-print.html"><div class="i">🖨️</div><h3>พิมพ์ใบกำกับภาษี</h3><p>เอกสาร A4 ไทยครบ: ผู้ออก/ลูกค้า/VAT/ตัวอักษร/ลายเซ็น</p><span class="go">เปิดดู →</span></a><a class="pg" href="trace.html"><div class="i">🔗</div><h3>สืบย้อนกลับ (Trace)</h3><p>ช่องค้นเดียว + legend Lot↔Batch + สายสัมพันธ์</p><span class="go">เปิดดู →</span></a><a class="pg" href="admin.html"><div class="i">⚙️</div><h3>ตั้งค่าระบบ</h3><p>ผู้ใช้/บทบาท/VAT/ข้อมูลบริษัท</p><span class="go">เปิดดู →</span></a>
- </div>
+ <h2><span class="dot" style="background:#10322F"></span>ระบบ & ภาพรวม</h2>
+ <p class="sub">6 หน้า</p>
+ <div class="grid"><a class="pg" href="login.html"><div class="i">🔐</div><h3>เข้าสู่ระบบ</h3><p>แบรนด์ ESSENCE Hub + logo/favicon teal</p><div class="fx">แก้: ชื่อระบบ + logo (feedback: identity)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="home.html"><div class="i">🏠</div><h3>หน้าหลัก</h3><p>การ์ดงานตาม role + อธิบาย Lot/Batch</p><div class="fx">แก้: แก้ชื่อ user ซ้ำ → เหลือจุดเดียว (ข้อ 1)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="dashboard.html"><div class="i">📊</div><h3>แดชบอร์ด 7 แผนก</h3><p>สลับมุมมองแต่ละแผนก (ลองกดได้)</p><div class="fx">แก้: dashboard แยกแผนก + สลับ role (ข้อ 2)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="responsive.html"><div class="i">📱</div><h3>ตัวอย่าง Responsive</h3><p>หน้าเดียว 3 ขนาดจอ desktop/tablet/mobile</p><div class="fx">แก้: responsive เป็น Must ทุกหน้า (ข้อ 8)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="trace.html"><div class="i">🔗</div><h3>สืบย้อนกลับ</h3><p>ทุกโมดูล + ปุ่ม archive (Super User)</p><div class="fx">แก้: trace ทุก activity + archive (ข้อ 11)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="settings.html"><div class="i">⚙️</div><h3>ตั้งค่าระบบ</h3><p>RUCDA+Admin 6 ระดับ, role ไม่จำกัด, บริษัท</p><div class="fx">แก้: RUCDA ราย module + role ใหม่ (ข้อ 12)</div><br><span class="go">เปิดดู →</span></a></div>
+</div></section><section style="background:#fff;border-top:1px solid #E4E7EB;border-bottom:1px solid #E4E7EB"><div class="wrap">
+ <h2><span class="dot" style="background:#0E7C7B"></span>งานขาย (Sale)</h2>
+ <p class="sub">5 หน้า</p>
+ <div class="grid"><a class="pg" href="customers.html"><div class="i">👥</div><h3>ลูกค้า</h3><p>5 สถานะ (ผู้สนใจ→บัญชีดำ) + ค้นด้วย PO/วันที่</p><div class="fx">แก้: 5 customer status + search (ข้อ 3)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="customer-detail.html"><div class="i">📇</div><h3>รายละเอียดลูกค้า</h3><p>contact ไม่จำกัด, note timeline, reassign Sale, ประวัติ PO</p><div class="fx">แก้: contact/note/sale assignment (ข้อ 3)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="po-list.html"><div class="i">📄</div><h3>ใบสั่งซื้อ (รายการ)</h3><p>2 ราง: ผลิต/จัดส่ง + วางบิล/ชำระ, Sale, VAT</p><div class="fx">แก้: summary ราคา/VAT/sale (ข้อ 4)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="po-create.html"><div class="i">➕</div><h3>เปิด PO ใหม่</h3><p>suggest, เช็ควัตถุดิบ (warning ไม่บล็อก), ส่ง PR, ขายวัตถุดิบตรง, ราคาแก้ได้</p><div class="fx">แก้: บรรทัดอ่านออก+ลบได้ / PR / ราคา BOM (ข้อ 1,4)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="po-detail.html"><div class="i">🔎</div><h3>รายละเอียด PO</h3><p>2 status flow bar + trace timeline</p><div class="fx">แก้: 2-track continuity + trace</div><br><span class="go">เปิดดู →</span></a></div>
+</div></section><section><div class="wrap">
+ <h2><span class="dot" style="background:#2C7BE5"></span>คลัง & จัดซื้อ (Stock)</h2>
+ <p class="sub">4 หน้า</p>
+ <div class="grid"><a class="pg" href="stock.html"><div class="i">🗄️</div><h3>สต็อกวัตถุดิบ</h3><p>เพิ่มวัตถุดิบ+UOM, เกณฑ์ใกล้หมดไม่มี default, ราคาซื้อ/ขายแยก</p><div class="fx">แก้: add material+UOM+threshold+dual price (ข้อ 5)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="purchase-request.html"><div class="i">📥</div><h3>คำขอสั่งซื้อ (PR)</h3><p>เกิดจาก PO ขาดของ → คลัง+ผลิต, ปลดบล็อก PO</p><div class="fx">แก้: PR flow C3/C4 (ข้อ 4)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="supplier.html"><div class="i">🏷️</div><h3>ผู้จำหน่าย</h3><p>lot prefix ต่อ supplier, หลาย supplier/วัตถุดิบ, upload ใบรับ</p><div class="fx">แก้: Supplier Management (ข้อ 8)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="bom.html"><div class="i">🧬</div><h3>สร้างสูตร BOM</h3><p>เลือกวัตถุดิบโชว์สต็อก, ราคาทุน default + ราคาขายบังคับ</p><div class="fx">แก้: BOM builder + pricing (ข้อ 6)</div><br><span class="go">เปิดดู →</span></a></div>
+</div></section><section style="background:#fff;border-top:1px solid #E4E7EB;border-bottom:1px solid #E4E7EB"><div class="wrap">
+ <h2><span class="dot" style="background:#E0912F"></span>ผลิต & คุณภาพ (Production/QC)</h2>
+ <p class="sub">3 หน้า</p>
+ <div class="grid"><a class="pg" href="production.html"><div class="i">🏭</div><h3>การผลิต</h3><p>เรียง/ค้นตามวันส่ง, เสี่ยงล่าช้า, 5 สถานะ, cross-notify Sale/Stock, trace</p><div class="fx">แก้: Potential Delay + cross-notify + trace (ข้อ 7)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="qc.html"><div class="i">🛡️</div><h3>ตรวจคุณภาพ</h3><p>รับเข้าวัตถุดิบ + ตรวจแบตช์</p><div class="fx">แก้: QC incoming (feedback prototype ข้อ 5)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="return.html"><div class="i">↩️</div><h3>คืนวัตถุดิบ</h3><p>Lot→supplier อัตโนมัติ, ตัดสต็อก+เหตุผลบังคับ</p><div class="fx">แก้: Return flow C13 (ข้อ 8)</div><br><span class="go">เปิดดู →</span></a></div>
+</div></section><section><div class="wrap">
+ <h2><span class="dot" style="background:#2E9E5B"></span>จัดส่ง & การเงิน (Shipping/Finance)</h2>
+ <p class="sub">5 หน้า</p>
+ <div class="grid"><a class="pg" href="shipping.html"><div class="i">🚚</div><h3>การจัดส่ง</h3><p>คิว QC ผ่าน, จัดส่งทีละ PO หรือรวมใบ</p><div class="fx">แก้: Ready-to-deliver queue (ข้อ 9)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="delivery-note.html"><div class="i">📦</div><h3>ใบจัดส่ง (DN)</h3><p>รวมหลาย PO, ส่งบางส่วน, reject→แจ้ง Sale, trace</p><div class="fx">แก้: multi-PO reconcile C9/C10 (ข้อ 9)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="invoices.html"><div class="i">💳</div><h3>ใบแจ้งหนี้</h3><p>ออกจาก PO Confirmed, โชว์ stage, เตือนค้างจ่าย+วัน</p><div class="fx">แก้: overdue alert + PO stage (ข้อ 10)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="invoice-detail.html"><div class="i">🧾</div><h3>รายละเอียดใบแจ้งหนี้</h3><p>overdue +วัน, versioning, trace</p><div class="fx">แก้: เปิดดูได้ (feedback prototype ข้อ 10)</div><br><span class="go">เปิดดู →</span></a><a class="pg" href="invoice-print.html"><div class="i">🖨️</div><h3>พิมพ์ใบกำกับภาษี</h3><p>A4 ไทยครบ: ผู้ออก(จากตั้งค่า)/VAT/ตัวอักษร/ลายเซ็น</p><div class="fx">แก้: ใบกำกับภาษีไทย (ข้อ 10)</div><br><span class="go">เปิดดู →</span></a></div>
 </div></section>
 
 <section><div class="wrap">
- <h2>3) คำถามถึงปอนด์ (ตอบที่ Gate 1)</h2>
- <p class="sub">ยืนยัน 3 เรื่องนี้เพื่อให้ Engineer เริ่ม implement ได้ตรงตามที่ต้องการ</p>
- <div class="q"><b>คำถาม 1 · โทนสี:</b> เลือกธีมไหน? &nbsp;(ก) Clean Clinical — teal ✅แนะนำ &nbsp; (ข) Warm Cosmetic — rose &nbsp; (ค) Corporate Blue &nbsp; (ง) มีสีแบรนด์เฉพาะ (กรุณาระบุ hex)</div>
- <div class="q"><b>คำถาม 2 · โลโก้:</b> มีไฟล์โลโก้จริงสำหรับหัวเว็บ + หัวใบกำกับภาษีไหม? &nbsp;(ก) มี ส่งไฟล์ &nbsp; (ข) ยังไม่มี ใช้ชื่อบริษัทเป็นตัวหนังสือไปก่อน</div>
- <div class="q"><b>คำถาม 3 · ชื่อ/ข้อมูลบริษัทบนเอกสาร:</b> ชื่อ-ที่อยู่-เลขผู้เสียภาษีที่ใช้จริงบนใบกำกับภาษี (ตอนนี้ใส่ตัวอย่าง "บริษัท คอสเมดิก แฟคทอรี จำกัด")? &nbsp;(ก) ใช้ข้อมูลจริงตามที่จะส่งให้ &nbsp; (ข) ให้ Admin กรอกเองในหน้าตั้งค่า</div>
+ <h2>คำถามยืนยันถึงปอนด์ (ตอบที่ Gate 1 รอบ 2)</h2>
+ <p class="sub">ค่าทั้งหมดข้างล่างใส่ default ที่สมเหตุสมผลไว้แล้ว ตอบเพื่อ "ล็อก" ก่อน Engineer เริ่ม</p>
+ <div class="q"><b>1 · Logo/แบรนด์:</b> ตอนนี้ใช้ placeholder (สัญลักษณ์หยดน้ำ teal + ชื่อ ESSENCE Hub System) — โอเคไหม หรือมีไฟล์โลโก้จริงจะส่งให้?</div>
+ <div class="q"><b>2 · Click budget:</b> ยืนยันเป้า เปิด PO ≤ 10 คลิก / ออกใบแจ้งหนี้ ≤ 6 คลิก (ใช้วัดตอน UAT) — ใช้ตามนี้หรือปรับ?</div>
+ <div class="q"><b>3 · รอบ "ลูกค้าประจำ/ห่างหาย":</b> ค่าเริ่มต้น 3 เดือน (ปรับต่อลูกค้าได้ 1/3/6/8) — ยืนยันไหม?</div>
+ <div class="q"><b>4 · ความครบถ้วน:</b> มีหน้า/สถานะไหนที่ปอนด์อยากเห็นเพิ่มก่อนอนุมัติหน้าตา และเริ่ม implement?</div>
 </div></section>
 
-<footer><div class="wrap">ออกแบบโดย UX/UI Agent · slug erp-v2-ui-first · เอกสาร design system: ../design-system.md</div></footer>
+<footer><div class="wrap">ESSENCE Hub System · slug erp-v2-ui-first · UX/UI round 2 · design system: ../design-system.md</div></footer>
 </body></html>

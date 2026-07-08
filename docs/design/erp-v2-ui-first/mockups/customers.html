@@ -1,157 +1,135 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ลูกค้า — Cosmedic ERP (mockup)</title><style>
+<title>ลูกค้า · ESSENCE Hub System</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2310322F%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230E7C7B%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22url(%23g)%22%2F%3E%3Cpath%20d%3D%22M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E"><style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
- --primary:#0E7C7B;--primary-hover:#12938C;--primary-bg:#E6F4F3;
- --sidebar:#10322F;--sidebar-text:#CFE0DE;
- --text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;
- --bg:#F4F6F8;--card:#FFFFFF;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;
- --radius:8px;--radius-lg:12px;--radius-sm:6px;
-}
-body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;
- background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
-.tnum{font-variant-numeric:tabular-nums}
-a{color:var(--primary);text-decoration:none}
-h1{font-size:24px;font-weight:600;line-height:1.3}
-h2{font-size:20px;font-weight:600}
-h3{font-size:16px;font-weight:600}
+:root{--primary:#0E7C7B;--primary-hover:#12938C;--primary-bg:#E6F4F3;--sidebar:#10322F;--sidebar-text:#CFE0DE;
+ --text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#FFFFFF;
+ --success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;--radius:8px;--radius-lg:12px;--radius-sm:6px;}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.tnum{font-variant-numeric:tabular-nums}a{color:var(--primary);text-decoration:none}
+h1{font-size:24px;font-weight:600;line-height:1.3}h2{font-size:20px;font-weight:600}h3{font-size:16px;font-weight:600}
 .muted{color:var(--text2)}.tiny{font-size:12px;color:var(--text3)}
-/* layout */
 .app{display:flex;min-height:100vh}
-.sider{width:240px;background:var(--sidebar);color:var(--sidebar-text);flex-shrink:0;position:sticky;top:0;height:100vh;overflow:auto}
-.brand{display:flex;align-items:center;gap:10px;padding:18px 20px;color:#fff;font-weight:600;font-size:16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.brand .logo{width:30px;height:30px;border-radius:8px;background:var(--primary);display:grid;place-items:center;font-size:16px}
+.sider{width:240px;background:var(--sidebar);color:var(--sidebar-text);flex-shrink:0;position:sticky;top:0;height:100vh;overflow:auto;z-index:30}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 18px;color:#fff;font-weight:600;font-size:15px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand small{display:block;font-size:11px;color:rgba(255,255,255,.5);font-weight:400}
 .menu-group{padding:14px 20px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.menu a{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--sidebar-text);font-size:14px;border-left:3px solid transparent}
+.menu a{display:flex;align-items:center;gap:12px;padding:10px 20px;color:var(--sidebar-text);font-size:14px;border-left:3px solid transparent}
 .menu a:hover{background:rgba(255,255,255,.06);color:#fff}
 .menu a.active{background:var(--primary);color:#fff;border-left-color:#fff;font-weight:500}
 .menu a .ico{width:18px;text-align:center;opacity:.9}
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.header{height:64px;background:var(--card);border-bottom:1px solid var(--border2);display:flex;align-items:center;
- justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:5}
-.crumb{font-size:12px;color:var(--text3);margin-bottom:2px}.crumb a{color:var(--text3)}.crumb b{color:var(--text2)}
-.header .title{font-size:18px;font-weight:600}
-.header .right{display:flex;align-items:center;gap:14px}
+.header{height:64px;background:var(--card);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:20;gap:14px}
+.crumb{font-size:12px;color:var(--text3)}.crumb a{color:var(--text3)}.crumb b{color:var(--text2)}
+.header .title{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header .gsearch{flex:1;max-width:320px;position:relative}
+.header .gsearch input{width:100%;height:38px;border:1px solid var(--border);border-radius:20px;padding:0 14px 0 36px;font-family:inherit;font-size:13px}
+.header .gsearch .si{position:absolute;left:13px;top:9px;color:var(--text3)}
+.header .right{display:flex;align-items:center;gap:12px}
 .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-bg);color:var(--primary);display:grid;place-items:center;font-weight:600}
+.userbox{display:flex;align-items:center;gap:8px}.userbox .nm{font-size:13px;font-weight:500;line-height:1.2}.userbox .rl{font-size:11px;color:var(--text3)}
 .content{padding:24px;flex:1}
 .pagehead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;flex-wrap:wrap}
-.pagehead .sub{color:var(--text2);margin-top:4px;font-size:13px}
-/* card */
+.pagehead .sub{color:var(--text2);margin-top:4px;font-size:13px;max-width:640px}
 .card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 1px 3px rgba(16,25,40,.06);margin-bottom:20px}
-.card-h{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:12px}
-.card-b{padding:20px}
-.card-h h3{font-size:16px}
-/* buttons */
-.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:var(--radius);
- border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.card-h{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-b{padding:20px}.card-h h3{font-size:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
 .btn:hover{border-color:var(--primary);color:var(--primary)}
-.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);color:#fff}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);color:#fff}
 .btn-danger{color:var(--error);border-color:#F2C2C2}.btn-danger:hover{background:#FCEAEA;color:var(--error)}
-.btn-sm{height:32px;padding:0 12px;font-size:13px}
-.btn-ghost{border-color:transparent;background:transparent}
+.btn-sm{height:32px;padding:0 12px;font-size:13px}.btn-ghost{border-color:transparent;background:transparent}
 .btn-link{border:none;background:none;color:var(--primary);cursor:pointer;padding:0;font-family:inherit;font-size:14px}
-/* badges */
-.badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;border:1px solid}
+.badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;border:1px solid;white-space:nowrap}
 .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
-.b-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}
-.b-processing{color:#1F5EDB;background:#E8F0FE;border-color:#BBD1F8}
-.b-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}
-.b-warning{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
-.b-error{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+.b-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}.b-processing{color:#1F5EDB;background:#E8F0FE;border-color:#BBD1F8}
+.b-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}.b-warning{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-error{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
 .badge.plain::before{display:none}
-/* table */
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.toolbar .l{display:flex;align-items:center;gap:10px}
-.toolbar .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.toolbar .l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.toolbar .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .count{background:var(--primary-bg);color:var(--primary);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
-table.tbl{width:100%;border-collapse:collapse;background:#fff}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;background:#fff;min-width:520px}
 .tbl th{text-align:left;font-size:12px;font-weight:600;color:var(--text2);padding:12px 16px;border-bottom:1px solid var(--border);background:#FAFBFC;white-space:nowrap}
 .tbl td{padding:13px 16px;border-bottom:1px solid var(--border2);font-size:14px;vertical-align:middle}
-.tbl tr:hover td{background:#FAFCFC}
-.tbl .num{text-align:right;font-variant-numeric:tabular-nums}
-.tbl .strong{font-weight:600}
-.tbl .id{font-size:12px;color:var(--text3)}
+.tbl tr:hover td{background:#FAFCFC}.tbl .num{text-align:right;font-variant-numeric:tabular-nums}.tbl .strong{font-weight:600}.tbl .id{font-size:12px;color:var(--text3)}
 .rowact{display:flex;gap:6px;justify-content:flex-end}
-/* form */
-.field{margin-bottom:16px}
-.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
-.field .req{color:var(--error)}
-.inp,.sel,textarea.inp{width:100%;height:40px;border:1px solid var(--border);border-radius:var(--radius);
- padding:0 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--text)}
+.field{margin-bottom:16px}.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}.field .req{color:var(--error)}
+.inp,.sel,textarea.inp{width:100%;height:40px;border:1px solid var(--border);border-radius:var(--radius);padding:0 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--text)}
 textarea.inp{height:auto;padding:10px 12px;resize:vertical}
-.inp:focus,.sel:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg)}
-.inp::placeholder{color:var(--text3)}
-.help{font-size:12px;color:var(--text3);margin-top:5px}
-.help.err{color:var(--error)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px}
+.inp:focus,.sel:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg)}.inp::placeholder{color:var(--text3)}
+.help{font-size:12px;color:var(--text3);margin-top:5px}.help.err{color:var(--error)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px}
 .sel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237B8794' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 .footerbar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border2);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px;margin:0 -20px -20px;border-radius:0 0 var(--radius-lg) var(--radius-lg)}
-/* alert */
 .alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius);border:1px solid;margin-bottom:16px;font-size:14px}
 .alert .ai{font-size:18px;flex-shrink:0}
-.alert-warn{background:#FBF0DE;border-color:#F1D6A6;color:#7A4A0F}
-.alert-err{background:#FCEAEA;border-color:#F2C2C2;color:#8F2020}
-.alert-info{background:#E8F0FE;border-color:#BBD1F8;color:#204A9E}
-.alert-ok{background:#E6F5EC;border-color:#B7E0C6;color:#1E6B3D}
+.alert-warn{background:#FBF0DE;border-color:#F1D6A6;color:#7A4A0F}.alert-err{background:#FCEAEA;border-color:#F2C2C2;color:#8F2020}
+.alert-info{background:#E8F0FE;border-color:#BBD1F8;color:#204A9E}.alert-ok{background:#E6F5EC;border-color:#B7E0C6;color:#1E6B3D}
 .alert a,.alert b{color:inherit}
-/* stat */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
 .stat{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px}
-.stat .k{font-size:13px;color:var(--text2)}
-.stat .v{font-size:28px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
-.stat .d{font-size:12px;margin-top:4px}
+.stat .k{font-size:13px;color:var(--text2)}.stat .v{font-size:28px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}.stat .d{font-size:12px;margin-top:4px}
 .up{color:var(--success)}.down{color:var(--error)}
-/* empty */
-.empty{text-align:center;padding:48px 20px}
-.empty .ei{font-size:40px;opacity:.5}
-.empty h3{margin:14px 0 6px}
-.empty p{color:var(--text2);margin-bottom:18px}
-/* misc */
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.tabs a{padding:12px 18px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.empty{text-align:center;padding:44px 20px}.empty .ei{font-size:40px;opacity:.5}.empty h3{margin:14px 0 6px}.empty p{color:var(--text2);margin-bottom:18px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto}
+.tabs a{padding:12px 18px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .tabs a.active{color:var(--primary);border-bottom-color:var(--primary)}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);font-size:13px;background:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);font-size:13px;background:#fff;cursor:pointer;white-space:nowrap}
 .chip.on{background:var(--primary-bg);border-color:var(--primary);color:var(--primary);font-weight:500}
 .kv{display:grid;grid-template-columns:150px 1fr;gap:10px 16px}.kv dt{color:var(--text2)}.kv dd{font-weight:500}
 .pill{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:500}
-.step{display:flex;align-items:center;gap:0;margin-bottom:24px;flex-wrap:wrap}
-.step .s{display:flex;align-items:center;gap:8px;color:var(--text3)}
-.step .s .n{width:26px;height:26px;border-radius:50%;background:#EEF1F4;display:grid;place-items:center;font-size:13px;font-weight:600}
-.step .s.done{color:var(--success)}.step .s.done .n{background:var(--success);color:#fff}
-.step .s.cur{color:var(--primary)}.step .s.cur .n{background:var(--primary);color:#fff}
-.step .line{width:36px;height:2px;background:var(--border);margin:0 8px}
-.searchbox{position:relative;flex:1;max-width:360px}
-.searchbox .inp{padding-left:38px}
-.searchbox .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
+.notify{display:block;padding:8px 12px;border-radius:6px;background:#E8F0FE;color:#204A9E;font-size:12px;border:1px solid #BBD1F8;line-height:1.55}
+.notify b,.notify a{color:inherit}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.flow .s{display:flex;align-items:center;gap:8px;color:var(--text3)}
+.flow .s .n{width:26px;height:26px;border-radius:50%;background:#EEF1F4;display:grid;place-items:center;font-size:13px;font-weight:600;flex-shrink:0}
+.flow .s.done{color:var(--success)}.flow .s.done .n{background:var(--success);color:#fff}
+.flow .s.cur{color:var(--primary)}.flow .s.cur .n{background:var(--primary);color:#fff}
+.flow .line{width:28px;height:2px;background:var(--border);margin:0 6px}
+.searchbox{position:relative;flex:1;max-width:360px}.searchbox .inp{padding-left:38px}.searchbox .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
 .split{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
-@media(max-width:991px){.sider{display:none}.grid2,.grid3{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
- .split{grid-template-columns:1fr}.header .hamb{display:inline-flex!important}}
-.hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;margin-right:8px}
-</style></head><body><div class="app"><aside class="sider"><div class="brand"><div class="logo">✦</div><div>Cosmedic ERP<div class="tiny" style="color:rgba(255,255,255,.5);font-weight:400">โรงงานเครื่องสำอาง</div></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class="active"><span class="ico">👥</span>ลูกค้า</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a></nav><div class="menu-group">คลัง & ผลิต</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อกวัตถุดิบ</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจสอบคุณภาพ (QC)</a></nav><div class="menu-group">ส่งของ & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ (Trace)</a><a href="admin.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
-  <div class="header"><div><button class="hamb">☰</button><div class="crumb">หน้าหลัก › <b>ลูกค้า</b></div><div class="title">ลูกค้า</div></div>
-   <div class="right"><span class="chip">บทบาท: <b style="margin-left:4px">ฝ่ายขาย/CS</b></span><span class="tiny">🔔</span><div class="avatar">สม</div></div></div>
+.timeline{position:relative;padding-left:20px}
+.timeline .t{position:relative;padding:0 0 16px}
+.timeline .t::before{content:"";position:absolute;left:-16px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 0 0 2px var(--primary-bg)}
+.timeline .t::after{content:"";position:absolute;left:-11.5px;top:13px;bottom:-3px;width:2px;background:var(--border2)}
+.timeline .t:last-child::after{display:none}
+.timeline .th{font-size:13px;font-weight:600}.timeline .tm{font-size:12px;color:var(--text3)}.timeline .tc{font-size:13px;color:var(--text2);margin-top:2px}
+.pop{border:1px solid var(--border);border-radius:10px;box-shadow:0 6px 16px rgba(16,25,40,.12);background:#fff;padding:14px;max-width:300px}
+.chk{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
+.chk.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.uprow{display:flex;align-items:center;gap:12px;border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--text2);font-size:13px}
+.hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
+.mobilebar{display:none}
+.drawer-bg{display:none}
+@media(max-width:991px){
+ .sider{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .2s;box-shadow:2px 0 12px rgba(0,0,0,.2)}
+ body.nav-open .sider{transform:translateX(0)}
+ body.nav-open .drawer-bg{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:25}
+ .hamb{display:inline-flex}
+ .grid2,.grid3{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}
+ .header .gsearch{display:none}
+}
+@media(max-width:575px){
+ .content{padding:14px 14px 74px}.stats{grid-template-columns:1fr}.kv{grid-template-columns:1fr;gap:4px 0}
+ .header .title{font-size:15px;max-width:150px}.userbox .nm,.userbox .rl{display:none}
+ .footerbar{flex-direction:column-reverse}.footerbar .btn{width:100%;justify-content:center}
+ .pagehead .btn,.pagehead a.btn{width:100%;justify-content:center}
+ .mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;height:58px;background:#fff;border-top:1px solid var(--border2);z-index:24;justify-content:space-around;align-items:center}
+ .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
+ .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
+}
+</style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class="active"><span class="ico">👥</span>ลูกค้า</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อกวัตถุดิบ</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
+  <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
+   <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>ลูกค้า</b></div><div class="title">ลูกค้า</div></div>
+   <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
+   <div class="right"><span class="tiny">🔔</span><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>ลูกค้า</h1><div class="sub">จัดการข้อมูลลูกค้าและข้อมูลสำหรับออกใบกำกับภาษี</div></div>
-  <button class="btn btn-primary">➕ เพิ่มลูกค้าใหม่</button></div>
- <div class="split">
-  <div class="card"><div class="card-b">
-    <div class="toolbar"><div class="l"><h3>รายชื่อลูกค้า</h3><span class="count">24 ราย</span></div>
-     <div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาชื่อลูกค้า / รหัส / เลขผู้เสียภาษี"></div></div>
-    <table class="tbl"><thead><tr><th>ลูกค้า</th><th>เลขผู้เสียภาษี</th><th>สถานะ</th><th></th></tr></thead><tbody>
-     <tr><td><b>บริษัท บิวตี้ เอเชีย จำกัด</b><div class="id">CUS-00000012 · โทร 02-555-1234</div></td><td class="tnum">0105558000001</td><td><span class="badge b-success">ใช้งาน</span></td><td class="num"><a href="#">ดู</a></td></tr>
-     <tr><td><b>ร้านกลอรี่ คอสเมติก</b><div class="id">CUS-00000018 · โทร 081-234-5678</div></td><td><span class="muted">— ยังไม่มี</span></td><td><span class="badge b-success">ใช้งาน</span></td><td class="num"><a href="#">ดู</a></td></tr>
-     <tr><td><b>บริษัท เดอร์มา แคร์ จำกัด</b><div class="id">CUS-00000021 · โทร 02-777-8899</div></td><td class="tnum">0107561000099</td><td><span class="badge b-neutral">ปิดใช้งาน</span></td><td class="num"><a href="#">ดู</a></td></tr>
-    </tbody></table></div></div>
-  <div class="card"><div class="card-h"><h3>เพิ่มลูกค้าใหม่</h3></div><div class="card-b">
-    <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>รหัสลูกค้าระบบสร้างให้อัตโนมัติ ไม่ต้องกรอกเอง</div></div>
-    <div class="field"><label>ชื่อลูกค้า <span class="req">*</span></label><input class="inp" placeholder="ชื่อบริษัท / ร้านค้า"></div>
-    <div class="field"><label>เบอร์โทร <span class="req">*</span></label><input class="inp" placeholder="0X-XXX-XXXX"></div>
-    <div class="field"><label>อีเมล <span class="req">*</span></label><input class="inp" placeholder="name@example.com"></div>
-    <div style="border-top:1px dashed var(--border);margin:8px 0 16px;padding-top:14px"><span class="pill">สำหรับใบกำกับภาษี</span></div>
-    <div class="field"><label>เลขประจำตัวผู้เสียภาษี (13 หลัก)</label><input class="inp tnum" placeholder="0 0000 00000 00 0" maxlength="13"><div class="help">ไม่บังคับตอนนี้ แต่ต้องมีก่อนออกใบกำกับภาษี</div></div>
-    <div class="field"><label>ที่อยู่จดทะเบียน</label><textarea class="inp" rows="2" placeholder="ที่อยู่ที่ใช้พิมพ์บนใบกำกับภาษี"></textarea></div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกลูกค้า</button></div>
-  </div></div>
- </div></div></div></div></body></html>
+ <div class="pagehead"><div><h1>ลูกค้า</h1><div class="sub">สถานะลูกค้าอัปเดตอัตโนมัติ (ประจำ/ห่างหาย) · ค้นด้วยชื่อ เลข PO หรือวันที่สั่งซื้อ</div></div><a class="btn btn-primary" href="customer-detail.html">➕ เพิ่มลูกค้าใหม่</a></div>
+ <div class="card"><div class="card-b">
+   <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหา: ชื่อลูกค้า / เลข PO / วันที่สั่งซื้อ"></div></div>
+    <div class="r"><span class="chip on">ทั้งหมด</span><span class="chip">ผู้สนใจ</span><span class="chip">ลูกค้าประจำ</span><span class="chip">ห่างหาย</span><span class="chip">ปิดใช้งาน</span><span class="chip">บัญชีดำ</span></div></div>
+   <div class="tblwrap"><table class="tbl"><thead><tr><th>ลูกค้า</th><th>Sale ที่ดูแล</th><th class="num">PO ล่าสุด</th><th class="num">ยอดสะสม (บาท)</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    <tr><td><b>บริษัท บิวตี้ เอเชีย จำกัด</b><div class="id">CUS-00000012</div></td><td>สมชาย</td><td class="num tnum">08/07/2569</td><td class="num strong tnum">1,240,000</td><td><span class="badge b-success">ลูกค้าประจำ</span></td><td class="num"><a href="customer-detail.html">ดู</a></td></tr><tr><td><b>ร้านกลอรี่ คอสเมติก</b><div class="id">CUS-00000018</div></td><td>สมชาย</td><td class="num tnum">—</td><td class="num strong tnum">0</td><td><span class="badge b-neutral">ผู้สนใจ</span></td><td class="num"><a href="customer-detail.html">ดู</a></td></tr><tr><td><b>บริษัท เดอร์มา แคร์ จำกัด</b><div class="id">CUS-00000021</div></td><td>สมหญิง</td><td class="num tnum">02/07/2569</td><td class="num strong tnum">890,000</td><td><span class="badge b-warning">ห่างหาย</span></td><td class="num"><a href="customer-detail.html">ดู</a></td></tr><tr><td><b>บริษัท กลาม บิวตี้ จำกัด</b><div class="id">CUS-00000009</div></td><td>สมชาย</td><td class="num tnum">15/06/2569</td><td class="num strong tnum">560,000</td><td><span class="badge b-neutral">ปิดใช้งาน</span></td><td class="num"><a href="customer-detail.html">ดู</a></td></tr><tr><td><b>ร้านเครื่องสำอางเชียงใหม่</b><div class="id">CUS-00000005</div></td><td>สมหญิง</td><td class="num tnum">—</td><td class="num strong tnum">120,000</td><td><span class="badge b-error">บัญชีดำ</span></td><td class="num"><a href="customer-detail.html">ดู</a></td></tr>
+   </tbody></table></div>
+   <p class="tiny" style="margin-top:12px">สถานะ "ลูกค้าประจำ/ห่างหาย" ระบบคำนวณเองจากรอบสั่งซื้อ (ตั้งค่าต่อลูกค้าได้ 1/3/6/8 เดือน — ค่าเริ่มต้น 3 เดือน) · "ปิดใช้งาน/บัญชีดำ" ตั้งเองพร้อมเหตุผล</p>
+ </div></div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
