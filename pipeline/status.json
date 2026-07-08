@@ -24,7 +24,67 @@
           "reason": "ปอนด์สั่ง flow ใหม่: UX/UI + PO ทำ design phase คู่กัน (แก้จากเดิมที่ข้าม po ด้วย) — functional scope อ้างอิง prototype-v1"
         }
       ],
-      "history": []
+      "history": [
+        {
+          "agent": "po",
+          "phase": "design-brief",
+          "status": "IN_PROGRESS",
+          "gate_checklist": [
+            {"item": "Business problem is concrete (lesson from prototype: functional-complete but not approved/adopted)", "pass": true, "missing": null},
+            {"item": "At least 1 measurable Business Key Value (adoption/task-time, not feature count)", "pass": true, "missing": null},
+            {"item": "Gate 1 'approve the look' defined with verifiable pass criteria", "pass": true, "missing": null},
+            {"item": "Screen business-priority tiers defined", "pass": true, "missing": null},
+            {"item": "Non-negotiable business rules UI must not violate listed (GMP, Thai tax invoice, audit, first-time users)", "pass": true, "missing": null},
+            {"item": "Feature-level Definition of Done to Gate 2 complete", "pass": true, "missing": null},
+            {"item": "Scope in/out specified", "pass": true, "missing": null},
+            {"item": "The 10 prototype feedback points confirmed (needed to make BKV-4 / Gate-1 criterion fully verifiable)", "pass": false, "missing": "PO cannot access git tag prototype-v1 (no Bash/git). Need Pond to confirm the list — see questions_for_pond Q1. Interim: use the 4 themes from inbox."}
+          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/brief.md"],
+          "questions_for_pond": [
+            {
+              "q": "จุด feedback เดิมของปอนด์จาก prototype ที่ว่ามี 10 ข้อ — ผมเข้าถึง git tag prototype-v1 ไม่ได้ ขอยืนยันรายการเพื่อให้เกณฑ์ Gate 1 (BKV-4 'แก้ครบ 100%') วัดได้จริง จะเอามาจากไหน?",
+              "options": [
+                "ปอนด์พิมพ์/วางรายการ 10 ข้อให้ตรงนี้",
+                "ให้ Dispatcher ดึงจาก prototype-v1 (git log / QA report) มาแนบให้ PO+UX/UI",
+                "ยังไม่มีรายการเป็นทางการ — ให้ใช้ 4 ธีมรวมจาก inbox เป็นเกณฑ์แทน (ไม่ professional / ใช้ยาก / โชว์ enum-รหัสดิบ / ไม่ responsive)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ยืนยันหน้าจอ Tier 1 (ต้องเนี้ยบสุด) ที่ผมเสนอ: เปิด PO, วางแผนผลิต/วัตถุดิบ (BOM+FIFO lot), invoice+ใบกำกับภาษีไทย, stock — ตรงกับจุดที่ปอนด์ feedback หนักสุดไหม?",
+              "options": [
+                "ตรงแล้ว ใช้ 4 หน้านี้เป็น Tier 1",
+                "ตรงแต่ขอเพิ่มหน้าอื่นเข้า Tier 1 (ระบุ)",
+                "ขอปรับ — บางหน้าใน 4 นี้ไม่ต้องเป็น Tier 1 (ระบุ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "เป้าเวลาทำงานของ user มือใหม่ (BKV-1) ควรตั้งที่เท่าไรจึงถือว่า 'ใช้ง่ายพอ'? (ใช้วัดตอน UAT)",
+              "options": [
+                "เปิด PO ≤ 3 นาที / ออก invoice+ใบกำกับภาษี ≤ 5 นาที (ค่าที่ผมเสนอ)",
+                "เข้มกว่านี้ (ระบุเวลา)",
+                "ผ่อนกว่านี้ (ระบุเวลา)",
+                "ยังไม่ต้องตั้งตัวเลข — วัดแค่ 'ทำสำเร็จเองโดยไม่มีคนสอน' พอ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "เกณฑ์คะแนน UAT 'ดู professional + ใช้ง่าย' (BKV-5) ควรผ่านที่เท่าไร?",
+              "options": [
+                "เฉลี่ย ≥ 4 จาก 5 (ค่าที่ผมเสนอ)",
+                "≥ 3.5 จาก 5",
+                "ทุกคนต้องให้ผ่าน (ไม่มีใครต่ำกว่า 3)",
+                "ปอนด์ตัดสินเองด้วยสายตา ไม่ต้องใช้คะแนน"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "Wrote v2 design-brief: why UI-first (prototype was functional-complete but never approved/adopted), 5 measurable Business Key Values focused on first-time-user task speed & adoption, verifiable Gate-1 'approve the look' criteria, screen priority tiers, non-negotiable UI rules (GMP traceability / Thai tax invoice / audit), and DoD to Gate 2. Did not touch feature-level status/current_agent (UX/UI owns it this phase). 4 business questions batched for Pond at Gate 1 — not blocking.",
+          "overridden_by": null,
+          "updated_at": "2026-07-08T11:30:00+07:00"
+        }
+      ]
     }
   }
 }
