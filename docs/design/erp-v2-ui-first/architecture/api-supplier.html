@@ -1,0 +1,44 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Supplier (ผู้จำหน่าย) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🏷️ API · Supplier (ผู้จำหน่าย)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Supplier + Price Matrix</h1>
+ <p>เพิ่ม/แก้ supplier + ผูกวัตถุดิบรายตัวพร้อม<b>ราคารับซื้อ (matrix supplier×วัตถุดิบ)</b> — ค้นวัตถุดิบตอนผูกได้. Active/Inactive. <b>ไม่มีฟังก์ชันรับเข้าคลังในหน้านี้</b> (อยู่ที่ goods-receipt). ราคานี้ใช้คิด "ราคาทุน BOM = สูงสุดของ supplier ที่ active".</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#supplier">DB: supplier/price</a>
+ <a href="../functional-spec/supplier.html">Functional spec (BA)</a>
+ <a href="../mockups/supplier.html">Mockup: supplier</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน/ค้น</a>
+ <a href="#write">สร้าง/แก้ + matrix</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#2C7BE5"></span>อ่าน / ค้นหา</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/suppliers</span></div><div class="b">รายการ + pagination + filter active/inactive. <span class="rt">Read supplier</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/suppliers/{id}</span></div><div class="b">รายละเอียด + วัตถุดิบที่ผูก + ราคารับซื้อรายตัว (matrix) + lot_prefix.</div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/materials/search?q=</span></div><div class="b">ค้นวัตถุดิบ (ใช้ตอนผูกเข้า supplier) — ซ่อนวัตถุดิบที่ถูกลบ (ADR-009).</div></div>
+</section>
+<section id="write">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้าง / แก้ + price matrix</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/suppliers</span></div><div class="b">สร้าง supplier + lot_prefix + ผูกวัตถุดิบ+ราคารับซื้อหลายรายการ. <span class="rt">Create supplier</span></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/suppliers/{id}</span></div><div class="b">แก้ข้อมูล / เพิ่ม-ลบ-แก้ราคาใน matrix (audit ทุกช่อง). แก้ราคา → BOM ที่อ้างอาจขึ้น badge "ราคาทุนล้าสมัย".</div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/suppliers/{id}/toggle-active</span></div><div class="b">Active↔Inactive · inactive แนะนำใช้แทนลบ · supplier inactive ไม่ถูกนับใน "ราคาทุน max active" ของ BOM.</div></div>
+ <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/suppliers/{id}</span></div><div class="b">soft-delete (ห้ามซื้อใหม่, Lot เดิมใช้ได้). <span class="rt">Delete supplier · comment บังคับ</span></div></div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>SUPPLIER_MATERIAL_DUP</td><td>ผูกวัตถุดิบซ้ำใน matrix</td></tr>
+  <tr><td>MATERIAL_REFERENCE_DELETED</td><td>ผูกวัตถุดิบที่ถูกลบ</td></tr>
+ </table>
+</section>
+<footer>API · Supplier · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#supplier + functional-spec/supplier</footer>
+</main></div></body></html>

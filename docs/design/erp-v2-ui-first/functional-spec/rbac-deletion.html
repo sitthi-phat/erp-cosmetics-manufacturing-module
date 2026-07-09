@@ -1,0 +1,73 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RUCDAA + Deletion Policy · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+p{margin:8px 0}.sub{color:var(--text2);font-size:13px}ol{margin:8px 0 8px 22px}li{margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}tr:target{background:#FFF6E5}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.ok{background:#E6F5EC;border:1px solid #B7E0C6;color:#1E6B3D;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › RUCDAA + Deletion</span></header>
+<div class="wrap">
+
+<h1>RUCDAA (สิทธิ์) + Deletion Policy</h1>
+
+<h2>RUCDAA — สิทธิ์ราย module × 6 ระดับ</h2>
+<p class="sub">อ้าง status-journeys.md §9 · สร้าง role ไม่จำกัด · user อยู่ใต้ role · ตั้งใน <a href="settings.html">Settings</a></p>
+<table>
+<tr><th>Bit</th><th>ความหมาย</th><th>ตัวอย่างการใช้</th></tr>
+<tr><td><b>R</b> Read</td><td>เห็น module + <b>ได้รับ notification</b> ของ module นั้น</td><td>เห็น dashboard/รายการ</td></tr>
+<tr><td><b>U</b> Update</td><td>แก้ไขข้อมูล</td><td>แก้ PO, แก้ลูกค้า</td></tr>
+<tr><td><b>C</b> Create</td><td>สร้างข้อมูลใหม่</td><td>สร้าง PO/PR/BOM</td></tr>
+<tr><td><b>D</b> Delete</td><td>soft-delete / ยกเลิก(void)</td><td>ลบลูกค้า, void invoice</td></tr>
+<tr><td><b>A</b> Approve</td><td>อนุมัติ/ตัดสิน</td><td>QC ตัดสิน Batch</td></tr>
+<tr><td><b>A</b> Admin</td><td>สิทธิ์พิเศษ: reassign, ปลด Blacklist, force override, cancel/reopen PO, <b>undelete/restore</b></td><td>Admin/Super User</td></tr>
+</table>
+<div class="note">Role ใหม่: <b>Sale Manager</b> (reassign, dashboard ทีม, ตั้ง Follow-up) · <b>Super User</b> (archive trace)</div>
+
+<h2>Deletion Policy — 7 กติกากลาง</h2>
+<p class="sub">อ้าง deletion-policy.md · <b>ทั้งระบบไม่มี hard delete</b></p>
+<ol>
+<li><b>Soft delete เท่านั้น</b> — ตั้ง flag <code>deleted</code> + เก็บ record ไว้</li>
+<li><b>ยัง search/เปิดดูย้อนหลังได้</b> (read-only, badge "ถูกลบ")</li>
+<li><b>ห้ามเป็น reference ของของใหม่</b> — หายจาก dropdown/ตัวเลือกงานใหม่</li>
+<li><b>ของเดิมที่ผูกอยู่แล้ววิ่งต่อได้</b> — ไม่ break integrity ย้อนหลัง</li>
+<li><b>Audit บังคับ</b> — ใครลบ/เมื่อไหร่/เหตุผล (comment บังคับ)</li>
+<li><b>สิทธิ์:</b> ลบ = bit D · กู้คืน = bit Admin · บาง entity ต้อง Approve/Manager</li>
+<li><b>เอกสารการค้า (PO/Invoice/DN/GR/PR/Shipment) ไม่มีปุ่มลบ</b> — ใช้ "ยกเลิก/void" (เลข gapless ห้ามหาย)</li>
+</ol>
+
+<div class="ok"><b>ปอนด์ยืนยันครบทุกข้อแล้ว (2026-07-09, finalize ใน deletion-policy.md)</b> — ตารางด้านล่างคือกติกาที่ล็อกแล้ว (ไม่มีคำถามค้าง)</div>
+
+<h2>Deletion Matrix ต่อ Entity (ยืนยันแล้ว)</h2>
+<table>
+<tr><th>Entity</th><th>วิธี "ลบ"</th><th>เงื่อนไขหลัก (ปอนด์ยืนยัน)</th><th>สิทธิ์</th><th>กู้คืน</th></tr>
+<tr id="cus"><td>Customer</td><td>soft delete (flag)</td><td>flag ได้เสมอ; PO เดิมวิ่งต่อจนจบ; <b>ห้ามสร้าง PO ใหม่</b></td><td>D + Approve(Sale Mgr)</td><td>Admin</td></tr>
+<tr><td>Sale/User</td><td>soft delete + ปิด login</td><td><b>ต้อง bulk-reassign ลูกค้าทั้งหมดให้คนอื่นก่อน</b> จึงลบได้</td><td>Admin</td><td>Admin</td></tr>
+<tr><td>Material</td><td>soft delete</td><td>flag → <b>ห้ามสร้าง PO/BOM/PR/GR ที่เกี่ยวกับวัตถุดิบนี้เพิ่ม</b>; ของคงเหลือใช้จนหมดได้</td><td>D</td><td>Admin</td></tr>
+<tr><td>BOM</td><td>soft delete</td><td>PO เดิม snapshot ต่อได้; ห้ามเปิด PO ใหม่ด้วยสูตรนี้</td><td>D</td><td>Admin</td></tr>
+<tr><td>Supplier</td><td>inactive/soft delete</td><td>ห้ามซื้อใหม่; Lot เดิมใช้ได้</td><td>D</td><td>Admin</td></tr>
+<tr><td>Contact</td><td>soft delete</td><td>ห้ามถ้าเป็นผู้ติดต่อหลักคนเดียว (ตั้งคนใหม่ก่อน)</td><td>D</td><td>Admin</td></tr>
+<tr id="role"><td>Role</td><td>soft delete</td><td><b>ห้ามลบจนกว่าย้าย user ออกหมด</b></td><td>Admin</td><td>Admin</td></tr>
+<tr id="trade"><td>PO/INV/DN/GR/PR/Shipment</td><td><b>ยกเลิก/void (ไม่ลบ)</b></td><td>gapless — เลขคงอยู่; PR/GR = void เท่านั้น</td><td>D/Approve/Admin</td><td>— (คงอยู่)</td></tr>
+<tr><td>PRD/Batch</td><td>ยกเลิกตาม PO</td><td>หลักฐาน GMP ห้ามหาย</td><td>ตาม PO</td><td>—</td></tr>
+</table>
+<div class="note">เพิ่มเติมที่ปอนด์ยืนยัน: <b>COGS/valuation อยู่นอก scope</b> (ใช้ต้นทุนจาก BOM snapshot) · <b>GR หลังติดลบ</b> → back-allocate consumption เข้า lot ใหม่แบบ FIFO อัตโนมัติ (คง Batch↔Lot GMP genealogy)</div>
+
+<h2>AC มาตรฐานการลบ (ใช้ทุก entity soft-delete)</h2>
+<div class="note"><b>Happy:</b> ลบ (flag) + comment → record ยัง search เจอ (badge ถูกลบ) + audit · <b>Edge:</b> record ที่ลบไม่โผล่ dropdown งานใหม่ แต่เอกสารเดิมที่อ้างอยู่ทำงานต่อจนจบ · <b>Error:</b> ลบไม่ได้เพราะมี reference ค้าง (เช่น Role มี user / Sale มีลูกค้ายังไม่ reassign) → ระบบบอกเหตุผล + เสนอทางออก (bulk-reassign / ย้าย user / inactive)</div>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="glossary.html">Glossary →</a><a href="settings.html">Settings</a></div>
+<footer>RUCDAA 6 ระดับ · Deletion 7 กติกา + matrix 9 entity (ปอนด์ยืนยันครบ) · Cross-cutting</footer>
+</div></body></html>

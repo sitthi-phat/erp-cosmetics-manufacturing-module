@@ -1,0 +1,48 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Dashboard (แดชบอร์ด 7 แผนก) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">📊 API · Dashboard (7 แผนก)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Dashboard + Drill-down</h1>
+ <p>แดชบอร์ดราย 7 แผนก (ขาย/คลัง/ผลิต/QC/จัดส่ง/การเงิน/Admin). <b>ทุก KPI tile drill-down ได้</b> → list + pagination + กดเข้า module พร้อม context. auto-refresh 15s (<b>ค้าง view เดิม</b> ผ่าน query param). date filter (วันนี้/สัปดาห์/เดือนนี้=default/กำหนดเอง) มีผลทุก tile. ทุก tile มี 2 endpoint: summary (นับ) + list (drill).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="../functional-spec/dashboard.html">Functional spec (BA)</a>
+ <a href="../mockups/dashboard.html">Mockup: dashboard</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#pattern">รูปแบบ tile</a>
+ <a href="#tiles">tile ราย 7 แผนก</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="pattern">
+ <h2><span class="dot" style="background:#2C7BE5"></span>รูปแบบ tile (ใช้ทุกแผนก)</h2>
+ <div class="why">แต่ละ tile มี 2 endpoint คู่กัน เพื่อให้กด tile แล้วเปิด list ที่ filter ตรง context เดิม + กดรายการ deep link เข้า module. date filter + auto-refresh เก็บใน query param ไม่ใช่ state ฝั่ง server (refresh แล้วอยู่ view เดิม).</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/summary?dateRange=</span></div><div class="b">คืนตัวเลขทุก tile ของแผนก + caption (ในช่วง vs ตอนนี้). <span class="rt">Read {dept}</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/tiles/{tileKey}?page&amp;dateRange=</span></div><div class="b">drill-down: list + pagination ของ tile นั้น · แต่ละแถวมี deepLink เข้า module พร้อม context.</div></div>
+</section>
+<section id="tiles">
+ <h2><span class="dot" style="background:#0E7C7B"></span>tile ราย 7 แผนก (ตัวอย่าง tileKey)</h2>
+ <table><tr><th>แผนก (dept)</th><th>tiles (drill-down ได้ทุกตัว)</th></tr>
+  <tr><td><b>sale</b></td><td>ลูกค้าประจำ · ห่างหาย · <b>ต้องติดตาม</b> · PO เดือนนี้ · ค้างชำระ → list ลูกค้า/PO + เข้า detail</td></tr>
+  <tr><td><b>stock</b></td><td>ใกล้หมด · ล็อตรอ QC · คำขอ PR ค้าง · <b>สต็อกติดลบ</b> → list + เข้า module</td></tr>
+  <tr><td><b>production</b></td><td>คิวรอรับงาน · คิวงานผลิต · เสี่ยงล่าช้า · พักงาน (Hold) · เสร็จวันนี้</td></tr>
+  <tr><td><b>qc</b></td><td>Lot รอตรวจรับ · Batch รอ QC · ไม่ผ่านวันนี้</td></tr>
+  <tr><td><b>shipping</b></td><td>PO พร้อมจัดส่ง · รอบกำลังนำส่ง · DN เลื่อน/ปฏิเสธ</td></tr>
+  <tr><td><b>finance</b></td><td>รอวางบิล · ค้างชำระ · <b>เกินกำหนด+จำนวนวัน</b> · รับชำระวันนี้</td></tr>
+  <tr><td><b>admin</b></td><td>ผู้ใช้ · role · audit ล่าสุด · การตั้งค่าระบบ</td></tr>
+ </table>
+ <div class="note">user หลาย role → สลับแผนกได้. tile ทั้งหมดคือ drill-down ของ list endpoint ในแต่ละ module (ใช้ endpoint เดียวกับหน้า list ปกติ + filter) — ไม่สร้างข้อมูลซ้ำ.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>DASHBOARD_DEPT_FORBIDDEN</td><td>เปิดแดชบอร์ดแผนกที่ไม่มีสิทธิ์ Read</td></tr>
+ </table>
+</section>
+<footer>API · Dashboard · ESSENCE Hub System · Stage 2 · ผูกกับ functional-spec/dashboard</footer>
+</main></div></body></html>

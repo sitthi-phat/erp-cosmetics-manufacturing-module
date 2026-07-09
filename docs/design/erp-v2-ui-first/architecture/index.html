@@ -171,13 +171,13 @@
 
 <section id="api">
  <h2><span class="dot" style="background:#0E7C7B"></span>5. API ราย module</h2>
- <div class="why">แต่ละหน้า API ผูก endpoint กับ "หน้าจอ + use case" และ cross-link ไปหน้า Functional Spec ของ BA (<code>../functional-spec/&lt;module&gt;.html</code>). เริ่มทำ Tier 1 ก่อน (PO / Production / Stock / Invoice).</div>
+ <div class="why">แต่ละหน้า API ผูก endpoint กับ "หน้าจอ + use case" และ cross-link ไปหน้า Functional Spec ของ BA (<code>../functional-spec/&lt;module&gt;.html</code>). ครบทุก module แล้ว (Tier 1: PO/Production/Stock/Invoice ทำก่อน).</div>
  <table><tr><th>Module</th><th>API spec</th><th>หน้าจอหลัก</th></tr>
   <tr><td>PO (ใบสั่งซื้อ)</td><td><a href="api-po.html">api-po.html</a></td><td>po-create/detail/list</td></tr>
   <tr><td>Production (ผลิต)</td><td><a href="api-production.html">api-production.html</a></td><td>production, po-detail</td></tr>
   <tr><td>Stock (คลัง)</td><td><a href="api-stock.html">api-stock.html</a></td><td>stock, goods-receipt</td></tr>
   <tr><td>Invoice (การเงิน)</td><td><a href="api-invoice.html">api-invoice.html</a></td><td>invoices, invoice-print</td></tr>
-  <tr><td>อื่น ๆ (customer/qc/shipping/supplier/bom/pr/settings/trace/notification)</td><td><span class="badge b-idx">ทยอยเพิ่ม</span></td><td>ตาม db-schema</td></tr>
+  <tr><td>Customer (ลูกค้า)</td><td><a href="api-customer.html">api-customer.html</a></td><td>customers, customer-detail</td></tr><tr><td>QC (คุณภาพ)</td><td><a href="api-qc.html">api-qc.html</a></td><td>qc</td></tr><tr><td>Shipping (จัดส่ง 2 ชั้น)</td><td><a href="api-shipping.html">api-shipping.html</a></td><td>shipping, delivery-note</td></tr><tr><td>Supplier (ผู้จำหน่าย)</td><td><a href="api-supplier.html">api-supplier.html</a></td><td>supplier</td></tr><tr><td>BOM (สูตร)</td><td><a href="api-bom.html">api-bom.html</a></td><td>bom, bom-create</td></tr><tr><td>Purchase Request (คำขอ)</td><td><a href="api-pr.html">api-pr.html</a></td><td>purchase-request, pr-create</td></tr><tr><td>Return (คืนวัตถุดิบ)</td><td><a href="api-return.html">api-return.html</a></td><td>return</td></tr><tr><td>Settings (ตั้งค่า 5 จอ)</td><td><a href="api-settings.html">api-settings.html</a></td><td>settings</td></tr><tr><td>Traceability (สืบย้อน)</td><td><a href="api-trace.html">api-trace.html</a></td><td>trace</td></tr><tr><td>Notification / Inbox</td><td><a href="api-notification.html">api-notification.html</a></td><td>bell ทุกหน้า</td></tr><tr><td>Dashboard (7 แผนก drill-down)</td><td><a href="api-dashboard.html">api-dashboard.html</a></td><td>dashboard</td></tr>
  </table>
 </section>
 

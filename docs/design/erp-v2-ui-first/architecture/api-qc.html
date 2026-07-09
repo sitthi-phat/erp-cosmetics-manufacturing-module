@@ -1,0 +1,53 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — QC (ตรวจคุณภาพ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🛡️ API · QC (ตรวจคุณภาพ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — QC (ขาเข้า + แบตช์)</h1>
+ <p>QC 2 แบบ: (1) ตรวจรับ <b>Lot วัตถุดิบขาเข้า</b> — ผ่าน→lot พร้อมใช้ / ไม่ผ่าน→lot ระงับ→ทำใบคืนของ. (2) ตรวจ <b>Batch การผลิต</b> — ผ่าน→PRD พร้อมส่งมอบ / ไม่ผ่าน→PRD Rework + feedback บังคับ. <b>การตัดสิน QC ทำได้เฉพาะที่นี่</b> (หน้าผลิตไม่มีปุ่มตัดสิน). เห็น GMP chain: PO↔แบตช์↔Lot + ประวัติ run ก่อนหน้า.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#qc">DB: qc_record</a>
+ <a href="../functional-spec/qc.html">Functional spec (BA)</a>
+ <a href="../mockups/qc.html">Mockup: qc</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">คิว QC</a>
+ <a href="#incoming">ตรวจ Lot ขาเข้า</a>
+ <a href="#batch">ตรวจ Batch</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#E0912F"></span>คิว QC</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/qc/queue</span></div><div class="b">คิวรอตรวจ: <code>?target=lot|batch</code> · lot รอตรวจรับ + batch รอ QC. เห็น PO/PRD/Lot ที่ผูก. <span class="rt">Read qc</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/qc/batches/{batchId}</span></div><div class="b">รายละเอียดแบตช์ + วัตถุดิบ (lot ที่ใช้) + ประวัติ run ก่อนหน้า (rework) + feedback เดิม. GMP chain.</div></div>
+</section>
+<section id="incoming">
+ <h2><span class="dot" style="background:#2C7BE5"></span>ตรวจรับ Lot วัตถุดิบขาเข้า</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
+  <tr><td><code>POST /qc/lots/{lotId}/pass</code></td><td>Lot รอตรวจรับ→พร้อมใช้ผลิต · (อาจปิด PR)</td><td>Approve qc</td></tr>
+  <tr><td><code>POST /qc/lots/{lotId}/fail</code></td><td>Lot→ระงับ · เสนอทำ<b>ใบคืนของ</b> (return) · noti Stock</td><td>Approve qc · <b>feedback บังคับ</b></td></tr>
+ </table>
+</section>
+<section id="batch">
+ <h2><span class="dot" style="background:#E0912F"></span>ตรวจ Batch การผลิต</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
+  <tr><td><code>POST /qc/batches/{batchId}/pass</code></td><td>Batch→QC ผ่าน · PRD→พร้อมส่งมอบ · <b>ถ้าทุก PRD ของ PO ผ่าน → PO→พร้อมจัดส่ง</b> + noti Shipping (C5/C8)</td><td>Approve qc</td></tr>
+  <tr><td><code>POST /qc/batches/{batchId}/fail</code></td><td>Batch→QC ไม่ผ่าน · PRD→Rework (กลับกำลังผลิต) · noti Production (C6)</td><td>Approve qc · <b>feedback บังคับ</b></td></tr>
+ </table>
+ <div class="note">ทุกการตัดสินเขียน <code>qc_record</code> + audit reason. Batch เป็นหลักฐาน GMP <b>ห้ามลบ</b>. Rework → ฝ่ายผลิตกด "ผลิตซ้ำ" gen Batch run ถัดไป (ดู <a href="api-production.html">api-production</a>).</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>QC_FEEDBACK_REQUIRED</td><td>ตัดสินไม่ผ่านโดยไม่ใส่ feedback</td></tr>
+  <tr><td>QC_TARGET_NOT_PENDING</td><td>ตัดสินเป้าที่ไม่ได้อยู่สถานะรอตรวจ</td></tr>
+  <tr><td>FORBIDDEN_RUCDAA</td><td>ไม่มีสิทธิ์ Approve qc</td></tr>
+ </table>
+</section>
+<footer>API · QC · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#qc + functional-spec/qc</footer>
+</main></div></body></html>

@@ -1,0 +1,76 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ความต่อเนื่องข้าม module · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+tr:target{background:#FFF6E5}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › ความต่อเนื่อง</span></header>
+<div class="wrap">
+
+<h1>Cross-module Continuity — Cascade + Notification</h1>
+<p class="sub">อ้าง entity-status-map.md §2 (Cascade 17 แถว) + status-journeys.md §10 (Notification/deep-link) · <b>ทุกการเปลี่ยนสถานะมี trace + reconcile ข้าม module + ยิง noti ตามสิทธิ์ Read</b></p>
+<div class="note">เกณฑ์ PO ตรวจ: ทุกแถวต้องมี mockup แสดงต้นทาง+ปลายทาง + trace + noti · ทุก journey จบทุก case (happy + exception)</div>
+
+<h2>Cascade Table (17 แถว)</h2>
+<table>
+<tr><th>#</th><th>ต้นเหตุ (ใคร)</th><th>ผล cascade</th><th>เห็นที่หน้า</th><th>noti</th></tr>
+<tr id="c1"><td>C1</td><td>PO ร่าง→ยืนยันแล้ว (Sale)</td><td>แต่ละ line เข้าคิว "รอรับงาน" (ยังไม่เกิด PRD); Lead→Active</td><td><a href="po.html">po-detail</a>, <a href="production.html">production</a>, <a href="customer.html">customers</a></td><td>Production</td></tr>
+<tr id="c2"><td>C2</td><td>รอรับงาน→รับงาน (Production)</td><td>gen เลข PRD (สถานะ รับงาน)</td><td>production</td><td>—</td></tr>
+<tr id="c3"><td>C3</td><td>PRD รับงาน→กำลังผลิต (Production "เริ่มผลิต")</td><td>gen Batch run1; ตัด stock (ติดลบได้); PO=กำลังผลิต</td><td>production, <a href="stock.html">stock</a></td><td>—</td></tr>
+<tr id="c4"><td>C4</td><td>Batch→รอ QC (Production "ส่งตรวจ")</td><td>PRD=รอ QC; Batch โผล่คิว QC</td><td>production, <a href="qc.html">qc</a></td><td>QC</td></tr>
+<tr id="c5"><td>C5</td><td>Batch→QC ผ่าน (QC)</td><td>PRD line=พร้อมส่งมอบ; ทุก PRD ผ่าน→PO=พร้อมจัดส่ง→คิวจัดส่ง</td><td>qc, po-detail, <a href="shipping.html">shipping</a></td><td>Shipping</td></tr>
+<tr id="c6"><td>C6</td><td>Batch→QC ไม่ผ่าน (QC + feedback)</td><td>Batch=ไม่ผ่าน; PRD=Rework; PO ยังไม่พร้อม</td><td>qc, production (badge Rework)</td><td>Production</td></tr>
+<tr id="c7"><td>C7</td><td>PRD Rework→ผลิตซ้ำ (Production)</td><td>gen Batch run ถัดไป→กลับคิว QC</td><td>production, qc</td><td>QC</td></tr>
+<tr id="c8"><td>C8</td><td>PRD→Hold (Production, เหตุลูกค้า/stock)</td><td>raise Sale/Stock; (ลูกค้า) Sale ตั้ง Follow-up</td><td>production, po-detail, customers</td><td>Sale / Stock</td></tr>
+<tr id="c9"><td>C9</td><td>PO พร้อมจัดส่ง→กำลังจัดส่ง (Shipping)</td><td>Shipment=รับเข้ารอบ→In-Route; DN=กำลังนำส่ง</td><td>shipping, delivery-note</td><td>—</td></tr>
+<tr id="c10"><td>C10</td><td>DN→ส่งถึงแล้ว (Shipping)</td><td>PO=ส่งถึงแล้ว; เริ่มนับ overdue; <span id="c10c">รอบจบเมื่อ DN ครบ</span></td><td>delivery-note, po-detail</td><td>Finance+Sale</td></tr>
+<tr id="c11"><td>C11</td><td>DN→ถูกปฏิเสธ (Shipping)</td><td>PO=พร้อมจัดส่ง(กลับคิว) + raise Sale</td><td>delivery-note, po-list, shipping</td><td>Sale</td></tr>
+<tr id="c12"><td>C12</td><td>DN→เลื่อนส่ง (Shipping)</td><td>PO=พร้อมจัดส่ง + flag Postpone+วันที่ ค้างคิว</td><td>delivery-note, shipping</td><td>Shipping</td></tr>
+<tr id="c13"><td>C13</td><td>ออก Invoice (Finance)</td><td>PO billing=วางบิลแล้ว</td><td>invoices, po-detail</td><td>—</td></tr>
+<tr id="c14"><td>C14</td><td>Overdue (scheduler)</td><td>billing=เกินกำหนด</td><td>invoices, dashboard(Finance)</td><td>Finance+Sale</td></tr>
+<tr id="c15"><td>C15</td><td>PO วัตถุดิบขาด (ตอนเปิด PO)</td><td>เตือน(ไม่บล็อก) + gen PR(ส่วนที่ขาด)</td><td>po-create, purchase-request</td><td>Stock+Production</td></tr>
+<tr id="c16"><td>C16</td><td>ผลิตตัด stock ติดลบ (Batch, วัตถุดิบไม่พอ)</td><td>stock ติดลบ + trace; badge แดง; ไม่บล็อก</td><td>stock, production, trace</td><td>Stock</td></tr>
+<tr id="c17"><td>C17</td><td>Goods Receipt บันทึกรับ (Stock)</td><td>gen Lot รายบรรทัด + ปิด/อัปเดต PR + บวก stock กลับ/ชดเชยติดลบ (notice)</td><td>goods-receipt, purchase-request, stock</td><td>Stock/Production</td></tr>
+<tr id="c18"><td>C18</td><td>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (QC)</td><td>ผ่าน→Lot พร้อมใช้(+อาจปิด PR) / ไม่ผ่าน→Lot ระงับ→คืนของ</td><td>qc, stock, <a href="return.html">return</a></td><td>Stock</td></tr>
+<tr id="c19"><td>C19</td><td>PO ยกเลิก→เปิดใหม่ (Sale/Admin)</td><td>คงเลข PO เดิม + trace lifecycle; คิว/PRD/Batch ยกเลิกตาม</td><td>po-detail</td><td>Production</td></tr>
+<tr id="c14b"><td>+</td><td>Sale reassign ลูกค้า</td><td>customer.sale เปลี่ยน; Dashboard 2 ฝั่ง + trace</td><td>customer-detail</td><td>Sale เดิม/ใหม่ + Manager</td></tr>
+<tr id="c12b"><td>+</td><td>Return Issued (Stock)</td><td>ตัด stock (lot) + comment; adjust ไม่มี PO</td><td>return, stock</td><td>Stock</td></tr>
+</table>
+
+<h2 id="noti">Notification Matrix (ผู้รับ = Read ของ module ปลายทาง)</h2>
+<table>
+<tr><th>อ้าง</th><th>เหตุการณ์</th><th>Noti เข้า module</th><th>Role ที่เห็น (Read)</th><th>Deep link</th></tr>
+<tr><td>C1/C2</td><td>PO Confirmed → คิวผลิต</td><td>Production</td><td>Read Production</td><td>production (คิว)</td></tr>
+<tr><td>C4</td><td>ส่งตรวจ QC</td><td>QC</td><td>Read QC</td><td>qc (คิวตรวจ Batch)</td></tr>
+<tr><td>C5</td><td>PO พร้อมจัดส่ง</td><td>Shipping</td><td>Read Shipping</td><td>shipping (สร้างรอบ)</td></tr>
+<tr><td>C6</td><td>QC ไม่ผ่าน</td><td>Production</td><td>Read Production</td><td>production (feedback)</td></tr>
+<tr><td>C8</td><td>Hold (raise Sale)</td><td>Sale</td><td>Read Sale</td><td>po-detail (แก้ไข PO)</td></tr>
+<tr><td>C8</td><td>ต้องติดตาม (Follow-up)</td><td>Customer/Sale</td><td>Sale(เจ้าของ), Sale Manager</td><td>customer-detail</td></tr>
+<tr><td>C10</td><td>DN Delivered</td><td>Finance+Sale</td><td>Read Finance/Sale</td><td>invoice/po billing</td></tr>
+<tr><td>C11</td><td>DN Rejected</td><td>Sale</td><td>Read Sale, Sale Manager</td><td>po-detail (ตัดสินใจ)</td></tr>
+<tr><td>C12</td><td>DN Postponed</td><td>Shipping</td><td>Read Shipping</td><td>คิวจัดส่ง (PO flag)</td></tr>
+<tr><td>C14</td><td>Overdue</td><td>Finance+Sale</td><td>Read Finance/Sale</td><td>invoice detail</td></tr>
+<tr><td>C15</td><td>PR (วัตถุดิบขาด)</td><td>Stock+Production</td><td>Read Stock/Production</td><td>purchase-request detail</td></tr>
+<tr><td>C16</td><td>stock ติดลบ</td><td>Stock</td><td>Read Stock</td><td>stock (badge แดง)</td></tr>
+<tr><td>C17</td><td>ของเข้าครบ (auto)</td><td>Production+Stock</td><td>Read Production/Stock</td><td>production / PR ที่ปิด</td></tr>
+<tr><td>C19</td><td>PO reopen</td><td>Production/Sale</td><td>Read Production/Sale</td><td>po-detail</td></tr>
+</table>
+<div class="note">กระดิ่งมุมบนขวา → badge รวม → กด expand → กดรายการ = deep link + acknowledge (นับ badge <b>ราย user</b>) — ดู <a href="platform.html#top">US-PLT-02</a></div>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="rbac-deletion.html">RUCDAA + Deletion →</a><a href="walkthrough.html">8 Use Cases</a></div>
+<footer>Cascade 17 แถว (+3) · Notification matrix 14 แถว · Cross-cutting</footer>
+</div></body></html>

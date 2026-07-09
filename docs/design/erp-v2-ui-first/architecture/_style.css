@@ -41,3 +41,14 @@ code{background:#EEF1F4;border-radius:4px;padding:1px 5px;font-family:"JetBrains
 footer{padding:22px 0 40px;color:#7B8794;font-size:12.5px;text-align:center}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#52606D;margin:6px 0 2px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.toc{position:static;max-height:none}.cardgrid{grid-template-columns:1fr}}
+
+/* Endpoint blocks (shared by api-*.html) */
+.ep{border:1px solid #E4E7EB;border-radius:10px;margin:10px 0;overflow:hidden}
+.ep .h{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F4F9F9;border-bottom:1px solid #E4E7EB}
+.ep .path{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;color:#10322F;font-weight:600}
+.ep .b{padding:10px 14px;font-size:13px}
+.ep .b .rt{background:#EEF1F4;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px}
+.m.get{background:#2E9E5B}.m.post{background:#0E7C7B}.m.patch{background:#E0912F}.m.del{background:#D64545}
+pre{background:#0B2E2C;color:#CFE0DE;border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:"JetBrains Mono",Consolas,monospace;font-size:12px;line-height:1.5}
+.err td:first-child{font-family:monospace;color:#B02A2A;white-space:nowrap}

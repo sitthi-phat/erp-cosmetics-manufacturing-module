@@ -1,0 +1,44 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — BOM (สูตรการผลิต) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🧬 API · BOM (สูตรการผลิต)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — BOM + Cost Snapshot</h1>
+ <p>สร้างสูตรจากวัตถุดิบ (ค้นได้). <b>ราคาทุน = สูงสุดของ supplier ที่ active</b> คิด ณ ตอนสร้าง/แก้ + user แก้ทับได้ + <b>snapshot ตอนบันทึก</b> (ไม่คิดใหม่อัตโนมัติ) + <b>badge เตือน "ราคาทุนอาจล้าสมัย"</b> เมื่อราคา supplier ปัจจุบันต่างจาก snapshot. ราคาขาย <b>บังคับกรอก</b>.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#bom">DB: bom</a>
+ <a href="../functional-spec/bom.html">Functional spec (BA)</a>
+ <a href="../mockups/bom.html">Mockup: bom</a>
+ <a href="../mockups/bom-create.html">Mockup: bom-create</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน + badge</a>
+ <a href="#write">สร้าง/แก้ + snapshot</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#2C7BE5"></span>อ่าน + badge ล้าสมัย</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/boms</span></div><div class="b">รายการสูตร + pagination. แต่ละสูตรคืน <code>cost_snapshot</code> + <code>cost_stale</code> (bool = snapshot ต่างจาก max active supplier ปัจจุบัน) → UI ขึ้น badge. <span class="rt">Read bom</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/boms/{id}</span></div><div class="b">รายละเอียด: ส่วนผสม (bom_line) + stock ปัจจุบันของแต่ละวัตถุดิบ (โชว์ประกอบ ไม่บังคับมี stock) + ราคาทุน snapshot vs ปัจจุบัน + ราคาขาย.</div></div>
+</section>
+<section id="write">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้าง / แก้ (snapshot ตอนบันทึก)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/boms</span></div><div class="b">สร้างสูตร: เลือกวัตถุดิบ (ค้นได้) + จำนวน · คิด <b>ราคาทุน = max(active supplier price)</b> อัตโนมัติ (แก้ทับได้ ตั้ง <code>cost_overridden</code>) · <b>snapshot ค่านี้</b> ตอน save · ราคาขาย<b>บังคับ</b>. ถ้าวัตถุดิบไม่มี supplier active → บังคับกรอกราคาทุนเอง. <span class="rt">Create bom</span></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/boms/{id}</span></div><div class="b">แก้สูตร → <b>คิดราคาทุนใหม่ + snapshot ใหม่</b> (จนกว่า save ใหม่ จะยึด snapshot เดิม). audit ทุกช่อง.</div></div>
+ <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/boms/{id}</span></div><div class="b">soft-delete: PO/PRD ที่ snapshot สูตรแล้ววิ่งต่อได้ · เปิด PO ใหม่ด้วยสูตรนี้ไม่ได้ (หายจาก dropdown). <span class="rt">Delete bom · comment</span></div></div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>BOM_SELL_PRICE_REQUIRED</td><td>ไม่กรอกราคาขาย (บังคับ)</td></tr>
+  <tr><td>BOM_COST_REQUIRED_NO_ACTIVE_SUPPLIER</td><td>วัตถุดิบไม่มี supplier active + ไม่กรอกราคาทุนเอง</td></tr>
+  <tr><td>MATERIAL_REFERENCE_DELETED</td><td>ใส่วัตถุดิบที่ถูกลบ</td></tr>
+ </table>
+</section>
+<footer>API · BOM · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#bom + functional-spec/bom</footer>
+</main></div></body></html>

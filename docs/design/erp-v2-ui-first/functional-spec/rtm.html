@@ -1,0 +1,74 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Requirement Traceability Matrix · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:18px;margin:24px 0 8px}
+p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;background:#fff}
+th,td{border:1px solid var(--border2);padding:6px 9px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › RTM</span></header>
+<div class="wrap">
+
+<h1>Requirement Traceability Matrix</h1>
+<p class="sub">Story ↔ mockup ↔ journey (entity-status-map/status-journeys) ↔ Use Case · ให้ Tech-Lead/QA ผูก API/DB + test ต่อได้</p>
+<div class="note">รวม <b>~50 stories / ~150 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case</div>
+
+<table>
+<tr><th>Story</th><th>Module</th><th>mockup</th><th>journey/cascade</th><th>UC</th></tr>
+<tr><td>US-PO-01..06</td><td><a href="po.html">PO</a></td><td>po-create/list/detail</td><td>ESM §1.2/1.3 · C1/C19</td><td>UC1/2/4</td></tr>
+<tr><td>US-PRD-01..06</td><td><a href="production.html">การผลิต</a></td><td>production, po-detail</td><td>ESM §1.4/1.5 · C2/C3/C4/C6/C8/C16</td><td>UC2/3/4/5</td></tr>
+<tr><td>US-QC-01..03</td><td><a href="qc.html">QC</a></td><td>qc</td><td>ESM §1.5/1.6 · C5/C6/C18</td><td>UC3/4/5</td></tr>
+<tr><td>US-SHP-01..03</td><td><a href="shipping.html">จัดส่ง</a></td><td>shipping, delivery-note</td><td>ESM §1.9/1.10 · C9/C10/C11/C12</td><td>UC6/7/8</td></tr>
+<tr><td>US-INV-01..04</td><td><a href="invoice.html">Invoice</a></td><td>invoices/detail/print</td><td>ESM §1.3/1.11 · C13/C14</td><td>UC6</td></tr>
+<tr><td>US-STK-01..04</td><td><a href="stock.html">Stock/GR</a></td><td>stock, goods-receipt</td><td>ESM §1.6/1.8 · C16/C17</td><td>materials</td></tr>
+<tr><td>US-PR-01..03</td><td><a href="purchase-request.html">PR</a></td><td>purchase-request, pr-create</td><td>ESM §1.7 · C15/C17</td><td>materials</td></tr>
+<tr><td>US-SUP-01..02</td><td><a href="supplier.html">Supplier</a></td><td>supplier</td><td>ESM §1 · BOM cost</td><td>materials</td></tr>
+<tr><td>US-BOM-01..02</td><td><a href="bom.html">BOM</a></td><td>bom, bom-create</td><td>ESM §11</td><td>materials</td></tr>
+<tr><td>US-CUS-01..04</td><td><a href="customer.html">ลูกค้า</a></td><td>customers/detail/create</td><td>ESM §1.1 · C1/C8/C14b</td><td>UC1/2/4</td></tr>
+<tr><td>US-RET-01</td><td><a href="return.html">Return</a></td><td>return</td><td>ESM journeys §6 · C18</td><td>materials</td></tr>
+<tr><td>US-DSH-01..02</td><td><a href="dashboard.html">Dashboard</a></td><td>dashboard</td><td>ทุก cascade (drill-down)</td><td>ทุก UC</td></tr>
+<tr><td>US-TRC-01..02</td><td><a href="traceability.html">Trace</a></td><td>trace</td><td>audit ทุกแถว</td><td>UC4/5/6</td></tr>
+<tr><td>US-SET-01..02</td><td><a href="settings.html">Settings</a></td><td>settings</td><td>RUCDAA · VAT</td><td>—</td></tr>
+<tr><td>US-PLT-01..03</td><td><a href="platform.html">Platform</a></td><td>login/home/responsive/shell</td><td>Noti matrix · RBAC guard</td><td>ทุก UC</td></tr>
+</table>
+
+<h2>Exception coverage (30 เคส) — ผูกกับ story</h2>
+<table>
+<tr><th>กลุ่ม exception</th><th>story ที่ครอบ</th></tr>
+<tr><td>วัตถุดิบขาด warning-not-block + auto PR</td><td>US-PO-01, US-PRD-01, US-PR-01</td></tr>
+<tr><td>ราคา 0 / ราคาติดลบ block</td><td>US-PO-01, US-STK-03/04</td></tr>
+<tr><td>PO cancel ทุก stage + reopen คงเลข</td><td>US-PO-04</td></tr>
+<tr><td>QC ไม่ผ่าน → Rework + feedback บังคับ</td><td>US-QC-02, US-PRD-04</td></tr>
+<tr><td>Hold → raise Sale/Stock → แก้ไข PO → ต่อ</td><td>US-PRD-05, US-PO-05</td></tr>
+<tr><td>Potential Delay overlay</td><td>US-PRD-06</td></tr>
+<tr><td>Follow-up + comment บังคับ</td><td>US-CUS-03</td></tr>
+<tr><td>Blacklist/Disabled + ปลด = Admin</td><td>US-CUS-04</td></tr>
+<tr><td>Supplier inactive → ตัดจาก BOM cost</td><td>US-SUP-02, US-BOM-02</td></tr>
+<tr><td>BOM ไม่มี active supplier → block override</td><td>US-BOM-02</td></tr>
+<tr><td>BOM cost stale badge</td><td>US-BOM-01</td></tr>
+<tr><td>GR → ปิด PR อัตโนมัติ / partial → PR ใหม่</td><td>US-STK-02, US-PR-03</td></tr>
+<tr><td>Negative stock + บวกกลับ</td><td>US-PRD-02, US-STK-03</td></tr>
+<tr><td>DN Reject/Postpone/reconcile Partially</td><td>US-SHP-02/03</td></tr>
+<tr><td>overdue หลังส่งของ+เลยเครดิต</td><td>US-INV-03</td></tr>
+<tr><td>void ไม่ลบ (gapless)</td><td>US-INV-04, Deletion §2.8</td></tr>
+<tr><td>Return เกินคงเหลือ lot / comment บังคับ</td><td>US-RET-01</td></tr>
+<tr><td>Notification by Read + ack ราย user</td><td>US-PLT-02</td></tr>
+<tr><td>RBAC guard (Create/Admin/Approve)</td><td>US-PO-06, US-PLT-03, ทุก module</td></tr>
+<tr><td>ไม่โชว์ enum ดิบ + field-level audit</td><td>US-PLT-03, US-TRC-02</td></tr>
+<tr><td>Soft-delete (search เจอ/ไม่โผล่ dropdown/ของเดิมวิ่งต่อ)</td><td><a href="rbac-deletion.html">Deletion (ทุก entity)</a></td></tr>
+</table>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="walkthrough.html">8 Use Cases</a><a href="continuity.html">Cascade</a></div>
+<footer>RTM · Story↔mockup↔journey↔UC + 30-exception coverage · Cross-cutting · ESM = entity-status-map.md</footer>
+</div></body></html>

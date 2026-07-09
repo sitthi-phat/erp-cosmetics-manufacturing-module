@@ -1,0 +1,38 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Return (คืนวัตถุดิบ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">↩️ API · Return (คืนวัตถุดิบ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Return (คืน supplier)</h1>
+ <p>คืนวัตถุดิบที่เสียหาย/QC ขาเข้าไม่ผ่าน: ระบุ lot → auto แสดง supplier → แก้จำนวน → <b>ตัด stock + comment บังคับ</b> (adjust ที่ไม่มี PO). ตัด stock = แถว movement reason=return_out (trace เสมอ).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#return">DB: return</a>
+ <a href="db-schema.html#material">DB: stock ledger</a>
+ <a href="../functional-spec/return.html">Functional spec (BA)</a>
+ <a href="../mockups/return.html">Mockup: return</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#flow">สร้าง/คืน</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="flow">
+ <h2><span class="dot" style="background:#E0912F"></span>สร้าง / คืน</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/lots/{id}</span></div><div class="b">ดึงข้อมูล lot → <b>auto แสดง supplier</b> + ยอดคงเหลือ (ใช้ตอนทำใบคืน).</div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/returns</span></div><div class="b">สร้างใบคืน (ร่าง): lines[{lot_id, qty, reason}]. <span class="rt">Create stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/returns/{id}/confirm</span></div><div class="b">→คืนแล้ว · <b>ตัด stock</b> (movement return_out) · noti Stock (C12). <span class="rt">Update stock · <b>comment บังคับ</b></span></div></div>
+ <div class="note">Lot QC ขาเข้าไม่ผ่าน (C18) → เสนอสร้างใบคืนนี้อัตโนมัติ (ดู <a href="api-qc.html#incoming">api-qc</a>). ใบคืน = void ไม่ลบ.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>RETURN_REASON_REQUIRED</td><td>คืนโดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>RETURN_QTY_EXCEEDS_LOT</td><td>คืนเกินยอดคงเหลือ lot</td></tr>
+ </table>
+</section>
+<footer>API · Return · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#return + functional-spec/return</footer>
+</main></div></body></html>

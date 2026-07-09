@@ -1,0 +1,59 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Notification / Inbox · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🔔 API · Notification / Inbox</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Notification + Deep Link</h1>
+ <p>ทุกการส่งงานข้าม module ยิงแจ้งเตือน. ผู้รับ = ทุกคนที่มีสิทธิ์ <b>Read ของ module ปลายทาง</b>. bell มุมขวาบน → badge รวม → expand เป็นรายการ → <b>กดรายการ = deep link ไปหน้าทำงานต่อ + acknowledge</b> (badge ลดราย user). ใช้ transactional outbox กันหลุด (ADR-005).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#xcut">DB: outbox/notification</a>
+ <a href="../../../adr/005-notification-outbox-readbit-fanout.md">ADR-005</a>
+ <a href="../functional-spec/platform.html">Functional spec (BA)</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">bell / รายการ</a>
+ <a href="#ack">acknowledge</a>
+ <a href="#map">แผนที่ noti (14 เหตุการณ์)</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#0E7C7B"></span>bell / รายการ</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/notifications</span></div><div class="b">รายการ noti ที่ยังไม่ ack ของ user (derive จากสิทธิ์ Read + ลบด้วย notification_ack) · แต่ละรายการมี <code>deepLink</code> (route+params) · badge count. polling ~15s (ADR-005). <span class="rt">ตามสิทธิ์ Read ราย module</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/notifications/badge</span></div><div class="b">เลขรวม badge + แยกราย module (สำหรับ badge เมนูซ้าย).</div></div>
+</section>
+<section id="ack">
+ <h2><span class="dot" style="background:#0E7C7B"></span>acknowledge</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/notifications/{id}/ack</span></div><div class="b">กดอ่าน 1 รายการ → insert notification_ack (idempotent) → badge ลด (5→4). ปกติเรียกพร้อม navigate ตาม deepLink. <span class="rt">ผู้มีสิทธิ์ Read ของ module นั้น</span></div></div>
+</section>
+<section id="map">
+ <h2><span class="dot" style="background:#2C7BE5"></span>แผนที่ noti (จาก status-journeys §10)</h2>
+ <table><tr><th>เหตุการณ์</th><th>เข้า module (Read เห็น)</th><th>deep link</th></tr>
+  <tr><td>ต้องติดตาม (C2b)</td><td>Customer/Sale</td><td>customer detail</td></tr>
+  <tr><td>PR วัตถุดิบขาด (C3)</td><td>Stock + Production</td><td>PR detail</td></tr>
+  <tr><td>ของเข้าครบ (C4)</td><td>Production + Stock</td><td>production/PR</td></tr>
+  <tr><td>PO Confirmed (C5)</td><td>Production</td><td>คิวผลิต</td></tr>
+  <tr><td>QC ไม่ผ่าน (C6)</td><td>Production</td><td>production (feedback)</td></tr>
+  <tr><td>Hold (C7)</td><td>Sale</td><td>PO detail (แก้ PO)</td></tr>
+  <tr><td>เสี่ยงล่าช้า (C7b)</td><td>Sale + Stock</td><td>production order</td></tr>
+  <tr><td>พร้อมส่งมอบ (C8)</td><td>Shipping</td><td>หน้าจัดส่ง</td></tr>
+  <tr><td>DN ส่งถึง (C9)</td><td>Finance + Sale</td><td>invoice/PO billing</td></tr>
+  <tr><td>DN ปฏิเสธ (C10)</td><td>Sale</td><td>PO detail</td></tr>
+  <tr><td>DN เลื่อน (C10b)</td><td>Shipping</td><td>คิวจัดส่ง</td></tr>
+  <tr><td>Overdue (C11)</td><td>Finance + Sale</td><td>invoice detail</td></tr>
+  <tr><td>Return (C12)</td><td>Stock</td><td>return/stock</td></tr>
+  <tr><td>PO reopen (C13) / reassign (C14)</td><td>Production/Sale · sale เดิม+ใหม่</td><td>PO / customer detail</td></tr>
+ </table>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>NOTI_NOT_VISIBLE</td><td>ack noti ของ module ที่ไม่มีสิทธิ์ Read</td></tr>
+ </table>
+</section>
+<footer>API · Notification · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#xcut + functional-spec/platform</footer>
+</main></div></body></html>

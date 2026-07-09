@@ -1,0 +1,53 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Shipping (จัดส่ง 2 ชั้น) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🚚 API · Shipping (จัดส่ง 2 ชั้น)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Shipment (รอบ) + Delivery Note</h1>
+ <p>โครงสร้าง 2 ชั้น: <b>Shipment (รอบจัดส่ง)</b> 1 รอบรวมหลาย <b>DN</b>, และ <b>DN 1 ใบ = 1 PO เสมอ</b> (ลูกค้าเซ็นรายใบ, print ทีละใบ). สร้างรอบจาก PO สถานะ "พร้อมจัดส่ง" (ค้นด้วย PO ID หรือข้อมูลลูกค้า). Reject→PO กลับคิว + raise Sale. Postpone→PO พร้อมจัดส่ง + flag กันจัดส่ง+วันที่ ค้างคิว. รอบจบเมื่อ DN ทุกใบถึงสถานะสุดท้าย.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#ship">DB: shipment/DN</a>
+ <a href="../functional-spec/shipping.html">Functional spec (BA)</a>
+ <a href="../mockups/shipping.html">Mockup: shipping</a>
+ <a href="../mockups/delivery-note.html">Mockup: delivery-note</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#queue">คิวจัดส่ง</a>
+ <a href="#round">สร้างรอบ (Shipment)</a>
+ <a href="#dn">DN (ราย PO)</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="queue">
+ <h2><span class="dot" style="background:#2E9E5B"></span>คิวจัดส่ง</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/shipping/queue</span></div><div class="b">PO สถานะ "พร้อมจัดส่ง" (รวม PO ที่ flag Postpone ค้างคิว) · <b>ค้นด้วย PO ID หรือข้อมูลลูกค้า</b> (ชื่อ/นามสกุล/บริษัท/เบอร์ contact/ชื่อ contact). <span class="rt">Read shipping</span></div></div>
+</section>
+<section id="round">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้างรอบ (Shipment)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/shipping/rounds</span></div><div class="b">สร้างรอบจาก PO ที่เลือก (พร้อมจัดส่งเท่านั้น) → <b>gen 1 DN ต่อ 1 PO</b> รวมเป็นรอบ · gen SHP + DN (gapless) · ข้อมูลรอบ: คนขับ/เบอร์/route/ประเภทรถ · สถานะรอบ = "รับเข้ารอบ". <span class="rt">Create shipping</span></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/shipping/rounds/{id}/dispatch</span></div><div class="b">รอบ→กำลังนำส่ง · DN ทุกใบ→กำลังนำส่ง · PO→กำลังจัดส่ง (C9)</div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/shipping/rounds/{id}</span></div><div class="b">รายละเอียดรอบ + DN ทุกใบ + สถานะ reconcile. รอบ→<b>จบรอบ auto</b> เมื่อ DN ทุกใบ terminal (C10c).</div></div>
+</section>
+<section id="dn">
+ <h2><span class="dot" style="background:#2E9E5B"></span>DN (1 ใบ = 1 PO)</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์</th></tr>
+  <tr><td><code>POST /shipping/dn/{id}/deliver</code></td><td>DN→ส่งถึงแล้ว (ลูกค้าเซ็น) · PO→ส่งถึงแล้ว · <b>เริ่มนับ overdue</b> · noti Finance+Sale (C9)</td><td>Update shipping</td></tr>
+  <tr><td><code>POST /shipping/dn/{id}/reject</code></td><td>DN→ปฏิเสธ · PO กลับ "พร้อมจัดส่ง" (เข้าคิว) · <b>raise Sale</b> (C10)</td><td>Update · comment บังคับ</td></tr>
+  <tr><td><code>POST /shipping/dn/{id}/postpone</code></td><td>DN→เลื่อนส่ง · PO=พร้อมจัดส่ง + <b>flag Postpone+วันที่</b> ค้างคิว (C10b)</td><td>Update · comment + วันที่</td></tr>
+  <tr><td><code>GET /shipping/dn/{id}/print</code></td><td>ข้อมูล print ใบจัดส่งราย order (ให้ลูกค้าเซ็น)</td><td>Read shipping</td></tr>
+ </table>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>SHIP_PO_NOT_READY</td><td>ใส่ PO ที่ไม่ได้อยู่ "พร้อมจัดส่ง" เข้ารอบ</td></tr>
+  <tr><td>DN_REJECT_REASON_REQUIRED</td><td>ปฏิเสธโดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>DN_POSTPONE_DATE_REQUIRED</td><td>เลื่อนส่งโดยไม่ระบุวันที่</td></tr>
+ </table>
+</section>
+<footer>API · Shipping · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#ship + functional-spec/shipping</footer>
+</main></div></body></html>

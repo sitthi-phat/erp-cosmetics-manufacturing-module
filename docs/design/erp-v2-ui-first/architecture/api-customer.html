@@ -1,0 +1,61 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Customer (ลูกค้า) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">👥 API · Customer (ลูกค้า)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 1</span>
+ <h1>API Spec — Customer (6 สถานะ)</h1>
+ <p>ลูกค้ามี 6 สถานะ (ผู้สนใจ/ลูกค้าประจำ/ห่างหาย/<b>ต้องติดตาม</b>/ปิดใช้งาน/บัญชีดำ). "ต้องติดตาม" เป็นสถานะแยกจริง ตั้งโดย Sale/Sale Manager พร้อม comment บังคับ. contact ไม่จำกัด, note timeline, reassign, ประวัติ PO, ค้นด้วย PO/วันที่.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#customer">DB: customer</a>
+ <a href="../functional-spec/customer.html">Functional spec (BA)</a>
+ <a href="../mockups/customers.html">Mockup: customers</a>
+ <a href="../mockups/customer-detail.html">Mockup: customer-detail</a>
+ <a href="../mockups/customer-create.html">Mockup: customer-create</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน/ค้น/dashboard</a>
+ <a href="#write">สร้าง/แก้ + contact/note</a>
+ <a href="#action">เปลี่ยนสถานะ</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#0E7C7B"></span>อ่าน / ค้นหา / dashboard</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/customers</span></div><div class="b">รายการ + pagination · filter <code>status</code> (6 ค่า) · <b>ค้นด้วยเลข PO หรือวันที่สั่งซื้อ</b> (<code>?q</code>, <code>?poNo</code>, <code>?orderFrom&amp;orderTo</code>) · โชว์ sale ที่ดูแล. <span class="rt">Read customers</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/customers/{id}</span></div><div class="b">รายละเอียด: contact ทั้งหมด, note timeline, sale owner, <b>ประวัติ PO ทั้งหมด</b>, สถานะ+เหตุผล Follow-up. หน้า <a href="../mockups/customer-detail.html">customer-detail</a></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/customers/dashboard</span></div><div class="b"><b>Sale dashboard tiles + drill-down</b>: ลูกค้าประจำ / ห่างหาย / <b>ต้องติดตาม</b> / PO เดือนนี้ / ค้างชำระ — แต่ละ tile คืน list + pagination + deep link เข้า customer detail (auto-refresh 15s, ค้าง view เดิม). <span class="rt">Read customers</span></div></div>
+</section>
+<section id="write">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้าง / แก้ + ผู้ติดต่อ / โน้ต</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/customers</span></div><div class="b">สร้างลูกค้า (สถานะเริ่ม "ผู้สนใจ") + ผู้ติดต่อหลัก + เลขผู้เสียภาษี 13 หลัก + credit_days + inactive_after_months (default 3). <span class="rt">Create customers</span> หน้า <a href="../mockups/customer-create.html">customer-create</a></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/customers/{id}</span></div><div class="b">แก้ข้อมูล (audit ทุก field, ส่ง version กันชน). ลบ = soft-delete (ADR-009: PO เดิมวิ่งต่อ, ห้ามเปิด PO ใหม่).</div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/customers/{id}/contacts</span></div><div class="b">เพิ่มผู้ติดต่อ (<b>ไม่จำกัด</b>) · ตั้งผู้ติดต่อหลัก. ลบผู้ติดต่อหลักคนเดียวไม่ได้ (ต้องตั้งใหม่ก่อน). หน้า <a href="../mockups/contact-create.html">contact-create</a></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/customers/{id}/notes</span></div><div class="b">เพิ่มโน้ต timeline (บันทึกการจัดการ).</div></div>
+</section>
+<section id="action">
+ <h2><span class="dot" style="background:#E0912F"></span>เปลี่ยนสถานะ (action endpoints)</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
+  <tr><td><code>POST /customers/{id}/follow-up</code></td><td>→ต้องติดตาม (จาก Lead/Active/Inactive) · โผล่ tile "ต้องติดตาม" Sale dashboard · ผูก use case Production Hold เหตุลูกค้า (C7→C2b)</td><td>Sale/Sale Manager · <b>comment บังคับ</b></td></tr>
+  <tr><td><code>POST /customers/{id}/clear-follow-up</code></td><td>ต้องติดตาม→Active (ถ้ามี order) / Inactive</td><td>Sale · comment optional</td></tr>
+  <tr><td><code>POST /customers/{id}/disable</code></td><td>→ปิดใช้งาน (ซ่อน/เตือนตอนเปิด PO)</td><td>Sale Manager/Admin · comment บังคับ</td></tr>
+  <tr><td><code>POST /customers/{id}/blacklist</code></td><td>→บัญชีดำ</td><td>Sale Manager/Admin · comment บังคับ</td></tr>
+  <tr><td><code>POST /customers/{id}/unblacklist</code></td><td>บัญชีดำ→Active (ปลด)</td><td><b>Admin customers</b> · comment บังคับ</td></tr>
+  <tr><td><code>POST /customers/{id}/reassign</code></td><td>เปลี่ยน sale owner · noti sale เดิม+ใหม่ (C14)</td><td><b>Admin</b>/Sale Manager · trace</td></tr>
+ </table>
+ <div class="note">Lead→Active (PO ใบแรก) และ Active↔Inactive (รอบ config) เป็น <b>auto</b> (cascade/scheduler) ไม่ใช่ endpoint ตรง — badge อธิบายเหตุผล.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>CUSTOMER_FOLLOWUP_COMMENT_REQUIRED</td><td>ตั้งต้องติดตามโดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>CONTACT_PRIMARY_REQUIRED</td><td>ลบผู้ติดต่อหลักคนเดียว</td></tr>
+  <tr><td>CUSTOMER_HAS_ACTIVE_PO</td><td>ลบลูกค้าที่มี PO active (soft-delete: PO เดิมวิ่งต่อ, ห้าม PO ใหม่)</td></tr>
+  <tr><td>FORBIDDEN_RUCDAA</td><td>สิทธิ์ไม่พอ (เช่นปลดบัญชีดำต้อง Admin)</td></tr>
+ </table>
+</section>
+<footer>API · Customer · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#customer + functional-spec/customer</footer>
+</main></div></body></html>

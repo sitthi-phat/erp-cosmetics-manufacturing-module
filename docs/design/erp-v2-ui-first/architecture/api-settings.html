@@ -1,0 +1,58 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Settings (ตั้งค่าระบบ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">⚙️ API · Settings (ตั้งค่าระบบ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 3</span>
+ <h1>API Spec — Settings (5 หน้าจอ)</h1>
+ <p>5 หน้าจอ: (1) Role &amp; สิทธิ์ RUCDAA + สร้าง role (2) ผู้ใช้ + สร้าง user + ผูก Google (3) VAT + วันมีผล (4) ข้อมูลบริษัท (5) Audit log. สิทธิ์จัดการส่วนใหญ่ต้องบิต <b>Admin</b> ของ module settings.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#auth">DB: role/user</a>
+ <a href="db-schema.html#xcut">DB: vat/company/audit</a>
+ <a href="../functional-spec/settings.html">Functional spec (BA)</a>
+ <a href="../mockups/settings.html">Mockup: settings</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#role">Role &amp; สิทธิ์</a>
+ <a href="#user">ผู้ใช้</a>
+ <a href="#vat">VAT + บริษัท</a>
+ <a href="#audit">Audit log</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="role">
+ <h2><span class="dot" style="background:#10322F"></span>Role &amp; สิทธิ์ (RUCDAA)</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/roles</span></div><div class="b">รายการ role + matrix สิทธิ์ราย module (6 บิต RUCDAA). <span class="rt">Read settings</span></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/roles</span></div><div class="b">สร้าง role (ไม่จำกัด) + ตั้งสิทธิ์ราย module. <span class="rt">Admin settings</span></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/roles/{id}/permissions</span></div><div class="b">แก้ matrix สิทธิ์ (audit ทุกช่อง). แก้บิต <code>r</code> = เปลี่ยนผู้รับ noti ของ module นั้นทันที (ADR-005).</div></div>
+ <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/roles/{id}</span></div><div class="b">soft-delete: <b>ห้ามลบถ้ายังมี user ผูก</b> (ADR-009 — ต้องย้าย user ก่อน). <span class="rt">Admin</span></div></div>
+</section>
+<section id="user">
+ <h2><span class="dot" style="background:#10322F"></span>ผู้ใช้งาน</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/users</span></div><div class="b">สร้าง user ใต้ role + ตั้ง username/password (bcrypt). <span class="rt">Admin settings</span></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/users/{id}/link-google</span></div><div class="b">ผูกบัญชี Google (Admin กรอก sub/email) → เปิด Google Login (ADR-007).</div></div>
+ <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/users/{id}</span></div><div class="b">soft-delete + ปิด login · <b>ต้อง reassign ลูกค้า/งานค้างก่อน</b> (ADR-009). ประวัติการกระทำคงอยู่.</div></div>
+</section>
+<section id="vat">
+ <h2><span class="dot" style="background:#2C7BE5"></span>VAT + วันมีผล + ข้อมูลบริษัท</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/vat-configs</span></div><div class="b">ตั้งเรต VAT + <b>effective date</b> (เก็บเป็นประวัติ). invoice ยึดเรตที่มีผล ณ วันออก (snapshot). <span class="rt">Admin settings</span></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/company-profile</span></div><div class="b">ข้อมูลผู้ออกใบกำกับภาษี (ชื่อ/ที่อยู่/เลขผู้เสียภาษี/โลโก้) — ใช้ในหน้า invoice-print.</div></div>
+</section>
+<section id="audit">
+ <h2><span class="dot" style="background:#D64545"></span>Audit log</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/audit-log</span></div><div class="b">ค้น audit ระดับ field ทั้งระบบ (ใครทำอะไร ค่าไหนเปลี่ยน จากอะไรเป็นอะไร) + date-range/time + entity. keyset paging (1.2M แถว &lt;2s). <span class="rt">Read settings (หรือ Trace)</span></div></div>
+ <div class="note">Archive/purge audit เป็น text file = เฉพาะ <b>Super User</b> (ดู <a href="api-trace.html">api-trace</a>). เก็บ online 1 ปี ไม่มี auto-purge (NFR).</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>ROLE_HAS_USERS</td><td>ลบ role ที่ยังมี user</td></tr>
+  <tr><td>USER_HAS_ASSIGNMENTS</td><td>ลบ user ที่ยังมีลูกค้า/งานค้าง (ต้อง reassign)</td></tr>
+  <tr><td>VAT_EFFECTIVE_OVERLAP</td><td>วันมีผลซ้อนทับเรตเดิม</td></tr>
+ </table>
+</section>
+<footer>API · Settings · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#auth + functional-spec/settings</footer>
+</main></div></body></html>

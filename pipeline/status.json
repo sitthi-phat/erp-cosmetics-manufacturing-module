@@ -1346,6 +1346,61 @@
           "summary": "STAGE 2 DESIGN delivered (Gate-1 approved r4). 9 ADRs + DB schema web + Tier-1 API specs (po/production/stock/invoice) + Architecture hub with system+service SVG diagrams (Phase2 local -> Phase3 GCP). Every page has Thai narrative for non-engineer review at Gate 2; diagrams self-contained. Key decisions: append-only stock ledger with negative-stock + FIFO retro-link (also fixes DEF-09 class); generic app-layer field-audit; action-endpoint state machine + standard envelope; outbox+Read-bit notification; storage abstraction (GCS-ready); local+Google auth with RUCDAA + 06:00 daily re-login; gapless per-period numbering; soft-delete + reference-guard. Self-reviewed: 111 cross-links verified (fixed 2 path bugs in db-schema), functional-spec cross-links live (BA done). REMAINING (next): api pages for customer/qc/shipping/supplier/bom/pr/settings/trace/notification (Tier 2/3) — Tier-1 done first per directive. Feature-level status left untouched (BA parallel).",
           "overridden_by": null,
           "updated_at": "2026-07-09T18:30:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "stage2-design-complete",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "All remaining Tier 2/3 API pages created: customer, qc, shipping, supplier, bom, pr, settings, trace, notification, dashboard(drill-down), return",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Each API page: action endpoint per transition + error envelope + pagination + noti/deep-link + Thai narrative + cross-link to functional-spec(BA)+db-schema+mockups",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "architecture/index.html §5 updated to link ALL 15 module API pages; intro/coverage reflect complete",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Self-review: 195 cross-links across 17 files all resolve (0 broken); all api pages backlink index + functional-spec",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Coverage complete: 17 cascades + deletion 7 + exception classes + NFR9 mapped; every module in db-schema now has an API page",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch feature-level status / no git",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/architecture/api-customer.html",
+            "docs/design/erp-v2-ui-first/architecture/api-qc.html",
+            "docs/design/erp-v2-ui-first/architecture/api-shipping.html",
+            "docs/design/erp-v2-ui-first/architecture/api-supplier.html",
+            "docs/design/erp-v2-ui-first/architecture/api-bom.html",
+            "docs/design/erp-v2-ui-first/architecture/api-pr.html",
+            "docs/design/erp-v2-ui-first/architecture/api-settings.html",
+            "docs/design/erp-v2-ui-first/architecture/api-trace.html",
+            "docs/design/erp-v2-ui-first/architecture/api-notification.html",
+            "docs/design/erp-v2-ui-first/architecture/api-dashboard.html",
+            "docs/design/erp-v2-ui-first/architecture/api-return.html",
+            "docs/design/erp-v2-ui-first/architecture/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "STAGE 2 DESIGN COMPLETE. Added 11 remaining API pages (customer/qc/shipping/supplier/bom/pr/settings/trace/notification/dashboard/return) to the 4 Tier-1 already delivered = 15 module API specs, all same standard: action-endpoint-per-transition + envelope + pagination + noti/deep-link + Thai narrative + cross-links to BA functional-spec (16 files) + db-schema anchors + mockups. Updated architecture/index.html §5 to link every module; coverage now complete (17 cascades + deletion 7 + exception classes + NFR9 all have a home; every db-schema module has an API page). Self-reviewed: 195 cross-links across 17 architecture files resolve, 0 broken. Full Stage-2 Tech-Lead deliverable set = 9 ADRs + db-schema.html + architecture index (system+service SVG diagrams) + 15 api-*.html. Feature-level status left untouched (parallel agents).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T21:00:00+07:00"
         }
       ]
     }

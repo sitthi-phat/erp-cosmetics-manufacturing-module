@@ -1,0 +1,54 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Purchase Request (คำขอสั่งซื้อ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">📥 API · Purchase Request (คำขอสั่งซื้อ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Purchase Request (PR)</h1>
+ <p>PR เกิด 2 ทาง: <b>auto จาก PO วัตถุดิบขาด</b> หรือ <b>Stock สร้างตรงจากหน้า PR</b>. "ของเข้าครบ" = auto จาก Goods Receipt (ผูก lot). "รับทราบ" + "ปิดคำขอ" = manual. รับไม่ครบ → "รับบางส่วน" + เสนอสร้าง PR ใหม่. PR <b>ยกเลิก (void) ไม่ลบ</b>.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#pr">DB: PR</a>
+ <a href="api-stock.html#gr">API: Goods Receipt</a>
+ <a href="../functional-spec/purchase-request.html">Functional spec (BA)</a>
+ <a href="../mockups/purchase-request.html">Mockup: purchase-request</a>
+ <a href="../mockups/pr-create.html">Mockup: pr-create</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน</a>
+ <a href="#write">สร้าง</a>
+ <a href="#action">สถานะ</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#2C7BE5"></span>อ่าน</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/purchase-requests</span></div><div class="b">รายการ + pagination + filter สถานะ (เปิด/รับทราบ/รับบางส่วน/ของเข้าครบ/ปิด/ยกเลิก) + source (auto|manual). โผล่ Stock + Production dashboard. <span class="rt">Read stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/purchase-requests/{id}</span></div><div class="b">รายละเอียด + วัตถุดิบที่ขอ + PO ต้นทาง (ถ้า auto) + lot ที่รับเข้าปิดคำขอ.</div></div>
+</section>
+<section id="write">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้าง (ตรงได้)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/purchase-requests</span></div><div class="b">Stock สร้างตรง: หลายวัตถุดิบต่อคำขอ (dropdown ค้นได้) + อ้าง PO ได้ · gen PR-{6} (gapless) · สถานะ "เปิดคำขอ". <span class="rt">Create stock</span> หน้า <a href="../mockups/pr-create.html">pr-create</a></div></div>
+ <div class="note">PR แบบ auto เกิดจาก <code>POST /po/{id}/confirm</code> เมื่อวัตถุดิบขาด (C3/C15) — ไม่ใช่ endpoint นี้.</div>
+</section>
+<section id="action">
+ <h2><span class="dot" style="background:#E0912F"></span>เปลี่ยนสถานะ</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร</th><th>สิทธิ์</th></tr>
+  <tr><td><code>POST /purchase-requests/{id}/acknowledge</code></td><td>เปิด→รับทราบ (manual)</td><td>Update stock</td></tr>
+  <tr><td><code>POST /purchase-requests/{id}/close</code></td><td>ของเข้าครบ→ปิดคำขอ (manual)</td><td>Update stock</td></tr>
+  <tr><td><code>POST /purchase-requests/{id}/void</code></td><td>ยกเลิก (ไม่ลบ)</td><td>Delete stock · comment บังคับ</td></tr>
+ </table>
+ <div class="note">"ของเข้าครบ / รับบางส่วน" = <b>auto จาก Goods Receipt</b> (ผูก lot รายบรรทัด) ไม่ใช่ manual — ดู <a href="api-stock.html#gr">api-stock › GR</a> (C4/C17).</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>PR_EMPTY_LINES</td><td>สร้างคำขอไม่มีรายการ</td></tr>
+  <tr><td>PR_VOID_REASON_REQUIRED</td><td>ยกเลิกโดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>PR_INVALID_TRANSITION</td><td>เปลี่ยนสถานะผิดลำดับ</td></tr>
+ </table>
+</section>
+<footer>API · Purchase Request · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#pr + functional-spec/purchase-request</footer>
+</main></div></body></html>

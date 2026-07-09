@@ -1,0 +1,47 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Traceability (สืบย้อนกลับ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🔗 API · Traceability (สืบย้อนกลับ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
+ <h1>API Spec — Traceability + Audit ระดับ field</h1>
+ <p>ค้นได้ทุก entity (ลูกค้า/PO/วัตถุดิบ/PR/Supplier/BOM/การผลิต/การจัดส่ง) · มุมมองการผลิต (status) + การจัดส่ง (รอบ+DN) · date-range + time · <b>audit ระดับ field</b> (ใครทำอะไร ค่าไหนเปลี่ยน จากอะไรเป็นอะไร) · GMP chain raw Lot→Batch→FG · archive เป็น text file เฉพาะ Super User.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#xcut">DB: audit_log</a>
+ <a href="../functional-spec/traceability.html">Functional spec (BA)</a>
+ <a href="../mockups/trace.html">Mockup: trace</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#search">ค้น/audit</a>
+ <a href="#gmp">GMP chain</a>
+ <a href="#archive">archive (Super User)</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="search">
+ <h2><span class="dot" style="background:#10322F"></span>ค้นหา / audit ระดับ field</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/trace/search</span></div><div class="b">
+  <code>?entityType=customer|po|material|pr|supplier|bom|production|shipping</code> · <code>?q</code> (เลข/ชื่อ) · <code>?from&amp;to</code> (date-range + time) · <code>?dateField=created|shipped</code> · <code>includeDeleted</code>. คืนไทม์ไลน์ + <b>audit ระดับ field</b> (timestamp | user | entity | field | old → new). <b>keyset paging</b> (1.2M แถว &lt;2s เพดาน 3s). <span class="rt">Read trace</span> หน้า <a href="../mockups/trace.html">trace</a>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/trace/{entityType}/{id}</span></div><div class="b">ประวัติเต็มของ entity เดียว: การเปลี่ยนสถานะ + ทุก field ที่แก้ + เหตุผล/comment. อ่านจาก <code>audit_log</code> เดียว (ADR-003).</div></div>
+</section>
+<section id="gmp">
+ <h2><span class="dot" style="background:#2E9E5B"></span>GMP chain (raw Lot → Batch → FG)</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/trace/gmp/{batchId}</span></div><div class="b">ไล่สาย GMP: Batch → วัตถุดิบ Lot ที่ใช้ (จาก <code>batch_material_consumption</code>) → supplier/GR → PO/ลูกค้า. รวม lot ที่ผูกย้อนหลังด้วย <b>retro-alloc</b> (กรณีเคยตัดสต็อกติดลบ) — คง trace แม้ผลิตก่อนของเข้า (ADR-001).</div></div>
+</section>
+<section id="archive">
+ <h2><span class="dot" style="background:#D64545"></span>archive / purge (Super User เท่านั้น)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/trace/archive</span></div><div class="b">export audit ช่วงวันที่เป็น <b>text file</b> (ผ่าน StorageService → disk/GCS) แล้วอาจ purge แถวที่ export. <b>ทั้ง export และ purge ถูก audit เอง</b>. เก็บ online 1 ปี ไม่มี auto-purge (NFR). <span class="rt">สิทธิ์: Super User (Admin trace)</span></div></div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>TRACE_ARCHIVE_FORBIDDEN</td><td>ไม่ใช่ Super User</td></tr>
+  <tr><td>TRACE_RANGE_TOO_LARGE</td><td>ช่วงค้นกว้างเกิน (แนะให้ใส่ date-range)</td></tr>
+ </table>
+</section>
+<footer>API · Traceability · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#xcut + functional-spec/traceability</footer>
+</main></div></body></html>
