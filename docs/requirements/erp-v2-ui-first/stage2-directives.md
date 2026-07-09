@@ -19,3 +19,20 @@
 
 ## ลำดับ review ของ Stage 2
 BA stories → PO review → ปอนด์ review (Gate 2 = ปอนด์อนุมัติ requirements + NFR)
+
+## Output Definition (ปอนด์กำหนดเพิ่ม 2026-07-09 — ก่อน approve Gate 1)
+
+**เป้าหมาย Stage 2: ยังไม่เริ่ม development — ทำให้ use case ครบและดีพอที่ Tech-Lead, QA,
+Engineer เข้าใจและพร้อมพัฒนา**
+
+1. **BA → "Functional Spec" เป็นเว็บ static** (แบบเดียวกับ mockup gallery):
+   - reference ถึงหน้าจอ mockup จริง
+   - อธิบาย use case ของแต่ละ module
+   - มี user stories อยู่ในเว็บนี้
+2. **Tech-Lead → update/เพิ่มใน Functional Spec เดียวกัน**: map **API และ database
+   table/field** ให้ชัดเจน (ผูกกับหน้าจอ/use case)
+3. **Tech-Lead → เพิ่มส่วน Architecture** แยกหน้า แต่ **link ได้จาก functional web**:
+   เห็น **service diagram และ system diagram**
+4. **PO ตรวจงาน BA ทุกครั้งที่แก้/เพิ่ม**: requirement ต้องครบ **ทุก journey flow
+   ต้องจบทุก case** แล้วจึงส่งปอนด์
+5. ทีมมีข้อกังวลอะไร ให้ถามปอนด์มาได้เลย (batch เป็นชุด)
