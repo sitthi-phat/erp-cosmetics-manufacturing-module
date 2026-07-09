@@ -64,8 +64,16 @@ pre{background:#0B2E2C;color:#CFE0DE;border-radius:8px;padding:12px 14px;overflo
  <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/po/{id}</span></div><div class="b">
   แก้ header/line (จำนวน/สินค้า/ราคา/วันส่ง) — ได้เสมอตามสถานะที่อนุญาต รวม<b>เคส Hold ที่ Sale แก้ได้ทั้งหมด</b>. ทุก field ที่แก้ลง audit. ต้องส่ง <code>version</code> (กันแก้ชนกัน → 409). <span class="rt">สิทธิ์: Update po</span>
  </div></div>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/material-check</span></div><div class="b">
-  เช็ควัตถุดิบตาม BOM+จำนวน (ใช้ตอนสร้าง/แก้): คืน "ครบ/ขาดอะไรกี่หน่วย" — ขาด = เตือน + เสนอสร้าง PR (ไม่บล็อก).
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/po/suggest</span></div><div class="b">
+  <b>suggest + auto-calc (US-PO-07)</b> ตอนเพิ่มสินค้า: ส่ง lines[{item_type, bom_id|material_id, qty}] → ระบบคืนต่อบรรทัด:<br>
+  ① <b>ราคา default ต่อชนิด</b>: BOM → <code>bom.sell_price</code> · วัตถุดิบตรง → <code>material.default_sell_price</code> (แก้ทับได้เสมอ, 0 ได้)<br>
+  ② <b>วัตถุดิบที่ต้องใช้</b>: สำหรับ line ที่เป็น BOM คำนวณ <code>Σ(bom_line.qty × po_line.qty)</code> ต่อวัตถุดิบ (รวมข้ามหลาย BOM line)<br>
+  ③ <b>เทียบ on_hand</b>: ต่อวัตถุดิบ คืน <code>required</code> vs <code>on_hand</code> (จาก stock_balance) → <code>shortBy</code> ถ้าขาด<br>
+  ④ <b>สรุป</b>: <code>{ ok | shortages:[{material, required, onHand, shortBy}] }</code> — ขาด = <b>เตือน (ไม่บล็อก)</b> + เสนอสร้าง PR ส่วนที่ขาด.
+  <span class="rt">Read po/stock/bom</span>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/material-check?poId=</span></div><div class="b">
+  เช็คซ้ำสำหรับ PO ที่มีอยู่ (ก่อนยืนยัน) — ตรรกะเดียวกับ suggest ③④.
  </div></div>
 </section>
 <section id="action">

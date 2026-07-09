@@ -1,12 +1,13 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>API — Dashboard (แดชบอร์ด 7 แผนก) · ESSENCE Hub System</title>
+<title>API — Dashboard (7 แผนก × 29 tile) · ESSENCE Hub System</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="_style.css"></head><body>
+<link rel="stylesheet" href="_style.css">
+<style>.ev{color:#1F5EDB;font-weight:600}.st{color:#1E7A44;font-weight:600}</style></head><body>
 <div class="hero"><div class="wrap">
- <div class="brand">📊 API · Dashboard (7 แผนก)</div>
- <span class="tag">ESSENCE Hub System · Stage 2 · Tier 2</span>
- <h1>API Spec — Dashboard + Drill-down</h1>
- <p>แดชบอร์ดราย 7 แผนก (ขาย/คลัง/ผลิต/QC/จัดส่ง/การเงิน/Admin). <b>ทุก KPI tile drill-down ได้</b> → list + pagination + กดเข้า module พร้อม context. auto-refresh 15s (<b>ค้าง view เดิม</b> ผ่าน query param). date filter (วันนี้/สัปดาห์/เดือนนี้=default/กำหนดเอง) มีผลทุก tile. ทุก tile มี 2 endpoint: summary (นับ) + list (drill).</p>
+ <div class="brand">📊 API · Dashboard (7 แผนก × 29 tile)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · delta review (69 stories/207 AC)</span>
+ <h1>API Spec — Dashboard + Drill-down (ครบ 29 tile)</h1>
+ <p>แดชบอร์ด 7 แผนก. ทุก tile มี <b>สูตรนับ + ชนิด (event/state) + summary endpoint + list(drill) endpoint + drill columns → deep link</b>. <b>สิทธิ์เห็น = Read ของ module ปลายทาง (ไม่ใช่ role)</b> (ปอนด์ยืนยัน). date filter (preset/custom) มีผลทุก tile. auto-refresh 15s คง filter+view. อ้าง <a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit §2</a> + <a href="../functional-spec/dashboard.html">functional-spec/dashboard</a>.</p>
 </div></div>
 <div class="layout">
 <nav class="toc">
@@ -14,35 +15,108 @@
  <a href="../functional-spec/dashboard.html">Functional spec (BA)</a>
  <a href="../mockups/dashboard.html">Mockup: dashboard</a>
  <h4>ในหน้านี้</h4>
- <a href="#pattern">รูปแบบ tile</a>
- <a href="#tiles">tile ราย 7 แผนก</a>
+ <a href="#perm">สิทธิ์ = Read (ไม่ใช่ role)</a>
+ <a href="#date">date filter + event/state</a>
+ <a href="#pattern">รูปแบบ endpoint</a>
+ <a href="#sale">Sale (5)</a>
+ <a href="#stock">Stock (4)</a>
+ <a href="#prod">Production (4)</a>
+ <a href="#qc">QC (4)</a>
+ <a href="#ship">Shipping (4)</a>
+ <a href="#fin">Finance (4)</a>
+ <a href="#admin">Admin (4)</a>
  <a href="#err">error</a>
 </nav>
 <main>
-<section id="pattern">
- <h2><span class="dot" style="background:#2C7BE5"></span>รูปแบบ tile (ใช้ทุกแผนก)</h2>
- <div class="why">แต่ละ tile มี 2 endpoint คู่กัน เพื่อให้กด tile แล้วเปิด list ที่ filter ตรง context เดิม + กดรายการ deep link เข้า module. date filter + auto-refresh เก็บใน query param ไม่ใช่ state ฝั่ง server (refresh แล้วอยู่ view เดิม).</div>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/summary?dateRange=</span></div><div class="b">คืนตัวเลขทุก tile ของแผนก + caption (ในช่วง vs ตอนนี้). <span class="rt">Read {dept}</span></div></div>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/tiles/{tileKey}?page&amp;dateRange=</span></div><div class="b">drill-down: list + pagination ของ tile นั้น · แต่ละแถวมี deepLink เข้า module พร้อม context.</div></div>
+<section id="perm">
+ <h2><span class="dot" style="background:#10322F"></span>สิทธิ์การเห็น = Read permission (ไม่ใช่ role)</h2>
+ <div class="why"><b>ปอนด์ยืนยัน:</b> การเห็นแผนกในแดชบอร์ดยึด <b>สิทธิ์ Read ของ module นั้น ๆ</b> ไม่ใช่ชื่อ role — role ไหนก็ตามที่ role_permission มี <code>r=true</code> ของ module = เห็นแผนกนั้น. หลาย Read = สลับได้หลายแผนก. สอดคล้องกับ noti (ADR-005/007) ที่ใช้ Read bit เหมือนกัน.</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/departments</span></div><div class="b"><b>ตัวสลับแผนก (multi-dept switcher)</b>: คืนรายชื่อแผนกที่ user มีสิทธิ์ Read (sale/stock/production/qc/shipping/finance/admin) — UI แสดงเป็น tab/selector. ไม่มี Read แผนกใด = ไม่โผล่ในตัวสลับ + เข้า URL ตรง → 403. <span class="rt">อ่านจาก role_permission ของ user</span></div></div>
 </section>
-<section id="tiles">
- <h2><span class="dot" style="background:#0E7C7B"></span>tile ราย 7 แผนก (ตัวอย่าง tileKey)</h2>
- <table><tr><th>แผนก (dept)</th><th>tiles (drill-down ได้ทุกตัว)</th></tr>
-  <tr><td><b>sale</b></td><td>ลูกค้าประจำ · ห่างหาย · <b>ต้องติดตาม</b> · PO เดือนนี้ · ค้างชำระ → list ลูกค้า/PO + เข้า detail</td></tr>
-  <tr><td><b>stock</b></td><td>ใกล้หมด · ล็อตรอ QC · คำขอ PR ค้าง · <b>สต็อกติดลบ</b> → list + เข้า module</td></tr>
-  <tr><td><b>production</b></td><td>คิวรอรับงาน · คิวงานผลิต · เสี่ยงล่าช้า · พักงาน (Hold) · เสร็จวันนี้</td></tr>
-  <tr><td><b>qc</b></td><td>Lot รอตรวจรับ · Batch รอ QC · ไม่ผ่านวันนี้</td></tr>
-  <tr><td><b>shipping</b></td><td>PO พร้อมจัดส่ง · รอบกำลังนำส่ง · DN เลื่อน/ปฏิเสธ</td></tr>
-  <tr><td><b>finance</b></td><td>รอวางบิล · ค้างชำระ · <b>เกินกำหนด+จำนวนวัน</b> · รับชำระวันนี้</td></tr>
-  <tr><td><b>admin</b></td><td>ผู้ใช้ · role · audit ล่าสุด · การตั้งค่าระบบ</td></tr>
+<section id="date">
+ <h2><span class="dot" style="background:#2C7BE5"></span>date filter + นิยาม event vs state</h2>
+ <div class="why"><b>date filter</b> (query param ทุก endpoint ด้านล่าง): <code>?range=today|week|month|custom</code> (default <b>month</b>) · ถ้า custom → <code>from</code> &amp; <code>to</code>. มีผลกับ tile ชนิด <span class="ev">event</span> เท่านั้น. <b>refresh/auto-refresh เก็บ range+view ใน query param</b> (ไม่รีเซ็ต ไม่เด้งกลับ). custom ที่ from &gt; to → ไม่ยิง query (error).<br>
+ <span class="ev">event</span> = นับเหตุการณ์ที่เกิด<b>ในช่วง</b>ที่เลือก (เช่น PO ที่สร้างในเดือนนี้) · <span class="st">state</span> = snapshot ปัจจุบัน<b>ไม่ขึ้นกับช่วง</b> (เช่น สต็อกใกล้หมดตอนนี้). backend คิดตามชนิดที่ระบุในตารางแต่ละ tile.</div>
+</section>
+<section id="pattern">
+ <h2><span class="dot" style="background:#0E7C7B"></span>รูปแบบ endpoint (ต่อ tile มี 2 ตัว)</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/summary?range=&amp;from=&amp;to=</span></div><div class="b">ตัวเลข + caption ("ในช่วง"/"ตอนนี้") ของทุก tile ในแผนก + เวลา refresh ล่าสุด. <span class="rt">Read {dept}</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/dashboard/{dept}/tiles/{tileKey}?range=&amp;from=&amp;to=&amp;page=&amp;pageSize=</span></div><div class="b">drill-down: list + pagination + คอลัมน์ตามตาราง + deepLink ต่อแถว. tile=0 → empty state "ไม่มีรายการ". เปลี่ยน range ระหว่าง drill เปิด → tile ชนิด event รีคำนวณ.</div></div>
+</section>
+
+<section id="sale">
+ <h2><span class="dot" style="background:#0E7C7B"></span>Sale — <code>dept=sale</code> · Read sale (5 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill → deep link</th></tr>
+  <tr><td>regular</td><td>count(customer.status=Active AND มี order ในช่วง)</td><td class="ev">event</td><td>ชื่อ/สถานะ → customer-detail</td></tr>
+  <tr><td>inactive</td><td>count(customer transition→Inactive ในช่วง; เกณฑ์ = inactive_after_months ของลูกค้า)</td><td class="ev">event</td><td>ชื่อ/เหตุ → customer-detail</td></tr>
+  <tr><td>po_month</td><td>count(po.created_date ในช่วง)</td><td class="ev">event</td><td>PO/ลูกค้า/สถานะ → po-detail</td></tr>
+  <tr><td>awaiting_pay</td><td>count(invoice.status=รอชำระ AND ยังไม่เกินกำหนด AND issued ในช่วง)</td><td class="ev">event</td><td>INV/ครบกำหนด → invoice-detail</td></tr>
+  <tr><td>follow_up</td><td>count(customer.status=Follow-up ที่ยังค้าง)</td><td class="st">state</td><td>ชื่อ/เหตุผล comment → customer-detail</td></tr>
  </table>
- <div class="note">user หลาย role → สลับแผนกได้. tile ทั้งหมดคือ drill-down ของ list endpoint ในแต่ละ module (ใช้ endpoint เดียวกับหน้า list ปกติ + filter) — ไม่สร้างข้อมูลซ้ำ.</div>
+</section>
+<section id="stock">
+ <h2><span class="dot" style="background:#2C7BE5"></span>Stock — <code>dept=stock</code> · Read stock (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill → deep link</th></tr>
+  <tr><td>low_stock</td><td>count(material ที่ on_hand ≤ low_stock_threshold; <b>เฉพาะที่ตั้ง threshold</b> — null=ไม่นับ)</td><td class="st">state</td><td>วัตถุดิบ/คงเหลือ → stock</td></tr>
+  <tr><td>lot_await_qc</td><td>count(lot.qc_status=รอตรวจรับ)</td><td class="st">state</td><td>lot/วัตถุดิบ → qc</td></tr>
+  <tr><td>pr_pending</td><td>count(PR.status ∈ {เปิดคำขอ, รับทราบ, รับบางส่วน})</td><td class="st">state</td><td>PR/สถานะ → purchase-request</td></tr>
+  <tr><td>stock_value</td><td><b>Σ(on_hand × ราคาซื้อล่าสุดของ lot ล่าสุดของวัตถุดิบนั้น)</b> — COGS นอก scope (ปอนด์ยืนยัน: last buy price ของ lot)</td><td class="st">state</td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr>
+ </table>
+ <div class="note">มูลค่าสต็อก อ้าง <code>lot.buy_price</code> ของ lot ล่าสุดต่อวัตถุดิบ (ดู <a href="api-stock.html#value">api-stock › มูลค่าสต็อก</a> + <a href="db-schema.html#material">db-schema lot.buy_price</a>). ติดลบ → มูลค่าติดลบตามจริง (ไม่ clamp).</div>
+</section>
+<section id="prod">
+ <h2><span class="dot" style="background:#E0912F"></span>Production — <code>dept=production</code> · Read production (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+  <tr><td>queue</td><td>count(queue_item=รอรับงาน) + count(PRD ∈ {รับงาน,กำลังผลิต,รอ QC,Rework}) — caption "รอรับงาน X + ในสายผลิต Y"</td><td class="st">state</td><td>รายการ/สถานะ (รอรับงาน=ยังไม่มีเลข PRD) → production</td></tr>
+  <tr><td>potential_delay</td><td>count(PRD overlay potential_delay=true; เกณฑ์ 2 วันผลิต+1 วันส่ง)</td><td class="st">state</td><td>PRD/เหลือกี่วัน → production</td></tr>
+  <tr><td>hold</td><td>count(PRD.status=Hold)</td><td class="st">state</td><td>PRD/เหตุ Hold → production</td></tr>
+  <tr><td>done</td><td>count(Batch→QC ผ่าน หรือ PRD→พร้อมส่งมอบ ในช่วง)</td><td class="ev">event</td><td>PRD/สถานะ → production</td></tr>
+ </table>
+</section>
+<section id="qc">
+ <h2><span class="dot" style="background:#E0912F"></span>QC — <code>dept=qc</code> · Read qc (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+  <tr><td>lot_await</td><td>count(lot.qc_status=รอตรวจรับ)</td><td class="st">state</td><td>lot → qc</td></tr>
+  <tr><td>batch_await</td><td>count(batch.status=รอ QC)</td><td class="st">state</td><td>batch → qc</td></tr>
+  <tr><td>passed</td><td>count(qc_record.result=pass ในช่วง; รวม lot+batch)</td><td class="ev">event</td><td>รายการ/ชนิด → qc</td></tr>
+  <tr><td>await_return</td><td>count(lot.qc_status=ระงับ AND ยังไม่มี return_doc)</td><td class="st">state</td><td>lot เสีย → return</td></tr>
+ </table>
+</section>
+<section id="ship">
+ <h2><span class="dot" style="background:#2E9E5B"></span>Shipping — <code>dept=shipping</code> · Read shipping (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+  <tr><td>ready</td><td>count(PO.fulfil=พร้อมจัดส่ง; <b>รวม PO ที่มี postpone_flag</b>)</td><td class="st">state</td><td>PO/ลูกค้า/Postpone → shipping</td></tr>
+  <tr><td>in_route</td><td>count(DN.status=กำลังนำส่ง)</td><td class="st">state</td><td>SHP/DN → delivery-note</td></tr>
+  <tr><td>delivered</td><td>count(DN→Delivered ในช่วง)</td><td class="ev">event</td><td>DN → delivery-note</td></tr>
+  <tr><td>reject_postpone</td><td>count(DN→Rejected หรือ Postponed ในช่วง)</td><td class="ev">event</td><td>PO/เหตุ → delivery-note</td></tr>
+ </table>
+</section>
+<section id="fin">
+ <h2><span class="dot" style="background:#2E9E5B"></span>Finance — <code>dept=finance</code> · Read finance/invoice (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+  <tr><td>to_invoice</td><td>count(PO.billing=ยังไม่วางบิล AND fulfil ≥ Confirmed)</td><td class="st">state</td><td>PO → invoices</td></tr>
+  <tr><td>due</td><td>count(invoice ครบกำหนดในช่วง AND ยังไม่จ่าย)</td><td class="ev">event</td><td>INV/ลูกค้า/+วัน → invoice-detail</td></tr>
+  <tr><td>received</td><td><b>Σ(ยอดรับชำระในช่วง) — เป็นยอดเงิน ไม่ใช่ count</b></td><td class="ev">event</td><td>รายการรับชำระ → invoice-detail</td></tr>
+  <tr><td>overdue</td><td>count(invoice.status=Overdue ที่ยังค้าง)</td><td class="st">state</td><td>INV/+วัน → invoice-detail</td></tr>
+ </table>
+</section>
+<section id="admin">
+ <h2><span class="dot" style="background:#10322F"></span>Admin — <code>dept=admin</code> · Read admin/settings (4 tile)</h2>
+ <table><tr><th>tileKey</th><th>สูตรนับ / เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+  <tr><td>users</td><td>count(user ที่ไม่ถูก soft-delete)</td><td class="st">state</td><td>user/role/สถานะ → settings</td></tr>
+  <tr><td>roles</td><td>count(role ที่ไม่ถูก soft-delete)</td><td class="st">state</td><td>role/จำนวนสิทธิ์ → settings</td></tr>
+  <tr><td>logins</td><td>count(login_event ในช่วง)</td><td class="ev">event</td><td>user/เวลา → trace</td></tr>
+  <tr><td>audit_events</td><td>count(audit_log ในช่วง)</td><td class="ev">event</td><td>audit ล่าสุด → trace</td></tr>
+ </table>
+ <div class="note"><b>[ยังต้องยืนยัน PO/ปอนด์]</b> Admin เห็น dashboard ทุกแผนก (superset) หรือเฉพาะ Admin dashboard — ตอนนี้ผมยึด "เห็นตาม Read bit" (ถ้า Admin มี Read ทุก module ก็เห็นทุกแผนกอัตโนมัติ) — รอ BA ยืนยันกับ PO (po-spec-depth-audit §4ข).</div>
 </section>
 <section id="err">
- <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <h2><span class="dot" style="background:#D64545"></span>error / edge</h2>
  <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
-  <tr><td>DASHBOARD_DEPT_FORBIDDEN</td><td>เปิดแดชบอร์ดแผนกที่ไม่มีสิทธิ์ Read</td></tr>
+  <tr><td>DASHBOARD_DEPT_FORBIDDEN</td><td>เปิดแผนกที่ไม่มีสิทธิ์ Read (403)</td></tr>
+  <tr><td>DASHBOARD_INVALID_RANGE</td><td>custom range: from &gt; to → ไม่ยิง query</td></tr>
+  <tr><td>—</td><td>tile=0 → HTTP 200 + list ว่าง + empty state</td></tr>
  </table>
 </section>
-<footer>API · Dashboard · ESSENCE Hub System · Stage 2 · ผูกกับ functional-spec/dashboard</footer>
+<footer>API · Dashboard (29 tile) · ESSENCE Hub System · Stage 2 delta · ผูกกับ functional-spec/dashboard + po-spec-depth-audit §2</footer>
 </main></div></body></html>

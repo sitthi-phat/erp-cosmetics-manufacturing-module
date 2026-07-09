@@ -177,7 +177,7 @@
   <tr><td>Production (ผลิต)</td><td><a href="api-production.html">api-production.html</a></td><td>production, po-detail</td></tr>
   <tr><td>Stock (คลัง)</td><td><a href="api-stock.html">api-stock.html</a></td><td>stock, goods-receipt</td></tr>
   <tr><td>Invoice (การเงิน)</td><td><a href="api-invoice.html">api-invoice.html</a></td><td>invoices, invoice-print</td></tr>
-  <tr><td>Customer (ลูกค้า)</td><td><a href="api-customer.html">api-customer.html</a></td><td>customers, customer-detail</td></tr><tr><td>QC (คุณภาพ)</td><td><a href="api-qc.html">api-qc.html</a></td><td>qc</td></tr><tr><td>Shipping (จัดส่ง 2 ชั้น)</td><td><a href="api-shipping.html">api-shipping.html</a></td><td>shipping, delivery-note</td></tr><tr><td>Supplier (ผู้จำหน่าย)</td><td><a href="api-supplier.html">api-supplier.html</a></td><td>supplier</td></tr><tr><td>BOM (สูตร)</td><td><a href="api-bom.html">api-bom.html</a></td><td>bom, bom-create</td></tr><tr><td>Purchase Request (คำขอ)</td><td><a href="api-pr.html">api-pr.html</a></td><td>purchase-request, pr-create</td></tr><tr><td>Return (คืนวัตถุดิบ)</td><td><a href="api-return.html">api-return.html</a></td><td>return</td></tr><tr><td>Settings (ตั้งค่า 5 จอ)</td><td><a href="api-settings.html">api-settings.html</a></td><td>settings</td></tr><tr><td>Traceability (สืบย้อน)</td><td><a href="api-trace.html">api-trace.html</a></td><td>trace</td></tr><tr><td>Notification / Inbox</td><td><a href="api-notification.html">api-notification.html</a></td><td>bell ทุกหน้า</td></tr><tr><td>Dashboard (7 แผนก drill-down)</td><td><a href="api-dashboard.html">api-dashboard.html</a></td><td>dashboard</td></tr>
+  <tr><td>Customer (ลูกค้า)</td><td><a href="api-customer.html">api-customer.html</a></td><td>customers, customer-detail</td></tr><tr><td>QC (คุณภาพ)</td><td><a href="api-qc.html">api-qc.html</a></td><td>qc</td></tr><tr><td>Shipping (จัดส่ง 2 ชั้น)</td><td><a href="api-shipping.html">api-shipping.html</a></td><td>shipping, delivery-note</td></tr><tr><td>Supplier (ผู้จำหน่าย)</td><td><a href="api-supplier.html">api-supplier.html</a></td><td>supplier</td></tr><tr><td>BOM (สูตร)</td><td><a href="api-bom.html">api-bom.html</a></td><td>bom, bom-create</td></tr><tr><td>Purchase Request (คำขอ)</td><td><a href="api-pr.html">api-pr.html</a></td><td>purchase-request, pr-create</td></tr><tr><td>Return (คืนวัตถุดิบ)</td><td><a href="api-return.html">api-return.html</a></td><td>return</td></tr><tr><td>Settings (ตั้งค่า 5 จอ)</td><td><a href="api-settings.html">api-settings.html</a></td><td>settings</td></tr><tr><td>Traceability (สืบย้อน)</td><td><a href="api-trace.html">api-trace.html</a></td><td>trace</td></tr><tr><td>Notification / Inbox</td><td><a href="api-notification.html">api-notification.html</a></td><td>bell ทุกหน้า</td></tr><tr><td>Dashboard (7 แผนก drill-down)</td><td><a href="api-dashboard.html">api-dashboard.html</a></td><td>dashboard</td></tr><tr><td>Platform (ค้นหารวม/Home/session)</td><td><a href="api-platform.html">api-platform.html</a></td><td>home, header search</td></tr><tr><td>List/Table conventions (10 หน้า)</td><td><a href="api-list-conventions.html">api-list-conventions.html</a></td><td>ทุกหน้า list</td></tr>
  </table>
 </section>
 
@@ -197,7 +197,7 @@
 
 <section id="coverage">
  <h2><span class="dot" style="background:#D64545"></span>7. เช็คครบทุก case — Cascade 17 / Exception / Deletion / NFR</h2>
- <div class="why">ไล่ทีละแถวว่า requirement ทุกอย่างมี "ที่รองรับ" ในดีไซน์. cascade อ้าง <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map §2</a>. exception ไล่ตามคลาสใน stage2-directives (BA จะทำ catalog เต็ม — cross-link BA ✓).</div>
+ <div class="why">ไล่ทีละแถวว่า requirement ทุกอย่างมี "ที่รองรับ" ในดีไซน์ (spec ล่าสุด 69 stories / 207 AC — ดู §7b Delta coverage). cascade อ้าง <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map §2</a>. exception ไล่ตามคลาสใน stage2-directives (BA จะทำ catalog เต็ม — cross-link BA ✓).</div>
  <h3>Cascade 17 แถว (entity-status-map §2)</h3>
  <table><tr><th>#</th><th>เหตุการณ์</th><th>รองรับด้วย</th></tr>
   <tr><td>1</td><td>PO ยืนยัน → คิวรอรับงาน + Lead→Active</td><td>action /po/confirm → สร้าง queue_item + customer status</td></tr>
@@ -227,5 +227,25 @@
  </table>
 </section>
 
+<section id="coverage-delta">
+ <h2><span class="dot" style="background:#D64545"></span>7b. Delta coverage — spec ขยาย 69 stories / 207 AC (depth audit)</h2>
+ <div class="why">หลัง BA ขยาย spec (47/141 → <b>69 stories / 207 AC</b> ตาม <a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit</a>) — ผมไล่เช็คว่า API/DB รองรับครบ และอุดที่ขาด. สรุปจุดที่เพิ่ม/แก้รอบ delta:</div>
+ <table><tr><th>AC ใหม่</th><th>รองรับด้วย</th></tr>
+  <tr><td>Dashboard 29 tile (7 แผนก): สูตร/event-state/drill</td><td><a href="api-dashboard.html">api-dashboard.html</a> (ครบ 29 tile + summary/list ต่อ tile)</td></tr>
+  <tr><td>Dashboard visibility = Read (ไม่ใช่ role) + multi-dept switcher</td><td>/dashboard/departments + guard ตาม role_permission.r</td></tr>
+  <tr><td>Date filter preset/custom + event vs state + refresh คง view</td><td>api-dashboard §date (query param, ไม่มี server state)</td></tr>
+  <tr><td>Global search (US-PLT-04)</td><td><a href="api-platform.html#search">api-platform.html</a> /api/search (กรองตาม Read)</td></tr>
+  <tr><td>Home — งานที่รอฉัน (task-inbox)</td><td>api-platform /api/home (reuse noti+dashboard)</td></tr>
+  <tr><td>Settings: user create/edit/link-google/<b>bulk-reassign ก่อนลบ Sale</b></td><td><a href="api-settings.html#user">api-settings.html</a></td></tr>
+  <tr><td>Settings: Audit-log screen (filter/sort/pagination)</td><td>api-settings #audit + api-trace</td></tr>
+  <tr><td>PO suggest/material-calc (US-PO-07): ΣBOM×qty vs on_hand + ราคา default ต่อชนิด</td><td><a href="api-po.html#write">api-po.html</a> /api/po/suggest</td></tr>
+  <tr><td>มูลค่าสต็อก = on_hand × ราคาซื้อล่าสุดของ lot (COGS นอก scope)</td><td><a href="api-stock.html#value">api-stock.html</a> /api/stock/value + <code>lot.buy_price</code></td></tr>
+  <tr><td>List filter/sort/default/page-size/empty ต่อ 10 หน้า</td><td><a href="api-list-conventions.html">api-list-conventions.html</a></td></tr>
+  <tr><td>Session pre-expiry warning ก่อน 06:00</td><td>api-platform /api/auth/session (expiresAt + nextForcedResetAt)</td></tr>
+  <tr><td>Admin dashboard "เข้าใช้" (login count)</td><td><code>login_event</code> table (db-schema #xcut)</td></tr>
+  <tr><td>inactive cycle {1,3,6,8}</td><td>customer.inactive_after_months∈{1,3,6,8} (db-schema #customer)</td></tr>
+ </table>
+ <div class="note"><b>ยังต้องยืนยันกับ BA/PO:</b> (1) Admin เห็นทุกแผนก (superset) หรือเฉพาะ Admin dashboard — ผมยึด "ตาม Read bit" ไปก่อน (2) มูลค่าสต็อก "lot ล่าสุด" = ต่อวัตถุดิบใช้ราคา lot ที่ received ล่าสุด (ยืนยันสูตรตรงกับ PO).</div>
+</section>
 <footer>ESSENCE Hub System · Architecture Overview · Stage 2 · Tech-Lead · เอกสารนี้เป็น baseline ที่เสนอปอนด์ที่ Gate 2 — ทุกไดอะแกรมเปิดดูได้เองแบบ self-contained (inline SVG)</footer>
 </main></div></body></html>

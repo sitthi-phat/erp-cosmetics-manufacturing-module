@@ -1,0 +1,58 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Platform (ค้นหารวม + Home inbox + session) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🧭 API · Platform (ค้นหารวม / Home / session)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · delta review</span>
+ <h1>API Spec — Global Search + Home Task-Inbox + Session</h1>
+ <p>ส่วนกลางที่ทุกหน้าใช้ร่วม: (1) <b>ช่องค้นหารวมบน header</b> (US-PLT-04) ค้นข้ามหลาย entity ตามสิทธิ์ (2) <b>Home — งานที่รอฉัน</b> (task-inbox, reuse noti/dashboard) (3) <b>session</b> 24 ชม. + เตะออกทุก 06:00 + เตือนก่อนหมดอายุ. ผูก <a href="../functional-spec/platform.html">functional-spec/platform</a> + <a href="../functional-spec/home.html">functional-spec/home</a>.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="api-notification.html">API: Notification</a>
+ <a href="api-dashboard.html">API: Dashboard</a>
+ <a href="../../../adr/007-auth-rbac-rucdaa.md">ADR-007 (auth/session)</a>
+ <a href="../functional-spec/platform.html">Functional spec: platform</a>
+ <a href="../functional-spec/home.html">Functional spec: home</a>
+ <a href="../mockups/home.html">Mockup: home</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#search">Global search (US-PLT-04)</a>
+ <a href="#home">Home task-inbox</a>
+ <a href="#session">Session / 06:00 reset</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="search">
+ <h2><span class="dot" style="background:#0E7C7B"></span>Global search (ช่องค้นหาบน header) — US-PLT-04</h2>
+ <div class="why">ช่องเดียวบน header ("ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้ ..."). พิมพ์แล้วค้น <b>ข้ามหลาย entity พร้อมกัน</b> คืนผลจัดกลุ่มตามชนิด + กดผล = deep link เข้า detail. <b>กรองตามสิทธิ์ Read</b>: entity ที่ user ไม่มี Read ของ module นั้น จะไม่โผล่ในผล.</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/search?q=&amp;limit=</span></div><div class="b">
+  ค้นแบบรวม (typeahead). <b>ครอบ entity:</b> customer (ชื่อ/บริษัท/เลขผู้เสียภาษี/contact), po (เลข PO), invoice (เลข INV), material (ชื่อ/รหัส), lot (เลข lot), batch (เลข batch), prd (เลข PRD), supplier (ชื่อ), bom (ชื่อสูตร), dn/shipment (เลข). คืน <code>[{type, id, label, sub, deepLink}]</code> จัดกลุ่มตาม type + จำกัดผลต่อกลุ่ม (เช่น 5) + "ดูทั้งหมดใน &lt;module&gt;". <b>ผลถูกกรองด้วย Read permission ของ user</b> (ต่อ module). ซ่อน soft-deleted (มี toggle "รวมที่ถูกลบ" เฉพาะ trace).
+  <span class="rt">ตามสิทธิ์ Read ราย module · &lt;2s</span>
+ </div></div>
+ <div class="note">index รองรับ: prefix/like index บนเลขเอกสารและชื่อ (เช่น po.id, invoice.id, customer.name, material.name, lot.id). ผลรวมจัดอันดับตามความตรง + ความใหม่.</div>
+</section>
+<section id="home">
+ <h2><span class="dot" style="background:#0E7C7B"></span>Home — "งานที่รอฉัน" (task-inbox)</h2>
+ <div class="why">หน้าหลักไม่สร้างข้อมูลใหม่ — <b>reuse</b> จาก Notification + Dashboard: "งานที่รอฉัน" = noti ที่ยังไม่ ack ของ user + ทางลัดเข้าแผนกที่มีสิทธิ์. ให้ผู้ใช้มือใหม่เห็น "ต้องทำอะไรต่อ" ทันที.</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/home</span></div><div class="b">
+  ประกอบจาก: ① <b>งานที่รอฉัน</b> = <a href="api-notification.html">/api/notifications</a> (unacknowledged, จัดกลุ่มตาม module) · ② <b>ทางลัดแผนก</b> = <a href="api-dashboard.html">/api/dashboard/departments</a> (แผนกที่มี Read) + ตัวเลขสรุปหลักต่อแผนก · ③ ชื่อ user + role. <b>empty state:</b> ไม่มีงานค้าง → "ไม่มีงานที่รอคุณ ✓". <span class="rt">ทุก user (เห็นเฉพาะของตัวเองตามสิทธิ์)</span>
+ </div></div>
+ <div class="note">ไม่มี endpoint ใหม่เชิงข้อมูล — Home เป็น <b>aggregator</b> ของ 2 endpoint ที่มีอยู่ (กัน logic ซ้ำ). หน้า <a href="../mockups/home.html">home</a>.</div>
+</section>
+<section id="session">
+ <h2><span class="dot" style="background:#E0912F"></span>Session / บังคับ re-login 06:00</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/auth/session</span></div><div class="b">สถานะ session ปัจจุบัน: <code>expiresAt</code> (issued + 24h) + <code>nextForcedResetAt</code> (06:00 วันถัดไป) → UI ใช้ขึ้น <b>คำเตือนก่อนหมดอายุ</b> (P1-2ค) ให้ save งานก่อนถูกเตะออก. <span class="rt">ผู้ล็อกอิน</span></div></div>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/auth/login</span> · <span class="m post">POST</span><span class="path">/api/auth/google</span> · <span class="m post">POST</span><span class="path">/api/auth/logout</span></div><div class="b">local (username/bcrypt) หรือ Google OIDC → ออก JWT (24h) + เขียน <code>login_event</code> (feed Admin dashboard "เข้าใช้" + trace). token valid เมื่อ <code>iat ≥ session_epoch</code> (เลื่อนทุก 06:00) — ADR-007.</div></div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>SESSION_EXPIRED</td><td>token เกิน 24h หรือ iat &lt; session_epoch (หลัง 06:00) → re-login</td></tr>
+  <tr><td>AUTH_INVALID_CREDENTIALS</td><td>รหัสผ่าน/Google ไม่ผ่าน</td></tr>
+  <tr><td>SEARCH_QUERY_TOO_SHORT</td><td>q สั้นเกิน (เช่น &lt; 2 ตัว) — ไม่ยิง</td></tr>
+ </table>
+</section>
+<footer>API · Platform · ESSENCE Hub System · Stage 2 delta · ผูกกับ functional-spec/platform + home + ADR-007</footer>
+</main></div></body></html>

@@ -34,7 +34,9 @@
  <h2><span class="dot" style="background:#10322F"></span>ผู้ใช้งาน</h2>
  <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/users</span></div><div class="b">สร้าง user ใต้ role + ตั้ง username/password (bcrypt). <span class="rt">Admin settings</span></div></div>
  <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/users/{id}/link-google</span></div><div class="b">ผูกบัญชี Google (Admin กรอก sub/email) → เปิด Google Login (ADR-007).</div></div>
- <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/users/{id}</span></div><div class="b">soft-delete + ปิด login · <b>ต้อง reassign ลูกค้า/งานค้างก่อน</b> (ADR-009). ประวัติการกระทำคงอยู่.</div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/users/{id}</span></div><div class="b">แก้ข้อมูล/เปลี่ยน role/เปิด-ปิดใช้งาน (audit ทุก field).</div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/users/{id}/reassignable-load</span></div><div class="b">ก่อนลบ Sale: คืนจำนวนลูกค้า/งานค้างที่ผูกกับ user นี้ (สำหรับหน้ายืนยัน bulk-reassign).</div></div>
+ <div class="ep"><div class="h"><span class="m del">DEL</span><span class="path">/api/users/{id}</span></div><div class="b">soft-delete + ปิด login. <b>ถ้ามีลูกค้า/งานค้าง → บังคับ bulk-reassign ก่อน</b>: body ต้องมี <code>reassignToUserId</code> → ระบบย้ายลูกค้า/งานทั้งหมดไปผู้รับช่วง (ในทรานแซกชันเดียว + audit ต่อรายการ) แล้วจึงปิด user. ประวัติการกระทำเดิมคงอ้างชื่อผู้ทำได้. <span class="rt">Admin settings · comment บังคับ</span></div></div>
 </section>
 <section id="vat">
  <h2><span class="dot" style="background:#2C7BE5"></span>VAT + วันมีผล + ข้อมูลบริษัท</h2>
@@ -43,7 +45,9 @@
 </section>
 <section id="audit">
  <h2><span class="dot" style="background:#D64545"></span>Audit log</h2>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/audit-log</span></div><div class="b">ค้น audit ระดับ field ทั้งระบบ (ใครทำอะไร ค่าไหนเปลี่ยน จากอะไรเป็นอะไร) + date-range/time + entity. keyset paging (1.2M แถว &lt;2s). <span class="rt">Read settings (หรือ Trace)</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/audit-log</span></div><div class="b">
+  หน้าจอ Audit log (Settings §5). <b>filter:</b> <code>entityType</code>, <code>actor</code> (ผู้ทำ), <code>action</code> (create/update/delete/transition), <code>from&amp;to</code> (<b>date-range + time</b>), <code>q</code> (entity id/field). <b>คอลัมน์:</b> เวลา · ผู้ทำ · entity · field · ค่าเดิม → ค่าใหม่ · เหตุผล. <b>sort:</b> เวลา (default desc) · <b>keyset pagination</b> (1.2M แถว &lt;2s เพดาน 3s). เป็นตารางเดียวกับ <a href="api-trace.html">trace</a> (audit_log) ต่างที่มุมมอง/filter. <span class="rt">Read settings (หรือ Trace)</span>
+ </div></div>
  <div class="note">Archive/purge audit เป็น text file = เฉพาะ <b>Super User</b> (ดู <a href="api-trace.html">api-trace</a>). เก็บ online 1 ปี ไม่มี auto-purge (NFR).</div>
 </section>
 <section id="err">

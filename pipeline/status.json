@@ -1596,6 +1596,45 @@
           "summary": "Depth-fix complete per po-spec-depth-audit: 47/141 -> 69/207 stories/AC. Dashboard 2->11 stories (29 tiles), Settings 2->5 screens, Home verified, P1/P2 closed, Pond answers folded. Entry appended by dispatcher; HTTP 200 verified by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T15:00:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "delta-review",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Dashboard API rebuilt: 29 tiles w/ formulas + event/state + endpoints/tile + Read-permission visibility + dept switcher + date-filter",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Global search endpoint (Read-filtered, 10+ entities, deep link); Home = /api/home aggregator",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Settings: user bulk-reassign-before-delete (single tx) + audit-log filter/sort/paging",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "PO suggest/material-calc; stock value = on_hand x latest lot buy_price (+lot.buy_price/received_at/index); list-conventions x10; login_event",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "index par5+par7b delta coverage 69/207; 230 cross-links 0 broken; 8 touched files HTTP 200",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/architecture/ (8 files: api-dashboard rebuilt, api-platform new, api-list-conventions new, api-po, api-stock, api-settings, db-schema, index)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Delta review vs expanded spec 69/207 complete — all TL gaps filled. 2 confirm points for PO (Admin-dept visibility [matches Pond permission-based answer], stock-value latest-lot interpretation). Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T17:00:00+07:00"
         }
       ]
     }

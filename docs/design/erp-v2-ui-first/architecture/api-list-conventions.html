@@ -1,0 +1,42 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — List/Table Conventions · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">📋 API · List / Table Conventions</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · delta review (P1-5)</span>
+ <h1>API Spec — มาตรฐานทุกหน้า List (filter/sort/paging/empty)</h1>
+ <p>ทุก list endpoint ใช้ query param ชุดเดียวกัน + ระบุ <b>ตัวกรอง/การเรียง/ค่าเริ่มต้น/ขนาดหน้า/empty state</b> ต่อหน้าให้ครบ (Engineer/QA ไม่ต้องเดา). อ้าง <a href="../functional-spec/list-conventions.html">functional-spec/list-conventions</a> (10 หน้า) + envelope มาตรฐาน (<a href="../../../adr/004-state-machine-action-endpoints.md">ADR-004</a>).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="../functional-spec/list-conventions.html">Functional spec (BA)</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#common">param ร่วม</a>
+ <a href="#pages">ตัวกรอง/เรียง ต่อหน้า</a>
+</nav>
+<main>
+<section id="common">
+ <h2><span class="dot" style="background:#0E7C7B"></span>Query param ร่วม (ทุก list)</h2>
+ <div class="why"><code>?page</code> (เริ่ม 1) · <code>?pageSize</code> (default <b>20</b>, เลือก 20/50/100) · <code>?sort</code> (<code>field:asc|desc</code>) · <code>?q</code> (ค้นข้อความ) · + ตัวกรองเฉพาะหน้าตามตารางล่าง. response = envelope + <code>meta.total</code> สำหรับ pager. <b>empty state:</b> total=0 → HTTP 200 + list ว่าง + ข้อความมาตรฐาน "ไม่พบรายการ" (+ปุ่มล้างตัวกรองถ้ามี filter). trace/audit ใช้ keyset paging; list module ปกติใช้ offset paging.</div>
+</section>
+<section id="pages">
+ <h2><span class="dot" style="background:#2C7BE5"></span>ตัวกรอง / การเรียง ต่อหน้า List (10 หน้า)</h2>
+ <table><tr><th>หน้า / endpoint</th><th>ตัวกรอง (filter)</th><th>เรียงได้ (sort)</th><th>default sort</th></tr>
+  <tr><td><b>customers</b><br><code>GET /api/customers</code></td><td>status (6 ค่า), sale_owner, <b>ค้นด้วยเลข PO</b>, ช่วงวันสั่งซื้อ, q(ชื่อ/บริษัท/เลขภาษี)</td><td>ชื่อ, สถานะ, วันสร้าง, ยอดสั่งล่าสุด</td><td>วันสร้าง desc</td></tr>
+  <tr><td><b>po-list</b><br><code>GET /api/po</code></td><td><b>3-date</b> (created/actual_ship/want)+range, fulfilStatus, billingStatus, saleOwner, q(PO/ลูกค้า)</td><td>เลข PO, วันสร้าง, วันส่ง, ยอด, สถานะ</td><td>วันสร้าง desc</td></tr>
+  <tr><td><b>stock</b><br><code>GET /api/stock</code></td><td>near_low(bool), negative(bool), มี/ไม่มี threshold, q(ชื่อ/รหัส)</td><td>ชื่อ, คงเหลือ, มูลค่า, สถานะ</td><td>ชื่อ asc (ใกล้หมด/ติดลบ ปักบน)</td></tr>
+  <tr><td><b>supplier</b><br><code>GET /api/suppliers</code></td><td>active/inactive, q(ชื่อ), มีวัตถุดิบ X</td><td>ชื่อ, จำนวนวัตถุดิบ, สถานะ</td><td>ชื่อ asc</td></tr>
+  <tr><td><b>purchase-request</b><br><code>GET /api/purchase-requests</code></td><td>status(6), source(auto/manual), ช่วงวันที่, q(PR/วัตถุดิบ)</td><td>เลข PR, วันสร้าง, สถานะ</td><td>วันสร้าง desc</td></tr>
+  <tr><td><b>invoices</b><br><code>GET /api/invoices</code></td><td>status(รอชำระ/ชำระ/เกินกำหนด), ช่วงวันออก/ครบกำหนด, overdue(bool), q(INV/ลูกค้า)</td><td>เลข INV, วันออก, ครบกำหนด, ยอด, วันค้าง</td><td>วันออก desc</td></tr>
+  <tr><td><b>qc</b><br><code>GET /api/qc/queue</code></td><td>target(lot/batch), qc_status, ช่วงวันที่, q(lot/batch/PO)</td><td>วันเข้าคิว, ชนิด, สถานะ</td><td>วันเข้าคิว asc (เก่าสุดก่อน)</td></tr>
+  <tr><td><b>shipping</b><br><code>GET /api/shipping/queue</code></td><td>postpone(bool), q(<b>PO ID/ข้อมูลลูกค้า</b>: ชื่อ/บริษัท/เบอร์/ชื่อ contact)</td><td>วันต้องการรับ, ลูกค้า, Postpone</td><td>วันต้องการรับ asc</td></tr>
+  <tr><td><b>delivery-note</b><br><code>GET /api/shipping/rounds</code> / dn</td><td>รอบ status, DN status(กำลังนำส่ง/ส่งถึง/ปฏิเสธ/เลื่อน), ช่วงวันที่, q(SHP/DN/PO)</td><td>วันสร้างรอบ, สถานะ</td><td>วันสร้างรอบ desc</td></tr>
+  <tr><td><b>bom</b><br><code>GET /api/boms</code></td><td>cost_stale(bool badge ล้าสมัย), q(ชื่อสูตร)</td><td>ชื่อ, ราคาทุน, ราคาขาย, วันแก้ล่าสุด</td><td>ชื่อ asc</td></tr>
+  <tr><td><b>audit log</b> (settings)<br><code>GET /api/audit-log</code></td><td>entity_type, actor, action, <b>date-range+time</b>, q(entity id/field)</td><td>เวลา (keyset)</td><td>เวลา desc</td></tr>
+ </table>
+ <div class="note">ทุกตัวกรอง/การเรียงข้างต้นตรงกับ element ในแต่ละ mockup + functional-spec/list-conventions ของ BA. หน้า drill-down ของ Dashboard reuse endpoint เดียวกันนี้ (ส่ง filter context) — ดู <a href="api-dashboard.html">api-dashboard</a>.</div>
+</section>
+<footer>API · List Conventions · ESSENCE Hub System · Stage 2 delta · ผูกกับ functional-spec/list-conventions</footer>
+</main></div></body></html>
