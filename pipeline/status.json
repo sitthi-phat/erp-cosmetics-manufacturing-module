@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "READY_FOR_PO_REVIEW",
+      "current_agent": "ba + tech-lead",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": "Stage 2: PO+BA+Tech-Lead — ปอนด์อนุมัติ requirements + NFR; ถ้า UI ขาด/flow ไม่ครบ วนกลับ UX/UI แบบ incremental"
+          "note": "Gate 2 OPEN (2026-07-09). PO review PASS — เปิดไฟล์จริงทั้ง BA (22) + TL (index+db-schema+15 api+ADR 001-009): ทุก journey/cascade C1-C19/8 UC/30 exception มี story+AC+endpoint+schema ครบ; AC วัดผลได้ตรงกติกาล่าสุด. 3 จุด confirm ไม่บล็อก (inactive-cycle set, story/AC count, 1 anchor). ดู po-stage2-review.md"
         },
         "gate3_app_review": {
           "approved": false,
@@ -1440,6 +1440,67 @@
           "summary": "Functional Spec web complete: 22 files, 47 stories/141 AC, all journeys+exceptions+deletion+Pond answers covered. TODO: reconcile placeholder links to TL api-*.html (TL finished all 15). Entry appended by dispatcher (write contention).",
           "overridden_by": null,
           "updated_at": "2026-07-09T20:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "stage2-review",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "Reviewed BOTH sides by opening real files — BA functional-spec (22) + TL architecture (index+db-schema+15 api) + ADR 001-009",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Every journey ends every case: all entities/statuses + cascade C1-C19 + 8 UC walkthrough + 30 exceptions all have story+AC",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "AC quality deep-sampled 5 modules — measurable, cite real mockup elements, match latest rules",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "TL side: endpoint per transition; db-schema supports every AC; coverage + NFR9 + 9 ADR complete",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Link spot-check clean; no fabricated business rules",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "3 non-blocking confirm/polish items recorded",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/po-stage2-review.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "รอบ Active→Inactive: จำกัดชุด {1,3,6,8} เดือน (BA/TL ตั้งไว้) หรือให้กรอกอิสระ? (default 3)",
+              "options": [
+                "จำกัดชุด {1,3,6,8}",
+                "กรอกอิสระ (จำนวนเดือนใดก็ได้)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ยืนยัน scope: COGS/valuation อยู่นอก scope (ใช้ต้นทุน BOM snapshot) ตามที่ TL ตั้ง?",
+              "options": [
+                "ยืนยัน out of scope",
+                "ต้องคิด COGS จริง (เพิ่มงาน)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "STAGE 2 PO REVIEW = PASS (Gate 2 open). Both sides verified by opening real files; every journey/cascade/UC/exception covered with story+AC+endpoint+schema; 3 non-blocking confirm/polish items. po-stage2-review.md has 15-min Gate-2 guide. Entry applied by dispatcher (write contention).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T22:30:00+07:00"
         }
       ]
     }
