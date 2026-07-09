@@ -38,6 +38,9 @@ Stage 4  DevOps ─────────────── deploy to GCP; QA 
 - **Work smart on rework**: a small change must NOT restart everything — rerun only the
   affected stage/artifacts, keep everything else intact, and diff against the approved
   version so Pond reviews only what changed.
+- **UI updates after Gate 1 (added by Pond, 2026-07-09)**: any stage may send UI work
+  directly to UX/UI at any time — but the change must re-enter GATE 1 where Pond reviews
+  **only the modified screens/parts**, never the whole mockup set again.
 - Engineer and QA work in parallel (QA writes test plan/automation from AC without waiting for code)
 
 ## Dispatcher Rules
