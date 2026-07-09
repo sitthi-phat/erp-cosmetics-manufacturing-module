@@ -1189,6 +1189,47 @@
           "summary": "Four small fixes from PO's updated entity-status-map.md (PRD manual-accept + negative-stock rule; data/label only, no structure changes). (1) production.html: added an 'รอรับงาน (Awaiting Acceptance)' queue — PO Confirmed puts each line here with NO PRD number yet; a 'รับงาน' button generates the PRD; test data PO-202607-000185 has 2 awaiting lines; the accepted queue is now labelled 'คิวงานที่รับแล้ว (มีเลข PRD)'. (2) Negative-stock warning at accept/start when material insufficient (line2 สเปรย์แอลกอฮอล์: 'จะตัด stock ติดลบ ~30 ล.', warning-not-block). (3) stock.html: แอลกอฮอล์ shows -30 in red + badge 'ติดลบ (รอรับเข้า)' + explainer. (4) goods-receipt.html: pre-confirm notice 'การรับนี้ชดเชยยอดติดลบ 30 ล.' (adds back before normal stock). Also synced dashboard (คิวงานผลิต tile counts รอรับงาน; drill shows the awaiting lines) + notification panel on all 25 shell pages (new 'งานใหม่รอรับ' item, badge 4→5) + po-list PO-185 = 'ยืนยันแล้ว · รอรับงาน'. Playwright spot-check: render OK, 0 JS errors, noti badge=5. Feature-level status unchanged (WAITING_HUMAN_GATE).",
           "overridden_by": null,
           "updated_at": "2026-07-10T11:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "prd-sync+deletion-finalize",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "deletion-policy.md FINALIZED — all 7 Pond decisions locked, open questions removed: (1) Customer flag anytime, old PO runs on, no new PO; (2) Sale flag only after mandatory BULK reassign of all customers; (3) Material flag = no new PO/BOM/PR/GR, existing stock used to depletion; (4) PR/GR = void only, no delete; (5) Role = no delete until all users moved out; (6) COGS out of scope (BOM snapshot); (7) GR-after-negative auto FIFO retro-link",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "FIFO retro-link added to entity-status-map.md §1.6 Negative Stock Rule (GR compensating negative auto back-allocates consumption to the new lot FIFO, keeps Batch↔Lot GMP genealogy; partial-cover = link what exists, rest stays negative) + §1.8 GR, §2 cascade row 17, §3 diagram/notes, §4 GR fix; matches Tech-Lead's answer",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "stage2-directives.md — appended 'Web Format Decisions' (main index + per-module split files; BA & TL SEPARATE files cross-linked; mockup refs = link+thumbnail; no-build static HTML) + note Pond returns to review Gate 1 in ~1h",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Verified UX already implemented my earlier mockup-fix list (ux-ui accept-queue-negative-stock: รอรับงาน queue + รับงาน button + negative-stock red/badge + GR compensation notice) — §4 fix table updated to reflect done vs remaining",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DOC SYNC ONLY (Pond's break window) — no development started; did not edit mockups; did NOT touch feature-level current_agent/status; no git",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/deletion-policy.md",
+            "docs/requirements/erp-v2-ui-first/entity-status-map.md",
+            "docs/requirements/erp-v2-ui-first/stage2-directives.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "DOC-CLOSE during Pond's ~1h break (doc sync only, no dev). (1) FINALIZED deletion-policy.md — Pond answered all 7; removed every open question and locked the rules: Customer=flag anytime (old PO runs on, no new PO); Sale=flag only after mandatory BULK reassign of all customers first; Material=flag → no new PO/BOM/PR/GR, existing stock used to depletion; PR/GR=void only (no delete); Role=no delete until users moved out; COGS out of scope (BOM snapshot); trade docs PO/INV/DN/GR/PR/Shipment = void/cancel only (gapless). (2) Added FIFO RETRO-LINK to entity-status-map.md §1.6 (+§1.8/§2/§3/§4): GR that compensates a negative balance auto back-allocates the earlier negative consumption to the newly received lot FIFO, so Batch↔Lot GMP genealogy stays complete; partial cover links what exists and leaves the rest negative until the next GR — matches Tech-Lead's recommendation. (3) Appended 'Web Format Decisions' to stage2-directives.md: main index + per-module split files, BA & TL in SEPARATE cross-linked files (not one shared file), mockup refs via link+thumbnail, no-build static HTML; noted Pond returns to review Gate 1 in ~1h. (4) Confirmed UX already shipped my earlier mockup-fix list (รอรับงาน queue + รับงาน button + negative-stock display + GR compensation notice) and updated §4 fix table to done/remaining. No open questions. Feature-level status unchanged (Gate 1 round 4 open); no mockups edited; no git.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T12:00:00+07:00"
         }
       ]
     }
