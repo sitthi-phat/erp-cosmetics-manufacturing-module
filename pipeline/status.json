@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "READY_FOR_PO_REVIEW",
+      "current_agent": "ba + tech-lead",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": "Gate 2 OPEN (2026-07-09). PO review PASS — เปิดไฟล์จริงทั้ง BA (22) + TL (index+db-schema+15 api+ADR 001-009): ทุก journey/cascade C1-C19/8 UC/30 exception มี story+AC+endpoint+schema ครบ; AC วัดผลได้ตรงกติกาล่าสุด. 3 จุด confirm ไม่บล็อก (inactive-cycle set, story/AC count, 1 anchor). ดู po-stage2-review.md"
+          "note": "Gate 2 OPEN r2 (2026-07-10). PO tri-layer review PASS: depth-fix ครบ (Dashboard 29 tiles, Home, Settings 5 จอ, Platform, list-conventions) + spec↔API↔DB ตรง (69/207 ↔ 17 api ↔ db-schema). 1 must-reconcile ก่อน Stage 3: stock-value formula (BA per-lot 625 vs TL latest-lot 675; PO แนะนำ per-lot). Admin dept visibility = Read-bit ปิดแล้ว. Dispatcher render-checked 12 key pages on :3000 = 200 all. ดู po-stage2-review.md §5"
         },
         "gate3_app_review": {
           "approved": false,
@@ -1635,6 +1635,54 @@
           "summary": "Delta review vs expanded spec 69/207 complete — all TL gaps filled. 2 confirm points for PO (Admin-dept visibility [matches Pond permission-based answer], stock-value latest-lot interpretation). Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T17:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "stage2-review-r2",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "Tri-layer review after depth-fix (69/207) + TL delta (8 files) — real files opened",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Depth Standard met on all previously-shallow modules; every new AC group backed by API+DB",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "TL confirm (a) Admin=Read-bit only — CONFIRMED CLOSED",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "M1: stock-value formula misalignment (BA per-lot 625 vs TL latest-lot 675) — Pond to pick; not gate-blocking",
+              "pass": false,
+              "missing": "reconcile stock-value formula before Stage 3"
+            },
+            {
+              "item": "HTTP render check delegated: dispatcher curled 12 key pages on :3000 = all 200",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/po-stage2-review.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "สูตรมูลค่าสต็อก: ต่อ lot (แต่ละ lot × ราคาซื้อของ lot ตัวเอง) หรือ latest-lot (คงเหลือรวม × ราคาซื้อ lot ล่าสุด)?",
+              "options": [
+                "per-lot: Σ(lot.on_hand × lot.buy_price) [PO แนะนำ]",
+                "latest-lot: total × ราคาซื้อ lot ล่าสุด"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "Stage 2 review round 2 PASS. Depth-fix + tri-layer alignment verified. 1 reconcile point (stock-value formula M1, PO recommends per-lot). Gate 2 r2 open. Entry applied by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T18:30:00+07:00"
         }
       ]
     }
