@@ -1,40 +1,44 @@
-# PO Mockup Review — รอบ 4 (ผลตรวจ) — ESSENCE Hub System
+# PO Mockup Review — รอบ 4 + 4.5 (ผลตรวจ) — ESSENCE Hub System
 
-ผู้ review: PO (แทนปอนด์ — ละเอียดที่สุด) · 2026-07-08 · ต่อจาก `po-mockup-review.md` §8 (รายการสั่งงานรอบ 4)
-ตรวจ mockups รอบ 4 (28 หน้า) เทียบ §8 ทีละข้อ + โจทย์ปอนด์รอบ 3 (9 หมวด) + Batch/rework loop ตาม `status-journeys.md` §3.1/§3.2
+ผู้ review: PO (แทนปอนด์ — ละเอียดที่สุด) · 2026-07-09 · ต่อจาก `po-mockup-review.md` §8
+รอบ 4 = โครงสร้าง/flow (ผ่าน §1–§5) · **รอบ 4.5 = ฝัง dataset กลาง — ตรวจความตรงข้ามหน้า (§6) = ผ่าน → เปิด Gate 1**
 
 ## สรุปภาษาไทย
-**ผลตรวจรอบ 4 = ผ่าน ✅** — UX/UI ปิดครบทุกข้อ P0/P1/P2 จาก §8 + โจทย์ปอนด์ 9 หมวด + Batch `B-{PO}-{line}-{run}` + rework loop (ก-ง) ครบ. เหลือแค่ **ฝัง dataset กลาง (mock-data-spec.md) ให้ตรงกันทุกหน้า (รอบ 4.5)**
+รอบ 4 mockups โครงสร้าง+flow ครบ (Batch/rework loop, create pages, GR multi-line, dashboard filter). รอบ 4.5 UX ฝัง `mock-data-spec.md` (dataset เดียว 8 use cases) ลงทุกหน้า. **PO ตรวจเองข้ามหน้าแล้ว (เปิดไฟล์จริง เทียบ mock-data-spec) — ข้อมูลตรงกันทุกจุดที่ตรวจ = ผ่าน** เปิด Gate 1 รอบ 4 ให้ปอนด์
 
-## 1. ผล P0/P1/P2 (จาก po-mockup-review.md §8)
-| ข้อ | รายการ | ผล | หลักฐาน (ตรวจแล้ว) |
+## 1–5 (รอบ 4) — ผ่านทั้งหมด
+P0/P1/P2 จาก §8 ปิดครบ · โจทย์ปอนด์รอบ 3 9/9 · Batch `B-{PO}-{line}-{run}` + rework loop (ก-ง) ตรง journeys §3.1/§3.2 (รายละเอียดในเวอร์ชันก่อนหน้าของไฟล์นี้)
+
+---
+
+## 6. ผลตรวจรอบ 4.5 — ความตรงของข้อมูลข้ามหน้า (เปิดไฟล์จริง เทียบ `mock-data-spec.md`)
+
+| # | จุดตรวจ | ผล | หลักฐาน (ไฟล์จริง) |
 |---|---|---|---|
-| P0-1 | production เอา "QC ไม่ผ่าน" ออก + Batch format + rework loop | ✅ | flow bar รับงาน→ผลิต→QC→พร้อมส่งมอบ; changer = เริ่มผลิต/ส่งตรวจ QC/Hold (ไม่มี QC ไม่ผ่าน); line2 badge Rework + "B-PO-202607-000181-2-2 (ผลิตครั้งที่ 2)" + feedback run1; อธิบาย 1 line=1 Batch + gen run+1 |
-| P0-2 | QC ราย line/Batch + ประวัติ run | ✅ | แท็บตรวจแบตช์: ตัดสินราย Batch, ไม่ผ่าน=ตีกลับเฉพาะแบตช์, ประวัติ run1 ไม่ผ่าน+เหตุผล, Lot ที่ใช้ (GMP chain), reconcile "ผ่าน 0/2 → PO พร้อมจัดส่งเมื่อครบ" |
-| P0-3 | po-detail line/Batch overview + status-change card | ✅ | การ์ด "เปลี่ยนสถานะ PO (+เหตุผล+trace)" (ยกเลิก/เปิดใหม่คงเลข/Admin override, เหตุผลบังคับ); ตาราง line+แบตช์+QC (line1 รอ QC, line2 Rework run2); trace มี rework events |
-| P0-4 | หน้า create จริง (customer/contact/supplier/PR/BOM/shipment) | ✅ | customer-create (ฟอร์มว่าง, "คนละหน้ากับแก้ไข"); contact-create/pr-create/bom-create มีจริง; supplier/shipping มี create-mode |
-| P1-5 | Goods Receipt multi-line + 1 GR หลาย PR + partial dialog | ✅ | header + หลาย line (วัตถุดิบ×จำนวน×ราคา×Lot gen×อ้าง PR รายบรรทัด) + "เพิ่มรายการ"; อ้าง PR-000031+PR-000030; กล่องยืนยัน "สร้าง PR ใหม่ของที่ขาด?" (ไม่สร้างเงียบ) |
-| P1-6 | Dashboard date filter อิสระ + caption event/state | ✅ | preset วันนี้/สัปดาห์/เดือน(default)/กำหนดเอง(range); caption "ในช่วง=นับเหตุการณ์ · ตอนนี้=สถานะปัจจุบัน" + tag ต่อ tile |
-| P1-7 | shipping สร้างรอบ 2 ทาง + คนขับ/เบอร์/route/รถ | ✅ | (ยืนยันจาก ux entry + shipping create-mode; ประเภทรถ dropdown เก๋ง/motorcycle/กระบะ/10 ล้อ) |
-| P1-8 | supplier layout ใหม่ (ไม่เอา panel ขวา) | ✅ | ฟอร์มเต็มความกว้างใต้ list ("จัดการราคารายวัตถุดิบเต็มความกว้าง ไม่ต้องเลื่อนพาเนลแคบ") + create/edit mode + price matrix + Active toggle |
-| P1-9 | BOM block เมื่อไม่มี active supplier | ✅ | (bom.html + bom-create; BOM-02 override เพราะน้ำหอม SUP-03 inactive) |
-| P2-10..13 | label ซ้ำหาย, test data สมจริง, dropdown search, empty/loading | ✅/⚠ | dropdown search ทุกจุด ✅; label/test data — ปรับต่อในรอบ 4.5 ตอนฝัง dataset |
+| 1 | **PO-202607-000181** rework (line2 run1→run2) ตรงทุกหน้า | ✅ | po-list: "กำลังผลิต · line2 rework" · production: B-PO-202607-000181-1-1 (รอ QC) + B-PO-202607-000181-2-2 badge Rework + feedback "เนื้อโฟมเป็นก้อน" · qc: B-…-181-2-2 Rework + ประวัติ run1 · po-detail: line1 รอ QC / line2 Rework run2 (ผ่าน 0/2) · trace: audit "B-…-181-2-1 → ไม่ผ่าน (ตีกลับ line #2)" |
+| 2 | **เดอร์มา แคร์ = ต้องติดตาม** โยง PO-188 Hold | ✅ | customers: CUS-000021 badge "ต้องติดตาม" + "ติดตาม: โทรยืนยันการแก้สูตร PO-202607-000188 (งานผลิตติด Hold)" · customer-detail: Follow-up + link PO-188 · dashboard: tile ต้องติดตาม + drill-down · po-list: PO-188 เดอร์มา "กำลังผลิต · Hold" |
+| 3 | **SHP-20260708-0046 = ส่งบางส่วน** | ✅ | delivery-note: DN-00122(PO-174) ส่งถึงแล้ว / DN-00123(PO-175) ถูกปฏิเสธ / DN-00124(PO-178) เลื่อนส่ง 10/07 + notify raise Sale / Postpone · po-list: PO-175 "ถูกปฏิเสธ กลับคิว", PO-178 "Postpone 10/07" |
+| 4 | **GR-008 partial → PR-032** | ✅ | purchase-request: PR-000028 แอลกอฮอล์ 250 "รับบางส่วน (200/250)" + PR-000032 "50 ล. · ของขาดจาก GR-008 · เปิดคำขอ" · flow เปิด→รับทราบ→รับบางส่วน 200/250 |
+| 5 | **8 use cases ครบใน po-list** + INV-135↔PO-176 + doc format | ✅ | po-list 11 rows = 8 UC (PO-191/188/185/181/178/176/175/174/173/172/170) ตรง §C · invoice-detail crumb INV-2026-000135 ผูก PO-202607-000176 · format ถูก PO-{YYYYMM}-{NNNNNN}, B-{PO}-{line}-{run}, DN-{YYYYMMDD}-{NNNNN}, SHP-… |
+| 6 | Thai encoding (arrow/ป้าย) | ✅ | อ่านไฟล์จริงหลายหน้า — ภาษาไทย + ↩️📦→✓ แสดงถูก ไม่มี mojibake (perl arrow bug แก้แล้ว) |
+| — | Sale assignment สอดคล้อง | ✅ | เดอร์มา/กลอรี่=สมหญิง · บิวตี้=สมชาย · สวยใส/ปิดกิจการ=อารดา ตรงทุกหน้า |
+| — | ลูกค้า 7 ราย ครบ 6 สถานะ | ✅ | ผู้สนใจ/ประจำ/ห่างหาย/ต้องติดตาม/ปิดใช้งาน/บัญชีดำ (customers) |
 
-## 2. โจทย์ปอนด์รอบ 3 — 9 หมวด
-label ซ้ำ ✅ · create ≠ edit จริง ✅ · GR multi-line + dialog PR ของขาด ✅ · dropdown search ✅ · supplier layout ใหม่ ✅ · ผลิตไม่มีปุ่ม QC ไม่ผ่าน ✅ · QC ราย line/Batch + ประวัติ run ✅ · PO status-change card ✅ · dashboard filter อิสระ + caption ✅ — **9/9 ผ่าน**
+**คำตัดสิน: ผ่าน** — ข้อมูลก้อนเดียวกันตรงกันข้าม module ทุกจุดที่ตรวจ · ไม่พบข้อมูลขัดกัน · เปิด Gate 1 รอบ 4
 
-## 3. Batch + rework loop เทียบ journeys §3.1/§3.2
-- Batch format **`B-{PO}-{line}-{run}`** ✅ (production/qc/po-detail แสดงตรง เช่น B-PO-202607-000181-2-2)
-- rework loop (ก) badge Rework+Batch run ใหม่+feedback ที่หน้าผลิต ✅ (ข) กด "ผลิตซ้ำ" gen run ถัดไป ✅ (ค) คิว QC เห็นรายการใหม่+ประวัติ run ✅ (ง) line อื่นเดินต่อ + po-detail เห็นภาพรวมทุก line/Batch ✅
+---
 
-## 4. หน้าที่ตรวจเชิงลึก (representative)
-production, qc, po-detail, goods-receipt, supplier, dashboard, customer-create — ทั้งหมดผ่าน · หน้าอื่น (contact/pr/bom-create, shipping) ยืนยันจากโครงสร้าง+ux entry (Playwright 3 ขนาดจอ)
+## 7. คู่มือ review สำหรับปอนด์ (เดินเรื่อง 8 use cases ให้เห็นครบใน ~10 นาที)
+เริ่มที่ **`index.html`** (สารบัญ + ป้าย 🟢ใหม่/🔵แก้) แล้วเดินตามเส้นเรื่องนี้:
 
-## 5. คำตัดสิน: **ผ่าน** → เหลือฝัง dataset (รอบ 4.5)
-mockups โครงสร้าง/flow ครบสมบูรณ์แล้ว · งานเดียวที่เหลือ = **ฝัง `mock-data-spec.md` (dataset กลาง 8 use cases) แทน sample เดิม ให้ข้อมูลตรงกันทุกหน้า** (ข้าม module เห็นเรื่องเดียวกัน) + ปรับ label/test data ให้สมจริงไปพร้อมกัน → แล้วเปิด Gate 1 รอบ 4 ให้ปอนด์
+1. **หน้าหลัก + Dashboard (1 นาที):** ดู home (งานที่รอ) → dashboard กดสลับแผนก + กด tile "ต้องติดตาม" (drill-down) + ลอง date filter (เดือนนี้/กำหนดเอง) สังเกต caption "ในช่วง/ตอนนี้"
+2. **ลูกค้า (1.5 นาที):** customers เห็นครบ 6 สถานะ → กด **เดอร์มา แคร์ (ต้องติดตาม)** → customer-detail เห็นเหตุโยง **PO-188 Hold** + note timeline · ลอง "เพิ่มลูกค้า"/"เพิ่มผู้ติดต่อ" (หน้า create จริง ฟอร์มว่าง)
+3. **เปิด PO ใหม่ = UC1 (1 นาที):** po-create (PO-191 ร่าง, สวยใส/Lead) เห็น suggest + เช็ควัตถุดิบ
+4. **การผลิต + QC = UC2/4/5 (2.5 นาที — หัวใจ GMP):** production เห็นคิว → **PO-181 line2 badge "Rework" (B-…-181-2-2) + feedback** · หน้าผลิต**ไม่มีปุ่ม "QC ไม่ผ่าน"** · ไป qc แท็บ "ตรวจแบตช์" → ตัดสินราย Batch, เห็น **ประวัติ run1 ไม่ผ่าน** + **Lot→Batch (GMP chain)** · ดู PO-188 (Hold), PO-170 (rework run2 ผ่าน)
+5. **PO detail = reconcile (1 นาที):** po-detail (PO-181) เห็น **การ์ดเปลี่ยนสถานะ PO** + ตารางราย line/Batch/QC (ผ่าน 0/2) + trace มี rework
+6. **คลัง/จัดซื้อ = UC ของขาด (1.5 นาที):** goods-receipt (multi-line, 1 GR หลาย PR, **กล่องยืนยันสร้าง PR ของขาด**) → purchase-request (PR-028 รับบางส่วน→PR-032) → supplier (layout ใหม่เต็มจอ, active/inactive, price matrix) → bom-create (block ถ้าไม่มี supplier active)
+7. **จัดส่ง = UC6/7/8 (1.5 นาที):** shipping (สร้างรอบ 2 ทาง + คนขับ/รถ) → delivery-note **SHP-0046 (ส่งบางส่วน)**: DN-122 ส่งถึง / DN-123 ถูกปฏิเสธ→raise Sale / DN-124 เลื่อน 10/07
+8. **การเงิน + trace (0.5 นาที):** invoices → INV-135 (PO-176) ใบกำกับภาษีไทย · trace ค้น **B-PO-202607-000170** เห็น Lot→Batch(run1 ไม่ผ่าน→run2 ผ่าน)→line→PO→ลูกค้า + audit ระดับ field
 
-## จุดที่ควรดูตอนฝัง (สำคัญ — ให้ตรงกันข้ามหน้า)
-- **PO-202607-000181** (เดอร์มา, line2 rework): po-list/po-detail/production/qc/trace ต้องเลขเดียวกัน
-- **เดอร์มา แคร์ = Follow-up** (จาก PO-188 Hold): customers/customer-detail/dashboard tile ต้องตรง
-- **SHP-20260708-0046 = Partially**: shipping/delivery-note/po-detail (PO-175 Rejected, PO-178 Postpone 10/07)
-- **GR-20260708-008** partial แอลกอฮอล์ 200/250 → dialog PR-000032
+> ทุกหน้ามี **กระดิ่งแจ้งเตือน (มุมบนขวา)** กดดูรายการ→deep link · responsive (ลองย่อจอ) · ทุกเลขเอกสารเชื่อมถึงกัน (คลิกได้)
+> **จุดที่อยากให้ปอนด์ยืนยันเป็นพิเศษ:** (ก) rework loop เข้าใจง่าย ไม่งงไหม (ข) การจัดส่ง 2 ชั้น (รอบ/DN) ชัดไหม (ค) Batch format `B-{PO}-{line}-{run}` โอเคไหม

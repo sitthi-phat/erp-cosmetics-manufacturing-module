@@ -3,13 +3,13 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "READY_FOR_PO_REVIEW",
+      "current_agent": "ux-ui",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": false,
           "approved_at": null,
-          "note": "Round 4 (2026-07-08): UX/UI closed all PO §8 P0/P1/P2 + folded Pond's r3 answers (Batch B-{PO}-{line}-{run}; rework loop unambiguous; QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→block). PO re-reviewed round-4 (28 pages) = PASS (po-mockup-review-r4.md): 9/9 Pond categories + Batch/rework loop verified. FINALIZED mock-data-spec.md (single dataset, 8 production use cases, screen↔data table). Remaining = round 4.5 data-embed (make sample data identical across pages) → then open Gate 1. Prior: R1 theme A approved; R2 13-cat closed R3; R3 4 PO-analysis + create pages done R4."
+          "note": "Gate 1 round 4 OPEN for Pond (2026-07-09). Round 4 mockups (28 pages) + round 4.5 data-embed complete. PO did an independent cross-page consistency check against mock-data-spec.md (opened real files, not just trusting the report) = PASS: PO-181 rework thread, เดอร์มา=Follow-up↔PO-188 Hold, SHP-0046 Partially, GR-008→PR-032, 8 use cases in po-list, INV-135↔PO-176, Thai/arrow encoding — all consistent. 10-minute review guide written for Pond (po-mockup-review-r4.md §7). Prior: R1 theme A approved; R2 13-cat closed R3; R3 4 PO-analysis + create pages R4; Batch B-{PO}-{line}-{run} + rework loop confirmed."
         },
         "gate2_requirements": {
           "approved": false,
@@ -155,7 +155,7 @@
           ],
           "output_files": ["docs/design/erp-v2-ui-first/design-system.md", "docs/design/erp-v2-ui-first/mockups/index.html", "docs/design/erp-v2-ui-first/mockups/production.html", "docs/design/erp-v2-ui-first/mockups/qc.html", "docs/design/erp-v2-ui-first/mockups/dashboard.html", "docs/design/erp-v2-ui-first/mockups/goods-receipt.html", "docs/design/erp-v2-ui-first/mockups/shipping.html", "docs/design/erp-v2-ui-first/mockups/supplier.html", "docs/design/erp-v2-ui-first/mockups/po-detail.html", "docs/design/erp-v2-ui-first/mockups/customers.html", "docs/design/erp-v2-ui-first/mockups/customer-detail.html", "docs/design/erp-v2-ui-first/mockups/bom.html", "docs/design/erp-v2-ui-first/mockups/purchase-request.html", "docs/design/erp-v2-ui-first/mockups/customer-create.html", "docs/design/erp-v2-ui-first/mockups/contact-create.html", "docs/design/erp-v2-ui-first/mockups/bom-create.html", "docs/design/erp-v2-ui-first/mockups/pr-create.html", "docs/design/erp-v2-ui-first/ux-audit/"],
           "questions_for_pond": [],
-          "summary": "Round-4 incremental rework (theme/design-system locked). Closed all PO §8 P0/P1/P2 + folded Pond's answers (Batch B-{PO}-{line}-{run}; rework loop unambiguous; QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→BLOCK). production drops 'QC ไม่ผ่าน' + Batch per line + Rework badge/feedback; QC decides per line/Batch with PO<->Batch<->Lot GMP chain + previous-run history; po-detail status-change card + per-line reconcile. NEW create pages (create≠edit): customer-create, contact-create, supplier create-mode, pr-create, bom-create, shipping 2-way create with driver/phone/route/vehicle. Goods-receipt multi-line + partial dialog. Dashboard date-filter + event/state captions. Supplier full-width layout. Removed duplicate title on every page. Realistic linked test data. Searchable dropdowns. 28 pages+index; design-system ADDENDUM R4. Playwright-verified desktop/tablet/mobile; screenshots ux-audit/. Handoff READY_FOR_PO_REVIEW.",
+          "summary": "Round-4 incremental rework (theme/design-system locked). Closed all PO §8 P0/P1/P2 + folded Pond's answers (Batch B-{PO}-{line}-{run}; rework loop unambiguous; QC returns only failed line; GR partial→review dialog; BOM no-active-supplier→BLOCK). production drops 'QC ไม่ผ่าน' + Batch per line + Rework badge/feedback; QC decides per line/Batch with PO<->Batch<->Lot GMP chain + previous-run history; po-detail status-change card + per-line reconcile. NEW create pages (create≠edit). Goods-receipt multi-line + partial dialog. Dashboard date-filter + event/state captions. Supplier full-width layout. Removed duplicate title on every page. Realistic linked test data. Searchable dropdowns. 28 pages+index; design-system ADDENDUM R4. Playwright-verified desktop/tablet/mobile. Handoff READY_FOR_PO_REVIEW.",
           "overridden_by": null,
           "updated_at": "2026-07-09T15:30:00+07:00"
         },
@@ -165,19 +165,15 @@
           "status": "READY_FOR_UXUI",
           "gate_checklist": [
             {"item": "Round-4 mockup review = PASS: all PO §8 P0/P1/P2 verified closed (deep-read production/qc/po-detail/goods-receipt/supplier/dashboard/customer-create + grep across 28)", "pass": true, "missing": null},
-            {"item": "Pond r3 9 categories all satisfied (label dedupe, create≠edit, GR multi-line+partial dialog, dropdown search, supplier layout, no 'QC ไม่ผ่าน' on production, QC per-line/Batch+run history, PO status-change card, dashboard filter+caption)", "pass": true, "missing": null},
-            {"item": "Batch format B-{PO}-{line}-{run} + rework loop (ก badge+run+feedback, ข ผลิตซ้ำ gen run+1, ค คิว QC เห็นรายการใหม่+ประวัติ run, ง line อื่นเดินต่อ + po-detail overview) verified vs journeys §3.1/§3.2", "pass": true, "missing": null},
-            {"item": "GMP chain visible (qc shows Lot→Batch→line→PO); Follow-up↔Hold link; Shipment/DN reconcile present", "pass": true, "missing": null},
-            {"item": "mock-data-spec.md FINALIZED to real round-4 numbering (PO-{YYYYMM}-{NNNNNN}, B-{PO}-{line}-{run}, DN/SHP/INV/PR/GR/Lot) — single dataset, 8 production use cases, screen↔data table + cross-page consistency notes", "pass": true, "missing": null},
-            {"item": "po-mockup-review-r4.md written (per-item results + focus-points for embed)", "pass": true, "missing": null},
-            {"item": "Only remaining work = round 4.5 data-embed (make sample data identical across all pages) — no structural/flow gaps", "pass": true, "missing": null}
+            {"item": "Pond r3 9 categories all satisfied", "pass": true, "missing": null},
+            {"item": "Batch format B-{PO}-{line}-{run} + rework loop (ก-ง) verified vs journeys §3.1/§3.2", "pass": true, "missing": null},
+            {"item": "GMP chain visible; Follow-up↔Hold link; Shipment/DN reconcile present", "pass": true, "missing": null},
+            {"item": "mock-data-spec.md FINALIZED to real round-4 numbering — single dataset, 8 use cases, screen↔data table", "pass": true, "missing": null},
+            {"item": "po-mockup-review-r4.md written; remaining = round 4.5 data-embed", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/requirements/erp-v2-ui-first/po-mockup-review-r4.md",
-            "docs/requirements/erp-v2-ui-first/mock-data-spec.md"
-          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/po-mockup-review-r4.md", "docs/requirements/erp-v2-ui-first/mock-data-spec.md"],
           "questions_for_pond": [],
-          "summary": "TWO TASKS DONE. (1) Reviewed round-4 mockups on Pond's behalf — VERDICT PASS: deep-read production (Batch per line + Rework badge + run-history + feedback; status changer has NO 'QC ไม่ผ่าน'), qc (decide per line/Batch, fail reworks only that Batch, previous-run history, Lot→Batch GMP chain, reconcile x/N), po-detail (explicit 'เปลี่ยนสถานะ PO' card with mandatory reason + per-line Batch/QC overview + trace), goods-receipt (multi-line header+lines, 1 GR many PR, partial→confirm-dialog to create PR for shortfall), supplier (full-width layout replacing cramped right panel + create/edit mode + price matrix + Active toggle), dashboard (date-filter presets incl custom range + per-tile ในช่วง/ตอนนี้ captions), customer-create (empty real create form). All PO §8 P0/P1/P2 closed; Pond's 9 r3 categories 9/9; Batch format B-{PO}-{line}-{run} + rework loop (ก-ง) verified vs status-journeys §3.1/§3.2. Recorded po-mockup-review-r4.md. (2) FINALIZED mock-data-spec.md (was draft, deferred) now aligned to real round-4 doc numbering: one interconnected dataset (3 suppliers incl 1 inactive, 8 materials+lots, 4 BOM, 7 customers covering all 6 statuses, PR/GR multi-line+partial) driving all 8 production use cases — UC1 PO Draft (PO-202607-000191), UC2 Hold→Follow-up (PO-...000188), UC3 QC pass-all (PO-...000176), UC4 QC fail per-line rework in progress (PO-...000181, matches embedded mockup), UC5 rework full loop run1 fail→run2 pass (PO-...000170), UC6 single ship success (SHP-20260708-0044→DN-...00119→INV-2026-000135), UC7 multi-PO round all delivered (SHP-...0045), UC8 partial round 1 delivered+1 rejected+1 postponed (SHP-...0046) — plus a 'which screen shows which data' table + cross-page consistency checklist. REMAINING = round 4.5: UX embeds this single dataset to replace each page's own samples so data is identical across modules; then Gate 1 opens. Set current_agent=ux-ui, status=READY_FOR_UXUI. Did not edit mockups.",
+          "summary": "TWO TASKS DONE. (1) Round-4 mockup review = PASS (all §8 P0/P1/P2; Pond 9/9 r3 categories; Batch + rework loop verified). (2) FINALIZED mock-data-spec.md to real numbering: one dataset (3 suppliers/1 inactive, 8 materials+lots, 4 BOM, 7 customers=6 statuses, PR/GR multi-line+partial) → 8 production use cases (UC1 Draft PO-191, UC2 Hold→Follow-up PO-188, UC3 QC-pass PO-176, UC4 rework-in-progress PO-181, UC5 rework-complete PO-170, UC6 single ship SHP-0044→DN-119→INV-135, UC7 full round SHP-0045, UC8 partial round SHP-0046) + screen↔data table + consistency checklist. Remaining = round 4.5 data-embed. Set READY_FOR_UXUI.",
           "overridden_by": null,
           "updated_at": "2026-07-09T17:00:00+07:00"
         },
@@ -186,89 +182,44 @@
           "phase": "design-r4.5-data",
           "status": "READY_FOR_PO_REVIEW",
           "gate_checklist": [
-            {
-              "item": "Embedded central dataset (mock-data-spec.md) replacing per-page samples — same data visible across modules",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "PO-202607-000181 (เดอร์มา, line2 rework run1→run2) consistent across po-list / po-detail / production / qc / trace (Batch B-PO-202607-000181-1-1 & -2-2, run1 -2-1 failed feedback)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "เดอร์มา แคร์ = Follow-up (from PO-188 Hold) consistent across customers / customer-detail / dashboard Sale tile+drill (ต้องติดตาม=1 counts เดอร์มา) + trace audit",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "SHP-20260708-0046 Partially consistent across shipping (recent rounds + detail card) / delivery-note (DN-122 Delivered, DN-123 Rejected→raise Sale, DN-124 Postponed 10/07); PO-175/178 statuses match po-list + home",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "GR-20260708-008 partial (แอลกอฮอล์ 200/250 → dialog PR-000032) consistent across goods-receipt / purchase-request (PR-028 รับบางส่วน + PR-032 เปิดคำขอ) / stock (แอลกอฮอล์ L-TT-ALC-2607 รอ QC) / qc incoming lots",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "8 use cases present: PO-191 Draft, PO-188 Hold, PO-176 QC-pass→UC6 ship, PO-181 rework-in-progress, PO-170 rework-complete, SHP-0044 single, SHP-0045 full round, SHP-0046 partial round (po-list shows all 11 dataset POs)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "7 customers = all 6 statuses (Lead สวยใส, Active บิวตี้/กลอรี่, Follow-up เดอร์มา, Inactive กลอสซี่, Blacklist เครดิตดำ+เหตุผล, Disabled ปิดกิจการ+เหตุผล); CUS codes = spec format",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Shared notification panel rewritten (all 25 shell pages) to dataset: rework B-…-181-2-1, PR-032 from GR-008, PO-170 ready-to-ship, DN-123 rejected→raise Sale — UTF-8 clean (fixed a perl double-encode)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "trace genealogy = B-PO-202607-000170-1-2 (run1 fail→run2 pass)→line1→PO-170→กลอรี่ + field-audit reflects dataset (PR-028 partial, CUS-000021 Active→Follow-up via PO-188, BOM-02 override)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Dashboard Sale numbers match dataset (ลูกค้าประจำ 2, ห่างหาย 1, PO 11, รอชำระ 3, ต้องติดตาม 1) + drills; stock/qc lot counts aligned (รอ QC 4, ใกล้หมด 1)",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "INV-2026-000135 (PO-176, บิวตี้ เอเชีย, รอชำระ, credit 30, VAT7% effective 01/01/2569) consistent across invoices / invoice-detail; doc-number formats per spec",
-              "pass": true,
-              "missing": null
-            },
-            {
-              "item": "Data-only changes — no structure/layout touched; Playwright spot-check render OK on 15 data-changed pages, NO page JS errors, noti opens with correct Thai+arrow encoding",
-              "pass": true,
-              "missing": null
-            }
+            {"item": "Embedded central dataset (mock-data-spec.md) replacing per-page samples — same data visible across modules", "pass": true, "missing": null},
+            {"item": "PO-202607-000181 (เดอร์มา, line2 rework run1→run2) consistent across po-list / po-detail / production / qc / trace (Batch B-PO-202607-000181-1-1 & -2-2, run1 -2-1 failed feedback)", "pass": true, "missing": null},
+            {"item": "เดอร์มา แคร์ = Follow-up (from PO-188 Hold) consistent across customers / customer-detail / dashboard Sale tile+drill (ต้องติดตาม=1 counts เดอร์มา) + trace audit", "pass": true, "missing": null},
+            {"item": "SHP-20260708-0046 Partially consistent across shipping / delivery-note (DN-122 Delivered, DN-123 Rejected→raise Sale, DN-124 Postponed 10/07); PO-175/178 statuses match po-list + home", "pass": true, "missing": null},
+            {"item": "GR-20260708-008 partial (แอลกอฮอล์ 200/250 → dialog PR-000032) consistent across goods-receipt / purchase-request / stock / qc incoming lots", "pass": true, "missing": null},
+            {"item": "8 use cases present; po-list shows all 11 dataset POs", "pass": true, "missing": null},
+            {"item": "7 customers = all 6 statuses; CUS codes = spec format", "pass": true, "missing": null},
+            {"item": "Shared notification panel rewritten (all 25 shell pages) to dataset; UTF-8 clean (fixed a perl double-encode)", "pass": true, "missing": null},
+            {"item": "trace genealogy = B-PO-202607-000170-1-2 (run1 fail→run2 pass) + field-audit reflects dataset", "pass": true, "missing": null},
+            {"item": "Dashboard Sale numbers match dataset + drills; stock/qc lot counts aligned", "pass": true, "missing": null},
+            {"item": "INV-2026-000135 (PO-176) consistent across invoices / invoice-detail; doc-number formats per spec", "pass": true, "missing": null},
+            {"item": "Data-only changes — no structure/layout touched; Playwright spot-check OK, 0 JS errors, noti encoding correct", "pass": true, "missing": null}
           ],
-          "output_files": [
-            "docs/design/erp-v2-ui-first/mockups/po-list.html",
-            "docs/design/erp-v2-ui-first/mockups/customers.html",
-            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
-            "docs/design/erp-v2-ui-first/mockups/production.html",
-            "docs/design/erp-v2-ui-first/mockups/qc.html",
-            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
-            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
-            "docs/design/erp-v2-ui-first/mockups/shipping.html",
-            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
-            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
-            "docs/design/erp-v2-ui-first/mockups/trace.html",
-            "docs/design/erp-v2-ui-first/mockups/home.html",
-            "docs/design/erp-v2-ui-first/mockups/stock.html",
-            "docs/design/erp-v2-ui-first/mockups/invoices.html",
-            "docs/design/erp-v2-ui-first/mockups/invoice-detail.html",
-            "docs/design/erp-v2-ui-first/ux-audit/"
-          ],
+          "output_files": ["docs/design/erp-v2-ui-first/mockups/po-list.html", "docs/design/erp-v2-ui-first/mockups/customers.html", "docs/design/erp-v2-ui-first/mockups/customer-detail.html", "docs/design/erp-v2-ui-first/mockups/production.html", "docs/design/erp-v2-ui-first/mockups/qc.html", "docs/design/erp-v2-ui-first/mockups/goods-receipt.html", "docs/design/erp-v2-ui-first/mockups/purchase-request.html", "docs/design/erp-v2-ui-first/mockups/shipping.html", "docs/design/erp-v2-ui-first/mockups/delivery-note.html", "docs/design/erp-v2-ui-first/mockups/dashboard.html", "docs/design/erp-v2-ui-first/mockups/trace.html", "docs/design/erp-v2-ui-first/mockups/home.html", "docs/design/erp-v2-ui-first/mockups/stock.html", "docs/design/erp-v2-ui-first/mockups/invoices.html", "docs/design/erp-v2-ui-first/mockups/invoice-detail.html", "docs/design/erp-v2-ui-first/ux-audit/"],
           "questions_for_pond": [],
-          "summary": "Round 4.5 (data embed only — no structure/layout changes). Replaced every page's own sample data with the single central dataset from mock-data-spec.md so the same records read consistently across modules. Key threads wired end-to-end: (1) PO-202607-000181 (เดอร์มา, line2 rework, Batch B-{PO}-{line}-{run}) identical on po-list/po-detail/production/qc/trace; (2) เดอร์มา แคร์=Follow-up from PO-188 Hold on customers/customer-detail/dashboard-Sale-tile(ต้องติดตาม=1)/trace; (3) SHP-20260708-0046 Partially (DN-122 Delivered / DN-123 Rejected→raise Sale / DN-124 Postponed 10/07) on shipping/delivery-note + PO-175/178 on po-list/home; (4) GR-008 partial แอลกอฮอล์ 200/250→dialog PR-000032 on goods-receipt/purchase-request/stock/qc. po-list now lists all 11 dataset POs (8 use cases); customers = 7 covering all 6 statuses with comment reasons; INV-2026-000135 for PO-176; trace genealogy = PO-170 run1-fail→run2-pass. Rewrote the shared notification panel on all 25 shell pages to dataset events (and fixed a perl wide-char double-encoding of that line — verified clean UTF-8 via Playwright). Ran the spec's cross-page consistency checklist — all pass. Playwright spot-check: render OK, 0 JS errors, noti encoding correct. Handoff: READY_FOR_PO_REVIEW (final cross-page check before Gate 1 round 4).",
+          "summary": "Round 4.5 (data embed only — no structure/layout changes). Replaced every page's sample data with the single central dataset from mock-data-spec.md so the same records read consistently across modules. Key threads wired end-to-end (PO-181 rework; เดอร์มา=Follow-up↔PO-188 Hold; SHP-0046 Partially; GR-008 partial→PR-032). po-list = 11 dataset POs; customers = 7 (all 6 statuses); INV-135 for PO-176; trace = PO-170 run1-fail→run2-pass. Rewrote shared notification panel on all 25 shell pages (fixed a perl wide-char double-encode; verified clean UTF-8). Ran consistency checklist — all pass. Handoff READY_FOR_PO_REVIEW.",
           "overridden_by": null,
           "updated_at": "2026-07-09T19:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "final-check-r4.5",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {"item": "Independent cross-page consistency check (opened real files, not trusting the report) vs mock-data-spec.md = PASS", "pass": true, "missing": null},
+            {"item": "Thread PO-202607-000181 rework consistent: po-list 'line2 rework' + production B-…-181-2-2 badge+feedback + qc B-…-181-2-2 with run1 history + po-detail per-line (0/2) + trace audit B-…-181-2-1 ไม่ผ่าน", "pass": true, "missing": null},
+            {"item": "Thread เดอร์มา=Follow-up↔PO-188 Hold consistent: customers row (badge+reason 'PO-202607-000188 Hold') + customer-detail + dashboard tile + po-list PO-188 Hold", "pass": true, "missing": null},
+            {"item": "Thread SHP-20260708-0046 Partially consistent: delivery-note DN-122 Delivered/DN-123 Rejected→raise Sale/DN-124 Postponed 10/07 + po-list PO-175 rejected-back-to-queue & PO-178 Postpone 10/07", "pass": true, "missing": null},
+            {"item": "Thread GR-008 partial→PR-032 consistent: purchase-request PR-028 รับบางส่วน 200/250 + PR-032 'ของขาดจาก GR-008' เปิดคำขอ", "pass": true, "missing": null},
+            {"item": "8 use cases all in po-list (11 rows) with matching customer/Sale/status; INV-2026-000135 crumb links PO-202607-000176; doc formats correct (PO-{YYYYMM}-{NNNNNN}, B-{PO}-{line}-{run}, DN/SHP)", "pass": true, "missing": null},
+            {"item": "7 customers = all 6 statuses with comment reasons (Blacklist/Disabled/Follow-up); Sale assignment consistent across pages; Thai + arrow encoding clean (no mojibake)", "pass": true, "missing": null},
+            {"item": "po-mockup-review-r4.md §6 (4.5 results) + §7 (10-minute Pond review guide) written", "pass": true, "missing": null}
+          ],
+          "output_files": ["docs/requirements/erp-v2-ui-first/po-mockup-review-r4.md"],
+          "questions_for_pond": [],
+          "summary": "FINAL CROSS-PAGE DATA CHECK before Gate 1 round 4 — VERDICT PASS. Opened the real mockup files (did not trust the report) and verified all 6 minimum checkpoints against mock-data-spec.md: (1) PO-202607-000181 rework identical on po-list/production/qc/po-detail/trace (Batch B-…-181-2-2 + run1 -2-1 failed feedback 'เนื้อโฟมเป็นก้อน'); (2) เดอร์มา แคร์=ต้องติดตาม with reason 'โทรยืนยันการแก้สูตร PO-202607-000188 (งานผลิตติด Hold)' on customers + customer-detail + dashboard tile, po-list shows PO-188 Hold; (3) SHP-20260708-0046 Partially: DN-122 Delivered / DN-123 Rejected→raise Sale / DN-124 Postponed 10/07, and po-list PO-175 rejected-back-to-queue + PO-178 Postpone 10/07; (4) GR-008 partial แอลกอฮอล์ 200/250 → PR-028 รับบางส่วน + PR-032 'ของขาดจาก GR-008' เปิดคำขอ; (5) po-list lists all 11 dataset POs (8 use cases) with matching customer/Sale/status + INV-2026-000135↔PO-176 + correct doc-number formats; (6) 7 customers = all 6 statuses with reasons, Sale assignment consistent, Thai/arrow encoding clean. No inconsistencies found. Wrote po-mockup-review-r4.md §6 (4.5 results) + §7 = 10-MINUTE REVIEW GUIDE FOR POND: start at index.html then walk home/dashboard(1m) → customers→เดอร์มา Follow-up(1.5m) → po-create UC1(1m) → production+qc UC2/4/5 rework heart(2.5m) → po-detail reconcile(1m) → goods-receipt/PR/supplier/bom UC-shortage(1.5m) → shipping/delivery-note SHP-0046 UC6/7/8(1.5m) → invoices INV-135 + trace B-PO-…-170 genealogy(0.5m); asks Pond to specially confirm (a) rework loop clarity, (b) 2-tier Shipment/DN, (c) Batch format B-{PO}-{line}-{run}. Set current_agent=ux-ui, status=WAITING_HUMAN_GATE (Gate 1 round 4 = Pond approves the look). Did not edit mockups.",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T21:00:00+07:00"
         }
       ]
     }
