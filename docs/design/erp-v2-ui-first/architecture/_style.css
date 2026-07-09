@@ -1,0 +1,43 @@
+/* Shared style for ESSENCE Hub System — Architecture / API / DB spec pages (Clean Clinical teal, matches mockups) */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:#F4F6F8;color:#26323F;line-height:1.6;font-size:14px}
+a{color:#0E7C7B;text-decoration:none}a:hover{text-decoration:underline}
+.hero{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;padding:34px 40px}
+.hero .brand{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:600;margin-bottom:12px}
+.hero h1{font-size:25px;margin-bottom:8px}.hero p{opacity:.92;max-width:900px}
+.hero .tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:12.5px;margin-bottom:14px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:26px;max-width:1240px;margin:0 auto;padding:24px}
+.toc{position:sticky;top:16px;align-self:start;background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:14px 12px;font-size:13px;max-height:calc(100vh - 32px);overflow:auto}
+.toc h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#7B8794;margin:10px 6px 6px}
+.toc a{display:block;padding:5px 8px;border-radius:7px;color:#26323F}
+.toc a:hover{background:#E6F4F3;text-decoration:none}
+main{min-width:0}
+section{background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(16,25,40,.05)}
+h2{font-size:19px;color:#10322F;margin-bottom:6px;display:flex;align-items:center;gap:9px;scroll-margin-top:16px}
+h2 .dot{width:11px;height:11px;border-radius:3px;flex:none}
+h3{font-size:15.5px;color:#0B6360;margin:18px 0 8px}
+.why{background:#E6F4F3;border-left:4px solid #0E7C7B;border-radius:8px;padding:11px 14px;margin:10px 0 14px;font-size:13.5px;color:#0B4E4C}
+.why b{color:#0B4E4C}
+.note{background:#FBF6EC;border-left:4px solid #E0912F;border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;color:#7A4E12}
+.danger{background:#FCEAEA;border-left:4px solid #D64545;border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;color:#8f2020}
+table{border-collapse:collapse;width:100%;margin:8px 0 6px;font-size:13px}
+th,td{border:1px solid #E4E7EB;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#F4F6F8;color:#52606D;font-weight:600;font-size:12.5px}
+td code,.mono{font-family:"JetBrains Mono","Consolas",monospace;font-size:12.5px}
+code{background:#EEF1F4;border-radius:4px;padding:1px 5px;font-family:"JetBrains Mono","Consolas",monospace;font-size:12.5px;color:#0B4E4C}
+.pk{color:#0E7C7B;font-weight:700}.fk{color:#2C7BE5}
+.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.b-pk{background:#E6F4F3;color:#0B6360}.b-fk{background:#E8F0FE;color:#1F5EDB}.b-idx{background:#EEF1F4;color:#52606D}
+.b-new{background:#E6F5EC;color:#1E7A44}.b-hard{background:#FCEAEA;color:#B02A2A}.b-soft{background:#FBF0DE;color:#9A5B12}
+.pill{display:inline-block;background:#E6F4F3;color:#0B6360;border-radius:20px;padding:3px 11px;font-size:12px;margin:2px 4px 2px 0}
+.crumb{font-size:12.5px;color:#7B8794;margin-bottom:14px}
+.crumb a{color:#7B8794}
+.cardgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
+.mini{border:1px solid #E4E7EB;border-radius:10px;padding:12px 14px}
+.mini h4{font-size:14px;color:#10322F;margin-bottom:4px}
+.mini p{font-size:12.5px;color:#52606D}
+.adrlink{font-size:12px;color:#0E7C7B;font-weight:600}
+footer{padding:22px 0 40px;color:#7B8794;font-size:12.5px;text-align:center}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#52606D;margin:6px 0 2px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.toc{position:static;max-height:none}.cardgrid{grid-template-columns:1fr}}

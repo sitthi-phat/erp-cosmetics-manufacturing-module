@@ -1,0 +1,140 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice / การเงิน · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}
+.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-could{color:#204A9E;background:#E8F0FE;border-color:#BBD1F8}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
+.mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Invoice</span></header>
+<div class="wrap">
+
+<h1>Module: Invoice / การเงิน <span class="badge b-must">Tier 1</span></h1>
+<p class="sub">ออกใบแจ้งหนี้ได้ตั้งแต่ PO=Confirmed · ใบกำกับภาษีไทยครบฟิลด์ · VAT ตาม effective date (ยึด invoice date) · overdue นับจากเครดิตระดับลูกค้า · เลข <code>INV-{YYYY}-{NNNNNN}</code></p>
+
+<h2>1. ภาพรวม + Use cases</h2>
+<p>Finance/Sale ออกใบแจ้งหนี้ตั้งแต่ PO ยืนยันแล้ว (แต่ต้องแสดง stage จริงของ PO เสมอ) · ใบกำกับภาษีมี logo, ผู้ออก+เลขผู้เสียภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/VAT7%+effective date/grand total/ตัวหนังสือไทย, ลายเซ็น 2 ช่อง · overdue เมื่อ "ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย"</p>
+<p class="sub">โผล่ใน: <a href="walkthrough.html#uc6">UC6 (INV-2026-000135, PO-176)</a>, UC7</p>
+
+<h2>2. หน้าจอ (mockup จริง)</h2>
+<div class="mock"><div class="thumb">💳</div><div><b>invoices.html</b> — รายการ + overdue alert + PO stage<br><a href="../mockups/invoices.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">📄</div><div><b>invoice-detail.html</b> — รายละเอียด + versioning + สถานะ PO<br><a href="../mockups/invoice-detail.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">🖨️</div><div><b>invoice-print.html</b> — ใบกำกับภาษีไทยเต็มรูป (พิมพ์)<br><a href="../mockups/invoice-print.html" target="_blank">เปิด mockup ↗</a></div></div>
+
+<h2>3. User Stories + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-INV-01</span> — ออกใบแจ้งหนี้ตั้งแต่ Confirmed <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Finance, <b>I want</b> ออกใบแจ้งหนี้ตั้งแต่ PO ยืนยันแล้ว แต่เห็น stage จริงของ PO, <b>so that</b> วางบิลได้เร็วโดยไม่หลุดสถานะงานจริง</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> PO-202607-000176 สถานะ "ส่งถึงแล้ว"</span>
+<span class="gwt"><b>When</b> Finance กด "ออกใบแจ้งหนี้"</span>
+<span class="gwt"><b>Then</b> gen <code>INV-2026-000135</code> สถานะ "รอชำระ"; ราง billing ของ PO = "วางบิลแล้ว"; แสดง PO fulfilment stage = "ส่งถึงแล้ว"; เครดิต 30 วัน (จากระดับลูกค้า) — ดู <a href="continuity.html#c13">Cascade C13</a></span></div>
+<div class="ac edge"><span class="tag">Edge — ออกตั้งแต่ Confirmed</span>
+<span class="gwt"><b>Given</b> PO เพิ่งยืนยัน (ยังไม่ผลิต/ส่ง)</span>
+<span class="gwt"><b>When</b> ออกใบแจ้งหนี้</span>
+<span class="gwt"><b>Then</b> อนุญาต + ใบแสดงป้ายเตือน PO stage = "ยืนยันแล้ว (ยังไม่ส่ง)" ชัดเจน</span></div>
+<div class="ac err"><span class="tag">Error — PO ยังเป็นร่าง/ยกเลิก</span>
+<span class="gwt"><b>Given</b> PO สถานะ "ร่าง" หรือ "ยกเลิก"</span>
+<span class="gwt"><b>When</b> พยายามออกใบแจ้งหนี้</span>
+<span class="gwt"><b>Then</b> ระบบบล็อก + error "ออกใบแจ้งหนี้ได้ตั้งแต่ PO ยืนยันแล้วเท่านั้น"</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-INV-02</span> — ใบกำกับภาษีไทย + VAT effective date <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Finance/ลูกค้า, <b>I want</b> ใบกำกับภาษีไทยครบฟิลด์และคิด VAT ตามอัตราที่มีผล ณ วันออกใบ, <b>so that</b> เอกสารถูกต้องตามสรรพากร</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ตั้งค่า VAT 7% effective 01/01/2569 ใน settings และออกใบวันที่ 08/07/2569</span>
+<span class="gwt"><b>When</b> เปิด invoice-print</span>
+<span class="gwt"><b>Then</b> ใบแสดง logo, ผู้ออก+เลขผู้เสียภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal, discount, <b>VAT 7% (มีผล 01/01/2569)</b>, grand total, <b>ตัวหนังสือไทย</b>, ลายเซ็น 2 ช่อง</span></div>
+<div class="ac edge"><span class="tag">Edge — มีหลายอัตรา VAT</span>
+<span class="gwt"><b>Given</b> มีการตั้งค่า VAT หลายช่วง effective date</span>
+<span class="gwt"><b>When</b> ออกใบวันที่ที่อยู่ในช่วงใด</span>
+<span class="gwt"><b>Then</b> ระบบเลือกอัตราที่ effective ครอบคลุม <b>วันที่ออกใบ (invoice date)</b> เท่านั้น</span></div>
+<div class="ac err"><span class="tag">Error — ข้อมูลบริษัทไม่ครบ</span>
+<span class="gwt"><b>Given</b> Admin ยังไม่กรอกข้อมูลบริษัท/เลขผู้เสียภาษีใน settings</span>
+<span class="gwt"><b>When</b> พยายามพิมพ์ใบกำกับภาษี</span>
+<span class="gwt"><b>Then</b> เตือน "ข้อมูลผู้ออกไม่ครบ กรุณากรอกในตั้งค่า" — ไม่พิมพ์ใบที่ฟิลด์บังคับว่าง</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-INV-03</span> — Overdue / ติดตามหนี้ <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> Finance/Sale, <b>I want</b> เห็นใบที่เกินกำหนดชำระพร้อมจำนวนวันค้าง, <b>so that</b> ติดตามเก็บเงินได้</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ใบที่ PO ส่งถึงแล้ว + เลยเครดิต (ระดับลูกค้า) + ยังไม่จ่าย</span>
+<span class="gwt"><b>When</b> scheduler ประเมินรายวัน</span>
+<span class="gwt"><b>Then</b> billing = "เกินกำหนด (Overdue)" + แสดงจำนวนวันค้าง; ยิง Notification → Finance + Sale — ดู <a href="continuity.html#c14">Cascade C14</a></span></div>
+<div class="ac edge"><span class="tag">Edge — ยังไม่ส่งของ</span>
+<span class="gwt"><b>Given</b> ออกใบแล้วแต่ PO ยังไม่ "ส่งถึงแล้ว"</span>
+<span class="gwt"><b>When</b> เลยวันเครดิต</span>
+<span class="gwt"><b>Then</b> <b>ยังไม่</b> ถือ overdue (นับ overdue เมื่อส่งของแล้วเท่านั้น)</span></div>
+<div class="ac err"><span class="tag">Error — รับชำระเกิน/ผิด</span>
+<span class="gwt"><b>Given</b> บันทึกรับชำระมากกว่ายอดใบ</span>
+<span class="gwt"><b>When</b> ยืนยัน</span>
+<span class="gwt"><b>Then</b> error "ยอดรับชำระเกินยอดค้าง" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-INV-04</span> — Versioning / ยกเลิก (void) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> Finance, <b>I want</b> แก้ไข/ยกเลิกใบแบบมีเวอร์ชัน (ไม่ลบ), <b>so that</b> เลขเอกสารครบ gapless และตรวจย้อนได้</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ใบ INV มีการแก้ไข</span>
+<span class="gwt"><b>When</b> บันทึกการแก้</span>
+<span class="gwt"><b>Then</b> เก็บเป็นเวอร์ชันใหม่ + เห็นประวัติเวอร์ชัน; เลขใบเดิมคงอยู่</span></div>
+<div class="ac edge"><span class="tag">Edge — void</span>
+<span class="gwt"><b>Given</b> ต้องยกเลิกใบ</span>
+<span class="gwt"><b>When</b> กด "ยกเลิก (void)" + เหตุผล</span>
+<span class="gwt"><b>Then</b> ใบ = void (ไม่ลบออกจากระบบ), เลขคงอยู่ (gapless), ออกใบใหม่แทนได้ — ดู <a href="rbac-deletion.html">Deletion §2.8</a></span></div>
+<div class="ac err"><span class="tag">Error — ไม่มีปุ่มลบถาวร</span>
+<span class="gwt"><b>Given</b> ผู้ใช้พยายามลบใบถาวร</span>
+<span class="gwt"><b>When</b> เปิดใบ</span>
+<span class="gwt"><b>Then</b> ไม่มีปุ่ม "ลบ" — มีเฉพาะ "ยกเลิก/void" (เอกสารการค้าห้าม hard delete)</span></div>
+</div>
+
+<h2>4. Data rules / สถานะ Entity</h2>
+<table>
+<tr><th>รายการ</th><th>กติกา</th></tr>
+<tr><td>เลข Invoice</td><td><code>INV-{YYYY}-{NNNNNN}</code> gapless ต่อปี</td></tr>
+<tr><td>Billing status</td><td>รอชำระ (Invoiced) → ชำระแล้ว (Paid) / เกินกำหนด (Overdue)</td></tr>
+<tr><td>VAT</td><td>อัตราตาม effective date ยึด <b>invoice date</b> · effective date ตั้งใน settings</td></tr>
+<tr><td>เครดิต (overdue)</td><td>จำนวนวันเครดิตจาก<b>ระดับลูกค้า</b> (default) แก้ต่อใบได้ · นับ overdue เมื่อส่งของแล้ว</td></tr>
+<tr><td>ใบกำกับภาษี</td><td>ฟิลด์ครบ (§5 brief) + ตัวหนังสือไทย + ลายเซ็น 2 ช่อง · ข้อมูลผู้ออกจาก settings</td></tr>
+<tr><td>ลบ</td><td>ไม่มี hard delete — void เท่านั้น (gapless)</td></tr>
+</table>
+
+<h2>5. API / Database (Tech-Lead)</h2>
+<div class="note">Placeholder: <a href="#">api-db/invoice.html ↗ (รอ TL)</a> — รองรับ: VAT rate lookup by invoice date, credit-term ระดับลูกค้า override ต่อใบ, overdue scheduler, versioning + void (no delete), Thai baht-text</div>
+
+<h2>6. ความต่อเนื่องข้าม module</h2>
+<ul class="sub">
+<li>DN Delivered → PO ส่งถึงแล้ว → เริ่มนับเครดิต (<a href="continuity.html#c10">C10</a>)</li>
+<li>ออก Invoice → billing วางบิลแล้ว (<a href="continuity.html#c13">C13</a>) · Overdue → Finance+Sale (<a href="continuity.html#c14">C14</a>)</li>
+</ul>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="stock.html">Stock →</a><a href="po.html">PO</a><a href="shipping.html">จัดส่ง</a></div>
+<footer>US-INV-01..04 · 12 AC (happy/edge/error) · Module Invoice/การเงิน</footer>
+</div></body></html>

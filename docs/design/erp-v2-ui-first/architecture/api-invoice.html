@@ -1,0 +1,64 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Invoice (ใบแจ้งหนี้/ใบกำกับภาษี) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.ep{border:1px solid #E4E7EB;border-radius:10px;margin:10px 0;overflow:hidden}
+.ep .h{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#EAF7EF;border-bottom:1px solid #E4E7EB}
+.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px}
+.m.get{background:#2E9E5B}.m.post{background:#0E7C7B}
+.ep .path{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;color:#10322F;font-weight:600}
+.ep .b{padding:10px 14px;font-size:13px}.ep .b .rt{background:#EEF1F4;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+.err td:first-child{font-family:monospace;color:#B02A2A;white-space:nowrap}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">💳 API · Invoice (ใบแจ้งหนี้)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 1</span>
+ <h1>API Spec — Invoice / ใบกำกับภาษีไทย</h1>
+ <p>ออกใบแจ้งหนี้ได้ตั้งแต่ PO=Confirmed (แต่โชว์ stage จริงเสมอ). VAT ยึดเรตตาม effective date. เตือนค้างจ่าย (overdue) เมื่อส่งของแล้ว+เลยเครดิต+ยังไม่จ่าย. พิมพ์ใบกำกับภาษีไทยครบฟิลด์ (ผู้ออกจาก settings, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง). มี versioning.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#invoice">DB: invoice/vat</a>
+ <a href="../functional-spec/invoice.html">Functional spec (BA) <span class="badge b-soft" style="font-size:9px">BA ✓</span></a>
+ <a href="../mockups/invoices.html">Mockup: invoices</a>
+ <a href="../mockups/invoice-detail.html">Mockup: invoice-detail</a>
+ <a href="../mockups/invoice-print.html">Mockup: invoice-print</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน/ค้น</a>
+ <a href="#action">ออก/ชำระ</a>
+ <a href="#vat">VAT + พิมพ์</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#2E9E5B"></span>อ่าน / ค้นหา</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/invoices</span></div><div class="b">รายการ + pagination · filter สถานะ (รอชำระ/ชำระ/เกินกำหนด) · โชว์ stage ของ PO · จำนวนวันค้าง. <span class="rt">Read invoice</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/invoices/{id}</span></div><div class="b">รายละเอียด + versioning + trace. หน้า <a href="../mockups/invoice-detail.html">invoice-detail</a></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/invoices/{id}/print</span></div><div class="b">ข้อมูลครบสำหรับพิมพ์ A4: company_profile (ผู้ออก+เลขผู้เสียภาษี), รายการ, subtotal/discount/<b>VAT ตาม effective</b>/grand total, ตัวหนังสือไทย. หน้า <a href="../mockups/invoice-print.html">invoice-print</a></div></div>
+</section>
+<section id="action">
+ <h2><span class="dot" style="background:#0E7C7B"></span>ออก / รับชำระ</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร</th><th>สิทธิ์</th></tr>
+  <tr><td><code>POST /invoices</code> (body: po_id)</td><td>ออกใบแจ้งหนี้ (ตั้งแต่ PO=Confirmed) · gen INV-{YYYY}-{6} (gapless) · <b>snapshot VAT rate</b> ตาม effective ณ วันออก · billing→วางบิล</td><td>Create invoice</td></tr>
+  <tr><td><code>POST /invoices/{id}/revise</code></td><td>แก้ → สร้าง version ใหม่ (เก็บรุ่นเก่า + audit)</td><td>Update invoice</td></tr>
+  <tr><td><code>POST /invoices/{id}/pay</code></td><td>รับชำระครบ → billing=ชำระแล้ว</td><td>Approve invoice</td></tr>
+  <tr><td><code>POST /invoices/{id}/void</code></td><td>ยกเลิก (<b>ไม่ลบ</b> คงเลข) + comment บังคับ → ออกใบใหม่แทน</td><td>Admin invoice</td></tr>
+ </table>
+ <div class="note">overdue เป็น <b>auto จาก scheduler</b> (ส่งของแล้ว + เลย credit_days ของลูกค้า + ยังไม่จ่าย) → ยิง noti Finance + Sale (cascade #14).</div>
+</section>
+<section id="vat">
+ <h2><span class="dot" style="background:#2C7BE5"></span>VAT + effective date</h2>
+ <div class="why">เรต VAT เก็บเป็นประวัติใน <code>vat_config</code> (rate + effective_date). ตอนออกใบแจ้งหนี้ ระบบเลือกเรตที่ "มีผล ณ วันออก" แล้ว <b>snapshot ลงใบ</b> — เปลี่ยนเรตภายหลังไม่กระทบใบเก่า. Admin ตั้งเรต+วันมีผลที่ <a href="../mockups/settings.html">settings</a>.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>INVOICE_PO_NOT_CONFIRMED</td><td>ออกใบก่อน PO ยืนยัน</td></tr>
+  <tr><td>VAT_CONFIG_MISSING</td><td>ไม่มีเรต VAT ที่มีผล ณ วันออก</td></tr>
+  <tr><td>INVOICE_VOID_REASON_REQUIRED</td><td>ยกเลิกโดยไม่ใส่เหตุผล</td></tr>
+ </table>
+</section>
+<footer>API · Invoice · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#invoice + functional-spec/invoice (BA ✓)</footer>
+</main></div></body></html>

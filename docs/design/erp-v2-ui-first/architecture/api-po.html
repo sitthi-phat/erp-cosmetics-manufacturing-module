@@ -1,0 +1,93 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — PO (ใบสั่งซื้อ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.ep{border:1px solid #E4E7EB;border-radius:10px;margin:10px 0;overflow:hidden}
+.ep .h{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F4F9F9;border-bottom:1px solid #E4E7EB}
+.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px}
+.m.get{background:#2E9E5B}.m.post{background:#0E7C7B}.m.patch{background:#E0912F}
+.ep .path{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;color:#10322F;font-weight:600}
+.ep .b{padding:10px 14px;font-size:13px}
+.ep .b .rt{background:#EEF1F4;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+pre{background:#0B2E2C;color:#CFE0DE;border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:"JetBrains Mono",Consolas,monospace;font-size:12px;line-height:1.5}
+.err td:first-child{font-family:monospace;color:#B02A2A;white-space:nowrap}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">📄 API · PO (ใบสั่งซื้อ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 1</span>
+ <h1>API Spec — Purchase Order (PO)</h1>
+ <p>รวม endpoint ของใบสั่งซื้อ ผูกกับหน้าจอและ use case จริง. PO มี 2 ราง (ผลิต/จัดส่ง + วางบิล) ยกเลิก/เปิดใหม่ได้ทุกขั้น (คงเลขเดิม) ราคา 0 ได้ ค้นได้ 3 แบบวันที่. การเปลี่ยนสถานะทุกครั้งเป็น "action endpoint" ที่เซิร์ฟเวอร์คุมกติกา + เก็บ trace + ยิงแจ้งเตือน.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#po">DB: ตาราง PO</a>
+ <a href="../functional-spec/po.html">Functional spec (BA) <span class="badge b-soft" style="font-size:9px">BA ✓</span></a>
+ <a href="../mockups/po-create.html">Mockup: po-create</a>
+ <a href="../mockups/po-detail.html">Mockup: po-detail</a>
+ <a href="../mockups/po-list.html">Mockup: po-list</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#conv">มาตรฐานร่วม</a>
+ <a href="#read">อ่าน/ค้นหา</a>
+ <a href="#write">สร้าง/แก้</a>
+ <a href="#action">เปลี่ยนสถานะ</a>
+ <a href="#err">รหัส error</a>
+</nav>
+<main>
+<section id="conv">
+ <h2><span class="dot" style="background:#0E7C7B"></span>มาตรฐานร่วม (ใช้ทุก endpoint)</h2>
+ <div class="why">ทุก response ห่อด้วย "ซอง" มาตรฐานเดียว: <code>data</code> (ข้อมูล), <code>meta</code> (เลขหน้า), <code>error</code> (ถ้าพลาด เป็นข้อความไทยพร้อมโชว์). ไม่มี enum ดิบหลุดถึง UI. สิทธิ์ตรวจด้วย RUCDAA (<a href="../../../adr/007-auth-rbac-rucdaa.md">ADR-007</a>) แนวคิด action endpoint ดู <a href="../../../adr/004-state-machine-action-endpoints.md">ADR-004</a>.</div>
+ <pre>// สำเร็จ (list)
+{ "data": [ {...} ], "meta": { "page":1, "pageSize":20, "total":1204 }, "error": null }
+// พลาด
+{ "data": null, "error": { "code":"PO_INVALID_TRANSITION",
+    "message":"ไม่สามารถยืนยันใบสั่งซื้อที่ยกเลิกแล้ว", "details":{...} } }</pre>
+</section>
+<section id="read">
+ <h2><span class="dot" style="background:#2E9E5B"></span>อ่าน / ค้นหา</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po</span></div><div class="b">
+  รายการ PO + pagination. <b>ค้น 3 แบบวันที่</b>: <code>?dateType=created|actual_ship|want&amp;from&amp;to</code> · <code>q</code> (เลข PO/ชื่อลูกค้า) · <code>fulfilStatus</code>/<code>billingStatus</code> · <code>saleOwnerId</code>. <span class="rt">สิทธิ์: Read po</span> · หน้า <a href="../mockups/po-list.html">po-list</a>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/{id}</span></div><div class="b">
+  รายละเอียด PO 1 ใบ: 2 ราง (fulfilment+billing) · po_line + snapshot BOM · sale ที่ดูแล · PRD/Batch ต่อ line + reconcile · timeline (จาก audit) · flag Postpone. หน้า <a href="../mockups/po-detail.html">po-detail</a>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/{id}/trace</span></div><div class="b">
+  ประวัติระดับ field ของ PO นี้ (ใครแก้อะไร จากอะไรเป็นอะไร) รวม lifecycle cancel→reopen. <span class="rt">อ่านจาก audit_log</span>
+ </div></div>
+</section>
+<section id="write">
+ <h2><span class="dot" style="background:#0E7C7B"></span>สร้าง / แก้ไข</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/po</span></div><div class="b">
+  สร้าง PO (สถานะ ร่าง) → <b>ออกเลข PO ทันที</b> (gapless, ADR-008). body: customer_id, lines[{item_type, bom_id|material_id, qty, unit_price≥0 <b>(0 ได้)</b>}], want_date. ตอบ suggest วัตถุดิบ + เตือนถ้าขาด (ไม่บล็อก). <span class="rt">สิทธิ์: Create po</span> หน้า <a href="../mockups/po-create.html">po-create</a>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/po/{id}</span></div><div class="b">
+  แก้ header/line (จำนวน/สินค้า/ราคา/วันส่ง) — ได้เสมอตามสถานะที่อนุญาต รวม<b>เคส Hold ที่ Sale แก้ได้ทั้งหมด</b>. ทุก field ที่แก้ลง audit. ต้องส่ง <code>version</code> (กันแก้ชนกัน → 409). <span class="rt">สิทธิ์: Update po</span>
+ </div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/material-check</span></div><div class="b">
+  เช็ควัตถุดิบตาม BOM+จำนวน (ใช้ตอนสร้าง/แก้): คืน "ครบ/ขาดอะไรกี่หน่วย" — ขาด = เตือน + เสนอสร้าง PR (ไม่บล็อก).
+ </div></div>
+</section>
+<section id="action">
+ <h2><span class="dot" style="background:#E0912F"></span>เปลี่ยนสถานะ (action endpoints)</h2>
+ <div class="why">แต่ละปุ่มบนหน้าจอ = 1 endpoint. เซิร์ฟเวอร์ตรวจว่าเปลี่ยนสถานะนี้ถูกต้องไหม + สิทธิ์พอไหม + comment ครบไหม แล้วทำ cascade + audit + แจ้งเตือน <b>ในทรานแซกชันเดียว</b>.</div>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
+  <tr><td><code>POST /po/{id}/confirm</code></td><td>ร่าง→ยืนยัน · สร้างคิว "รอรับงาน" ต่อ line (ยังไม่เกิด PRD) · ลูกค้า Lead→Active · ยิง noti Production · เช็ควัตถุดิบขาด→สร้าง PR</td><td>Approve po</td></tr>
+  <tr><td><code>POST /po/{id}/cancel</code></td><td>→ยกเลิก (ได้ทุกขั้น) · คิว/PRD/Batch ที่เกิดถูกยกเลิกตาม (trace)</td><td>Delete po · <b>comment บังคับ</b></td></tr>
+  <tr><td><code>POST /po/{id}/reopen</code></td><td>ยกเลิก→ร่าง · <b>คงเลข PO เดิม</b> · lifecycle event ใน audit</td><td>Admin po · comment บังคับ</td></tr>
+  <tr><td><code>POST /po/{id}/override-status</code></td><td>ข้ามลำดับสถานะ (force) — เฉพาะกรณีจำเป็น</td><td><b>Admin po</b> · comment บังคับ</td></tr>
+ </table>
+ <div class="note">สถานะ "กำลังผลิต / พร้อมจัดส่ง / กำลังจัดส่ง / ส่งถึง" ของ PO เป็น <b>auto จาก cascade</b> ของ Production/Shipping (ไม่ใช่ endpoint ตรงของ PO) — ดู <a href="api-production.html">api-production</a> และ shipping.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>รหัส error (ตัวอย่าง)</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร (ข้อความไทยที่ผู้ใช้เห็น)</th></tr>
+  <tr><td>PO_INVALID_TRANSITION</td><td>เปลี่ยนสถานะไม่ถูกลำดับ (เช่น ยืนยันใบที่ยกเลิกแล้ว)</td></tr>
+  <tr><td>PO_REASON_REQUIRED</td><td>ยกเลิก/override โดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>CONFLICT_STALE</td><td>มีคนแก้ก่อนหน้า (version ไม่ตรง) → โหลดใหม่</td></tr>
+  <tr><td>REFERENCE_DELETED</td><td>อ้างลูกค้า/วัตถุดิบ/BOM ที่ถูกลบ (ADR-009)</td></tr>
+  <tr><td>FORBIDDEN_RUCDAA</td><td>สิทธิ์ไม่พอสำหรับ action นี้</td></tr>
+ </table>
+</section>
+<footer>API · PO · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#po + functional-spec/po (BA ✓)</footer>
+</main></div></body></html>

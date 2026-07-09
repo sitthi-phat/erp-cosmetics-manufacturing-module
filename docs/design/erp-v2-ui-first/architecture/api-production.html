@@ -1,0 +1,66 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Production (การผลิต) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.ep{border:1px solid #E4E7EB;border-radius:10px;margin:10px 0;overflow:hidden}
+.ep .h{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#FBF6EC;border-bottom:1px solid #E4E7EB}
+.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px}
+.m.get{background:#2E9E5B}.m.post{background:#0E7C7B}
+.ep .path{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;color:#10322F;font-weight:600}
+.ep .b{padding:10px 14px;font-size:13px}.ep .b .rt{background:#EEF1F4;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+.err td:first-child{font-family:monospace;color:#B02A2A;white-space:nowrap}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🏭 API · Production (การผลิต)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 1</span>
+ <h1>API Spec — Production (PRD + Batch)</h1>
+ <p>หัวใจของการผลิต: PO ยืนยัน → คิว "รอรับงาน" → ฝ่ายผลิตกด "รับงาน" (เกิดเลข PRD) → "เริ่มผลิต" (เกิด Batch + ตัดสต็อก ติดลบได้) → ส่ง QC → พร้อมส่งมอบ. 1 PO : N PRD (N=line) : M Batch. QC ตัดสินที่ module QC เท่านั้น (หน้านี้ไม่มีปุ่มตัดสิน QC).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#prd">DB: PRD/Batch</a>
+ <a href="db-schema.html#material">DB: Stock ledger</a>
+ <a href="../functional-spec/production.html">Functional spec (BA) <span class="badge b-soft" style="font-size:9px">BA ✓</span></a>
+ <a href="../mockups/production.html">Mockup: production</a>
+ <a href="../mockups/qc.html">Mockup: qc</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่าน/คิวงาน</a>
+ <a href="#action">action การผลิต</a>
+ <a href="#neg">สต็อกติดลบ</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#E0912F"></span>อ่าน / คิวงาน</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/production/queue</span></div><div class="b">คิว "รอรับงาน" (จาก PO ยืนยัน) + งานที่รับแล้ว. เรียง/ค้นด้วยวันจัดส่ง/PO/ลูกค้า. overlay "เสี่ยงล่าช้า". <span class="rt">Read production</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/production/{prdId}</span></div><div class="b">รายละเอียด PRD: สถานะ, Batch runs (ประวัติ rework), วัตถุดิบที่ใช้ (lot/movement), feedback QC. </div></div>
+</section>
+<section id="action">
+ <h2><span class="dot" style="background:#E0912F"></span>Action การผลิต (แต่ละปุ่ม = 1 endpoint)</h2>
+ <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
+  <tr><td><code>POST /production/accept</code><br>body: queueItemId</td><td>รอรับงาน→รับงาน · <b>gen เลข PRD</b> (PRD-{YYYYMM}-{6}, gapless) · ยังไม่ตัดสต็อก · เตือนถ้าวัตถุดิบอาจไม่พร้อม</td><td>Create production</td></tr>
+  <tr><td><code>POST /production/{prdId}/start</code></td><td>รับงาน→กำลังผลิต · <b>gen Batch run แรก</b> (B-{PO}-{line}-1) · <b>ตัดสต็อกวัตถุดิบตาม BOM (ติดลบได้)</b> · PO→กำลังผลิต · เตือน "จะตัดติดลบ X"</td><td>Update production</td></tr>
+  <tr><td><code>POST /production/{prdId}/submit-qc</code></td><td>Batch→รอ QC · โผล่คิว QC + noti QC</td><td>Update production</td></tr>
+  <tr><td><code>POST /production/{prdId}/rework</code></td><td>(หลัง QC ไม่ผ่าน) → <b>gen Batch run ถัดไป</b> (run+1) กลับกำลังผลิต</td><td>Update production</td></tr>
+  <tr><td><code>POST /production/{prdId}/hold</code></td><td>→Hold · <b>raise Sale หรือ Stock</b> (noti) · เหตุลูกค้า → Sale ตั้ง Follow-up ได้</td><td>Update · <b>comment บังคับ</b></td></tr>
+  <tr><td><code>POST /production/{prdId}/resume</code></td><td>Hold→กำลังผลิต (หลังแก้ PO เสร็จ)</td><td>Update production</td></tr>
+ </table>
+ <div class="note">"QC ผ่าน/ไม่ผ่าน" ไม่อยู่ที่นี่ — เป็น <code>POST /qc/{batchId}/pass|fail</code> (module QC). QC ผ่านทุก PRD ของ PO → PO auto "พร้อมจัดส่ง".</div>
+</section>
+<section id="neg">
+ <h2><span class="dot" style="background:#D64545"></span>สต็อกติดลบ (ตอน start)</h2>
+ <div class="danger">ตอน <code>start</code> ถ้าวัตถุดิบไม่พอ ระบบ <b>ไม่บล็อก</b> — เขียน <code>stock_movement</code> qty ลบ (lot_id อาจ null ถ้ายังไม่มี lot) ตั้ง <code>caused_negative=true</code> + trace. หน้า stock โชว์ตัวเลขแดง + badge "ติดลบ (รอรับเข้า)". พอทำ Goods Receipt → retro-alloc ผูก lot FIFO + บวกกลับ. รายละเอียด <a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001</a>.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>PRD_ALREADY_ACCEPTED</td><td>รับงานซ้ำ queue เดิม</td></tr>
+  <tr><td>QC_FEEDBACK_REQUIRED</td><td>ตีกลับ QC โดยไม่ใส่ feedback (ที่ module QC)</td></tr>
+  <tr><td>HOLD_REASON_REQUIRED</td><td>Hold โดยไม่ใส่เหตุผล</td></tr>
+  <tr><td>PRD_INVALID_TRANSITION</td><td>เปลี่ยนสถานะผิดลำดับ</td></tr>
+ </table>
+</section>
+<footer>API · Production · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#prd + functional-spec/production (BA ✓)</footer>
+</main></div></body></html>

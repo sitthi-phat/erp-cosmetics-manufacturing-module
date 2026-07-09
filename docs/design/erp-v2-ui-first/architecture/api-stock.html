@@ -1,0 +1,65 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API — Stock (คลังวัตถุดิบ) · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.ep{border:1px solid #E4E7EB;border-radius:10px;margin:10px 0;overflow:hidden}
+.ep .h{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#EAF2FF;border-bottom:1px solid #E4E7EB}
+.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px}
+.m.get{background:#2E9E5B}.m.post{background:#0E7C7B}.m.patch{background:#E0912F}
+.ep .path{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;color:#10322F;font-weight:600}
+.ep .b{padding:10px 14px;font-size:13px}.ep .b .rt{background:#EEF1F4;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+.err td:first-child{font-family:monospace;color:#B02A2A;white-space:nowrap}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🗄️ API · Stock (คลังวัตถุดิบ)</div>
+ <span class="tag">ESSENCE Hub System · Stage 2 · Tier 1</span>
+ <h1>API Spec — Stock / Goods Receipt</h1>
+ <p>คลังทำงานบน "บัญชีเดินสะพัด" (append-only ledger) — ยอดคงเหลือคำนวณจากประวัติ ไม่ใช่ตัวเลขเดียว. รองรับสต็อกติดลบ + รับเข้า (GR) หลายบรรทัด + gen lot + ปิด PR อัตโนมัติ + ชดเชยยอดติดลบ. ราคาซื้อ/ขาย 0 ได้.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#material">DB: material/lot/ledger</a>
+ <a href="db-schema.html#pr">DB: PR/GR</a>
+ <a href="../functional-spec/stock.html">Functional spec (BA) <span class="badge b-soft" style="font-size:9px">BA ✓</span></a>
+ <a href="../mockups/stock.html">Mockup: stock</a>
+ <a href="../mockups/goods-receipt.html">Mockup: goods-receipt</a>
+ <h4>ในหน้านี้</h4>
+ <a href="#read">อ่านสต็อก</a>
+ <a href="#master">วัตถุดิบ (master)</a>
+ <a href="#gr">รับเข้า GR</a>
+ <a href="#err">error</a>
+</nav>
+<main>
+<section id="read">
+ <h2><span class="dot" style="background:#2C7BE5"></span>อ่านสต็อก</h2>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock</span></div><div class="b">รายการวัตถุดิบ + ยอดคงเหลือ (จาก stock_balance) + สถานะ "ใกล้หมด/ติดลบ". <b>ยอดติดลบ = ค่าลบ</b> (UI โชว์แดง + badge). ค้นได้. <span class="rt">Read stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/{materialId}/ledger</span></div><div class="b">ประวัติ movement ทั้งหมด (รับ/ตัดผลิต/คืน/ปรับ/retro) — ไล่ที่มาของทุกยอด. keyset paging.</div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/dashboard</span></div><div class="b">tile คลัง: ใกล้หมด / ล็อตรอ QC / คำขอ PR ค้าง — drill-down เป็นรายการ + กดเข้า module (auto-refresh 15s).</div></div>
+</section>
+<section id="master">
+ <h2><span class="dot" style="background:#2C7BE5"></span>วัตถุดิบ (master)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/materials</span></div><div class="b">เพิ่มวัตถุดิบใหม่ + <b>UOM</b> + เกณฑ์ใกล้หมด (<b>ไม่มี default</b>: null=เงียบ; %หรือจำนวน) + ราคาซื้อ/ขาย (<b>0 ได้</b>). <span class="rt">Create stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/materials/{id}</span></div><div class="b">แก้ข้อมูล/เกณฑ์/ราคา (audit ทุก field). ลบ = soft-delete (ADR-009: ของเดิมใช้จนหมด, ห้ามใส่ BOM/PR ใหม่).</div></div>
+</section>
+<section id="gr">
+ <h2><span class="dot" style="background:#0E7C7B"></span>รับเข้าคลัง — Goods Receipt (multi-line)</h2>
+ <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/goods-receipts</span></div><div class="b">
+  บันทึกรับเข้า 1 ใบ (1 supplier หลายบรรทัด): header (supplier, เลขใบรับ, วันที่, แนบไฟล์) + lines[{material, qty, buy_price, sell_price, pr_id?}]. ระบบทำในทรานแซกชันเดียว:<br>
+  ① gen เลข GR (gapless) · ② <b>gen lot รายบรรทัด</b> (prefix ตาม supplier, สถานะ "รอตรวจรับ") · ③ เขียน movement บวก · ④ <b>retro-alloc</b> ผูก consumption ติดลบเข้า lot ใหม่ (FIFO) + บวกชดเชย · ⑤ <b>ปิด/อัปเดต PR ที่อ้าง</b> (ครบ→"ของเข้าครบ", ไม่ครบ→"รับบางส่วน" + เสนอสร้าง PR ใหม่) · ⑥ noti Stock/Production.
+  <span class="rt">Create stock · แนบไฟล์ผ่าน StorageService (ADR-006)</span> หน้า <a href="../mockups/goods-receipt.html">goods-receipt</a>
+ </div></div>
+ <div class="danger"><b>notice ชดเชยติดลบ:</b> ก่อนยืนยัน ถ้ายอดวัตถุดิบตัวนั้นก่อนรับ &lt; 0 → API คืน <code>compensatesNegative: X</code> ให้ UI ขึ้นกล่อง "การรับนี้ชดเชยยอดติดลบ X หน่วย". นี่คือผลลัพธ์ธรรมชาติของการ net ยอด (<a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001</a>) ไม่ใช่ logic พิเศษ.</div>
+</section>
+<section id="err">
+ <h2><span class="dot" style="background:#D64545"></span>error</h2>
+ <table class="err"><tr><th>code</th><th>เมื่อไร</th></tr>
+  <tr><td>GR_SUPPLIER_INACTIVE</td><td>รับเข้าจาก supplier ที่ inactive/ถูกลบ</td></tr>
+  <tr><td>GR_EMPTY_LINES</td><td>ไม่มีบรรทัดรับเข้า</td></tr>
+  <tr><td>MATERIAL_REFERENCE_DELETED</td><td>อ้างวัตถุดิบที่ถูกลบ (ADR-009)</td></tr>
+  <tr><td>RETURN_REASON_REQUIRED</td><td>คืนของโดยไม่ใส่เหตุผล (module return)</td></tr>
+ </table>
+</section>
+<footer>API · Stock · ESSENCE Hub System · Stage 2 · ผูกกับ db-schema.html#material + functional-spec/stock (BA ✓)</footer>
+</main></div></body></html>

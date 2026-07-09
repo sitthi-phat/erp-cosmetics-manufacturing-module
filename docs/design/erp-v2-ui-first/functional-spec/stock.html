@@ -1,0 +1,139 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>คลัง + Goods Receipt · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}
+.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-could{color:#204A9E;background:#E8F0FE;border-color:#BBD1F8}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
+.mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.warn{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Stock</span></header>
+<div class="wrap">
+
+<h1>Module: คลังวัตถุดิบ + Goods Receipt <span class="badge b-must">Tier 1</span></h1>
+<p class="sub">เพิ่มวัตถุดิบ+UOM+เกณฑ์ใกล้หมด (ไม่มี default) · ราคาซื้อ/ขาย 0 ได้ · Goods Receipt multi-line → gen Lot + ปิด PR + <b>บวก stock กลับ/ชดเชยยอดติดลบ</b> · เลข Lot <code>{supplier prefix}{YYMM}</code>, GR <code>GR-{YYYYMMDD}-{NNN}</code></p>
+
+<h2>1. ภาพรวม + Use cases</h2>
+<p>ฝ่ายคลังจัดการวัตถุดิบ+Lot, รับเข้า (Goods Receipt), และเห็นยอดติดลบจากการผลิตล่วงหน้า · เกณฑ์ "ใกล้หมด" ตั้งต่อวัตถุดิบ (% หรือจำนวน) — <b>ไม่มี default</b> ไม่เตือนจนกว่าตั้งค่า · <b>ไม่มีฟังก์ชันรับเข้าในหน้า Supplier</b> (อยู่ที่นี่)</p>
+<p class="sub">โผล่ใน: <a href="walkthrough.html#materials">เส้นวัตถุดิบ (PR-031/GR-007/GR-008)</a></p>
+
+<h2>2. หน้าจอ (mockup จริง)</h2>
+<div class="mock"><div class="thumb">📦</div><div><b>stock.html</b> — รายการวัตถุดิบ+Lot · เพิ่มวัตถุดิบ+UOM+threshold · ยอดติดลบสีแดง + badge<br><a href="../mockups/stock.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">📥</div><div><b>goods-receipt.html</b> — รับเข้า multi-line: supplier→auto lot, จำนวน, ราคาซื้อ, เลขใบรับ, upload, อ้าง PR<br><a href="../mockups/goods-receipt.html" target="_blank">เปิด mockup ↗</a></div></div>
+
+<h2>3. User Stories + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-STK-01</span> — เพิ่มวัตถุดิบใหม่ + UOM + เกณฑ์ใกล้หมด <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เพิ่มวัตถุดิบที่ไม่เคยมี พร้อมหน่วยนับและเกณฑ์ใกล้หมด, <b>so that</b> รับเข้าของใหม่ได้ถูกต้องและเตือนสต็อกตามที่ตั้ง</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ฝ่ายคลังอยู่หน้า stock</span>
+<span class="gwt"><b>When</b> เพิ่ม "วิตามินอี" UOM=กก. เกณฑ์ใกล้หมด = 2 กก.</span>
+<span class="gwt"><b>Then</b> ระบบสร้างวัตถุดิบ <code>RM-xxx</code>; เมื่อยอดคงเหลือ ≤ 2 กก. จะแสดง "ใกล้หมด" ใน Stock Dashboard</span></div>
+<div class="ac edge"><span class="tag">Edge — ไม่ตั้งเกณฑ์ (ไม่มี default)</span>
+<span class="gwt"><b>Given</b> เพิ่มวัตถุดิบโดยไม่กรอกเกณฑ์ใกล้หมด</span>
+<span class="gwt"><b>When</b> ยอดคงเหลือลดลงมาก</span>
+<span class="gwt"><b>Then</b> ระบบ<b>ไม่เตือน</b> "ใกล้หมด" (ไม่มี default) จนกว่าจะตั้งค่า</span></div>
+<div class="ac err"><span class="tag">Error — ไม่ระบุ UOM / ชื่อซ้ำ</span>
+<span class="gwt"><b>Given</b> เว้น UOM ว่าง หรือใช้ชื่อวัตถุดิบซ้ำที่มีอยู่</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "ต้องระบุหน่วยนับ" / "วัตถุดิบนี้มีอยู่แล้ว" — ไม่สร้างซ้ำ</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-STK-02</span> — Goods Receipt multi-line + ปิด PR อัตโนมัติ <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> รับเข้าหลายรายการในใบเดียว อ้างเลข PR ได้, <b>so that</b> เข้าคลังพร้อม gen Lot และปิด PR ที่รับครบอัตโนมัติ</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ฝ่ายคลังทำ GR ของ SUP-01 อ้าง PR-000031 (กลีเซอรีน 6 กก.)</span>
+<span class="gwt"><b>When</b> บันทึก GR-20260708-007</span>
+<span class="gwt"><b>Then</b> gen Lot <code>L-GLY-2607</code> (สถานะ "รอตรวจรับ"); PR-000031 → "ของเข้าครบ (Fulfilled)" อัตโนมัติ พร้อมเหตุผลว่ารับจาก lot ไหน — ดู <a href="continuity.html#c17">Cascade C17</a></span></div>
+<div class="ac edge"><span class="tag">Edge — รับบางส่วน → เสนอ PR ใหม่</span>
+<span class="gwt"><b>Given</b> GR รับแอลกอฮอล์ 200/250 ล. อ้าง PR-000028</span>
+<span class="gwt"><b>When</b> บันทึก GR-20260708-008</span>
+<span class="gwt"><b>Then</b> PR-000028 = "รับบางส่วน"; ระบบเปิดกล่องยืนยัน "สร้าง PR ใหม่ 50 ล.? (PR-000032)" <b>รอ user review</b> (ยังไม่สร้างจนกด) — ดู <a href="purchase-request.html">PR</a></span></div>
+<div class="ac err"><span class="tag">Error — ไม่กรอกเลขใบรับ/supplier</span>
+<span class="gwt"><b>Given</b> เว้น supplier หรือเลขใบรับจาก supplier ว่าง</span>
+<span class="gwt"><b>When</b> บันทึก GR</span>
+<span class="gwt"><b>Then</b> error ที่ field ที่ขาด — ไม่บันทึก, ไม่ gen Lot</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-STK-03</span> — Negative stock + บวกกลับตอนรับเข้า <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เห็นยอดวัตถุดิบที่ติดลบจากการผลิตล่วงหน้า และให้ GR บวกกลับชดเชย, <b>so that</b> รู้ว่ามีของค้างรับและยอดถูกต้องเมื่อของเข้า</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> การผลิตตัดกลีเซอรีนจนยอดคงเหลือ = −4 กก.</span>
+<span class="gwt"><b>When</b> เปิดหน้า stock</span>
+<span class="gwt"><b>Then</b> แสดงยอด <b>−4 เป็นตัวเลขสีแดง + badge "ติดลบ (รอรับเข้า)"</b> + ปริมาณติดลบ</span></div>
+<div class="ac edge"><span class="tag">Edge — GR ชดเชยยอดติดลบ</span>
+<span class="gwt"><b>Given</b> ยอดกลีเซอรีน −4 กก. และรับเข้า 6 กก.</span>
+<span class="gwt"><b>When</b> ยืนยัน GR</span>
+<span class="gwt"><b>Then</b> ก่อนยืนยันแสดง notice "การรับนี้ชดเชยยอดติดลบ 4 หน่วย"; หลังรับ ยอดคงเหลือ = +2 (ชดเชย 4 ก่อน แล้วส่วนเกิน 2 เข้าปกติ) + trace</span></div>
+<div class="ac err"><span class="tag">Error — ราคาซื้อติดลบ</span>
+<span class="gwt"><b>Given</b> กรอกราคาซื้อเป็นค่าติดลบ</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "ราคาต้อง ≥ 0" (0 ได้ แต่ติดลบไม่ได้) — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-STK-04</span> — ราคาซื้อ/ขาย 0 ได้ + FIFO <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> กำหนดราคาซื้อและราคาขายแยกกัน (0 ได้) และให้ระบบเลือก Lot แบบ FIFO, <b>so that</b> ราคาขาย default ไป PO และการตัด stock ถูกต้องตามลำดับล็อต</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> รับเข้าวัตถุดิบพร้อมราคาซื้อ 45 ราคาขาย 0</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> ระบบยอมรับราคาขาย 0; ราคาขายใช้เป็น default ตอนขายวัตถุดิบใน PO</span></div>
+<div class="ac edge"><span class="tag">Edge — FIFO หลาย Lot</span>
+<span class="gwt"><b>Given</b> วัตถุดิบมี Lot เก่า L-GLY-2506 และใหม่ L-GLY-2607</span>
+<span class="gwt"><b>When</b> การผลิตตัด stock</span>
+<span class="gwt"><b>Then</b> ระบบตัดจาก Lot เก่าก่อน (FIFO) และ trace ระบุ Lot ที่ใช้</span></div>
+<div class="ac err"><span class="tag">Error — แก้ threshold เป็นค่าลบ</span>
+<span class="gwt"><b>Given</b> ตั้งเกณฑ์ใกล้หมดเป็นค่าติดลบ หรือ % &gt; 100</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "เกณฑ์ต้องเป็นค่าที่ถูกต้อง (จำนวน ≥ 0 หรือ % 0–100)"</span></div>
+</div>
+
+<h2>4. Data rules / สถานะ Entity</h2>
+<table>
+<tr><th>Entity</th><th>กติกา (entity-status-map §1.6/§1.8)</th></tr>
+<tr><td>Lot</td><td>รอตรวจรับ → พร้อมใช้ผลิต (QC ผ่าน) / ระงับ (QC ไม่ผ่าน→คืน) / หมด · <code>{supplier prefix}{YYMM}</code></td></tr>
+<tr><td>GR</td><td><code>GR-{YYYYMMDD}-{NNN}</code> · header 1 supplier + หลาย line · gen Lot รายบรรทัด</td></tr>
+<tr><td>ราคา</td><td>ซื้อ/ขาย แยก field · 0 ได้ · ติดลบไม่ได้</td></tr>
+<tr><td>เกณฑ์ใกล้หมด</td><td>ต่อวัตถุดิบ · % หรือจำนวน · <b>ไม่มี default</b></td></tr>
+<tr><td>Negative stock</td><td>ผลิตตัดติดลบได้ · แสดงแดง+badge · GR บวกกลับชดเชย + trace</td></tr>
+</table>
+
+<h2>5. API / Database (Tech-Lead)</h2>
+<div class="note">Placeholder: <a href="#">api-db/stock.html ↗ (รอ TL)</a> — รองรับ: negative on-hand + retro-compensation on GR, FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix</div>
+
+<h2>6. ความต่อเนื่องข้าม module</h2>
+<ul class="sub">
+<li>ผลิตตัด stock ติดลบ (<a href="continuity.html#c16">C16</a>) · GR รับเข้า gen Lot + ปิด PR + บวกกลับ (<a href="continuity.html#c17">C17</a>)</li>
+<li>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (<a href="continuity.html#c18">C18</a>) → <a href="qc.html">QC</a> / <a href="return.html">Return</a></li>
+</ul>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="purchase-request.html">PR →</a><a href="production.html">การผลิต</a><a href="supplier.html">Supplier</a></div>
+<footer>US-STK-01..04 · 12 AC (happy/edge/error) · Module คลัง + Goods Receipt</footer>
+</div></body></html>

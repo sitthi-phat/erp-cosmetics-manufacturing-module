@@ -1,0 +1,231 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESSENCE Hub System — Database Schema (Stage 2)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3Cpath%20d%3D'M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css"></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">🗄️ ESSENCE Hub System — สถาปัตยกรรม</div>
+ <span class="tag">Stage 2 · Database Schema · React + Node.js + MySQL 8 (ADR-000)</span>
+ <h1>โครงสร้างฐานข้อมูล (Database Schema)</h1>
+ <p>เอกสารนี้อธิบายว่า "ข้อมูลของทั้งระบบเก็บอย่างไร" — แต่ละกล่องคือ 1 ตาราง มีคำอธิบายไทยว่าตารางนี้ทำหน้าที่อะไร รองรับ requirement ข้อไหน และเชื่อมกับหน้าจอ mockup ไหน. จุดออกแบบยากทุกจุด (สต็อกติดลบ, audit ระดับ field, เลขเอกสารห้ามข้าม, 2 ชั้นจัดส่ง, ลบแบบ soft) มีกล่องสีอธิบายเหตุผลกำกับ พร้อมลิงก์ไปเอกสารการตัดสินใจ (ADR).</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <h4>ทั่วไป</h4>
+ <a href="index.html">← กลับ Architecture</a>
+ <a href="#legend">คำอธิบายสัญลักษณ์</a>
+ <h4>สิทธิ์ & ระบบ</h4>
+ <a href="#auth">ผู้ใช้ / role / สิทธิ์ RUCDAA</a>
+ <a href="#xcut">ตารางกลาง (audit/noti/เลข/ไฟล์)</a>
+ <h4>งานขาย</h4>
+ <a href="#customer">ลูกค้า + ผู้ติดต่อ</a>
+ <a href="#po">ใบสั่งซื้อ PO (2 ราง)</a>
+ <a href="#invoice">ใบแจ้งหนี้ + VAT</a>
+ <h4>คลัง & จัดซื้อ</h4>
+ <a href="#material">วัตถุดิบ + Lot + Ledger</a>
+ <a href="#supplier">ผู้จำหน่าย + price matrix</a>
+ <a href="#bom">สูตร BOM + snapshot</a>
+ <a href="#pr">คำขอ PR + รับเข้า GR</a>
+ <h4>ผลิต & คุณภาพ</h4>
+ <a href="#prd">ใบสั่งผลิต PRD + Batch</a>
+ <a href="#qc">QC (ขาเข้า + แบตช์)</a>
+ <h4>จัดส่ง</h4>
+ <a href="#ship">Shipment (รอบ) + DN</a>
+ <a href="#return">คืนวัตถุดิบ</a>
+ <h4>ตรวจสอบ</h4>
+ <a href="#coverage">ตารางเช็คครบทุก case</a>
+</nav>
+<main>
+
+<section id="legend">
+ <h2><span class="dot" style="background:#10322F"></span>คำอธิบายสัญลักษณ์ + หลักการรวม</h2>
+ <div class="legend">
+  <span><span class="badge b-pk">PK</span> คีย์หลัก</span>
+  <span><span class="badge b-fk">FK</span> เชื่อมตารางอื่น</span>
+  <span><span class="badge b-idx">IDX</span> ทำ index เพื่อค้นเร็ว</span>
+  <span><span class="badge b-new">ใหม่</span> entity ที่เพิ่งเกิดใน v2</span>
+  <span><span class="badge b-hard">จุดยาก</span> จุดออกแบบสำคัญ</span>
+  <span><span class="badge b-soft">soft-delete</span> ลบแบบติดธง</span>
+ </div>
+ <div class="why"><b>หลักการที่ใช้กับทุกตาราง:</b> (1) ทุกตารางที่แก้ไขได้มี <code>id</code>, <code>created_at</code>, <code>updated_at</code>, <code>version</code> (กันแก้ชนกัน) · (2) master ทุกตัวมี <code>deleted_at / deleted_by / delete_reason</code> — <b>ไม่ลบถาวร</b> (<a href="../../../adr/009-soft-delete-reference-guard.md">ADR-009</a>) · (3) ทุกการแก้ไขถูกบันทึกลง <code>audit_log</code> อัตโนมัติจากชั้นกลาง <b>ไม่ต้องเขียนรายตาราง</b> (<a href="../../../adr/003-generic-field-level-audit.md">ADR-003</a>) · (4) เวลาเก็บเป็น UTC แสดงผลเป็นเวลาไทย + ปี พ.ศ. (NFR) · (5) เลขเอกสารออกจากตาราง <code>sequence</code> ห้ามข้าม (<a href="../../../adr/008-gapless-numbering.md">ADR-008</a>).</div>
+</section>
+
+<section id="auth">
+ <h2><span class="dot" style="background:#10322F"></span>ผู้ใช้ / บทบาท / สิทธิ์ (RUCDAA)</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/settings.html">settings.html</a> (Role &amp; สิทธิ์, ผู้ใช้) · API: <a href="api-settings.html">api-settings.html</a> <span class="badge b-idx">รอสร้าง</span></div>
+ <div class="why">สิทธิ์เป็นแบบ <b>RUCDAA ราย module × 6 บิต</b> (อ่าน/แก้/สร้าง/ลบ/อนุมัติ/Admin). สร้าง role ได้ไม่จำกัด user อยู่ใต้ role. บิต <b>Admin</b> = สิทธิ์พิเศษ (reassign ลูกค้า, ปลด blacklist, reopen PO, archive trace, override สถานะ, กู้คืนของที่ลบ). เข้าระบบได้ทั้ง password และ Google. รายละเอียด <a href="../../../adr/007-auth-rbac-rucdaa.md">ADR-007</a>.</div>
+ <h3><code>role</code> — บทบาท <span class="badge b-soft">soft-delete</span></h3>
+ <table><tr><th>field</th><th>ชนิด</th><th>อธิบาย</th></tr>
+  <tr><td><code>id</code> <span class="badge b-pk">PK</span></td><td>bigint</td><td>รหัส role</td></tr>
+  <tr><td><code>name</code></td><td>varchar</td><td>ชื่อ role เช่น "หัวหน้าคลัง" (สร้างได้ไม่จำกัด)</td></tr>
+  <tr><td><code>is_system</td></td><td>bool</td><td>role มาตรฐาน (Sale/Stock/... ) ห้ามลบทิ้ง</td></tr>
+ </table>
+ <h3><code>role_permission</code> — สิทธิ์ราย module <span class="badge b-hard">จุดยาก</span></h3>
+ <table><tr><th>field</th><th>ชนิด</th><th>อธิบาย</th></tr>
+  <tr><td><code>role_id</code> <span class="badge b-fk">FK</span></td><td>bigint</td><td>→ role</td></tr>
+  <tr><td><code>module</code></td><td>varchar</td><td>ชื่อ module (customers, po, stock, production, qc, shipping, invoice, ...)</td></tr>
+  <tr><td><code>r,u,c,d,approve,admin</code></td><td>bool ×6</td><td><b>RUCDAA</b> — บิต <code>r</code> ยังใช้กำหนดผู้รับ Notification ของ module นั้นด้วย (<a href="../../../adr/005-notification-outbox-readbit-fanout.md">ADR-005</a>)</td></tr>
+ </table>
+ <p class="mono" style="color:#7B8794">PK รวม (role_id, module) · <span class="badge b-idx">IDX</span> (module, r) เพื่อหา "ใครรับ noti ของ module นี้"</p>
+ <h3><code>user</code> — ผู้ใช้ <span class="badge b-soft">soft-delete</span></h3>
+ <table><tr><th>field</th><th>ชนิด</th><th>อธิบาย</th></tr>
+  <tr><td><code>id</code> <span class="badge b-pk">PK</span> · <code>username</code></td><td>—</td><td>ล็อกอิน</td></tr>
+  <tr><td><code>password_hash</code></td><td>varchar</td><td>bcrypt — <b>อยู่ใน audit-exclude</b> ไม่เก็บค่าจริง/ไม่ log</td></tr>
+  <tr><td><code>role_id</code> <span class="badge b-fk">FK</span></td><td>bigint</td><td>→ role (ลบ role ไม่ได้ถ้ายังมี user ผูก — ADR-009)</td></tr>
+  <tr><td><code>google_sub</code></td><td>varchar null</td><td>ผูกบัญชี Google (Admin ตั้งในหน้า settings)</td></tr>
+  <tr><td><code>is_active</code></td><td>bool</td><td>ปิด login เมื่อ soft-delete/ระงับ</td></tr>
+ </table>
+ <p><code>app_config</code> (แถวเดียว): <code>session_epoch</code> (timestamp) — ทุก 06:00 เลื่อนค่า → token ที่ออกก่อนหน้าใช้ไม่ได้ = บังคับ re-login (ADR-007) · เก็บ VAT/บริษัทแยกตารางด้านล่าง.</p>
+</section>
+
+<section id="xcut">
+ <h2><span class="dot" style="background:#10322F"></span>ตารางกลาง (cross-cutting) — audit / noti / เลข / ไฟล์</h2>
+ <div class="why">ตารางชุดนี้ทำงาน "เบื้องหลัง" ให้ทุก module โดยไม่ต้องเขียนซ้ำรายตาราง — เป็นหัวใจที่ทำให้ audit ระดับ field, การแจ้งเตือน, เลขเอกสารห้ามข้าม และไฟล์แนบ ทำงานเหมือนกันทั้งระบบ.</div>
+ <div class="cardgrid">
+  <div class="mini"><h4><code>audit_log</code> <span class="badge b-hard">จุดยาก</span></h4><p>1 แถว = การเปลี่ยน 1 field: <code>entity_type, entity_id, field, old_value, new_value, action, reason, actor_id, at, request_id</code>. เขียนอัตโนมัติจากชั้น ORM (ADR-003). ป้อนหน้า <a href="../mockups/trace.html">trace</a> + Settings→Audit log. <span class="badge b-idx">IDX</span> (entity_type,entity_id,at) และ (at). เก็บ online 1 ปี → Super User purge/archive.</p></div>
+  <div class="mini"><h4><code>status_history</code> (มุมมองของ audit)</h4><p>ประวัติเปลี่ยนสถานะ = filter <code>action='transition'</code> ของ audit_log — ไม่แยกตาราง กัน "2 ความจริง". แสดงบน timeline ทุกหน้า detail.</p></div>
+  <div class="mini"><h4><code>outbox</code> + <code>notification</code> + <code>notification_ack</code></h4><p><code>outbox</code>: event ที่เขียนใน transaction เดียวกับการเปลี่ยนสถานะ (กันหลุด). ตัว dispatcher แปลงเป็น <code>notification</code> (type, entity_ref, <b>deep_link</b>, module). ผู้เห็น = คนมีสิทธิ์ <code>r</code> ของ module ลบด้วยแถวใน <code>notification_ack</code> (นับ badge ราย user). ADR-005.</p></div>
+  <div class="mini"><h4><code>sequence</code> <span class="badge b-hard">จุดยาก</span></h4><p><code>(name, period_key, current_value)</code> — ออกเลขห้ามข้ามด้วย <code>SELECT..FOR UPDATE</code> ในทรานแซกชันสร้างเอกสาร. รองรับ PO/PRD/INV/PR/GR/SHP/DN. ADR-008.</p></div>
+  <div class="mini"><h4><code>file_asset</code></h4><p>metadata ของไฟล์ (เอกสารใบรับ supplier, ไฟล์ archive trace): <code>key, filename, mime, size, sha256, uploaded_by, entity_ref</code>. ไฟล์จริงอยู่บน disk (เฟส2)/GCS (เฟส3) ผ่าน StorageService — ADR-006. <b>ไม่เก็บไฟล์ใน DB</b>.</p></div>
+  <div class="mini"><h4><code>vat_config</code> · <code>company_profile</code></h4><p><code>vat_config(rate, effective_date, is_active)</code> — เก็บประวัติเรต, invoice ยึดเรตตาม effective ณ วันที่ออก. <code>company_profile</code> = ข้อมูลผู้ออกใบกำกับภาษี (Admin กรอก) — หน้า <a href="../mockups/settings.html">settings</a> + <a href="../mockups/invoice-print.html">invoice-print</a>.</p></div>
+ </div>
+</section>
+
+<section id="customer">
+ <h2><span class="dot" style="background:#0E7C7B"></span>ลูกค้า + ผู้ติดต่อ</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/customers.html">customers</a> · <a href="../mockups/customer-detail.html">customer-detail</a> · <a href="../mockups/customer-create.html">customer-create</a> · <a href="../mockups/contact-create.html">contact-create</a> · API: <a href="api-customer.html">api-customer.html</a> <span class="badge b-idx">รอสร้าง</span> · Functional: <a href="../functional-spec/customer.html">functional-spec/customer</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why"><b>6 สถานะจริง</b> (Lead / Active / Inactive / <b>Follow-up "ต้องติดตาม"</b> / Disabled / Blacklist). Follow-up เป็นสถานะแยก ตั้งโดย Sale/Sale Manager <b>บังคับ comment</b> (เก็บใน audit reason). รอบ Active→Inactive config ต่อลูกค้า (1/3/6/8 เดือน default 3). ดู <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map §1.1</a>.</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>customer</code> <span class="badge b-soft">soft</span></td><td><code>id</code>(CUS-{6}) , <code>name, tax_id(13), reg_address, status, inactive_after_months(=3), sale_owner_id</code> <span class="badge b-fk">FK</span>→user, <code>credit_days</code></td><td>สถานะ = enum 6 ค่า (แสดงเป็นป้ายไทย). <code>credit_days</code> ใช้คิด overdue. เลขผู้เสียภาษี 13 หลัก (feedback prototype #9).</td></tr>
+  <tr><td><code>customer_contact</code> <span class="badge b-new">ใหม่</span></td><td><code>customer_id</code> <span class="badge b-fk">FK</span>, <code>name, position, phone, email, is_primary</code></td><td>ผู้ติดต่อ <b>ไม่จำกัด</b>/ลูกค้า. ลบผู้ติดต่อหลักคนเดียวไม่ได้ต้องตั้งใหม่ก่อน (ADR-009). ใช้ค้นตอนสร้างรอบจัดส่ง.</td></tr>
+  <tr><td><code>customer_note</code></td><td><code>customer_id</code> <span class="badge b-fk">FK</span>, <code>body, author_id, at</code></td><td>timeline บันทึกการจัดการ (เห็นประวัติ). การเปลี่ยน sale_owner (reassign) บันทึกใน audit.</td></tr>
+ </table>
+</section>
+
+<section id="po">
+ <h2><span class="dot" style="background:#0E7C7B"></span>ใบสั่งซื้อ PO — 2 ราง (ผลิต/จัดส่ง + วางบิล)</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/po-create.html">po-create</a> · <a href="../mockups/po-detail.html">po-detail</a> · <a href="../mockups/po-list.html">po-list</a> · API: <a href="api-po.html">api-po.html</a> · Functional: <a href="../functional-spec/po.html">functional-spec/po</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why">PO มี <b>2 ราง reconcile กัน</b>: ราง fulfilment (ร่าง→ยืนยัน→กำลังผลิต→พร้อมจัดส่ง→กำลังจัดส่ง→ส่งถึง→ยกเลิก) และราง billing (ยังไม่วางบิล→วางบิล→ชำระ/เกินกำหนด). <b>ยกเลิกได้ทุกขั้น</b> + <b>reopen คงเลข PO เดิม</b> (ADR-008). สินค้าแต่ละบรรทัดขายได้ทั้ง BOM และวัตถุดิบตรง <b>ราคา 0 ได้</b>. ไม่มีปุ่มลบ — ใช้ยกเลิก (ADR-009).</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>po</code></td><td><code>id</code>(PO-{YYYYMM}-{6}), <code>customer_id</code> <span class="badge b-fk">FK</span>, <code>sale_owner_id</code>, <code>fulfil_status, billing_status</code>, <code>created_date, want_date, actual_ship_date</code>, <code>postpone_flag, postpone_date</code>, <code>version</code></td><td>3 วันที่ = ค้นได้ 3 แบบ (<span class="badge b-idx">IDX</span> ทั้ง 3). <code>postpone_*</code> = flag "กันจัดส่ง Postpone" ระดับ PO. reopen คงเลขเดิม → lifecycle event ใน audit.</td></tr>
+  <tr><td><code>po_line</code></td><td><code>po_id</code> <span class="badge b-fk">FK</span>, <code>item_type</code>(bom|material), <code>bom_id|material_id</code>, <code>qty, unit_price</code>(≥0 allow 0), <code>bom_snapshot_json</code></td><td>ตอนยืนยัน PO → <b>snapshot สูตร BOM</b> ลง line (ลบ BOM ทีหลังไม่กระทบ). 1 line = 1 งานผลิต (1 PRD).</td></tr>
+ </table>
+ <div class="note">Cascade: PO "ยืนยัน" → สร้าง <code>production_queue_item</code> ต่อ line (สถานะ "รอรับงาน") <b>ยังไม่เกิด PRD</b> (entity-status-map §2 cascade#1). ลูกค้า Lead→Active ถ้าเป็น PO ใบแรก.</div>
+</section>
+
+<section id="material">
+ <h2><span class="dot" style="background:#2C7BE5"></span>วัตถุดิบ + Lot + Stock Ledger (สต็อกติดลบได้)</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/stock.html">stock</a> · <a href="../mockups/goods-receipt.html">goods-receipt</a> · API: <a href="api-stock.html">api-stock.html</a> · Functional: <a href="../functional-spec/stock.html">functional-spec/stock</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="danger"><b>จุดยากที่สุดของระบบ — สต็อกเป็น "บัญชีเดินสะพัด" (append-only ledger) ไม่ใช่ตัวเลขเดียว.</b> การผลิตตัด stock ได้แม้ของไม่พอ → <b>ยอดติดลบได้</b> (ไม่บล็อกสายผลิต). พอทำ Goods Receipt ระบบบวกกลับ/ชดเชยติดลบ + ผูก lot ย้อนหลังแบบ FIFO เพื่อคง trace GMP. วิธีนี้ยัง<b>แก้บั๊ก DEF-09</b> (สต็อกชนกันตอนตัดพร้อมกัน) ไปในตัว. อ่านเต็ม <a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001</a>.</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>material</code> <span class="badge b-soft">soft</span></td><td><code>id, name, uom, low_stock_threshold</code>(null=ไม่เตือน), <code>threshold_type</code>(pct|qty), <code>default_buy_price, default_sell_price</code>(0 ได้)</td><td>เพิ่มวัตถุดิบใหม่ + UOM ได้. เกณฑ์ใกล้หมด <b>ไม่มี default</b> (null = เงียบจนตั้งค่า).</td></tr>
+  <tr><td><code>lot</code> <span class="badge b-new">ใหม่</span></td><td><code>id</code>({prefix}{YYMM}), <code>material_id</code> <span class="badge b-fk">FK</span>, <code>supplier_id</code>, <code>gr_id</code>, <code>qc_status</code>(รอตรวจ/พร้อมใช้/ระงับ), <code>received_qty</code></td><td>lot prefix ต่อ supplier. QC ขาเข้าตัดสินสถานะ lot. GMP: raw lot → batch.</td></tr>
+  <tr><td><code>stock_movement</code> <span class="badge b-hard">จุดยาก</span></td><td><code>material_id, lot_id</code>(<b>null ได้</b>=ยังไม่ผูก lot), <code>qty</code>(±), <code>reason</code>(production_consume/goods_receipt/return_out/adjust/retro_alloc), <code>ref_type, ref_id, caused_negative, created_by, at, note</code></td><td><b>append-only</b> — ห้าม UPDATE/DELETE. ตัดผลิต = แถว qty ลบ (ไม่ต้องเช็คก่อน → ไม่มี race). GR = แถวบวก + แถว retro_alloc ผูก consumption เก่าเข้า lot ใหม่ (FIFO).</td></tr>
+  <tr><td><code>stock_balance</code> (cache)</td><td><code>material_id, lot_id, qty_on_hand, updated_at</code></td><td>ยอดคงเหลือ = ผลรวม movement (อัปเดตแบบ <code>qty=qty+delta</code> atomic). rebuild ได้จาก ledger เสมอ. <b>ติดลบ = แสดงสีแดง + badge "ติดลบ (รอรับเข้า)"</b>.</td></tr>
+ </table>
+</section>
+
+<section id="supplier">
+ <h2><span class="dot" style="background:#2C7BE5"></span>ผู้จำหน่าย + ตารางราคา (price matrix)</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/supplier.html">supplier</a> · Functional: <a href="../functional-spec/supplier.html">functional-spec/supplier</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why">ผูก "วัตถุดิบ 1 ตัว × supplier ได้หลายราย" พร้อม<b>ราคารับซื้อต่อคู่</b> = ตาราง matrix. supplier มี Active/Inactive. ราคานี้ใช้คิด "ราคาทุน BOM = สูงสุดของ supplier ที่ active". <b>ไม่มีฟังก์ชันรับเข้าคลังในหน้านี้</b> (อยู่ที่ goods-receipt).</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>supplier</code> <span class="badge b-new">ใหม่</span> <span class="badge b-soft">soft</span></td><td><code>id, name, lot_prefix, is_active, contact...</code></td><td>inactive แนะนำใช้แทนลบ. lot_prefix ใช้ gen เลข lot.</td></tr>
+  <tr><td><code>supplier_material_price</code> <span class="badge b-hard">จุดยาก</span></td><td><code>supplier_id</code> <span class="badge b-fk">FK</span>, <code>material_id</code> <span class="badge b-fk">FK</span>, <code>buy_price</code></td><td>PK รวม (supplier_id, material_id) = matrix. คิดราคาทุน BOM ใช้เฉพาะ supplier ที่ <code>is_active</code>.</td></tr>
+ </table>
+</section>
+
+<section id="bom">
+ <h2><span class="dot" style="background:#2C7BE5"></span>สูตรการผลิต BOM + snapshot ราคาทุน</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/bom.html">bom</a> · <a href="../mockups/bom-create.html">bom-create</a> · Functional: <a href="../functional-spec/bom.html">functional-spec/bom</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why"><b>ราคาทุน = สูงสุดของ supplier ที่ active</b> คิด ณ ตอนสร้าง/แก้ + <b>user แก้ทับได้</b> + <b>snapshot ตอนบันทึก</b> (ไม่คิดใหม่อัตโนมัติ) + <b>badge เตือน "ราคาทุนอาจล้าสมัย"</b> เมื่อราคา supplier ปัจจุบันต่างจาก snapshot. ราคาขาย <b>บังคับกรอก</b>. (entity-status-map §11 / ADR-001 §4).</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>bom</code> <span class="badge b-soft">soft</span></td><td><code>id, name, cost_snapshot, cost_overridden(bool), sell_price</code>(บังคับ), <code>snapshot_at</code></td><td>badge ล้าสมัย = เทียบ cost_snapshot กับ max(active supplier price) ปัจจุบัน (คิดตอนอ่าน).</td></tr>
+  <tr><td><code>bom_line</code></td><td><code>bom_id</code> <span class="badge b-fk">FK</span>, <code>material_id</code> <span class="badge b-fk">FK</span>, <code>qty</code></td><td>ส่วนผสม. ใช้คิดวัตถุดิบที่ต้องใช้ตอนเปิด PO/ผลิต (auto-calc + lot FIFO).</td></tr>
+ </table>
+</section>
+
+<section id="pr">
+ <h2><span class="dot" style="background:#2C7BE5"></span>คำขอสั่งซื้อ PR + ใบรับเข้า GR</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/purchase-request.html">purchase-request</a> · <a href="../mockups/pr-create.html">pr-create</a> · <a href="../mockups/goods-receipt.html">goods-receipt</a></div>
+ <div class="why">PR เกิด 2 ทาง: auto จาก PO วัตถุดิบขาด หรือ Stock สร้างตรง. "ของเข้าครบ" = auto จาก GR (ผูก lot). "รับทราบ/ปิดคำขอ" = manual. GR เป็น <b>multi-line</b> (1 supplier หลายบรรทัด) แต่ละบรรทัด gen lot + อ้าง PR รายบรรทัด → ปิด PR อัตโนมัติ + บวก stock กลับ (ชดเชยติดลบ). PR/GR <b>ยกเลิก (void) ไม่ลบ</b>.</div>
+ <table><tr><th>ตาราง</th><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>purchase_request</code> / <code>_line</code> <span class="badge b-new">ใหม่</span></td><td>id(PR-{6}), status(เปิด/รับทราบ/รับบางส่วน/ของเข้าครบ/ปิด/ยกเลิก), source(auto|manual), po_id?, line(material, qty)</td><td>รับบางส่วน → เสนอสร้าง PR ใหม่ (user review).</td></tr>
+  <tr><td><code>goods_receipt</code> / <code>_line</code> <span class="badge b-new">ใหม่</span></td><td>id(GR-{YYYYMMDD}-{3}), supplier_id, doc_no, file_asset_id, line(material, qty, buy_price, sell_price, lot_id gen, pr_id?)</td><td>บันทึกรับเข้า → gen lot + ปิด PR + บวก stock/retro-alloc. โชว์ notice "ชดเชยยอดติดลบ X".</td></tr>
+ </table>
+</section>
+
+<section id="prd">
+ <h2><span class="dot" style="background:#E0912F"></span>ใบสั่งผลิต PRD + รุ่นผลิต Batch</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/production.html">production</a> · <a href="../mockups/po-detail.html">po-detail</a> · API: <a href="api-production.html">api-production.html</a> · Functional: <a href="../functional-spec/production.html">functional-spec/production</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why"><b>1 PO : N PRD (N=line) : M Batch (M≥N, +1 ทุก rework).</b> PO ยืนยัน → คิว "รอรับงาน" (ยังไม่มีเลข). ฝ่ายผลิตกด <b>"รับงาน" → เกิดเลข PRD</b> (ไม่ auto). กด "เริ่มผลิต" → เกิด <b>Batch run แรก</b> + ตัด stock (ติดลบได้). QC ผ่านทุก PRD → PO พร้อมจัดส่ง. (entity-status-map §1.4/§1.5).</div>
+ <table><tr><th>ตาราง</th><th>field สำคัญ</th><th>อธิบาย</th></tr>
+  <tr><td><code>production_queue_item</code> <span class="badge b-new">ใหม่</span></td><td><code>po_id, po_line_id, status</code>(=รอรับงาน)</td><td>เกิดตอน PO ยืนยัน. <b>ยังไม่ใช่ PRD/ไม่มีเลข</b>. กดรับงาน → gen PRD แล้ว mark accepted.</td></tr>
+  <tr><td><code>production_order</code> (PRD) <span class="badge b-new">ใหม่</span></td><td><code>id</code>(PRD-{YYYYMM}-{6}), <code>po_line_id</code> <span class="badge b-fk">FK</span>, <code>status</code>(รับงาน/กำลังผลิต/รอ QC/พร้อมส่งมอบ/Rework/Hold), <code>hold_reason, potential_delay</code>(bool overlay), <code>accepted_by, accepted_at</code></td><td>Hold บังคับ comment + raise Sale/Stock. Potential Delay = overlay auto (2 วันผลิต+1 วันส่ง) ไม่ใช่ state แยก.</td></tr>
+  <tr><td><code>batch</code> <span class="badge b-new">ใหม่</span></td><td><code>id</code>(B-{PO}-{line}-{run}), <code>prd_id</code> <span class="badge b-fk">FK</span>, <code>run_no</code>, <code>status</code>(กำลังผลิต/รอ QC/QC ผ่าน/QC ไม่ผ่าน)</td><td>เกิดตอน "เริ่มผลิต". rework → run+1. หลักฐาน GMP <b>ห้ามลบ</b>.</td></tr>
+  <tr><td><code>batch_material_consumption</code></td><td><code>batch_id</code> <span class="badge b-fk">FK</span>, <code>material_id, lot_id</code>(null ช่วงติดลบ), <code>qty, movement_id</code> <span class="badge b-fk">FK</span></td><td>ผูก Batch ↔ Lot ↔ movement = สาย trace GMP. retro-alloc เติม lot_id ย้อนหลังตอน GR.</td></tr>
+ </table>
+</section>
+
+<section id="qc">
+ <h2><span class="dot" style="background:#E0912F"></span>QC — ตรวจรับขาเข้า + ตรวจแบตช์</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/qc.html">qc</a> · Functional: <a href="../functional-spec/qc.html">functional-spec/qc</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why">QC 2 แบบ: (1) <b>ตรวจรับ Lot ขาเข้า</b> (ผ่าน→lot พร้อมใช้ / ไม่ผ่าน→lot ระงับ→คืนของ) (2) <b>ตรวจ Batch</b> (ผ่าน→PRD พร้อมส่งมอบ / ไม่ผ่าน→PRD Rework + <b>feedback บังคับ</b>). ตัดสิน QC ได้เฉพาะหน้า QC เท่านั้น (หน้าผลิตไม่มีปุ่มตัดสิน).</div>
+ <table><tr><th>ตาราง</th><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>qc_record</code> <span class="badge b-new">ใหม่</span></td><td><code>id, target_type</code>(lot|batch), <code>target_id, result</code>(pass|fail), <code>feedback</code>(บังคับเมื่อ fail), <code>inspector_id, at</code></td><td>fail → cascade กลับสายผลิต/คืนของ + audit reason.</td></tr>
+ </table>
+</section>
+
+<section id="ship">
+ <h2><span class="dot" style="background:#2E9E5B"></span>จัดส่ง 2 ชั้น — Shipment (รอบ) + DN</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/shipping.html">shipping</a> · <a href="../mockups/delivery-note.html">delivery-note</a> · Functional: <a href="../functional-spec/shipping.html">functional-spec/shipping</a> <span class="badge b-soft">BA ✓</span></div>
+ <div class="why"><b>Shipment (รอบจัดส่ง) 1 รอบ = หลาย DN · DN 1 ใบ = 1 PO เสมอ</b> (ลูกค้าเซ็นรายใบ). รอบจบเมื่อ DN ทุกใบถึงสถานะสุดท้าย. <b>DN Reject</b> → PO กลับพร้อมจัดส่ง + raise Sale. <b>DN Postpone</b> → PO พร้อมจัดส่ง + flag Postpone+วันที่ ค้างคิว. (entity-status-map §1.9/§1.10).</div>
+ <table><tr><th>ตาราง</th><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>shipment</code> <span class="badge b-new">ใหม่</span></td><td>id(SHP-{YYYYMMDD}-{4}), status(รับเข้ารอบ/กำลังนำส่ง/จบรอบ), driver_name, driver_phone, route, vehicle_type</td><td>จบรอบ = auto เมื่อทุก DN terminal.</td></tr>
+  <tr><td><code>delivery_note</code> <span class="badge b-new">ใหม่</span></td><td>id(DN-{YYYYMMDD}-{5}), <code>shipment_id</code> <span class="badge b-fk">FK</span>, <code>po_id</code> <span class="badge b-fk">FK</span> (1:1), status(กำลังนำส่ง/ส่งถึง/ปฏิเสธ/เลื่อน)</td><td>print ทีละใบ. ส่งถึง→PO Delivered เริ่มนับ overdue.</td></tr>
+ </table>
+</section>
+
+<section id="invoice">
+ <h2><span class="dot" style="background:#2E9E5B"></span>ใบแจ้งหนี้ + ใบกำกับภาษีไทย</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/invoices.html">invoices</a> · <a href="../mockups/invoice-detail.html">invoice-detail</a> · <a href="../mockups/invoice-print.html">invoice-print</a> · API: <a href="api-invoice.html">api-invoice.html</a></div>
+ <div class="why">ออกได้ตั้งแต่ <b>PO=Confirmed</b> แต่โชว์ stage จริงเสมอ. <b>VAT ยึด effective date</b> จาก <code>vat_config</code> ณ วันที่ออก. overdue = ส่งของแล้ว+เลยเครดิต+ยังไม่จ่าย. มี versioning. ใบกำกับภาษีไทยครบ (ผู้ออก+เลขผู้เสียภาษี, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง) — company_profile จาก settings.</div>
+ <table><tr><th>ตาราง</th><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>invoice</code> / <code>_line</code></td><td>id(INV-{YYYY}-{6}), po_id, vat_rate(snapshot), subtotal, discount, vat_amount, grand_total, status(รอชำระ/ชำระ/เกินกำหนด), issued_date</td><td>1 PO : 1 invoice (+versions).</td></tr>
+  <tr><td><code>invoice_version</code></td><td>invoice_id, version_no, snapshot_json, at</td><td>เก็บทุกรุ่นที่แก้ (audit + versioning).</td></tr>
+ </table>
+</section>
+
+<section id="return">
+ <h2><span class="dot" style="background:#E0912F"></span>คืนวัตถุดิบ (Return)</h2>
+ <div class="crumb">หน้าจอ: <a href="../mockups/return.html">return</a></div>
+ <div class="why">ระบุ lot → auto แสดง supplier → แก้จำนวน → <b>ตัด stock + comment บังคับ</b> (adjust ไม่มี PO). ตัด stock = แถว movement reason=return_out (trace เสมอ).</div>
+ <table><tr><th>ตาราง</th><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>return_doc</code> / <code>_line</code> <span class="badge b-new">ใหม่</span></td><td>id, status(ร่าง/คืนแล้ว/ปิด/ยกเลิก), line(lot_id, qty, reason บังคับ)</td><td>เชื่อม stock_movement (return_out).</td></tr>
+ </table>
+</section>
+
+<section id="coverage">
+ <h2><span class="dot" style="background:#D64545"></span>ตารางเช็คครบทุก case (schema coverage)</h2>
+ <div class="why">ไล่เช็คว่า cascade 17 แถว, exception, กติกาลบ 7 ข้อ และ NFR — มีตารางรองรับครบทุกจุด (ตารางเต็มอยู่ที่ <a href="index.html#coverage">Architecture › Coverage</a>).</div>
+ <table><tr><th>Requirement</th><th>ตาราง/กลไกที่รองรับ</th></tr>
+  <tr><td>ลูกค้า 6 สถานะ + Follow-up comment</td><td><code>customer.status</code> + audit reason</td></tr>
+  <tr><td>PO reopen คงเลขเดิม</td><td>ไม่ออกเลขใหม่ + lifecycle event ใน <code>audit_log</code></td></tr>
+  <tr><td>PRD เกิดตอนรับงาน / 1 line=1 PRD</td><td><code>production_queue_item</code> → <code>production_order</code></td></tr>
+  <tr><td>Batch runs + rework</td><td><code>batch.run_no</code></td></tr>
+  <tr><td>สต็อกติดลบ + retro FIFO</td><td><code>stock_movement</code>(lot null + retro_alloc)</td></tr>
+  <tr><td>2 ชั้นจัดส่ง / DN=1 PO</td><td><code>shipment</code> 1:N <code>delivery_note</code>(po 1:1)</td></tr>
+  <tr><td>PR/GR void</td><td>status ยกเลิก (ไม่มี delete)</td></tr>
+  <tr><td>price matrix</td><td><code>supplier_material_price</code></td></tr>
+  <tr><td>BOM snapshot + badge</td><td><code>bom.cost_snapshot</code> เทียบ realtime</td></tr>
+  <tr><td>RUCDAA + Admin</td><td><code>role_permission</code> 6 บิต</td></tr>
+  <tr><td>audit ระดับ field</td><td><code>audit_log</code> (ADR-003)</td></tr>
+  <tr><td>VAT effective date</td><td><code>vat_config</code> ประวัติเรต</td></tr>
+  <tr><td>soft-delete + guard</td><td>คอลัมน์ deleted_* ทุก master (ADR-009)</td></tr>
+  <tr><td>gapless numbering</td><td><code>sequence</code> (ADR-008)</td></tr>
+  <tr><td>noti ราย Read-bit + ack</td><td><code>outbox/notification/notification_ack</code></td></tr>
+  <tr><td>NFR: trace 1.2M แถว &lt;2s</td><td><span class="badge b-idx">IDX</span> (entity_type,entity_id,at)+(at) keyset paging</td></tr>
+ </table>
+</section>
+
+<footer>ESSENCE Hub System · Database Schema · Stage 2 · Tech-Lead · ค่าจริงของ DDL จะอยู่ใน <code>db/migrations/</code> (Prisma) เมื่อเริ่ม dev — เอกสารนี้คือ baseline ที่อนุมัติ ณ Gate 2</footer>
+</main></div></body></html>

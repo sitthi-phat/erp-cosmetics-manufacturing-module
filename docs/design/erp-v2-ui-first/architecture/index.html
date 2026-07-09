@@ -1,0 +1,231 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESSENCE Hub System — Architecture (Stage 2)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3Cpath%20d%3D'M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.svgwrap{overflow-x:auto;border:1px solid #E4E7EB;border-radius:12px;background:#fff;padding:10px;margin:12px 0}
+.svgwrap svg{display:block;margin:0 auto}
+.difftab td:first-child{white-space:nowrap;font-weight:600;color:#10322F}
+.ok{color:#1E7A44;font-weight:600}
+.adrgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
+@media(max-width:900px){.adrgrid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">
+  <svg viewBox="0 0 40 40" width="30" height="30"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/></svg>
+  ESSENCE Hub System — สถาปัตยกรรมระบบ
+ </div>
+ <span class="tag">Stage 2 · Architecture · Tech-Lead · React + Node.js + MySQL (ADR-000)</span>
+ <h1>ภาพรวมสถาปัตยกรรม (Architecture Overview)</h1>
+ <p>หน้านี้คือ "แผนที่ช่างเทคนิค" ของระบบ ESSENCE Hub — อธิบายเป็นภาษาคนว่าระบบประกอบด้วยอะไร ต่อกันอย่างไร ทำงานบนเครื่องอะไร (เฟส 2 = PC ในโรงงาน → เฟส 3 = Google Cloud) และการตัดสินใจสำคัญแต่ละข้อ (ADR) มีเหตุผลอะไร. ทุกกล่องในไดอะแกรมมีคำอธิบายไทยกำกับ. ลิงก์ไป <a href="db-schema.html" style="color:#CFE0DE;text-decoration:underline">โครงสร้างฐานข้อมูล</a> และ API ราย module ด้านล่าง.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <h4>ในหน้านี้</h4>
+ <a href="#system">1. ระบบวางบนอะไร (System)</a>
+ <a href="#service">2. บริการ/โมดูล (Service)</a>
+ <a href="#flow">3. เส้นทางข้อมูล 1 คำสั่ง</a>
+ <a href="#adr">4. การตัดสินใจ (ADR ทั้ง 9)</a>
+ <a href="#api">5. API ราย module</a>
+ <a href="#nfr">6. NFR ที่ปอนด์กำหนด</a>
+ <a href="#coverage">7. เช็คครบทุก case</a>
+ <h4>เอกสารเชื่อม</h4>
+ <a href="db-schema.html">Database schema</a>
+ <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">Entity-status map</a>
+ <a href="../mockups/index.html">Mockup gallery</a>
+</nav>
+<main>
+
+<section id="system">
+ <h2><span class="dot" style="background:#10322F"></span>1. ระบบวางบนอะไร — System Diagram (เฟส 2 → เฟส 3)</h2>
+ <div class="why">อ่านซ้าย→ขวา: ผู้ใช้เปิดเว็บ (React) → คุยกับ <b>Backend (Node.js/NestJS)</b> → เก็บข้อมูลใน <b>MySQL</b>. ไฟล์แนบ/ไฟล์ archive เก็บผ่าน "ตัวกลางเก็บไฟล์" ที่สลับได้ระหว่างดิสก์ในเครื่อง (เฟส 2) กับ Google Cloud Storage (เฟส 3). <b>โค้ดชุดเดียวกันย้ายขึ้น cloud ได้โดยไม่ต้องเขียนใหม่</b> — เปลี่ยนแค่ค่า config (หลักการที่ทำให้เส้นทาง PC→GCP ไม่ถูกปิด ตาม charter).</div>
+ <div class="svgwrap"><svg viewBox="0 0 980 430" width="980" height="430" font-family="IBM Plex Sans Thai,Segoe UI,sans-serif">
+  <defs>
+   <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#52606D"/></marker>
+   <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E7C7B"/><stop offset="1" stop-color="#0B6360"/></linearGradient>
+  </defs>
+  <!-- client -->
+  <rect x="20" y="150" width="150" height="110" rx="12" fill="#fff" stroke="#0E7C7B" stroke-width="2"/>
+  <text x="95" y="180" text-anchor="middle" font-size="26">🧑‍🏭</text>
+  <text x="95" y="212" text-anchor="middle" font-size="14" font-weight="600" fill="#10322F">ผู้ใช้ (เบราว์เซอร์)</text>
+  <text x="95" y="232" text-anchor="middle" font-size="11.5" fill="#52606D">React SPA (Vite)</text>
+  <text x="95" y="248" text-anchor="middle" font-size="11.5" fill="#52606D">Ant Design + teal theme</text>
+  <!-- phase2 box -->
+  <rect x="210" y="40" width="480" height="360" rx="14" fill="#F4F9F9" stroke="#0E7C7B" stroke-dasharray="6 4"/>
+  <text x="228" y="64" font-size="12.5" font-weight="700" fill="#0B6360">เฟส 2 — PC ในโรงงาน (Dev/Test Environment)</text>
+  <!-- API -->
+  <rect x="250" y="150" width="180" height="150" rx="12" fill="url(#g1)"/>
+  <text x="340" y="182" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">Backend API</text>
+  <text x="340" y="202" text-anchor="middle" font-size="11.5" fill="#DdeeED">Node.js 20 · NestJS</text>
+  <text x="340" y="222" text-anchor="middle" font-size="11.5" fill="#DdeeED">REST + envelope</text>
+  <text x="340" y="244" text-anchor="middle" font-size="11" fill="#CFE0DE">Guard(RUCDAA)·Audit</text>
+  <text x="340" y="260" text-anchor="middle" font-size="11" fill="#CFE0DE">Outbox·Sequence</text>
+  <text x="340" y="280" text-anchor="middle" font-size="11" fill="#CFE0DE">Scheduler (06:00, overdue)</text>
+  <!-- DB -->
+  <rect x="500" y="150" width="160" height="90" rx="12" fill="#fff" stroke="#2C7BE5" stroke-width="2"/>
+  <text x="580" y="180" text-anchor="middle" font-size="22">🗄️</text>
+  <text x="580" y="208" text-anchor="middle" font-size="13.5" font-weight="600" fill="#10322F">MySQL 8 / InnoDB</text>
+  <text x="580" y="226" text-anchor="middle" font-size="11" fill="#52606D">ledger·audit·sequence</text>
+  <!-- storage local -->
+  <rect x="500" y="258" width="160" height="66" rx="12" fill="#fff" stroke="#E0912F" stroke-width="2"/>
+  <text x="580" y="284" text-anchor="middle" font-size="12.5" font-weight="600" fill="#7A4E12">📁 Local disk</text>
+  <text x="580" y="302" text-anchor="middle" font-size="10.5" fill="#7A4E12">ไฟล์แนบ/archive (StorageService)</text>
+  <!-- google -->
+  <rect x="250" y="330" width="180" height="52" rx="10" fill="#fff" stroke="#D7DDE3"/>
+  <text x="340" y="356" text-anchor="middle" font-size="12" fill="#52606D">🔐 Google OAuth (login)</text>
+  <text x="340" y="372" text-anchor="middle" font-size="10.5" fill="#7B8794">+ local username/password</text>
+  <!-- phase3 -->
+  <rect x="720" y="40" width="240" height="360" rx="14" fill="#EAF2FF" stroke="#2C7BE5" stroke-dasharray="6 4"/>
+  <text x="738" y="64" font-size="12.5" font-weight="700" fill="#1F5EDB">เฟส 3 — Google Cloud (Production)</text>
+  <rect x="745" y="150" width="190" height="60" rx="10" fill="#fff" stroke="#2C7BE5"/>
+  <text x="840" y="176" text-anchor="middle" font-size="12.5" font-weight="600" fill="#10322F">Cloud Run (API เดิม)</text>
+  <text x="840" y="194" text-anchor="middle" font-size="10.5" fill="#52606D">โค้ดเดียวกัน</text>
+  <rect x="745" y="222" width="190" height="52" rx="10" fill="#fff" stroke="#2C7BE5"/>
+  <text x="840" y="246" text-anchor="middle" font-size="12" font-weight="600" fill="#10322F">Cloud SQL (MySQL)</text>
+  <text x="840" y="263" text-anchor="middle" font-size="10.5" fill="#52606D">backup อัตโนมัติทุกวัน</text>
+  <rect x="745" y="286" width="190" height="48" rx="10" fill="#fff" stroke="#E0912F"/>
+  <text x="840" y="314" text-anchor="middle" font-size="12" font-weight="600" fill="#7A4E12">☁️ Cloud Storage (GCS)</text>
+  <text x="840" y="356" text-anchor="middle" font-size="10.5" fill="#1F5EDB">สลับ driver ด้วย config เดียว →</text>
+  <!-- arrows -->
+  <line x1="170" y1="205" x2="248" y2="205" stroke="#52606D" stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="205" y="198" text-anchor="middle" font-size="10.5" fill="#52606D">HTTPS</text>
+  <line x1="430" y1="195" x2="498" y2="195" stroke="#52606D" stroke-width="1.6" marker-end="url(#ar)"/>
+  <line x1="430" y1="285" x2="498" y2="288" stroke="#52606D" stroke-width="1.6" marker-end="url(#ar)"/>
+  <line x1="660" y1="205" x2="743" y2="200" stroke="#2C7BE5" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+ </svg></div>
+ <p style="font-size:12.5px;color:#52606D">เส้นทึบ = การต่อในเฟส 2 · เส้นประน้ำเงิน = การยกขึ้น GCP ในเฟส 3 (เปลี่ยน environment ไม่เปลี่ยนโค้ดธุรกิจ — ดู <a href="../../../adr/006-storage-abstraction-gcs-ready.md">ADR-006</a>).</p>
+</section>
+
+<section id="service">
+ <h2><span class="dot" style="background:#0E7C7B"></span>2. บริการ/โมดูลภายใน — Service Diagram</h2>
+ <div class="why">Backend แบ่งเป็น <b>โมดูลตามแผนกงาน</b> (ขาย/คลัง/ผลิต/QC/จัดส่ง/การเงิน/ตั้งค่า) ล้อมรอบด้วย <b>"ชั้นกลาง" 6 ตัว</b> ที่ทำงานให้ทุกโมดูลเหมือนกันอัตโนมัติ — ตรวจสิทธิ์, บันทึก audit, ห่อ response, ยิงแจ้งเตือน, ออกเลขเอกสาร, เก็บไฟล์. <b>นี่คือเหตุผลที่ requirement ยาก ๆ (audit ทุก field, ลบ soft, เลขห้ามข้าม) ทำครั้งเดียวใช้ทั้งระบบ</b> ไม่ต้องเขียนซ้ำรายโมดูล.</div>
+ <div class="svgwrap"><svg viewBox="0 0 980 470" width="980" height="470" font-family="IBM Plex Sans Thai,Segoe UI,sans-serif">
+  <!-- cross-cutting ring -->
+  <rect x="20" y="20" width="940" height="70" rx="12" fill="#E6F4F3" stroke="#0E7C7B"/>
+  <text x="34" y="44" font-size="12.5" font-weight="700" fill="#0B6360">ชั้นกลาง (cross-cutting) — ทำงานให้ทุกโมดูลอัตโนมัติ</text>
+  <g font-size="11.5" fill="#0B4E4C" font-weight="600">
+   <rect x="40" y="54" width="140" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="110" y="71" text-anchor="middle">RbacGuard · RUCDAA</text>
+   <rect x="190" y="54" width="140" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="260" y="71" text-anchor="middle">AuditInterceptor</text>
+   <rect x="340" y="54" width="140" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="410" y="71" text-anchor="middle">ResponseEnvelope</text>
+   <rect x="490" y="54" width="120" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="550" y="71" text-anchor="middle">OutboxService</text>
+   <rect x="620" y="54" width="140" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="690" y="71" text-anchor="middle">SequenceService</text>
+   <rect x="770" y="54" width="170" height="26" rx="6" fill="#fff" stroke="#0E7C7B"/><text x="855" y="71" text-anchor="middle">Storage · SoftDeleteRepo</text>
+  </g>
+  <!-- domain modules -->
+  <g font-size="12" font-weight="600">
+   <rect x="30" y="120" width="150" height="70" rx="10" fill="#fff" stroke="#0E7C7B" stroke-width="1.6"/><text x="105" y="150" text-anchor="middle" fill="#10322F">👥 Customer</text><text x="105" y="170" text-anchor="middle" font-size="10.5" fill="#52606D">6 สถานะ+Follow-up</text>
+   <rect x="200" y="120" width="150" height="70" rx="10" fill="#fff" stroke="#0E7C7B" stroke-width="1.6"/><text x="275" y="150" text-anchor="middle" fill="#10322F">📄 PO (2 ราง)</text><text x="275" y="170" text-anchor="middle" font-size="10.5" fill="#52606D">cancel/reopen</text>
+   <rect x="370" y="120" width="150" height="70" rx="10" fill="#fff" stroke="#E0912F" stroke-width="1.6"/><text x="445" y="150" text-anchor="middle" fill="#10322F">🏭 Production</text><text x="445" y="170" text-anchor="middle" font-size="10.5" fill="#52606D">PRD+Batch+Hold</text>
+   <rect x="540" y="120" width="150" height="70" rx="10" fill="#fff" stroke="#E0912F" stroke-width="1.6"/><text x="615" y="150" text-anchor="middle" fill="#10322F">🛡️ QC</text><text x="615" y="170" text-anchor="middle" font-size="10.5" fill="#52606D">ขาเข้า+แบตช์</text>
+   <rect x="710" y="120" width="150" height="70" rx="10" fill="#fff" stroke="#2E9E5B" stroke-width="1.6"/><text x="785" y="150" text-anchor="middle" fill="#10322F">🚚 Shipping</text><text x="785" y="170" text-anchor="middle" font-size="10.5" fill="#52606D">Shipment+DN</text>
+
+   <rect x="30" y="210" width="150" height="70" rx="10" fill="#fff" stroke="#2C7BE5" stroke-width="1.6"/><text x="105" y="240" text-anchor="middle" fill="#10322F">🗄️ Stock</text><text x="105" y="260" text-anchor="middle" font-size="10.5" fill="#52606D">ledger (ติดลบได้)</text>
+   <rect x="200" y="210" width="150" height="70" rx="10" fill="#fff" stroke="#2C7BE5" stroke-width="1.6"/><text x="275" y="240" text-anchor="middle" fill="#10322F">📥 PR + GR</text><text x="275" y="260" text-anchor="middle" font-size="10.5" fill="#52606D">multi-line+retro</text>
+   <rect x="370" y="210" width="150" height="70" rx="10" fill="#fff" stroke="#2C7BE5" stroke-width="1.6"/><text x="445" y="240" text-anchor="middle" fill="#10322F">🏷️ Supplier</text><text x="445" y="260" text-anchor="middle" font-size="10.5" fill="#52606D">price matrix</text>
+   <rect x="540" y="210" width="150" height="70" rx="10" fill="#fff" stroke="#2C7BE5" stroke-width="1.6"/><text x="615" y="240" text-anchor="middle" fill="#10322F">🧬 BOM</text><text x="615" y="260" text-anchor="middle" font-size="10.5" fill="#52606D">snapshot ทุน</text>
+   <rect x="710" y="210" width="150" height="70" rx="10" fill="#fff" stroke="#2E9E5B" stroke-width="1.6"/><text x="785" y="240" text-anchor="middle" fill="#10322F">💳 Invoice</text><text x="785" y="260" text-anchor="middle" font-size="10.5" fill="#52606D">VAT effective</text>
+  </g>
+  <!-- shared services row -->
+  <rect x="30" y="305" width="400" height="60" rx="10" fill="#F4F6F8" stroke="#D7DDE3"/>
+  <text x="230" y="330" text-anchor="middle" font-size="12" font-weight="600" fill="#10322F">🔔 Notification / Inbox</text>
+  <text x="230" y="349" text-anchor="middle" font-size="10.5" fill="#52606D">fan-out ตามสิทธิ์ Read + deep link + ack ราย user</text>
+  <rect x="450" y="305" width="410" height="60" rx="10" fill="#F4F6F8" stroke="#D7DDE3"/>
+  <text x="655" y="330" text-anchor="middle" font-size="12" font-weight="600" fill="#10322F">🔗 Trace / Audit / Settings (RUCDAA, VAT, บริษัท)</text>
+  <text x="655" y="349" text-anchor="middle" font-size="10.5" fill="#52606D">อ่านจาก audit_log เดียว + archive (Super User)</text>
+  <!-- data layer -->
+  <rect x="30" y="390" width="830" height="56" rx="10" fill="#0B6360"/>
+  <text x="445" y="416" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Prisma ORM → MySQL 8 (ทุก transition = 1 transaction: เปลี่ยนสถานะ + audit + outbox + ledger พร้อมกัน)</text>
+  <text x="445" y="434" text-anchor="middle" font-size="10.5" fill="#CFE0DE">โครงสร้างตาราง: db-schema.html</text>
+  <line x1="445" y1="365" x2="445" y2="388" stroke="#0B6360" stroke-width="1.6" marker-end="url(#ar)"/>
+ </svg></div>
+</section>
+
+<section id="flow">
+ <h2><span class="dot" style="background:#0E7C7B"></span>3. เส้นทางข้อมูลของ 1 คำสั่ง (เช่น QC กด "ผ่าน")</h2>
+ <div class="why">ตัวอย่างให้เห็นว่า "การกดปุ่มเดียว" ทำอะไรบ้างเบื้องหลัง และทำไมทุกอย่าง<b>ต้องสำเร็จพร้อมกันหรือไม่สำเร็จทั้งหมด</b> (1 transaction) — กันข้อมูลหลุด/สถานะเพี้ยน.</div>
+ <table><tr><th>ลำดับ</th><th>เกิดอะไร</th><th>ชั้นที่ทำ</th></tr>
+  <tr><td>1</td><td>ผู้ใช้ QC กด "ผ่าน" ที่แบตช์ → เรียก <code>POST /qc/{batchId}/pass</code></td><td>React → API</td></tr>
+  <tr><td>2</td><td>ตรวจสิทธิ์: role นี้มีบิต Approve ของ module qc ไหม</td><td>RbacGuard (ADR-007)</td></tr>
+  <tr><td>3</td><td>ตรวจว่าแบตช์อยู่สถานะ "รอ QC" จริง (state machine legal?)</td><td>QC service (ADR-004)</td></tr>
+  <tr><td>4 (ในทรานแซกชันเดียว)</td><td>Batch→QC ผ่าน · PRD→พร้อมส่งมอบ · ถ้าทุก PRD ของ PO ผ่าน → PO→พร้อมจัดส่ง · เขียน audit ทุก field · เขียน outbox event "พร้อมส่งมอบ"</td><td>Prisma $transaction</td></tr>
+  <tr><td>5</td><td>dispatcher อ่าน outbox → สร้าง notification ให้ทุกคนที่มีสิทธิ์ Read ของ Shipping (deep link ไปหน้าจัดส่ง)</td><td>OutboxService (ADR-005)</td></tr>
+  <tr><td>6</td><td>ตอบกลับ envelope มาตรฐาน → UI อัปเดต (ไม่โชว์ enum ดิบ)</td><td>ResponseEnvelope (ADR-004)</td></tr>
+ </table>
+</section>
+
+<section id="adr">
+ <h2><span class="dot" style="background:#10322F"></span>4. การตัดสินใจสำคัญ — ADR ทั้ง 9 (อธิบายไทย)</h2>
+ <div class="why">แต่ละ ADR = การตัดสินใจ 1 เรื่อง มีเหตุผล + ทางเลือกที่ทิ้ง + ผลที่ตามมา. คลิกอ่านเต็มได้. เรียงตามความสำคัญ.</div>
+ <div class="adrgrid">
+  <div class="mini"><h4><a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001 · Stock Ledger + สต็อกติดลบ</a> <span class="badge b-hard">หัวใจ</span></h4><p>สต็อกเป็นบัญชีเดินสะพัด (append-only) ยอดคงเหลือคำนวณจากประวัติ. อนุญาตติดลบระหว่างผลิต, GR บวกกลับ+ผูก lot FIFO ย้อนหลัง. <b>แก้บั๊ก DEF-09</b> ไปในตัว.</p></div>
+  <div class="mini"><h4><a href="../../../adr/002-backend-framework-orm.md">ADR-002 · Framework/ORM</a></h4><p>NestJS + Prisma + React/Vite + Ant Design + TypeScript. เลือกให้ทีมทำเหมือนกัน + ย้าย GCP ได้ + มี guard/interceptor รองรับ audit/สิทธิ์.</p></div>
+  <div class="mini"><h4><a href="../../../adr/003-generic-field-level-audit.md">ADR-003 · Audit ระดับ field</a> <span class="badge b-hard">จุดยาก</span></h4><p>บันทึก "ใครแก้อะไร จากอะไรเป็นอะไร" อัตโนมัติจากชั้น ORM — ไม่เขียนรายตาราง. เก็บ 1 ปี → Super User archive.</p></div>
+  <div class="mini"><h4><a href="../../../adr/004-state-machine-action-endpoints.md">ADR-004 · Action endpoint + envelope</a></h4><p>ทุกการเปลี่ยนสถานะเป็น endpoint เฉพาะ (เช่น /po/confirm) เซิร์ฟเวอร์คุม state machine + สิทธิ์ + comment + cascade ในทรานแซกชันเดียว. response รูปแบบเดียว + pagination.</p></div>
+  <div class="mini"><h4><a href="../../../adr/005-notification-outbox-readbit-fanout.md">ADR-005 · แจ้งเตือน (outbox)</a></h4><p>event เขียนคู่กับการเปลี่ยนสถานะ (ไม่หลุด). ผู้เห็น = คนมีสิทธิ์ Read ของ module. กดอ่าน = ack (badge ลด). ไม่ต้องมี broker ในเฟส 2.</p></div>
+  <div class="mini"><h4><a href="../../../adr/006-storage-abstraction-gcs-ready.md">ADR-006 · เก็บไฟล์ (GCS-ready)</a></h4><p>ไฟล์แนบ/archive ผ่านตัวกลางตัวเดียว — ดิสก์ในเครื่อง (เฟส2) → GCS (เฟส3) โดยไม่แก้โค้ดธุรกิจ.</p></div>
+  <div class="mini"><h4><a href="../../../adr/007-auth-rbac-rucdaa.md">ADR-007 · Auth + RUCDAA</a></h4><p>login local+Google, สิทธิ์ RUCDAA 6 บิตราย module, บิต Admin = สิทธิ์พิเศษ. session 24 ชม. + เตะออกทุก 06:00.</p></div>
+  <div class="mini"><h4><a href="../../../adr/008-gapless-numbering.md">ADR-008 · เลขเอกสารห้ามข้าม</a></h4><p>PO/PRD/INV/... เรียงต่อเนื่องตามสรรพากร ออกจากตัวนับที่ล็อกในทรานแซกชัน. PO reopen ใช้เลขเดิม.</p></div>
+  <div class="mini"><h4><a href="../../../adr/009-soft-delete-reference-guard.md">ADR-009 · ลบแบบ soft + guard</a></h4><p>ไม่ลบถาวร ติดธง "ถูกลบ" ยังค้นเจอแต่ผูกใหม่ไม่ได้. เอกสารการค้าใช้ "ยกเลิก" คงเลข. กู้คืน = Admin.</p></div>
+ </div>
+</section>
+
+<section id="api">
+ <h2><span class="dot" style="background:#0E7C7B"></span>5. API ราย module</h2>
+ <div class="why">แต่ละหน้า API ผูก endpoint กับ "หน้าจอ + use case" และ cross-link ไปหน้า Functional Spec ของ BA (<code>../functional-spec/&lt;module&gt;.html</code>). เริ่มทำ Tier 1 ก่อน (PO / Production / Stock / Invoice).</div>
+ <table><tr><th>Module</th><th>API spec</th><th>หน้าจอหลัก</th></tr>
+  <tr><td>PO (ใบสั่งซื้อ)</td><td><a href="api-po.html">api-po.html</a></td><td>po-create/detail/list</td></tr>
+  <tr><td>Production (ผลิต)</td><td><a href="api-production.html">api-production.html</a></td><td>production, po-detail</td></tr>
+  <tr><td>Stock (คลัง)</td><td><a href="api-stock.html">api-stock.html</a></td><td>stock, goods-receipt</td></tr>
+  <tr><td>Invoice (การเงิน)</td><td><a href="api-invoice.html">api-invoice.html</a></td><td>invoices, invoice-print</td></tr>
+  <tr><td>อื่น ๆ (customer/qc/shipping/supplier/bom/pr/settings/trace/notification)</td><td><span class="badge b-idx">ทยอยเพิ่ม</span></td><td>ตาม db-schema</td></tr>
+ </table>
+</section>
+
+<section id="nfr">
+ <h2><span class="dot" style="background:#2C7BE5"></span>6. NFR ที่ปอนด์กำหนด — สะท้อนในดีไซน์อย่างไร</h2>
+ <table class="difftab"><tr><th>NFR (คำตอบปอนด์)</th><th>ออกแบบรองรับอย่างไร</th></tr>
+  <tr><td>Perf &lt;2s (เพดาน 3s)</td><td>index ครบ + keyset paging บน trace 1.2M แถว + cache ยอดสต็อก</td></tr>
+  <tr><td>50 users พร้อมกัน</td><td>เบาสำหรับ MySQL เครื่องเดียว; ledger append + relative delta ไม่ล็อก hot row</td></tr>
+  <tr><td>&gt;200 PO/วัน, &gt;50 GR/วัน</td><td>throughput ต่ำ; จุดล็อกเดียว = ตัวนับเลข (เบามาก)</td></tr>
+  <tr><td>audit online 1 ปี + manual purge</td><td>ไม่มี auto-purge; Super User archive เป็น text file (ADR-003/006)</td></tr>
+  <tr><td>Cloud SQL backup ทุกวัน</td><td>เฟส 3 ใช้ backup ของ Cloud SQL; เฟส 2 DevOps ตั้ง dump รายวัน (flag ให้ DevOps)</td></tr>
+  <tr><td>พ.ศ. บนเอกสาร / เก็บ UTC</td><td>DB เก็บ UTC, ชั้นแสดงผลแปลงเป็น Asia/Bangkok + พ.ศ.</td></tr>
+  <tr><td>login local + Google, session 24h + 06:00 reset</td><td>ADR-007 (session_epoch เลื่อนทุก 06:00)</td></tr>
+  <tr><td>เลข gapless ต่อปี/เดือน</td><td>ADR-008</td></tr>
+ </table>
+</section>
+
+<section id="coverage">
+ <h2><span class="dot" style="background:#D64545"></span>7. เช็คครบทุก case — Cascade 17 / Exception / Deletion / NFR</h2>
+ <div class="why">ไล่ทีละแถวว่า requirement ทุกอย่างมี "ที่รองรับ" ในดีไซน์. cascade อ้าง <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map §2</a>. exception ไล่ตามคลาสใน stage2-directives (BA จะทำ catalog เต็ม — cross-link BA ✓).</div>
+ <h3>Cascade 17 แถว (entity-status-map §2)</h3>
+ <table><tr><th>#</th><th>เหตุการณ์</th><th>รองรับด้วย</th></tr>
+  <tr><td>1</td><td>PO ยืนยัน → คิวรอรับงาน + Lead→Active</td><td>action /po/confirm → สร้าง queue_item + customer status</td></tr>
+  <tr><td>2</td><td>รับงาน → gen PRD</td><td>/production/accept + sequence PRD</td></tr>
+  <tr><td>3</td><td>เริ่มผลิต → gen Batch + ตัด stock (ติดลบได้)</td><td>/production/start + stock_movement</td></tr>
+  <tr><td>4</td><td>ส่งตรวจ QC</td><td>/production/submit-qc → batch รอ QC</td></tr>
+  <tr><td>5</td><td>QC ผ่าน → PRD/PO พร้อมจัดส่ง</td><td>/qc/pass + cascade PO</td></tr>
+  <tr><td>6</td><td>QC ไม่ผ่าน → Rework + feedback</td><td>/qc/fail (feedback บังคับ)</td></tr>
+  <tr><td>7</td><td>Rework → Batch run+1</td><td>/production/rework + sequence run</td></tr>
+  <tr><td>8</td><td>Hold → raise Sale/Stock (+Follow-up)</td><td>/production/hold + outbox + customer Follow-up</td></tr>
+  <tr><td>9</td><td>PO พร้อม → สร้าง Shipment+DN</td><td>/shipping/create-round</td></tr>
+  <tr><td>10</td><td>DN ส่งถึง → PO Delivered + overdue</td><td>/shipping/deliver + scheduler overdue</td></tr>
+  <tr><td>11</td><td>DN ปฏิเสธ → PO กลับคิว + raise Sale</td><td>/shipping/reject + outbox</td></tr>
+  <tr><td>12</td><td>DN เลื่อน → flag Postpone+วันที่</td><td>/shipping/postpone → po.postpone_*</td></tr>
+  <tr><td>13</td><td>ออก Invoice → billing วางบิล</td><td>/invoice/issue</td></tr>
+  <tr><td>14</td><td>Overdue</td><td>scheduler + outbox Finance/Sale</td></tr>
+  <tr><td>15</td><td>PO วัตถุดิบขาด → PR (เตือนไม่บล็อก)</td><td>/po/confirm ตรวจ BOM → สร้าง PR</td></tr>
+  <tr><td>16</td><td>ผลิตตัด stock ติดลบ</td><td>stock_movement caused_negative + badge</td></tr>
+  <tr><td>17</td><td>GR → gen Lot + ปิด PR + บวก stock/retro</td><td>/goods-receipt + retro_alloc</td></tr>
+ </table>
+ <p style="font-size:12.5px;color:#52606D">+ แถว 18 (Lot QC ขาเข้า) และ 19 (PO ยกเลิก→เปิดใหม่) รองรับด้วย /qc (target=lot) และ /po/cancel + /po/reopen (คงเลข).</p>
+ <h3>กติกาลบ 7 entity (deletion-policy) + Exception classes</h3>
+ <table><tr><th>กลุ่ม</th><th>รองรับด้วย</th></tr>
+  <tr><td>ลบ Customer/User/Material/BOM/Supplier/Contact/Role</td><td>soft-delete + reference-guard + เงื่อนไขราย entity (ADR-009 §Decision)</td></tr>
+  <tr><td>เอกสารการค้า (PO/INV/DN/GR/PR/Shipment)</td><td>void/cancel ไม่ลบ (คงเลข gapless)</td></tr>
+  <tr><td>Exception: วัตถุดิบขาด / QC ไม่ผ่าน / Hold / reject / postpone / PR ค้าง / ราคา 0 / supplier inactive / negative stock</td><td>มี action endpoint + สถานะรองรับครบ (ดู cascade + db-schema) · <b>catalog เต็มของ BA: <a href="../functional-spec/index.html">functional-spec</a> <span class="badge b-soft">BA ✓</span></b></td></tr>
+ </table>
+</section>
+
+<footer>ESSENCE Hub System · Architecture Overview · Stage 2 · Tech-Lead · เอกสารนี้เป็น baseline ที่เสนอปอนด์ที่ Gate 2 — ทุกไดอะแกรมเปิดดูได้เองแบบ self-contained (inline SVG)</footer>
+</main></div></body></html>

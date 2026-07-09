@@ -1277,6 +1277,75 @@
           "summary": "Pond's pre-approval requests (incremental). (1) production.html: split the stacked 'รอรับงาน' and 'คิวงานที่รับแล้ว' cards into two TABS (each with its own pagination); moved the PRD work detail (lifecycle flow + Batch info + BOM material/FIFO plan + inline status changer + trace) into a MODAL that opens from the 'จัดการ' link (backdrop/✕ close) so users don't leave the page. (2) Pagination sweep: added the standard pager pattern ('แสดง X–Y จาก Z' + page buttons, same style as existing) to every list/table page that was missing it — stock, supplier list, goods-receipt recent-receipts, shipping recent rounds, delivery-note DN list, qc (both incoming-lot and batch lists), return, customer-detail PO history. Pages that already had it (po-list, customers, purchase-request, invoices, trace, settings audit log, dashboard drills) left unchanged. Playwright spot-check: 0 JS errors, tab switch + modal open verified, pagers present (production 2, qc 2, others 1). Feature-level status unchanged (WAITING_HUMAN_GATE).",
           "overridden_by": null,
           "updated_at": "2026-07-10T14:00:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "stage2-design",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "9 ADRs written (001 stock-ledger/negative-stock+DEF-09, 002 framework/ORM, 003 field-audit, 004 action-endpoints/envelope, 005 noti-outbox/Read-bit, 006 storage GCS-ready, 007 auth local+Google+RUCDAA+06:00 reset, 008 gapless, 009 soft-delete/reference-guard)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DB schema (db-schema.html) — all entities+hard cases (6 customer statuses, PRD-on-accept, Batch runs, negative-stock ledger+FIFO retro, 2-tier shipment, PR/GR void, price matrix, BOM snapshot, RUCDAA+Admin, field-audit, VAT effective, soft-delete, gapless) with Thai narrative per section",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "API spec Tier 1 (po, production, stock, invoice) — action endpoints per transition, envelope, pagination, error codes, Thai narrative, cross-linked to db-schema + functional-spec + mockups",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Architecture index.html — system diagram (Phase2 local->Phase3 GCP) + service diagram (modules+6 cross-cutting layers) inline SVG teal + 1-command data-flow + ADR narrative + NFR reflection + coverage matrix (17 cascades + deletion 7 + exceptions)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Self-review pass: all 111 real cross-links resolve (fixed db-schema ../../mockups depth bug + docs-path bug); รอ BA markers updated to BA-done",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "All 9 NFR answers reflected (perf<2s cap3s, 50 users, >200 PO/day, audit 1yr manual purge, Cloud SQL backup, UTC store/พ.ศ. display, local+Google auth+06:00, gapless)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Non-engineer readable — Thai explanation box on every page + beautiful self-contained SVG diagrams (Pond reviews at Gate 2)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch feature-level status (BA in parallel) / no git",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/adr/001-stock-ledger-negative-stock.md",
+            "docs/adr/002-backend-framework-orm.md",
+            "docs/adr/003-generic-field-level-audit.md",
+            "docs/adr/004-state-machine-action-endpoints.md",
+            "docs/adr/005-notification-outbox-readbit-fanout.md",
+            "docs/adr/006-storage-abstraction-gcs-ready.md",
+            "docs/adr/007-auth-rbac-rucdaa.md",
+            "docs/adr/008-gapless-numbering.md",
+            "docs/adr/009-soft-delete-reference-guard.md",
+            "docs/design/erp-v2-ui-first/architecture/_style.css",
+            "docs/design/erp-v2-ui-first/architecture/index.html",
+            "docs/design/erp-v2-ui-first/architecture/db-schema.html",
+            "docs/design/erp-v2-ui-first/architecture/api-po.html",
+            "docs/design/erp-v2-ui-first/architecture/api-production.html",
+            "docs/design/erp-v2-ui-first/architecture/api-stock.html",
+            "docs/design/erp-v2-ui-first/architecture/api-invoice.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "STAGE 2 DESIGN delivered (Gate-1 approved r4). 9 ADRs + DB schema web + Tier-1 API specs (po/production/stock/invoice) + Architecture hub with system+service SVG diagrams (Phase2 local -> Phase3 GCP). Every page has Thai narrative for non-engineer review at Gate 2; diagrams self-contained. Key decisions: append-only stock ledger with negative-stock + FIFO retro-link (also fixes DEF-09 class); generic app-layer field-audit; action-endpoint state machine + standard envelope; outbox+Read-bit notification; storage abstraction (GCS-ready); local+Google auth with RUCDAA + 06:00 daily re-login; gapless per-period numbering; soft-delete + reference-guard. Self-reviewed: 111 cross-links verified (fixed 2 path bugs in db-schema), functional-spec cross-links live (BA done). REMAINING (next): api pages for customer/qc/shipping/supplier/bom/pr/settings/trace/notification (Tier 2/3) — Tier-1 done first per directive. Feature-level status left untouched (BA parallel).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T18:30:00+07:00"
         }
       ]
     }

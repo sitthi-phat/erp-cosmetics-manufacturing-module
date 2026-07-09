@@ -1,0 +1,95 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BOM · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
+.mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.warn{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › BOM</span></header>
+<div class="wrap">
+
+<h1>Module: BOM — สูตรการผลิต <span class="badge b-should">Should</span></h1>
+<p class="sub">ราคาทุน = ราคารับซื้อ <b>สูงสุดของ supplier ที่ active</b> + user override ได้ + <b>snapshot ตอนบันทึก</b> + badge เตือน "ราคาทุนอาจล้าสมัย" · ราคาขาย mandatory · เลข <code>BOM-{NN}</code></p>
+
+<h2>1. ภาพรวม + Use cases</h2>
+<p>สร้างสูตรเต็มรูปแบบ เลือกวัตถุดิบประกอบ (ไม่จำเป็นต้องมี stock แต่โชว์ stock) · ราคาทุนคิดจาก max active supplier ณ ตอนสร้าง/แก้ + snapshot · ถ้าไม่มี supplier active → บล็อกจนกรอก override</p>
+<p class="sub">Dataset: BOM-01/03/04 (snapshot), BOM-02 ครีมกันแดด (น้ำหอมจาก SUP-03 inactive → override 12.40)</p>
+
+<h2>2. หน้าจอ (mockup จริง)</h2>
+<div class="mock"><div class="thumb">🧪</div><div><b>bom.html</b> / <b>bom-create.html</b> — สร้างสูตร + ราคาทุน/ขาย + badge ล้าสมัย · <a href="../mockups/bom.html" target="_blank">เปิด ↗</a></div></div>
+
+<h2>3. User Stories + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-BOM-01</span> — สร้างสูตร + คิดราคาทุน (max active) + snapshot <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายผลิต/สูตร, <b>I want</b> สร้างสูตรและให้ระบบคิดราคาทุนจาก supplier active สูงสุด แล้ว snapshot, <b>so that</b> ต้นทุนคงที่จนกว่าจะแก้สูตรใหม่</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> BOM-01 ใช้วิตามินซี+กลีเซอรีน มี supplier active</span>
+<span class="gwt"><b>When</b> บันทึกสูตร</span>
+<span class="gwt"><b>Then</b> ราคาทุน = ผลรวม (max active supplier price × ปริมาณ) = 18.00; <b>snapshot</b> ไว้; ราคาขาย mandatory = 220</span></div>
+<div class="ac edge"><span class="tag">Edge — badge ล้าสมัย</span>
+<span class="gwt"><b>Given</b> ราคา supplier active ปัจจุบันต่างจาก snapshot</span>
+<span class="gwt"><b>When</b> เปิดดู BOM</span>
+<span class="gwt"><b>Then</b> แสดง badge "ราคาทุนอาจล้าสมัย"; ราคาทุนยังใช้ snapshot จนกว่า save ใหม่</span></div>
+<div class="ac err"><span class="tag">Error — ไม่กรอกราคาขาย</span>
+<span class="gwt"><b>Given</b> ราคาขายว่าง</span>
+<span class="gwt"><b>When</b> บันทึกสูตร</span>
+<span class="gwt"><b>Then</b> error "ราคาขายจำเป็น (mandatory)" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-BOM-02</span> — ไม่มี supplier active → บล็อกจนกรอก override <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายสูตร, <b>I want</b> ถ้าวัตถุดิบไม่มี supplier active ให้ระบบบังคับกรอกราคาทุน override, <b>so that</b> ราคาทุนไม่เป็น 0 โดยไม่ตั้งใจ</p>
+<div class="ac happy"><span class="tag">Happy — override</span>
+<span class="gwt"><b>Given</b> BOM-02 มีน้ำหอม (SUP-03 inactive เท่านั้น)</span>
+<span class="gwt"><b>When</b> ผู้ใช้กรอกราคาทุน override 12.40</span>
+<span class="gwt"><b>Then</b> บันทึกได้ด้วยราคา override + snapshot</span></div>
+<div class="ac edge"><span class="tag">Edge — บาง component มี active</span>
+<span class="gwt"><b>Given</b> บาง component มี active บาง component ไม่มี</span>
+<span class="gwt"><b>When</b> คิดราคาทุน</span>
+<span class="gwt"><b>Then</b> component ที่มี active คิดอัตโนมัติ, component ที่ไม่มีต้อง override</span></div>
+<div class="ac err"><span class="tag">Error — บันทึกโดยไม่ override</span>
+<span class="gwt"><b>Given</b> มี component ไม่มี supplier active และยังไม่กรอก override</span>
+<span class="gwt"><b>When</b> บันทึกสูตร</span>
+<span class="gwt"><b>Then</b> ระบบ<b>บล็อก</b> + error "วัตถุดิบไม่มีราคา supplier active กรุณากรอกราคาทุน"</span></div>
+</div>
+
+<h2>4. Data rules (entity-status-map §11)</h2>
+<table><tr><th>รายการ</th><th>กติกา</th></tr>
+<tr><td>ราคาทุน</td><td>max active supplier price · override ได้ · snapshot ตอน save · badge ล้าสมัยเมื่อต่างจาก snapshot · block ถ้าไม่มี active + ไม่ override</td></tr>
+<tr><td>ราคาขาย</td><td>mandatory</td></tr>
+<tr><td>สูตร</td><td>snapshot ไปกับ PO ตอนสร้าง PO (แก้สูตรภายหลังไม่กระทบ PO เดิม)</td></tr></table>
+
+<h2>5. API / Database (Tech-Lead)</h2>
+<div class="note">Placeholder: <a href="#">api-db/bom.html ↗ (รอ TL)</a> — cost = max(active supplier price) + override + snapshot column + stale detection + BOM snapshot on PO create</div>
+
+<h2>6. ความต่อเนื่อง</h2>
+<ul class="sub"><li>ราคา supplier active → cost · snapshot ไป PO · ราคาขาย default ไป <a href="po.html">PO</a></li></ul>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="supplier.html">Supplier</a><a href="production.html">การผลิต →</a></div>
+<footer>US-BOM-01..02 · 6 AC · Module BOM</footer>
+</div></body></html>

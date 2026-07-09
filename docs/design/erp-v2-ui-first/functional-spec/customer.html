@@ -1,0 +1,136 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ลูกค้า (6 สถานะ) · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}
+.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-could{color:#204A9E;background:#E8F0FE;border-color:#BBD1F8}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
+.mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › ลูกค้า</span></header>
+<div class="wrap">
+
+<h1>Module: ลูกค้า (Customer) — 6 สถานะ <span class="badge b-should">Should</span></h1>
+<p class="sub">Lead / Active / Inactive / <b>Follow-up (ต้องติดตาม)</b> / Disabled / Blacklist · contact ไม่จำกัด · reassign · note timeline · เลข <code>CUS-{NNNNNN}</code></p>
+
+<h2>1. ภาพรวม + Use cases</h2>
+<p>Sale/Sale Manager จัดการลูกค้าและ contact · สถานะ Active↔Inactive เปลี่ยน auto ตามรอบ order (default 3 เดือน config ได้) · "ต้องติดตาม" = สถานะที่ 6 แยกจริง ตั้งโดย Sale/Sale Manager + comment บังคับ · reassign โดย Sale Manager/Admin</p>
+<p class="sub">โผล่ใน: <a href="walkthrough.html#uc1">UC1 (Lead สวยใส)</a>, <a href="walkthrough.html#uc2">UC2 (Follow-up เดอร์มา จาก PO-188 Hold)</a></p>
+
+<h2>2. หน้าจอ (mockup จริง)</h2>
+<div class="mock"><div class="thumb">👥</div><div><b>customers.html</b> — รายการ 7 ราย (6 สถานะ) + chip กรอง + pagination · <a href="../mockups/customers.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">🧑‍💼</div><div><b>customer-detail.html</b> — contact · note timeline · reassign · ประวัติ PO · เปลี่ยนสถานะ (Follow-up+comment) · <a href="../mockups/customer-detail.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">➕</div><div><b>customer-create.html</b> / <b>contact-create.html</b> — ฟอร์มสร้าง · <a href="../mockups/customer-create.html" target="_blank">เปิด ↗</a></div></div>
+
+<h2>3. User Stories + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-CUS-01</span> — สร้างลูกค้า + contact ไม่จำกัด + ฟิลด์ภาษี <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale, <b>I want</b> สร้างลูกค้าพร้อมเลขผู้เสียภาษี 13 หลัก ที่อยู่จดทะเบียน และเพิ่ม contact ได้หลายคน, <b>so that</b> ออกใบกำกับภาษีและติดต่อได้ครบ</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> Sale อยู่หน้า customer-create</span>
+<span class="gwt"><b>When</b> กรอกชื่อ+เลขผู้เสียภาษี 13 หลัก+ที่อยู่ แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> สร้าง <code>CUS-xxxxxx</code> สถานะ "ผู้สนใจ (Lead)"; เพิ่ม contact ได้ไม่จำกัด</span></div>
+<div class="ac edge"><span class="tag">Edge — contact หลายคน</span>
+<span class="gwt"><b>Given</b> ลูกค้ามี contact 3 คน</span>
+<span class="gwt"><b>When</b> เพิ่ม contact ที่ 4</span>
+<span class="gwt"><b>Then</b> บันทึกได้ (ไม่จำกัดจำนวน) + ระบุผู้ติดต่อหลักได้</span></div>
+<div class="ac err"><span class="tag">Error — เลขภาษีไม่ครบ 13 หลัก</span>
+<span class="gwt"><b>Given</b> กรอกเลขผู้เสียภาษี &ne; 13 หลัก</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "เลขผู้เสียภาษีต้อง 13 หลัก" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-CUS-02</span> — วงจรสถานะ auto (Active↔Inactive) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ระบบ/Sale, <b>I want</b> สถานะเปลี่ยนอัตโนมัติตามรอบ order, <b>so that</b> รู้ว่าลูกค้าประจำหรือห่างหายโดยไม่ต้องอัปเดตมือ</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ลูกค้า Lead ยืนยัน PO ใบแรก</span>
+<span class="gwt"><b>When</b> PO Confirmed</span>
+<span class="gwt"><b>Then</b> ลูกค้า → "ลูกค้าประจำ (Active)" auto (<a href="continuity.html#c1">C1</a>)</span></div>
+<div class="ac edge"><span class="tag">Edge — ไม่มี order เกินรอบ</span>
+<span class="gwt"><b>Given</b> config รอบ = 3 เดือน และลูกค้าไม่มี order เกิน 3 เดือน</span>
+<span class="gwt"><b>When</b> scheduler ประเมิน</span>
+<span class="gwt"><b>Then</b> ลูกค้า Active → "ห่างหาย (Inactive)" auto + แจ้ง Sale; มี order ใหม่ → กลับ Active</span></div>
+<div class="ac err"><span class="tag">Error — config รอบผิด</span>
+<span class="gwt"><b>Given</b> ตั้งค่ารอบเป็นค่าที่ไม่อยู่ใน {1,3,6,8} เดือน</span>
+<span class="gwt"><b>When</b> บันทึก config ต่อลูกค้า</span>
+<span class="gwt"><b>Then</b> error "ค่ารอบไม่ถูกต้อง" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-CUS-03</span> — ตั้ง "ต้องติดตาม" (Follow-up) + comment บังคับ <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale/Sale Manager, <b>I want</b> ตั้งลูกค้าเป็น "ต้องติดตาม" พร้อมเหตุผล, <b>so that</b> ทีมขายรู้ว่าต้องติดตามเรื่องอะไร (เช่น งานผลิตติด Hold)</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> เดอร์มา แคร์ มีงาน PO-188 ติด Hold (raise มาที่ Sale)</span>
+<span class="gwt"><b>When</b> Sale เปลี่ยนสถานะเป็น "ต้องติดตาม" + comment "โทรยืนยันการแก้สูตร PO-188"</span>
+<span class="gwt"><b>Then</b> ลูกค้า → Follow-up (mutually exclusive กับ Active/Inactive); โผล่ tile "ต้องติดตาม" ใน Sale Dashboard; trace บันทึก (<a href="continuity.html#c8">C8</a>)</span></div>
+<div class="ac edge"><span class="tag">Edge — ปิดการติดตาม</span>
+<span class="gwt"><b>Given</b> ลูกค้า Follow-up จัดการเรื่องจบ</span>
+<span class="gwt"><b>When</b> Sale ปิดการติดตาม หรือมี order ใหม่</span>
+<span class="gwt"><b>Then</b> กลับเป็น Active (มี order) หรือ Inactive (ยังไม่มี order)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่ใส่ comment</span>
+<span class="gwt"><b>Given</b> ช่อง comment ว่าง</span>
+<span class="gwt"><b>When</b> กดตั้ง Follow-up</span>
+<span class="gwt"><b>Then</b> ไม่เปลี่ยนสถานะ + error "ต้องระบุเหตุผลการติดตาม" (comment บังคับ)</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-CUS-04</span> — Disable/Blacklist + reassign <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> Sale Manager/Admin, <b>I want</b> ปิดใช้งาน/ขึ้นบัญชีดำลูกค้า และย้ายผู้ดูแล (reassign), <b>so that</b> ควบคุมความเสี่ยงและกระจายงานได้</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> ลูกค้าเช็คเด้ง 2 ครั้ง</span>
+<span class="gwt"><b>When</b> Sale Manager ตั้ง "บัญชีดำ" + comment (บังคับ)</span>
+<span class="gwt"><b>Then</b> ลูกค้า → Blacklist; หายจาก dropdown ตอนเปิด PO ใหม่ + เตือนเมื่อพยายามเปิด PO</span></div>
+<div class="ac edge"><span class="tag">Edge — reassign</span>
+<span class="gwt"><b>Given</b> Sale Manager ต้องการย้ายลูกค้าจากสมชายไปสมหญิง</span>
+<span class="gwt"><b>When</b> กด reassign</span>
+<span class="gwt"><b>Then</b> customer.sale เปลี่ยน; แสดง 2 dashboard (เดิม/ใหม่) + trace (<a href="continuity.html#c14">ref</a>)</span></div>
+<div class="ac err"><span class="tag">Error — ปลด Blacklist โดยไม่ใช่ Admin</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Admin</span>
+<span class="gwt"><b>When</b> พยายามปลด Blacklist</span>
+<span class="gwt"><b>Then</b> ไม่มีตัวเลือก/403 (ปลด Blacklist = Admin เท่านั้น) — ดู <a href="rbac-deletion.html">RUCDAA</a></span></div>
+</div>
+
+<h2>4. Data rules / สถานะ Entity</h2>
+<table>
+<tr><th>รายการ</th><th>กติกา (entity-status-map §1.1)</th></tr>
+<tr><td>6 สถานะ</td><td>Lead / Active / Inactive / Follow-up / Disabled / Blacklist (Follow-up = สถานะแยกจริง)</td></tr>
+<tr><td>Auto</td><td>Lead→Active (PO ใบแรก) · Active↔Inactive (รอบ config, default 3 ด.)</td></tr>
+<tr><td>Manual + comment บังคับ</td><td>Follow-up, Disabled, Blacklist</td></tr>
+<tr><td>สิทธิ์พิเศษ</td><td>reassign = Sale Manager/Admin · ปลด Blacklist = Admin</td></tr>
+<tr><td>contact</td><td>ไม่จำกัด · มีผู้ติดต่อหลัก (ลบไม่ได้ถ้าเป็นคนเดียว)</td></tr>
+</table>
+
+<h2>5. API / Database (Tech-Lead)</h2>
+<div class="note">Placeholder: <a href="#">api-db/customer.html ↗ (รอ TL)</a> — รองรับ: 6-status FSM, Active/Inactive scheduler (config ต่อลูกค้า), reassign audit, soft-delete + reference guard</div>
+
+<h2>6. ความต่อเนื่องข้าม module</h2>
+<ul class="sub"><li>PO ใบแรก→Active (<a href="continuity.html#c1">C1</a>) · Hold→Follow-up (<a href="continuity.html#c8">C8</a>) · reassign 2 dashboard (<a href="continuity.html#c14b">C14b</a>)</li></ul>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="po.html">PO →</a><a href="dashboard.html">Dashboard</a></div>
+<footer>US-CUS-01..04 · 12 AC (happy/edge/error) · Module ลูกค้า</footer>
+</div></body></html>
