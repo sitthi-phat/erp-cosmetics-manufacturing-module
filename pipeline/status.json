@@ -1230,6 +1230,53 @@
           "summary": "DOC-CLOSE during Pond's ~1h break (doc sync only, no dev). (1) FINALIZED deletion-policy.md — Pond answered all 7; removed every open question and locked the rules: Customer=flag anytime (old PO runs on, no new PO); Sale=flag only after mandatory BULK reassign of all customers first; Material=flag → no new PO/BOM/PR/GR, existing stock used to depletion; PR/GR=void only (no delete); Role=no delete until users moved out; COGS out of scope (BOM snapshot); trade docs PO/INV/DN/GR/PR/Shipment = void/cancel only (gapless). (2) Added FIFO RETRO-LINK to entity-status-map.md §1.6 (+§1.8/§2/§3/§4): GR that compensates a negative balance auto back-allocates the earlier negative consumption to the newly received lot FIFO, so Batch↔Lot GMP genealogy stays complete; partial cover links what exists and leaves the rest negative until the next GR — matches Tech-Lead's recommendation. (3) Appended 'Web Format Decisions' to stage2-directives.md: main index + per-module split files, BA & TL in SEPARATE cross-linked files (not one shared file), mockup refs via link+thumbnail, no-build static HTML; noted Pond returns to review Gate 1 in ~1h. (4) Confirmed UX already shipped my earlier mockup-fix list (รอรับงาน queue + รับงาน button + negative-stock display + GR compensation notice) and updated §4 fix table to done/remaining. No open questions. Feature-level status unchanged (Gate 1 round 4 open); no mockups edited; no git.",
           "overridden_by": null,
           "updated_at": "2026-07-10T12:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "tabs-pagination",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "production.html: split รอรับงาน / คิวงานที่รับแล้ว into 2 tabs (.tabs pattern, JS prodTab) + pagination on both tabs; PRD detail (line/Batch/material plan + status changer + trace) moved into a MODAL (opens on 'จัดการ', ✕/backdrop close) — no page change",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pagination sweep — added standard pager (X–Y จาก Z + page numbers) to list/table pages that lacked it: stock, supplier (list), goods-receipt (รับเข้าล่าสุด), shipping (recent rounds), delivery-note (DN list), qc (incoming lots + batch lists = 2), return, customer-detail (PO history)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pages that already had consistent pagination left intact: po-list, customers, purchase-request, invoices, trace, settings (audit log), dashboard drill-downs",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Data/label + local restructure only (no theme/design-system change); Playwright spot-check: 0 JS errors on all touched pages, production tab-switch works, modal opens on จัดการ, pager counts render",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Feature-level status untouched (WAITING_HUMAN_GATE, Gate 1 round 4 open)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/supplier.html",
+            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/return.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Pond's pre-approval requests (incremental). (1) production.html: split the stacked 'รอรับงาน' and 'คิวงานที่รับแล้ว' cards into two TABS (each with its own pagination); moved the PRD work detail (lifecycle flow + Batch info + BOM material/FIFO plan + inline status changer + trace) into a MODAL that opens from the 'จัดการ' link (backdrop/✕ close) so users don't leave the page. (2) Pagination sweep: added the standard pager pattern ('แสดง X–Y จาก Z' + page buttons, same style as existing) to every list/table page that was missing it — stock, supplier list, goods-receipt recent-receipts, shipping recent rounds, delivery-note DN list, qc (both incoming-lot and batch lists), return, customer-detail PO history. Pages that already had it (po-list, customers, purchase-request, invoices, trace, settings audit log, dashboard drills) left unchanged. Playwright spot-check: 0 JS errors, tab switch + modal open verified, pagers present (production 2, qc 2, others 1). Feature-level status unchanged (WAITING_HUMAN_GATE).",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T14:00:00+07:00"
         }
       ]
     }
