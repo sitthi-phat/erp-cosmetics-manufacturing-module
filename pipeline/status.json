@@ -1136,6 +1136,59 @@
           "summary": "BA ack new output (Functional Spec static web). Planned structure: index + per-module pages (16 epics, fixed sections a-f w/ TL placeholder) + cross-cutting pages (cascade/noti/RUCDAA/deletion/glossary) + 8-UC walkthrough + traceability matrix. Content blockers before writing: Gate1 approval, mockup fixes (accept queue/negative stock), deletion Q1-5 answers. Original 6 business questions now all answered in new docs. Entry appended by dispatcher on BA request (concurrent-write contention).",
           "overridden_by": null,
           "updated_at": "2026-07-09T11:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "accept-queue-negative-stock",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "production.html: added 'รอรับงาน (Awaiting Acceptance)' card (from PO Confirmed, NO PRD number yet) + 'รับงาน' button per line; test data = PO-185 line1 ครีมกันแดด (พร้อม) + line2 สเปรย์แอลกอฮอล์ (อาจไม่พร้อม); moved PO-185 out of accepted queue which is now titled 'คิวงานที่รับแล้ว (มีเลข PRD)'",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "production.html: negative-stock warning on accept/start when material short — line2 shows 'แอลกอฮอล์ไม่พอ (พร้อมใช้ 0 · lot 200 รอ QC) — เริ่มผลิตจะตัด stock ติดลบ ~30 ล.' + warn alert 'จะตัด stock ติดลบ X หน่วย (ทำต่อได้ ไม่บล็อก)'",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "stock.html: แอลกอฮอล์ พร้อมใช้ = -30 in red + badge 'ติดลบ (รอรับเข้า)' + explainer alert (produced before receipt; GR adds back to compensate)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "goods-receipt.html: pre-confirm notice 'การรับนี้ชดเชยยอดติดลบ -30 ล. → บวกกลับ 30 ล. ก่อน แล้ว 170 ล. เข้า stock ปกติ' tied to the stock negative item",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "dashboard: production 'คิวงานผลิต' tile counts รอรับงาน (11 = รอรับงาน 2 + ในสายผลิต 9) + drill lists the 2 awaiting lines; noti (all 25 shell pages) adds 'งานใหม่รอรับ: PO-185 (2 line) เข้าคิวรอรับงาน', badge 4→5",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "po-list PO-185 badge updated to 'ยืนยันแล้ว · รอรับงาน' for consistency; data/label only — no structure/layout change; Playwright spot-check render OK, 0 JS errors, noti badge=5",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Feature-level status untouched (WAITING_HUMAN_GATE, Gate 1 round 4 open)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/po-list.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Four small fixes from PO's updated entity-status-map.md (PRD manual-accept + negative-stock rule; data/label only, no structure changes). (1) production.html: added an 'รอรับงาน (Awaiting Acceptance)' queue — PO Confirmed puts each line here with NO PRD number yet; a 'รับงาน' button generates the PRD; test data PO-202607-000185 has 2 awaiting lines; the accepted queue is now labelled 'คิวงานที่รับแล้ว (มีเลข PRD)'. (2) Negative-stock warning at accept/start when material insufficient (line2 สเปรย์แอลกอฮอล์: 'จะตัด stock ติดลบ ~30 ล.', warning-not-block). (3) stock.html: แอลกอฮอล์ shows -30 in red + badge 'ติดลบ (รอรับเข้า)' + explainer. (4) goods-receipt.html: pre-confirm notice 'การรับนี้ชดเชยยอดติดลบ 30 ล.' (adds back before normal stock). Also synced dashboard (คิวงานผลิต tile counts รอรับงาน; drill shows the awaiting lines) + notification panel on all 25 shell pages (new 'งานใหม่รอรับ' item, badge 4→5) + po-list PO-185 = 'ยืนยันแล้ว · รอรับงาน'. Playwright spot-check: render OK, 0 JS errors, noti badge=5. Feature-level status unchanged (WAITING_HUMAN_GATE).",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T11:00:00+07:00"
         }
       ]
     }
