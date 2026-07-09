@@ -1487,7 +1487,7 @@
                 "จำกัดชุด {1,3,6,8}",
                 "กรอกอิสระ (จำนวนเดือนใดก็ได้)"
               ],
-              "answer": null
+              "answer": "จำกัดชุด {1,3,6,8} ไปก่อน (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "ยืนยัน scope: COGS/valuation อยู่นอก scope (ใช้ต้นทุน BOM snapshot) ตามที่ TL ตั้ง?",
@@ -1531,7 +1531,24 @@
           "output_files": [
             "docs/requirements/erp-v2-ui-first/po-spec-depth-audit.md"
           ],
-          "questions_for_pond": [],
+          "questions_for_pond": [
+            {
+              "q": "สูตรมูลค่าสต็อก (COGS out of scope) ใช้ราคาอ้างอิงไหน?",
+              "options": [
+                "ราคาซื้อล่าสุดของ lot",
+                "เฉลี่ย",
+                "ไม่แสดงมูลค่า"
+              ],
+              "answer": "ราคาซื้อล่าสุดของ Lot (ปอนด์ตอบ 2026-07-09)"
+            },
+            {
+              "q": "Admin เห็น dashboard ทุกแผนกไหม?",
+              "options": [
+                "-"
+              ],
+              "answer": "ยึด permission ล้วนๆ — มี Read ของ module ไหน = เห็น dashboard แผนกนั้น ไม่เกี่ยวกับชื่อ role (ปอนด์ตอบ 2026-07-09)"
+            }
+          ],
           "summary": "Depth audit complete per Pond Gate-2 directive. Dashboard+Settings shallow, Home missing, Trace/Platform sub-behaviors missing; 11 transaction modules deep enough. po-spec-depth-audit.md = BA work order (P0: Dashboard 7-dept via PO template, Home, Settings 5 screens / P1: Trace, Platform noti+global search+session, PO suggest logic, supplier matrix, list filters everywhere, stock-value formula / P2: polish). Entry appended by dispatcher (contention).",
           "overridden_by": null,
           "updated_at": "2026-07-09T23:30:00+07:00"
