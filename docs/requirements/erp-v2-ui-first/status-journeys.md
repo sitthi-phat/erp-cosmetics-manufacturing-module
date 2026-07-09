@@ -1,10 +1,10 @@
 # Status Journeys — ESSENCE Hub System (ERP v2, UI-First Rebuild)
 
 slug: `erp-v2-ui-first` · เขียนโดย PO (design phase) เพื่อให้ UX/UI ทำ mockup ทุกสถานะ และ BA/Engineer/QA ทำครบ
-ที่มา: `pond-gate1-feedback.md` (ร1) + คำตอบ 6 ข้อ + `pond-gate1-r2-feedback.md` (ร2) + คำตอบ 5 ข้อ + `pond-gate1-r3-feedback.md` (ร3) + คำตอบ r3 ครบ (2026-07-08) + Notification/deep-link
+ที่มา: `pond-gate1-feedback.md` (ร1) + คำตอบ 6 ข้อ + `pond-gate1-r2-feedback.md` (ร2) + คำตอบ 5 ข้อ + `pond-gate1-r3-feedback.md` (ร3) + คำตอบ r3 ครบ + **`entity-status-map.md` (r4 — ความจริงหลักเรื่อง entity/สถานะ/ใครเปลี่ยน/cascade รวมนิยาม PRD)** + Notification/deep-link
 
 ## สรุปภาษาไทย
-"แผนที่สถานะ" ของทั้งระบบ — ทุกสถานะต้องต่อเนื่องข้าม module ห้ามหลุด journey. อัปเดตล่าสุด (r3 ตอบครบ): **QC ตัดสินราย line/Batch ที่หน้า QC เท่านั้น — ตีกลับเฉพาะตัวเสีย + rework loop ชัดเจน (Batch run ใหม่)** · **เลข Batch = `B-{PO}-{line}-{run}`** (ปอนด์เลือกตามเหตุผล GMP), สร้างตอน "เริ่มผลิต", 1 line = 1 Batch · **Goods Receipt multi-line, 1 GR อ้างหลาย PR; รับไม่ครบ → เสนอ PR ใหม่เฉพาะที่ขาด user review ก่อน** · **Dashboard date filter default เดือนนี้ + เลือกอิสระ เดือน/ปี/date range** · **BOM ไม่มี supplier active → บล็อกจนกรอก override** · ก่อนหน้า: ลูกค้า 6 สถานะ, Shipment→DN (DN=1 PO), PO cancel/reopen คงเลข, BOM snapshot
+"แผนที่สถานะ" ของทั้งระบบ — ทุกสถานะต้องต่อเนื่องข้าม module ห้ามหลุด journey. **นิยาม entity/สถานะ/cascade ฉบับเต็ม + PRD (ใบสั่งผลิต) อยู่ที่ `entity-status-map.md` (ความจริงหลัก) เอกสารนี้อ้างอิงและสอดคล้องกับมัน**. สรุป r4: **PO ยืนยัน → auto สร้าง PRD (ใบสั่งผลิต) 1 ใบ/line (รับงาน) → ฝ่ายผลิตกด "เริ่มผลิต" = gen Batch** · **1 PO : N PRD (N=line) : M Batch (M≥N, +1/rework)** · QC ตัดสินราย Batch ที่หน้า QC เท่านั้น (Batch เกิดตอนเริ่มผลิต ไม่ใช่ตอนส่งตรวจ) · เลข `B-{PO}-{line}-{run}`, `PRD-{YYYYMM}-{NNNNNN}` · ก่อนหน้า: ลูกค้า 6 สถานะ, Shipment→DN (DN=1 PO), GR multi-line/partial, dashboard filter, BOM block/snapshot
 
 **หลักการร่วม (ทุกสาย):**
 1. **ทุกการเปลี่ยนสถานะมี trace เสมอ** (ใคร/จากอะไร→เป็นอะไร/เมื่อไหร่/เหตุผล) — รวม cancel/reopen
@@ -57,8 +57,8 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> Draft
     Draft --> Confirmed: ยืนยัน (Sale)
-    Confirmed --> InProduction: สร้างงานผลิต (Production=รับงาน)
-    InProduction --> ReadyToDeliver: ทุก line item ผ่าน QC (Production=พร้อมส่งมอบ)
+    Confirmed --> InProduction: auto สร้าง PRD ต่อ line (รับงาน)
+    InProduction --> ReadyToDeliver: ทุก PRD/line ผ่าน QC (พร้อมส่งมอบ)
     ReadyToDeliver --> InDelivery: DN สร้างในรอบจัดส่ง
     InDelivery --> Delivered: DN ยืนยันส่งถึง
     Draft --> Cancelled
@@ -70,7 +70,7 @@ stateDiagram-v2
 ```
 - **Cancel ได้ทุก case** (บังคับ comment) · **Cancelled → Draft** คงเลข PO เดิม + trace
 - **UI เปลี่ยนสถานะ PO ชัดเจน** ที่ po-detail (ปุ่ม/กล่อง + เหตุผล + trace). manual force เฉพาะ Admin-bit (RUCDAA) + trace
-- **po-detail แสดงภาพรวมทุก line item + Batch/สถานะราย line** (line ไหน rework, line ไหนไปต่อ, line ไหนผ่าน QC) — เห็นทั้งใบในที่เดียว
+- **po-detail แสดงภาพรวมทุก line item + PRD/Batch/สถานะราย line** (line ไหน rework, line ไหนไปต่อ, line ไหนผ่าน QC) — เห็นทั้งใบในที่เดียว
 
 ### 2B. Billing track
 ```mermaid
@@ -86,48 +86,50 @@ stateDiagram-v2
 
 ---
 
-## 3. Production Lifecycle (จบที่ "พร้อมส่งมอบ") — QC ตัดสินที่หน้า QC เท่านั้น
-สถานะราย Batch/line: `รับงาน` → `กำลังผลิต` → `รอ QC` → `พร้อมส่งมอบ` + `พักงาน (Hold)` + overlay `เสี่ยงล่าช้า`
+## 3. Production Lifecycle — PRD (ใบสั่งผลิต) + Batch · QC ตัดสินที่หน้า QC เท่านั้น
+> **นิยามเต็ม + สถานะราย entity + cascade ดู `entity-status-map.md` (ความจริงหลัก)**
+**PRD (ใบสั่งผลิต) = 1 ใบต่อ 1 line item · สร้างอัตโนมัติเมื่อ PO Confirmed (ฝ่ายผลิตไม่ต้องกดรับ) · 1 PRD มีได้หลาย Batch (run) เมื่อ rework**
+สถานะ **PRD**: `รับงาน` → `กำลังผลิต` → `รอ QC` → `พร้อมส่งมอบ` + `พักงาน (Hold)` + `Rework` + overlay `เสี่ยงล่าช้า`
+สถานะ **Batch** (ของตัวเอง): `กำลังผลิต` → `รอ QC` → `QC ผ่าน` / `QC ไม่ผ่าน` · เลข `B-{PO}-{line}-{run}`, PRD `PRD-{YYYYMM}-{NNNNNN}`
 **หน้าการผลิต "ไม่มี" ปุ่ม "QC ไม่ผ่าน"** — QC ตัดสินที่หน้า QC หน้าผลิตแค่เห็นผล + รับงานกลับ (rework)
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Received: รับงาน (จาก PO Confirmed)
+    [*] --> Received: รับงาน (auto จาก PO Confirmed)
     Received --> InProgress: กด "เริ่มผลิต" -> gen Batch B-{PO}-{line}-{run}
-    InProgress --> WaitQC: ผลิตเสร็จ ส่งหน้า QC
-    WaitQC --> ReadyToDeliver: QC ผ่าน (หน้า QC)
-    WaitQC --> Rework: QC ไม่ผ่าน -> ตีกลับเฉพาะ line + feedback (หน้า QC)
+    InProgress --> WaitQC: ผลิตเสร็จ ส่งหน้า QC (Batch: กำลังผลิต->รอ QC)
+    WaitQC --> ReadyToDeliver: Batch QC ผ่าน (หน้า QC)
+    WaitQC --> Rework: Batch QC ไม่ผ่าน -> ตีกลับเฉพาะ line + feedback (หน้า QC)
     Rework --> InProgress: กด "ผลิตซ้ำ" -> gen Batch run ถัดไป
     InProgress --> Hold: ติดปัญหา (raise Sale, บังคับ comment)
     Hold --> InProgress: แก้ไข PO แล้วผลิตต่อ
-    ReadyToDeliver --> [*]: ส่งต่อฝ่ายจัดส่ง
+    ReadyToDeliver --> [*]: ส่งต่อฝ่ายจัดส่ง (ทุก PRD ของ PO พร้อม → PO พร้อมจัดส่ง)
 ```
 - ตัวเปลี่ยนสถานะที่หน้าผลิต = เริ่มผลิต / ส่งตรวจ QC / Hold(+raise Sale) / **ผลิตซ้ำ (เมื่อ line ถูก rework)** — **ไม่มี "QC ไม่ผ่าน"**
 - Hold: raise Sale → Sale แก้ไข PO ได้ทุกอย่าง + trace → ผลิตต่อ · Potential Delay overlay (2+1 วัน)
 
-### 3.1 Batch Lifecycle + PO ↔ Batch ↔ QC (หัวใจ GMP — ปอนด์ตัดสินแล้ว)
-- **สร้าง Batch เมื่อ:** ฝ่ายผลิตกด **"เริ่มผลิต"** ของ line item นั้น (ไม่ใช่ตอน PO confirm)
-- **1 line item = 1 Batch** → 1 PO N สินค้า = N Batch (line เดียวผลิต/ผลิตซ้ำหลายรอบ = หลาย Batch run)
-- **★ รูปแบบเลข Batch (ปอนด์เลือก): `B-{PO}-{line}-{run}`**
-  - เช่น **`B-PO-2026-0012-2-1`** = PO-2026-0012, line item ที่ 2, ผลิตครั้งที่ 1
-  - ผลิตซ้ำ (rework) ครั้งแรกของ line 2 → **`B-PO-2026-0012-2-2`** (run เพิ่มทีละ 1)
-  - อ่านแล้วรู้ทันทีว่ามาจาก PO/line ไหน + เป็นการผลิตรอบที่เท่าไร
-- **Batch ผูก:** PO ref + line ref + **Lot วัตถุดิบที่ใช้ (FIFO)** + จำนวน + ผู้ผลิต + เวลา + run ก่อนหน้า (ถ้า rework)
-- **GMP chain:** Lot → Batch → line → PO → ลูกค้า → DN/Invoice
-- **ทำไมต้องแยก Batch จาก PO (เหตุผล GMP):** 1 PO หลายสินค้า/ผลิตคนละรอบ/คนละ lot; QC ไม่ผ่านผลิตซ้ำ = Batch ใหม่ (run ถัดไป) ของ line เดิม; recall ต้องไล่ Batch→Lot; ฉลาก อย./GMP ต้องมีเลขรุ่นผลิต
+### 3.1 PRD ↔ Batch ↔ QC (หัวใจ GMP — ปอนด์ตัดสินแล้ว) · ความสัมพันธ์ 1 PO : N PRD : M Batch
+- **PRD สร้างเมื่อ:** **PO Confirmed (auto)** · **1 line = 1 PRD** → 1 PO N line = **N PRD**
+- **Batch สร้างเมื่อ:** ฝ่ายผลิตกด **"เริ่มผลิต"** ของ PRD นั้น (**ไม่ใช่ตอน PO confirm และไม่ใช่ตอนส่งตรวจ QC**) → gen Batch run แรก · rework = Batch run ถัดไปของ PRD เดิม → 1 PRD : **1+ Batch** → 1 PO : **M Batch (M≥N)**
+- **★ รูปแบบเลข Batch (ปอนด์เลือก): `B-{PO}-{line}-{run}`** · เช่น `B-PO-202607-000181-2-1` (PO นี้ line 2 ผลิตครั้งที่ 1) · rework → `...-2-2` (run+1)
+- **Batch ผูก:** PO ref + line ref (=PRD) + **Lot วัตถุดิบที่ใช้ (FIFO)** + จำนวน + ผู้ผลิต + เวลา + run ก่อนหน้า
+- **cascade สถานะ:** Batch(กำลังผลิต)→PRD(กำลังผลิต) · Batch(รอ QC)→PRD(รอ QC) · **Batch QC ผ่าน→PRD line พร้อมส่งมอบ** · **ทุก PRD ของ PO พร้อมส่งมอบ→PO พร้อมจัดส่ง** · Batch QC ไม่ผ่าน→PRD Rework + gen Batch run ใหม่
+- **GMP chain:** Lot → Batch → line(PRD) → PO → ลูกค้า → DN/Invoice
+- **ทำไมต้องแยก Batch/PRD จาก PO:** 1 PO หลายสินค้า/ผลิตคนละรอบ/คนละ lot; rework = Batch ใหม่ run เดิม line; recall ไล่ Batch→Lot; ฉลาก อย./GMP ต้องมีเลขรุ่นผลิต
 
 ### 3.2 QC ราย line + Rework Loop (UI requirement — คำกำชับปอนด์ "อย่าให้ฝ่ายผลิตงง + ส่งกลับ QC ลื่น")
 QC ตัดสิน **ราย line item / ราย Batch** ที่หน้า QC เท่านั้น · line ไม่ผ่าน → ตีกลับเฉพาะตัวนั้น + **feedback (บังคับ)** · line ผ่าน → รอ · **PO "พร้อมจัดส่ง" เมื่อทุก line ผ่าน QC**
 
 **Rework loop — ต้องเห็นชัดในหน้าจอ (ส่งให้ UX/UI):**
-- **(ก) หน้าผลิต** แสดง line ที่ถูกตีกลับด้วย **badge "Rework"** + ระบุ **Batch run ใหม่ที่จะเกิด** (เช่น "Batch ใหม่: B-PO-2026-0012-2-2") + **feedback จาก QC แสดงติดกับ line นั้น** (เห็นว่าเสียเรื่องอะไร)
+- **(ก) หน้าผลิต** แสดง line ที่ถูกตีกลับด้วย **badge "Rework"** + ระบุ **Batch run ใหม่ที่จะเกิด** (เช่น "Batch ใหม่: B-PO-202607-000181-2-2") + **feedback จาก QC แสดงติดกับ line นั้น** (เห็นว่าเสียเรื่องอะไร)
 - **(ข) กด "ผลิตซ้ำ"** → ระบบ **gen Batch run ถัดไปอัตโนมัติ** (`...-{run+1}`) ผูก run ก่อนหน้า
 - **(ค) ส่งกลับ QC** → **คิว QC เห็นเป็นรายการใหม่** พร้อม **ประวัติ run ก่อนหน้า** (run 1 ไม่ผ่านเพราะอะไร) — ตรวจซ้ำได้ลื่น
-- **(ง) line อื่นใน PO เดินต่อไม่สะดุด** + **po-detail เห็นภาพรวมทุก line/Batch** (สถานะราย line: ผ่าน/รอ QC/Rework)
+- **(ง) line อื่นใน PO เดินต่อไม่สะดุด** + **po-detail เห็นภาพรวมทุก line/PRD/Batch** (สถานะราย line: ผ่าน/รอ QC/Rework)
 - ทุกขั้นมี **trace** (ใคร/เมื่อไหร่/feedback/run)
 
 | Transition | หน้า | comment | สะกิดข้าม module |
 |---|---|---|---|
+| PO Confirmed → gen PRD (รับงาน) | ระบบ (auto) | — | โผล่คิวฝ่ายผลิต |
 | Received → InProgress (gen Batch run 1) | Production ("เริ่มผลิต") | — | สร้าง Batch `B-{PO}-{line}-1` ผูก PO/line/Lot |
 | InProgress → WaitQC | Production ("ส่งตรวจ QC") | optional | โผล่หน้า QC |
 | WaitQC → ReadyToDeliver | **QC** | optional | ครบทุก line → PO พร้อมจัดส่ง |
@@ -203,18 +205,18 @@ stateDiagram-v2
 | C2b | Sale ตั้ง "ต้องติดตาม" | Follow-up + comment; tile Sale Dashboard |
 | C3 | PO วัตถุดิบขาด | WARNING + สร้าง PR (ส่วนที่ขาด) → Stock + Production Dashboard |
 | C4 | Goods Receipt รับของ (ผูก lot รายบรรทัด) | PR → Fulfilled อัตโนมัติ (รับไม่ครบ = เสนอ PR ใหม่ user ยืนยัน); Stock เพิ่ม (lot รอ QC) |
-| C5 | PO Confirmed | Production = รับงาน |
-| C5b | Production "เริ่มผลิต" | gen Batch `B-{PO}-{line}-{run}` (ผูก PO/line/Lot) |
-| C6 | QC ตีกลับ line/Batch | line → Rework + feedback + badge; ผลิตซ้ำ → Batch run ใหม่ → กลับคิว QC (line อื่นเดินต่อ) |
+| C5 | **PO Confirmed** | **auto สร้าง PRD ต่อ line = รับงาน** (โผล่คิวฝ่ายผลิต) |
+| C5b | Production "เริ่มผลิต" (PRD) | gen Batch `B-{PO}-{line}-{run}` (ผูก PO/line/Lot); PRD/Batch = กำลังผลิต |
+| C6 | QC ตีกลับ Batch/line | Batch=ไม่ผ่าน; PRD=Rework + feedback + badge; ผลิตซ้ำ → Batch run ใหม่ → กลับคิว QC (line อื่นเดินต่อ) |
 | C7 | Production Hold (ลูกค้า) | raise Sale → อาจตั้ง Follow-up (C2b) + แก้ไข PO |
 | C7b | Potential Delay | notify Sale + Stock |
-| C8 | ทุก line ผ่าน QC | PO → พร้อมจัดส่ง; โผล่คิวจัดส่ง |
+| C8 | ทุก PRD/line ผ่าน QC | PO → พร้อมจัดส่ง; โผล่คิวจัดส่ง |
 | C9 | DN Delivered | PO → Delivered; นับ overdue |
 | C10 | DN Rejected | PO พร้อมจัดส่ง + raise Sale |
 | C10b | DN Postponed | PO พร้อมจัดส่ง + flag Postpone+วันที่ ค้างคิว |
 | C11 | Invoice Overdue | แจ้ง Finance (+Sale) |
 | C12 | Return Issued | Stock ลด (lot) + adjust + comment |
-| C13 | PO Cancelled → Draft (reopen, คงเลข) | รับงานต่อ; trace lifecycle |
+| C13 | PO Cancelled → Draft (reopen, คงเลข) | PRD/Batch ที่เกิดถูกยกเลิกตาม + trace; รับงานต่อได้ |
 | C14 | Sale reassign ลูกค้า | customer.sale เปลี่ยน; Dashboard 2 ฝั่ง + trace |
 
 ---
@@ -233,10 +235,6 @@ stateDiagram-v2
 - **UI:** preset **วันนี้ / สัปดาห์นี้ / เดือนนี้ (default) / กำหนดเอง** + **เลือกอิสระได้: เดือนไหน / ปีไหน / date range** มีผลทุก tile
 - **แยก metric 2 ชนิด + caption ต่อ tile:** **Event** (PO=สร้างในช่วง, ค้างชำระ=ครบกำหนดในช่วง, ห่างหาย=กลายเป็น Inactive ในช่วง, ต้องติดตาม=ตั้งในช่วง) vs **State/activity** (ลูกค้าประจำ=มี order ในช่วง; คิวผลิต/รอ QC=ตอนนี้) · กด tile = drill-down list ของช่วงนั้น
 
-## 13. คำถามถึงปอนด์ (r3 — ตอบครบแล้ว ✅)
-1. **QC ราย line:** ✅ ตีกลับเฉพาะ line ที่ไม่ผ่าน + rework loop (§3.2)
-2. **เลข Batch:** ✅ **`B-{PO}-{line}-{run}`** (ปอนด์เลือก, GMP) — ผลิตซ้ำ run+1 (§3.1)
-3. **Dashboard:** ✅ default เดือนนี้ + เลือกอิสระ เดือน/ปี/date range + event/state (§12)
-4. **Goods Receipt/PR:** ✅ 1 GR อ้างหลาย PR; รับไม่ครบ → เสนอ PR ใหม่เฉพาะที่ขาด + user review (§5)
-5. **BOM ไม่มี supplier active:** ✅ บล็อกจนกรอก override (§11)
-> ไม่มีคำถามค้างในรอบนี้
+## 13. คำถามถึงปอนด์
+- **r3: ตอบครบแล้ว ✅** — QC ตีกลับเฉพาะ line (§3.2) · Batch `B-{PO}-{line}-{run}` (§3.1) · Dashboard filter (§12) · GR/PR many + partial (§5) · BOM block (§11)
+- **r4 (lifecycle PRD): 3 คำถามใน `entity-status-map.md` §5** — (1) PRD auto-create ตอน Confirm หรือฝ่ายผลิตกดรับเอง (default: auto) (2) 1 line=1 PRD (default) (3) PRD สร้างแม้วัตถุดิบขาด (default: สร้าง) — ตั้ง default แล้ว ไม่ block
