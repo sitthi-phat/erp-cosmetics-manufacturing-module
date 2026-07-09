@@ -10,7 +10,7 @@ header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-grad
 header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
 h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
 h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
-.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
 th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
 .story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
@@ -32,45 +32,45 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Module: Platform / Identity / Notification <span class="badge b-must">Must</span></h1>
-<p class="sub">login · product identity (ESSENCE Hub ทุกหน้า+browser title) · shell/นำทาง · Notification bell + deep link + acknowledge (ราย user) · responsive ทุกหน้า</p>
+<p class="sub">login (local+Google) · identity ESSENCE Hub ทุกหน้า+browser title · shell/นำทาง · <b>global search</b> บน header · Notification bell (panel + badge + deep link + ack ราย user) · session 24 ชม. + reset 06:00 (มี warning ก่อนหมด) · responsive ทุกหน้า</p>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>เข้าสู่ระบบ (local + Google), เห็นชื่อระบบ+logo ทุกหน้า, กระดิ่งแจ้งเตือนส่งงานข้ามแผนก · ผู้รับ noti = ผู้มีสิทธิ์ Read ของ module ปลายทาง · กดรายการ = deep link ไปหน้าทำงานต่อ + acknowledge (badge ลดราย user)</p>
+<p>เข้าสู่ระบบ, เห็นชื่อระบบ+logo ทุกหน้า, ค้นหาข้าม module จากช่องค้นบน header, รับกระดิ่งแจ้งเตือนงานข้ามแผนก (ผู้รับ = ผู้มีสิทธิ์ Read ของ module ปลายทาง), กดไปทำงานต่อ (deep link) + acknowledge (badge ลดราย user) · ก่อน session reset 06:00 มีการเตือนล่วงหน้า</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
 <div class="mock"><div class="thumb">🔐</div><div><b>login.html</b> · <b>home.html</b> — identity + "หน้าหลัก" จุดเดียว · <a href="../mockups/login.html" target="_blank">เปิด ↗</a></div></div>
-<div class="mock"><div class="thumb">🔔</div><div><b>ทุกหน้า (shell)</b> — bell → panel รายการ + badge + deep link + ack · <b>responsive.html</b> demo · <a href="../mockups/responsive.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">🔔</div><div><b>ทุกหน้า (shell)</b> — header: global search + bell → panel รายการ (grouping/mark all read/ดูทั้งหมด) + badge (cap "9+") + deep link + ack · <b>responsive.html</b> · <a href="../mockups/responsive.html" target="_blank">เปิด ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
 <div class="story">
-<h3><span class="sid">US-PLT-01</span> — เข้าสู่ระบบ + identity <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> พนักงาน, <b>I want</b> ล็อกอินและเห็นชื่อระบบ/โลโก้ทุกหน้า, <b>so that</b> ใช้งานได้อย่างมั่นใจ</p>
+<h3><span class="sid">US-PLT-01</span> — เข้าสู่ระบบ + identity + session warning ก่อน 06:00 <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> พนักงาน, <b>I want</b> ล็อกอิน เห็นชื่อระบบ/โลโก้ทุกหน้า และได้รับเตือนก่อน session หมด/reset, <b>so that</b> ใช้งานได้มั่นใจและไม่เสียงานค้างตอน session ตัด</p>
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> ผู้ใช้มี account</span>
 <span class="gwt"><b>When</b> ล็อกอิน (local หรือ Google)</span>
-<span class="gwt"><b>Then</b> เข้าระบบ; ทุกหน้าแสดง "ESSENCE Hub System" + logo/icon (browser title ด้วย); เห็นเมนูตามสิทธิ์</span></div>
-<div class="ac edge"><span class="tag">Edge — session หมดอายุ/reset 06:00</span>
-<span class="gwt"><b>Given</b> session เกิน 24 ชม. หรือถึง 06:00 (reset ทั้งระบบ)</span>
-<span class="gwt"><b>When</b> ใช้งานต่อ</span>
-<span class="gwt"><b>Then</b> ระบบให้ล็อกอินใหม่ (ไม่ทำงานค้าง)</span></div>
+<span class="gwt"><b>Then</b> เข้าระบบ; ทุกหน้าแสดง "ESSENCE Hub System" + logo/icon และ browser title; เห็นเมนู/ค้นหา/dashboard ตามสิทธิ์ Read</span></div>
+<div class="ac edge"><span class="tag">Edge — เตือนก่อน session reset 06:00</span>
+<span class="gwt"><b>Given</b> ใกล้เวลา reset session ประจำวัน 06:00 (หรือ session ใกล้ครบ 24 ชม.)</span>
+<span class="gwt"><b>When</b> เหลือเวลาก่อนตัด (เช่น 5 นาที)</span>
+<span class="gwt"><b>Then</b> แสดงแถบเตือน "ระบบจะออกจากระบบเวลา 06:00 กรุณาบันทึกงาน" ล่วงหน้า; เมื่อถึงเวลา → ให้ล็อกอินใหม่ (ไม่ทำงานค้างเงียบๆ)</span></div>
 <div class="ac err"><span class="tag">Error — รหัสผิด</span>
 <span class="gwt"><b>Given</b> กรอกรหัสผิด</span>
 <span class="gwt"><b>When</b> ล็อกอิน</span>
-<span class="gwt"><b>Then</b> error "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" — ไม่เข้าระบบ</span></div>
+<span class="gwt"><b>Then</b> error "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" — ไม่เข้าระบบ (ไม่บอกว่าผิดที่ช่องไหนเพื่อความปลอดภัย)</span></div>
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PLT-02</span> — Notification bell + deep link + acknowledge <span class="badge b-must">Must</span></h3>
+<h3><span class="sid">US-PLT-02</span> — Notification: routing ตาม Read-bit + deep link + ack ราย user <span class="badge b-must">Must</span></h3>
 <p><b>As a</b> ผู้ใช้ที่มีสิทธิ์ Read ของ module, <b>I want</b> รับแจ้งเตือนงานส่งข้ามแผนกและกดไปทำต่อ, <b>so that</b> ไม่พลาดงานและไปทำงานต่อได้ทันที</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> มี 5 การแจ้งเตือน (เช่น PO Confirmed → Production)</span>
+<span class="gwt"><b>Given</b> มี 5 การแจ้งเตือน (เช่น PO-181 Confirmed → Production)</span>
 <span class="gwt"><b>When</b> กด bell → กดรายการ "PO-181 เข้าคิวผลิต"</span>
-<span class="gwt"><b>Then</b> deep link ไปหน้า production พร้อม context + acknowledge รายการนั้น → badge เหลือ 4 (ราย user)</span></div>
+<span class="gwt"><b>Then</b> deep link ไป production พร้อม context + acknowledge รายการนั้น → badge เหลือ 4 (ราย user)</span></div>
 <div class="ac edge"><span class="tag">Edge — routing ตาม Read permission</span>
 <span class="gwt"><b>Given</b> เหตุการณ์เข้า module Production</span>
 <span class="gwt"><b>When</b> ยิง notification</span>
-<span class="gwt"><b>Then</b> เฉพาะผู้ที่มีสิทธิ์ Read ของ Production ได้รับ (ผู้อื่นไม่เห็น) — ดู <a href="continuity.html#noti">Notification matrix</a></span></div>
+<span class="gwt"><b>Then</b> เฉพาะผู้มีสิทธิ์ Read ของ Production ได้รับ (ผู้อื่นไม่เห็น) — ดู <a href="continuity.html#noti">Notification matrix</a></span></div>
 <div class="ac err"><span class="tag">Error — ack ของคนอื่น</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ A กด ack รายการ</span>
 <span class="gwt"><b>When</b> ผู้ใช้ B เปิด bell</span>
@@ -78,16 +78,50 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PLT-03</span> — Responsive + RBAC guard ทุกหน้า <span class="badge b-must">Must</span></h3>
+<h3><span class="sid">US-PLT-03</span> — Notification panel: grouping / mark all read / empty / badge cap / ดูทั้งหมด <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้, <b>I want</b> แผงแจ้งเตือนอ่านง่าย จัดกลุ่ม เคลียร์ทั้งหมดได้ และไปหน้ารวมได้, <b>so that</b> จัดการแจ้งเตือนจำนวนมากได้โดยไม่รก</p>
+<div class="ac happy"><span class="tag">Happy — ลำดับ + grouping + ดูทั้งหมด</span>
+<span class="gwt"><b>Given</b> เปิด bell panel มีแจ้งเตือน 8 รายการ</span>
+<span class="gwt"><b>When</b> ดู panel</span>
+<span class="gwt"><b>Then</b> รายการเรียง<b>ใหม่→เก่า</b>, จัดกลุ่ม "ยังไม่อ่าน" ก่อน; แสดงสูงสุด N รายการ + ลิงก์ "ดูทั้งหมด" ไปหน้ารวมแจ้งเตือน (list + pagination)</span></div>
+<div class="ac edge"><span class="tag">Edge — mark all read + badge cap "9+"</span>
+<span class="gwt"><b>Given</b> ยังไม่อ่าน 12 รายการ (badge แสดง "9+")</span>
+<span class="gwt"><b>When</b> กด "ทำเป็นอ่านทั้งหมด (mark all read)"</span>
+<span class="gwt"><b>Then</b> ทุกรายการของ user นี้เป็นอ่านแล้ว, badge → 0 (ไม่กระทบ user อื่น); ค่า badge > 9 แสดงเป็น "9+" เสมอ</span></div>
+<div class="ac err"><span class="tag">Edge/Empty — ไม่มีแจ้งเตือน</span>
+<span class="gwt"><b>Given</b> ไม่มีแจ้งเตือนค้าง</span>
+<span class="gwt"><b>When</b> เปิด panel</span>
+<span class="gwt"><b>Then</b> แสดง empty state "ไม่มีการแจ้งเตือน" (ไม่ error, ไม่ panel ว่างเปล่างงๆ); badge ไม่แสดงตัวเลข</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-PLT-04</span> — Global header search (ค้นข้าม module ตามสิทธิ์) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ผู้ใช้, <b>I want</b> ค้นหาเอกสาร/ลูกค้า/วัตถุดิบจากช่องค้นบน header แล้วกดไปหน้ารายละเอียด, <b>so that</b> หาสิ่งที่ต้องการได้เร็วจากทุกหน้า</p>
+<div class="ac happy"><span class="tag">Happy — ค้นได้อะไร + คลิกไปไหน</span>
+<span class="gwt"><b>Given</b> ผู้ใช้พิมพ์ "181" หรือ "กลอรี่" ในช่องค้น header</span>
+<span class="gwt"><b>When</b> ระบบค้น</span>
+<span class="gwt"><b>Then</b> แสดงผลจัดกลุ่มตามชนิด (PO / ลูกค้า / วัตถุดิบ-Lot / PR-GR / DN-Invoice) เช่น "PO-202607-000181", "ลูกค้า กลอรี่"; แต่ละผลคลิก → deep link ไปหน้ารายละเอียดของ entity นั้น</span></div>
+<div class="ac edge"><span class="tag">Edge — จำกัดตามสิทธิ์ Read + ไม่พบผล</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read module ของบางผลลัพธ์ หรือคำค้นไม่ตรงอะไร</span>
+<span class="gwt"><b>When</b> ค้น</span>
+<span class="gwt"><b>Then</b> ผลที่อยู่นอกสิทธิ์ Read <b>ไม่ปรากฏ</b>; ถ้าไม่พบ → "ไม่พบผลการค้นหา" (ไม่ error)</span></div>
+<div class="ac err"><span class="tag">Error — คำค้นสั้นเกินไป</span>
+<span class="gwt"><b>Given</b> พิมพ์ตัวอักษรน้อยกว่า 2 ตัว</span>
+<span class="gwt"><b>When</b> ค้น</span>
+<span class="gwt"><b>Then</b> ไม่ยิงค้น + ข้อความช่วยเหลือ "พิมพ์อย่างน้อย 2 ตัวอักษร" (กัน query หนักโดยเปล่าประโยชน์)</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-PLT-05</span> — Responsive + RBAC guard ทุกหน้า <span class="badge b-must">Must</span></h3>
 <p><b>As a</b> ผู้ใช้, <b>I want</b> ใช้งานได้ทุกอุปกรณ์ และเห็นเฉพาะสิ่งที่มีสิทธิ์, <b>so that</b> ทำงานได้จริงและปลอดภัย</p>
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> เปิดบน mobile/tablet/desktop</span>
 <span class="gwt"><b>When</b> ใช้งาน</span>
-<span class="gwt"><b>Then</b> layout responsive (hamburger/mobile tab-bar) ทุกหน้า; ไม่มีหน้าโชว์ enum/รหัสดิบ</span></div>
+<span class="gwt"><b>Then</b> layout responsive (hamburger/mobile tab-bar) ทุกหน้า; ไม่มีหน้าโชว์ enum/รหัสดิบ (สถานะเป็นป้ายไทย)</span></div>
 <div class="ac edge"><span class="tag">Edge — เมนูตามสิทธิ์</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read module X</span>
 <span class="gwt"><b>When</b> ดูเมนูซ้าย</span>
-<span class="gwt"><b>Then</b> ไม่เห็นเมนู X + เข้า URL ตรงถูกปฏิเสธ (guard)</span></div>
+<span class="gwt"><b>Then</b> ไม่เห็นเมนู X + เข้า URL ตรงถูกปฏิเสธ (guard 403)</span></div>
 <div class="ac err"><span class="tag">Error — action เกินสิทธิ์</span>
 <span class="gwt"><b>Given</b> มีสิทธิ์ Read แต่ไม่มี Create</span>
 <span class="gwt"><b>When</b> พยายามสร้างข้อมูล</span>
@@ -97,16 +131,17 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h2>4. Data rules</h2>
 <table><tr><th>รายการ</th><th>กติกา</th></tr>
 <tr><td>identity</td><td>ESSENCE Hub System + logo/icon ทุกหน้า + browser title</td></tr>
-<tr><td>notification</td><td>ผู้รับ = Read ของ module ปลายทาง · deep link + ack ราย user · badge รวม</td></tr>
-<tr><td>responsive</td><td>Must ทุกหน้า (desktop/tablet/mobile)</td></tr>
-<tr><td>auth (NFR)</td><td>local + Google · session 24 ชม. + reset 06:00 · 50 concurrent · &lt;2s (hard 3s)</td></tr></table>
+<tr><td>notification</td><td>ผู้รับ = Read ของ module ปลายทาง · deep link + ack ราย user · panel: เรียงใหม่→เก่า, จัดกลุ่มยังไม่อ่าน, mark all read, "ดูทั้งหมด", empty state · badge cap "9+"</td></tr>
+<tr><td>global search</td><td>ค้น PO/ลูกค้า/วัตถุดิบ-Lot/PR-GR/DN-Invoice · จำกัดตามสิทธิ์ Read · ≥2 ตัวอักษร · ผลคลิก = deep link</td></tr>
+<tr><td>session</td><td>24 ชม. + reset 06:00 ทุกวัน · เตือนล่วงหน้าก่อนตัด</td></tr>
+<tr><td>responsive/auth</td><td>Must ทุกหน้า · local + Google · 50 concurrent · &lt;2s (hard 3s)</td></tr></table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-notification.html" target="_blank">api-notification.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — auth (local+Google/JWT), notification fan-out by Read-bit + per-user ack state, RBAC middleware guard</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-notification.html" target="_blank">api-notification.html ↗</a> · <a href="../architecture/api-trace.html" target="_blank">api-trace.html ↗</a> (global search index) · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — auth (local+Google/JWT + 06:00 reset + pre-expiry warning), notification fan-out by Read-bit + per-user ack/read state + "mark all read" + list พร้อม pagination, global search across entities scoped by Read-bit, RBAC middleware guard</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>ทุกการส่งงานข้าม module ยิง noti (ดู <a href="continuity.html#noti">Notification matrix</a> ทุกแถว)</li></ul>
+<ul class="sub"><li>ทุกการส่งงานข้าม module ยิง noti (<a href="continuity.html#noti">Notification matrix</a>) → โผล่ใน <a href="home.html">Home task inbox</a> + <a href="dashboard.html">Dashboard badge</a> (source เดียว) · global search ↔ ทุก module detail page</li></ul>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="continuity.html">ความต่อเนื่อง →</a><a href="dashboard.html">Dashboard</a></div>
-<footer>US-PLT-01..03 · 9 AC · Module Platform</footer>
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="continuity.html">ความต่อเนื่อง →</a><a href="dashboard.html">Dashboard</a><a href="home.html">Home</a></div>
+<footer>US-PLT-01..05 · 15 AC · Module Platform / Identity / Notification / Global Search</footer>
 </div></body></html>

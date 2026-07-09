@@ -31,66 +31,93 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Traceability</span></header>
 <div class="wrap">
 
-<h1>Module: Traceability + Field-level Audit <span class="badge b-should">Should</span></h1>
-<p class="sub">search ทุก entity (ลูกค้า/PO/วัตถุดิบ/PR/Supplier/BOM/ผลิต/จัดส่ง) · มุมมองผลิต(status)+จัดส่ง(รอบ+DN) · date range + time · <b>audit ระดับ field</b> (ใคร/field/จาก→เป็น/เมื่อไหร่) · archive (Super User)</p>
+<h1>Module: Traceability + Field-level Audit <span class="badge b-must">Must</span></h1>
+<p class="sub">entity selector (ค้นได้ทุก entity + field ที่ค้นได้ต่อ entity) · genealogy Lot→Batch→FG (คลิก node ไปหน้าจริง) · date range + time · <b>audit ระดับ field</b> (คอลัมน์/filter/sort/pagination) · archive text file (Super User)</p>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>GMP: ไล่ Lot → Batch → FG + อธิบาย Lot vs Batch · audit ระดับ field ทุกการเปลี่ยน · archive text file เฉพาะ Super User</p>
+<p>GMP: ไล่ Lot → Batch → FG + อธิบาย Lot (ล็อตวัตถุดิบ) vs Batch (รอบผลิต) · audit ระดับ field ทุกการเปลี่ยน · archive text file เฉพาะ Super User</p>
 <p class="sub">Dataset: genealogy B-PO-202607-000170-1-2 (run1 fail→run2 pass) → Lot → PO-170 → กลอรี่ → DN/INV; field-audit Follow-up CUS-000021</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">🧬</div><div><b>trace.html</b> — entity selector + date-range+time + genealogy + ตาราง field-audit + archive · <a href="../mockups/trace.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">🧬</div><div><b>trace.html</b> — entity selector + field · date-range+time · genealogy (node คลิกได้) · ตาราง field-audit (filter/sort/pagination) · archive · <a href="../mockups/trace.html" target="_blank">เปิด ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
 <div class="story">
-<h3><span class="sid">US-TRC-01</span> — Search + genealogy (Lot→Batch→FG) <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ผู้ตรวจสอบ, <b>I want</b> ค้นทุก entity และไล่ genealogy การผลิต, <b>so that</b> สืบย้อนกลับ GMP ได้ครบ</p>
+<h3><span class="sid">US-TRC-01</span> — Entity selector: ค้นได้อะไร + field ที่ค้นได้ต่อ entity <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ตรวจสอบ, <b>I want</b> เลือก entity แล้วรู้ว่าค้นด้วย field ใดได้บ้าง, <b>so that</b> ค้นเจอเป้าหมายได้ตรงโดยไม่ต้องเดา</p>
+<table><tr><th>Entity ที่ค้นได้</th><th>field ที่ค้นได้</th></tr>
+<tr><td>ลูกค้า (Customer)</td><td>รหัส CUS / ชื่อ / เบอร์ / สถานะ</td></tr>
+<tr><td>PO</td><td>เลข PO / ลูกค้า / สถานะ fulfilment/billing</td></tr>
+<tr><td>PRD / Batch</td><td>เลข PRD / เลข Batch (B-{PO}-{line}-{run}) / สถานะ</td></tr>
+<tr><td>วัตถุดิบ / Lot</td><td>รหัส RM / ชื่อ / เลข Lot / supplier / qc_status</td></tr>
+<tr><td>PR / GR</td><td>เลข PR / เลข GR / วัตถุดิบ / สถานะ</td></tr>
+<tr><td>Supplier</td><td>รหัส SUP / ชื่อ / สถานะ active</td></tr>
+<tr><td>Shipment / DN / Invoice</td><td>เลข SHP / DN / INV / ลูกค้า / สถานะ</td></tr></table>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> เลือก entity = Batch, ค้น B-PO-202607-000170-1-2</span>
-<span class="gwt"><b>When</b> ค้นหา</span>
-<span class="gwt"><b>Then</b> แสดง genealogy: Lot(L-GLY-2506, L-OLV-2604) → Batch run1(ไม่ผ่าน)+run2(ผ่าน) → line1 → PO-170 → กลอรี่ → DN/INV</span></div>
+<span class="gwt"><b>Given</b> เลือก entity = Batch</span>
+<span class="gwt"><b>When</b> ค้นด้วยเลข Batch "B-PO-202607-000170-1-2"</span>
+<span class="gwt"><b>Then</b> พบ Batch นั้น + ปุ่มดู genealogy; ช่องค้นแสดง field ที่ใช้ได้ของ Batch (เลข PRD/เลข Batch/สถานะ)</span></div>
 <div class="ac edge"><span class="tag">Edge — date range + time</span>
-<span class="gwt"><b>Given</b> กรองด้วยช่วงวัน+เวลา</span>
+<span class="gwt"><b>Given</b> กรองด้วยช่วงวัน + เวลา ร่วมกับ entity</span>
 <span class="gwt"><b>When</b> ค้น</span>
-<span class="gwt"><b>Then</b> แสดงเฉพาะรายการในช่วง; ถ้าไม่พบ = empty state</span></div>
-<div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ Read</span>
-<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read entity นั้น</span>
+<span class="gwt"><b>Then</b> แสดงเฉพาะรายการในช่วง; ถ้าไม่พบ = empty state "ไม่พบข้อมูลตามเงื่อนไข"</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ Read entity</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read module ของ entity นั้น</span>
 <span class="gwt"><b>When</b> ค้น</span>
-<span class="gwt"><b>Then</b> ไม่แสดงผล entity ที่ไม่มีสิทธิ์ / 403</span></div>
+<span class="gwt"><b>Then</b> entity นั้นไม่อยู่ใน selector / ผลไม่แสดง (403 ตามสิทธิ์ Read)</span></div>
 </div>
 
 <div class="story">
-<h3><span class="sid">US-TRC-02</span> — Field-level audit + archive (Super User) <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ผู้ตรวจสอบ, <b>I want</b> เห็นการแก้ทุกค่าระดับ field และ Super User archive ได้, <b>so that</b> ตรวจสอบใครทำอะไรและเก็บระยะยาว</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> CUS-000021 ถูกตั้ง Follow-up</span>
-<span class="gwt"><b>When</b> เปิด field-audit</span>
-<span class="gwt"><b>Then</b> แสดงแถว: เวลา/ผู้ทำ(สมหญิง)/entity(CUS-000021)/field(status)/จาก(Active)→เป็น(Follow-up)/เหตุผล</span></div>
-<div class="ac edge"><span class="tag">Edge — archive</span>
-<span class="gwt"><b>Given</b> ผู้ใช้เป็น Super User</span>
+<h3><span class="sid">US-TRC-02</span> — Genealogy (Lot→Batch→FG) + คลิก node ไปหน้าจริง <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ตรวจสอบ GMP, <b>I want</b> เห็นสายพันธุ์การผลิตและคลิก node ไปหน้าที่เกี่ยวข้อง, <b>so that</b> สืบย้อนกลับได้ครบและเปิดดูรายละเอียดต้นทางได้</p>
+<div class="ac happy"><span class="tag">Happy — genealogy + node คลิกได้</span>
+<span class="gwt"><b>Given</b> ค้น B-PO-202607-000170-1-2</span>
+<span class="gwt"><b>When</b> เปิด genealogy</span>
+<span class="gwt"><b>Then</b> แสดงสาย: Lot (L-GLY-2506, L-OLV-2604) → Batch run1(ไม่ผ่าน)+run2(ผ่าน) → line1 → PO-170 → กลอรี่ → DN/INV; คลิก node <b>Lot</b> → stock/qc ของ lot, node <b>Batch</b> → production/qc, node <b>PO</b> → po-detail, node <b>DN/INV</b> → หน้าเอกสารนั้น</span></div>
+<div class="ac edge"><span class="tag">Edge — อธิบาย Lot vs Batch</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ใหม่ดู genealogy</span>
+<span class="gwt"><b>When</b> hover/ดูคำอธิบาย</span>
+<span class="gwt"><b>Then</b> แสดงคำอธิบาย "Lot = ล็อตวัตถุดิบรับเข้า · Batch = รอบผลิต 1 line (rework = Batch run ใหม่)" (ดู <a href="glossary.html">Glossary</a>)</span></div>
+<div class="ac err"><span class="tag">Error — entity ไม่มีสายผลิต</span>
+<span class="gwt"><b>Given</b> ค้น entity ที่ไม่มี genealogy (เช่น Supplier)</span>
+<span class="gwt"><b>When</b> เปิด genealogy</span>
+<span class="gwt"><b>Then</b> แสดง "รายการนี้ไม่มีสายการผลิต" + ยังดู field-audit ได้ (ไม่ error หน้าค้าง)</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-TRC-03</span> — ตาราง Field-level audit (คอลัมน์/filter/sort/pagination) + archive <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ตรวจสอบ, <b>I want</b> เห็นการแก้ทุกค่าระดับ field ในตารางที่กรอง/เรียง/แบ่งหน้าได้ และ Super User archive ได้, <b>so that</b> ตรวจสอบใครทำอะไรและเก็บระยะยาว</p>
+<div class="ac happy"><span class="tag">Happy — คอลัมน์ + filter + sort</span>
+<span class="gwt"><b>Given</b> CUS-000021 ถูกตั้ง Follow-up และมี audit หลายรายการ</span>
+<span class="gwt"><b>When</b> เปิดตาราง field-audit แล้วกรอง field = "status" + เรียงเวลาใหม่→เก่า</span>
+<span class="gwt"><b>Then</b> แสดงคอลัมน์ (เวลา / ผู้ทำ / entity / field / จาก→เป็น / เหตุผล) — แถว: สมหญิง / CUS-000021 / status / Active→Follow-up / เหตุผล; มี pagination เมื่อเกินหนึ่งหน้า; sort เวลา default ใหม่→เก่า</span></div>
+<div class="ac edge"><span class="tag">Edge — archive (Super User)</span>
+<span class="gwt"><b>Given</b> ผู้ใช้เป็น Super User เลือกช่วงวันที่</span>
 <span class="gwt"><b>When</b> กด "archive เป็น text file"</span>
-<span class="gwt"><b>Then</b> ระบบ archive ช่วงที่เลือก (retention online 1 ปี, purge/archive manual โดย Super User)</span></div>
+<span class="gwt"><b>Then</b> export ช่วงที่เลือกเป็น text file (retention online 1 ปี; หลังจากนั้น purge/archive manual — ไม่มี auto-purge) + ยืนยันก่อน export</span></div>
 <div class="ac err"><span class="tag">Error — archive โดยไม่ใช่ Super User</span>
-<span class="gwt"><b>Given</b> ผู้ใช้ทั่วไป</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ทั่วไป (ไม่ใช่ Super User)</span>
 <span class="gwt"><b>When</b> พยายาม archive</span>
-<span class="gwt"><b>Then</b> ไม่มีปุ่ม / 403 (archive = Super User เท่านั้น)</span></div>
+<span class="gwt"><b>Then</b> ไม่มีปุ่ม archive / 403 (archive = Super User เท่านั้น)</span></div>
 </div>
 
 <h2>4. Data rules</h2>
 <table>
 <tr><th>รายการ</th><th>กติกา</th></tr>
-<tr><td>audit</td><td>ระดับ field: เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล · ทุก action</td></tr>
+<tr><td>entity ค้นได้</td><td>ลูกค้า/PO/PRD-Batch/วัตถุดิบ-Lot/PR-GR/Supplier/Shipment-DN-Invoice · field ต่อ entity (ดูตาราง TRC-01)</td></tr>
+<tr><td>genealogy</td><td>Lot→Batch→line→PO→ลูกค้า→DN/INV · node คลิก = deep link · rework = Batch run ใหม่</td></tr>
+<tr><td>audit</td><td>ระดับ field: เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล · filter (ผู้ใช้/entity/field/ช่วงวัน) + sort เวลา + pagination · ทุก action</td></tr>
 <tr><td>retention</td><td>online 1 ปี · หลังจากนั้น Super User manual purge/archive (ไม่มี auto-purge)</td></tr>
-<tr><td>archive</td><td>text file · Super User เท่านั้น</td></tr>
+<tr><td>archive</td><td>text file · Super User เท่านั้น · ยืนยันก่อน export</td></tr>
 <tr><td>เอกสารการค้า</td><td>void/cancel ไม่ลบ — trace ครบ (gapless)</td></tr></table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-trace.html" target="_blank">api-trace.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — generic field-level audit table (all tables), entity search + date/time range, genealogy graph, archive export, retention 1yr</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-trace.html" target="_blank">api-trace.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — generic field-level audit table (ทุกตาราง), entity search (field ต่อ entity) + date/time range, genealogy graph + deep-link nodes, audit query (filter/sort/pagination), archive export, retention 1yr · <b>เดียวกับ</b> Settings Audit-log screen (<a href="settings.html">US-SET-05</a>)</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>ทุกการเปลี่ยนสถานะทุก module → บันทึก audit (ดู <a href="continuity.html">Cascade ทุกแถว</a>)</li></ul>
+<ul class="sub"><li>ทุกการเปลี่ยนสถานะทุก module → บันทึก audit (ดู <a href="continuity.html">Cascade ทุกแถว</a>) · Audit log ใน <a href="settings.html">Settings</a> = มุมมองรวมของ field-audit เดียวกัน (source เดียว)</li></ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="settings.html">Settings →</a><a href="production.html">การผลิต</a></div>
-<footer>US-TRC-01..02 · 6 AC · Module Traceability</footer>
+<footer>US-TRC-01..03 · 9 AC · Module Traceability + Field-level Audit</footer>
 </div></body></html>

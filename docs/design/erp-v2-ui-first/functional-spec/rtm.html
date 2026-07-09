@@ -22,53 +22,68 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 
 <h1>Requirement Traceability Matrix</h1>
 <p class="sub">Story ↔ mockup ↔ journey (entity-status-map/status-journeys) ↔ Use Case · ให้ Tech-Lead/QA ผูก API/DB + test ต่อได้</p>
-<div class="note">รวม <b>~50 stories / ~150 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case</div>
+<div class="note">รวม <b>69 stories / 207 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case · <b>depth-fix Gate 2:</b> Dashboard 7 แผนก×29 tile, Settings 5 หน้าจอ, Home, พฤติกรรมย่อย (noti panel/global search/PO suggest/list filter)</div>
 
+<h2>Story coverage — 16 module + cross-cutting</h2>
 <table>
 <tr><th>Story</th><th>Module</th><th>mockup</th><th>journey/cascade</th><th>UC</th></tr>
-<tr><td>US-PO-01..06</td><td><a href="po.html">PO</a></td><td>po-create/list/detail</td><td>ESM §1.2/1.3 · C1/C19</td><td>UC1/2/4</td></tr>
+<tr><td>US-HOME-01..03</td><td><a href="home.html">Home</a></td><td>home</td><td>task inbox = dashboard/noti source เดียว</td><td>UC1/2/6/8</td></tr>
+<tr><td>US-PO-01..07</td><td><a href="po.html">PO</a></td><td>po-create/list/detail</td><td>ESM §1.2/1.3 · C1/C15/C19</td><td>UC1/2/4</td></tr>
 <tr><td>US-PRD-01..06</td><td><a href="production.html">การผลิต</a></td><td>production, po-detail</td><td>ESM §1.4/1.5 · C2/C3/C4/C6/C8/C16</td><td>UC2/3/4/5</td></tr>
 <tr><td>US-QC-01..03</td><td><a href="qc.html">QC</a></td><td>qc</td><td>ESM §1.5/1.6 · C5/C6/C18</td><td>UC3/4/5</td></tr>
 <tr><td>US-SHP-01..03</td><td><a href="shipping.html">จัดส่ง</a></td><td>shipping, delivery-note</td><td>ESM §1.9/1.10 · C9/C10/C11/C12</td><td>UC6/7/8</td></tr>
 <tr><td>US-INV-01..04</td><td><a href="invoice.html">Invoice</a></td><td>invoices/detail/print</td><td>ESM §1.3/1.11 · C13/C14</td><td>UC6</td></tr>
-<tr><td>US-STK-01..04</td><td><a href="stock.html">Stock/GR</a></td><td>stock, goods-receipt</td><td>ESM §1.6/1.8 · C16/C17</td><td>materials</td></tr>
+<tr><td>US-STK-01..05</td><td><a href="stock.html">Stock/GR</a></td><td>stock, goods-receipt</td><td>ESM §1.6/1.8 · C16/C17 · valuation=last buy</td><td>materials</td></tr>
 <tr><td>US-PR-01..03</td><td><a href="purchase-request.html">PR</a></td><td>purchase-request, pr-create</td><td>ESM §1.7 · C15/C17</td><td>materials</td></tr>
-<tr><td>US-SUP-01..02</td><td><a href="supplier.html">Supplier</a></td><td>supplier</td><td>ESM §1 · BOM cost</td><td>materials</td></tr>
+<tr><td>US-SUP-01..03</td><td><a href="supplier.html">Supplier</a></td><td>supplier</td><td>ESM §1 · BOM cost · price matrix snapshot</td><td>materials</td></tr>
 <tr><td>US-BOM-01..02</td><td><a href="bom.html">BOM</a></td><td>bom, bom-create</td><td>ESM §11</td><td>materials</td></tr>
 <tr><td>US-CUS-01..04</td><td><a href="customer.html">ลูกค้า</a></td><td>customers/detail/create</td><td>ESM §1.1 · C1/C8/C14b</td><td>UC1/2/4</td></tr>
 <tr><td>US-RET-01</td><td><a href="return.html">Return</a></td><td>return</td><td>ESM journeys §6 · C18</td><td>materials</td></tr>
-<tr><td>US-DSH-01..02</td><td><a href="dashboard.html">Dashboard</a></td><td>dashboard</td><td>ทุก cascade (drill-down)</td><td>ทุก UC</td></tr>
-<tr><td>US-TRC-01..02</td><td><a href="traceability.html">Trace</a></td><td>trace</td><td>audit ทุกแถว</td><td>UC4/5/6</td></tr>
-<tr><td>US-SET-01..02</td><td><a href="settings.html">Settings</a></td><td>settings</td><td>RUCDAA · VAT</td><td>—</td></tr>
-<tr><td>US-PLT-01..03</td><td><a href="platform.html">Platform</a></td><td>login/home/responsive/shell</td><td>Noti matrix · RBAC guard</td><td>ทุก UC</td></tr>
+<tr><td><b>US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM</b></td><td><a href="dashboard.html">Dashboard ×7</a></td><td>dashboard</td><td>ESM/journeys §12 · ทุก cascade (drill) · po-spec-depth-audit §2.2</td><td>ทุก UC</td></tr>
+<tr><td>US-TRC-01..03</td><td><a href="traceability.html">Trace</a></td><td>trace</td><td>field-audit ทุกแถว · genealogy Lot→Batch→FG</td><td>UC4/5/6</td></tr>
+<tr><td><b>US-SET-01..05</b></td><td><a href="settings.html">Settings (5 หน้าจอ)</a></td><td>settings</td><td>RUCDAA+Admin · user bulk-reassign · VAT · company · audit</td><td>—</td></tr>
+<tr><td><b>US-PLT-01..05</b></td><td><a href="platform.html">Platform</a></td><td>login/home/responsive/shell (search+bell)</td><td>Noti matrix · RBAC guard · session 06:00 · global search</td><td>ทุก UC</td></tr>
+<tr><td>US-LST-01</td><td><a href="list-conventions.html">List Conventions</a></td><td>ทุกหน้า list (10)</td><td>filter/sort/page-size/empty มาตรฐาน</td><td>ทุก UC</td></tr>
 </table>
 
-<h2>Exception coverage (30 เคส) — ผูกกับ story</h2>
+<h2>Exception coverage (30+ เคส) — ผูกกับ story</h2>
 <table>
 <tr><th>กลุ่ม exception</th><th>story ที่ครอบ</th></tr>
-<tr><td>วัตถุดิบขาด warning-not-block + auto PR</td><td>US-PO-01, US-PRD-01, US-PR-01</td></tr>
+<tr><td>วัตถุดิบขาด warning-not-block + auto PR + suggest/material-calc</td><td>US-PO-01, US-PO-07, US-PRD-01, US-PR-01</td></tr>
 <tr><td>ราคา 0 / ราคาติดลบ block</td><td>US-PO-01, US-STK-03/04</td></tr>
 <tr><td>PO cancel ทุก stage + reopen คงเลข</td><td>US-PO-04</td></tr>
 <tr><td>QC ไม่ผ่าน → Rework + feedback บังคับ</td><td>US-QC-02, US-PRD-04</td></tr>
 <tr><td>Hold → raise Sale/Stock → แก้ไข PO → ต่อ</td><td>US-PRD-05, US-PO-05</td></tr>
-<tr><td>Potential Delay overlay</td><td>US-PRD-06</td></tr>
-<tr><td>Follow-up + comment บังคับ</td><td>US-CUS-03</td></tr>
+<tr><td>Potential Delay overlay</td><td>US-PRD-06, US-DSH-PRD</td></tr>
+<tr><td>Follow-up + comment บังคับ</td><td>US-CUS-03, US-DSH-SALE</td></tr>
 <tr><td>Blacklist/Disabled + ปลด = Admin</td><td>US-CUS-04</td></tr>
-<tr><td>Supplier inactive → ตัดจาก BOM cost</td><td>US-SUP-02, US-BOM-02</td></tr>
-<tr><td>BOM ไม่มี active supplier → block override</td><td>US-BOM-02</td></tr>
+<tr><td>Supplier inactive → ตัดจาก BOM cost · price snapshot</td><td>US-SUP-02, US-SUP-03, US-BOM-02</td></tr>
+<tr><td>BOM ไม่มี active supplier → block override</td><td>US-BOM-02, US-PO-07</td></tr>
 <tr><td>BOM cost stale badge</td><td>US-BOM-01</td></tr>
 <tr><td>GR → ปิด PR อัตโนมัติ / partial → PR ใหม่</td><td>US-STK-02, US-PR-03</td></tr>
-<tr><td>Negative stock + บวกกลับ</td><td>US-PRD-02, US-STK-03</td></tr>
-<tr><td>DN Reject/Postpone/reconcile Partially</td><td>US-SHP-02/03</td></tr>
-<tr><td>overdue หลังส่งของ+เลยเครดิต</td><td>US-INV-03</td></tr>
+<tr><td>Negative stock + บวกกลับ FIFO retro</td><td>US-PRD-02, US-STK-03</td></tr>
+<tr><td>มูลค่าสต็อก = last buy price of lot (COGS นอก scope)</td><td>US-STK-05, US-DSH-STK</td></tr>
+<tr><td>DN Reject/Postpone/reconcile Partially</td><td>US-SHP-02/03, US-DSH-SHP</td></tr>
+<tr><td>overdue หลังส่งของ+เลยเครดิต</td><td>US-INV-03, US-DSH-FIN</td></tr>
 <tr><td>void ไม่ลบ (gapless)</td><td>US-INV-04, Deletion §2.8</td></tr>
 <tr><td>Return เกินคงเหลือ lot / comment บังคับ</td><td>US-RET-01</td></tr>
+<tr><td>Dashboard date-filter (event vs state) + refresh คง view</td><td>US-DSH-01, US-DSH-03</td></tr>
+<tr><td>Dashboard เห็นตาม permission Read (ไม่ผูก role) + multi-dept</td><td>US-DSH-04, ทุก US-DSH-&lt;dept&gt;</td></tr>
+<tr><td>Tile drill=0 → empty state; deep link 403 ตามสิทธิ์</td><td>US-DSH-02</td></tr>
+<tr><td>ลบ Sale → bulk reassign ลูกค้าก่อน · ลบ Role → block</td><td>US-SET-01, US-SET-02</td></tr>
+<tr><td>Audit log screen (filter/sort) = trace source เดียว</td><td>US-SET-05, US-TRC-03</td></tr>
+<tr><td>VAT effective date · เลขภาษี 13 หลัก · logo placeholder</td><td>US-SET-03, US-SET-04</td></tr>
+<tr><td>Notification panel (grouping/mark-all-read/9+/ดูทั้งหมด/empty)</td><td>US-PLT-03</td></tr>
+<tr><td>Global search (ค้นตามสิทธิ์ · ≥2 ตัว · deep link)</td><td>US-PLT-04</td></tr>
+<tr><td>Session 06:00 reset + เตือนก่อนหมด</td><td>US-PLT-01</td></tr>
 <tr><td>Notification by Read + ack ราย user</td><td>US-PLT-02</td></tr>
-<tr><td>RBAC guard (Create/Admin/Approve)</td><td>US-PO-06, US-PLT-03, ทุก module</td></tr>
-<tr><td>ไม่โชว์ enum ดิบ + field-level audit</td><td>US-PLT-03, US-TRC-02</td></tr>
+<tr><td>RBAC guard (Create/Admin/Approve)</td><td>US-PO-06, US-PLT-05, ทุก module</td></tr>
+<tr><td>ไม่โชว์ enum ดิบ + field-level audit</td><td>US-PLT-05, US-TRC-03</td></tr>
+<tr><td>List filter/sort/empty + คงตัวกรองเมื่อ refresh</td><td>US-LST-01, US-PO-03</td></tr>
+<tr><td>Home task inbox ตามสิทธิ์ + empty + โหลดล้มเหลว</td><td>US-HOME-01/02/03</td></tr>
 <tr><td>Soft-delete (search เจอ/ไม่โผล่ dropdown/ของเดิมวิ่งต่อ)</td><td><a href="rbac-deletion.html">Deletion (ทุก entity)</a></td></tr>
 </table>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="walkthrough.html">8 Use Cases</a><a href="continuity.html">Cascade</a></div>
-<footer>RTM · Story↔mockup↔journey↔UC + 30-exception coverage · Cross-cutting · ESM = entity-status-map.md</footer>
+<footer>RTM · 69 stories / 207 AC · Story↔mockup↔journey↔UC + 30+ exception coverage · Cross-cutting · ESM = entity-status-map.md</footer>
 </div></body></html>

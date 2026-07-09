@@ -1,0 +1,85 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>List Page Conventions · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;background:#fff}
+th,td{border:1px solid var(--border2);padding:7px 9px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › List Conventions</span></header>
+<div class="wrap">
+
+<h1>Cross-cutting: List/Table Page Conventions <span class="badge b-must">Must</span></h1>
+<p class="sub">มาตรฐาน <b>search / filter fields · sort · default sort · page-size · empty state</b> ต่อทุกหน้า list — เพื่อ Engineer/QA ไม่ต้องเดา · ตัวกรองทุกตัวมาจาก field/สถานะที่นิยามไว้แล้วใน <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map</a> + <a href="glossary.html">Glossary</a> (ไม่มีการประดิษฐ์ field ใหม่)</p>
+
+<div class="note"><b>มาตรฐานร่วมทุกหน้า list:</b> page-size default = 20/หน้า (เลือก 10/20/50) · pagination "แสดง X–Y จาก Z" + เลขหน้า · <b>คงตัวกรอง+หน้า</b>เมื่อ refresh/กลับมา (ไม่รีเซ็ต) · ไม่พบผล = empty state ข้อความเฉพาะหน้า + ปุ่มล้างตัวกรอง · ทุกสถานะแสดงเป็นป้ายไทย (ไม่โชว์ enum ดิบ) · ตัวกรองที่ผู้ใช้ไม่มีสิทธิ์ Read เห็นข้อมูลข้าม module ถูก scope ตามสิทธิ์</div>
+
+<h2>1. ตารางนิยามต่อหน้า list</h2>
+<table>
+<tr><th>หน้า (mockup)</th><th>search</th><th>filter fields</th><th>sort (default)</th><th>empty state</th></tr>
+<tr><td><b>po-list</b> (มีแล้ว)</td><td>เลข PO / ลูกค้า</td><td>ประเภทวันที่ 3 แบบ (สร้าง/จัดส่งจริง/ต้องการรับ) + ช่วง · สถานะ fulfilment · สถานะ billing</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่พบใบสั่งซื้อในช่วงที่เลือก"</td></tr>
+<tr><td><b>customers</b></td><td>ชื่อ / รหัส CUS / เบอร์</td><td>สถานะ 6 แบบ (ผู้สนใจ/ลูกค้าประจำ/ต้องติดตาม/ห่างหาย/บัญชีดำ/ปิดใช้งาน) · Sale ผู้ดูแล</td><td>ชื่อ (ก→ฮ)</td><td>"ไม่พบลูกค้าตามเงื่อนไข"</td></tr>
+<tr><td><b>stock</b></td><td>ชื่อวัตถุดิบ / RM / เลข Lot</td><td>สถานะ Lot (รอตรวจรับ/พร้อมใช้/ระงับ/หมด) · เฉพาะใกล้หมด · เฉพาะติดลบ</td><td>ชื่อวัตถุดิบ (ก→ฮ)</td><td>"ไม่พบวัตถุดิบตามเงื่อนไข"</td></tr>
+<tr><td><b>supplier</b> (ดู <a href="supplier.html">US-SUP-03</a>)</td><td>ชื่อ / รหัส SUP / วัตถุดิบที่ผูก</td><td>สถานะ (Active/Inactive/ทั้งหมด)</td><td>ชื่อ (ก→ฮ)</td><td>"ไม่พบ supplier ตามเงื่อนไข"</td></tr>
+<tr><td><b>purchase-request</b></td><td>เลข PR / วัตถุดิบ</td><td>สถานะ (เปิดคำขอ/รับทราบ/รับบางส่วน/ของเข้าครบ/ยกเลิก) · ที่มา (auto/สร้างตรง)</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่พบคำขอสั่งซื้อ"</td></tr>
+<tr><td><b>invoices</b></td><td>เลข INV / ลูกค้า / เลข PO</td><td>สถานะ billing (ยังไม่วางบิล/รอชำระ/ชำระแล้ว/เกินกำหนด) · ช่วงวันครบกำหนด</td><td>วันครบกำหนด (ใกล้สุดก่อน)</td><td>"ไม่พบใบแจ้งหนี้/ใบกำกับ"</td></tr>
+<tr><td><b>qc</b></td><td>เลข Lot / เลข Batch / เลข PO</td><td>ชนิด (lot ขาเข้า/batch ผลิต) · ผล (รอตรวจ/ผ่าน/ไม่ผ่าน)</td><td>วันที่รอตรวจ (เก่าสุดก่อน = คิว)</td><td>"ไม่มีรายการรอตรวจ"</td></tr>
+<tr><td><b>shipping</b></td><td>เลข SHP / DN / PO / ลูกค้า</td><td>สถานะรอบ (ร่าง/กำลังนำส่ง/ปิดรอบ) · ประเภทรถ/Route</td><td>วันที่รอบ (ใหม่→เก่า)</td><td>"ไม่พบรอบจัดส่ง"</td></tr>
+<tr><td><b>delivery-note</b></td><td>เลข DN / PO / ลูกค้า</td><td>สถานะ DN (กำลังนำส่ง/ส่งถึงแล้ว/ถูกปฏิเสธ/เลื่อน)</td><td>วันที่ส่ง (ใหม่→เก่า)</td><td>"ไม่พบใบส่งของ"</td></tr>
+<tr><td><b>return</b></td><td>เลข Return / Lot / supplier</td><td>สถานะ (ร่าง/ส่งคืนแล้ว)</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่มีใบคืนของ"</td></tr>
+<tr><td><b>settings ▸ audit</b> (ดู <a href="settings.html">US-SET-05</a>)</td><td>คำค้นในเหตุผล/entity</td><td>ผู้ใช้ · module · ช่วงวัน · field</td><td>เวลา (ใหม่→เก่า)</td><td>"ไม่พบเหตุการณ์"</td></tr>
+</table>
+
+<h2>2. User Story + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-LST-01</span> — ตัวกรอง/เรียง/แบ่งหน้า/empty มาตรฐานทุกหน้า list <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้ทุกแผนก, <b>I want</b> ทุกหน้า list มีตัวกรอง เรียง แบ่งหน้า และหน้าว่างที่คาดเดาได้เหมือนกัน, <b>so that</b> หาข้อมูลได้เร็วและใช้งานทุกหน้าแบบเดียวกันโดยไม่ต้องเรียนรู้ใหม่</p>
+<div class="ac happy"><span class="tag">Happy — filter + sort + pagination</span>
+<span class="gwt"><b>Given</b> หน้า invoices มีใบแจ้งหนี้ 45 ใบ</span>
+<span class="gwt"><b>When</b> กรองสถานะ = "เกินกำหนด" + เรียงตามวันครบกำหนด แล้วเปิดหน้า 2</span>
+<span class="gwt"><b>Then</b> แสดงเฉพาะใบเกินกำหนด เรียงใกล้สุดก่อน; pager "แสดง 21–40 จาก N"; page-size default 20 (เลือก 10/20/50 ได้)</span></div>
+<div class="ac edge"><span class="tag">Edge — คงตัวกรองเมื่อ refresh/กลับมา</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ตั้งตัวกรอง customers = สถานะ "ต้องติดตาม" + Sale "สมชาย"</span>
+<span class="gwt"><b>When</b> refresh หน้า หรือกดเข้ารายละเอียดแล้วกดกลับ</span>
+<span class="gwt"><b>Then</b> ตัวกรอง + หน้าปัจจุบัน<b>คงอยู่</b> (ไม่รีเซ็ตกลับหน้า 1/ไม่ล้างตัวกรอง)</span></div>
+<div class="ac err"><span class="tag">Error/Empty — ไม่พบผล</span>
+<span class="gwt"><b>Given</b> ตั้งตัวกรองที่ไม่มีข้อมูลตรง (เช่น qc ผล "ไม่ผ่าน" ที่ไม่มี)</span>
+<span class="gwt"><b>When</b> ใช้ตัวกรอง</span>
+<span class="gwt"><b>Then</b> แสดง empty state เฉพาะหน้า (เช่น "ไม่มีรายการรอตรวจ") + ปุ่ม "ล้างตัวกรอง" — ไม่ error, ไม่ตารางเปล่างงๆ</span></div>
+</div>
+
+<h2>3. Data rules</h2>
+<table><tr><th>รายการ</th><th>กติกา</th></tr>
+<tr><td>page-size</td><td>default 20/หน้า · เลือก 10/20/50 · pager "แสดง X–Y จาก Z" + เลขหน้า</td></tr>
+<tr><td>persistence</td><td>คงตัวกรอง + หน้า เมื่อ refresh/navigate-back</td></tr>
+<tr><td>filter values</td><td>มาจากสถานะ/field ที่นิยามใน entity-status-map + glossary (ไม่ประดิษฐ์ใหม่)</td></tr>
+<tr><td>สิทธิ์</td><td>ผลลัพธ์ scope ตาม Read permission ของ module</td></tr>
+<tr><td>ป้ายสถานะ</td><td>ภาษาไทยเสมอ (ไม่โชว์ enum ดิบ)</td></tr></table>
+
+<h2>4. API / Database (Tech-Lead)</h2>
+<div class="note"><b>API / DB (Tech-Lead):</b> ทุก list endpoint รับ query params (filter/sort/page/page-size) + คืน envelope พร้อม total/pagination มาตรฐาน · scope by Read-bit · ดู api-*.html ต่อ module + <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a></div>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="glossary.html">Glossary →</a><a href="rtm.html">RTM</a></div>
+<footer>US-LST-01 · 3 AC · 10 หน้า list enumerate ครบ · Cross-cutting List Conventions</footer>
+</div></body></html>

@@ -151,6 +151,24 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <span class="gwt"><b>Then</b> ไม่มีตัวเลือกให้ / ถ้าเรียก API ตรงต้องถูกปฏิเสธด้วย 403 + ไม่มีการเปลี่ยนสถานะ</span></div>
 </div>
 
+<div class="story">
+<h3><span class="sid">US-PO-07</span> — Suggest + เช็ควัตถุดิบพอ + ราคา default ตอนสร้าง <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale, <b>I want</b> ระบบ suggest สินค้าและคำนวณว่าวัตถุดิบพอไหมพร้อมเติมราคา default ให้อัตโนมัติ, <b>so that</b> เปิด PO ได้เร็วและเห็นความเสี่ยงวัตถุดิบก่อนยืนยัน</p>
+<div class="note"><b>สูตรเช็ควัตถุดิบพอ (ราย component):</b> ต้องใช้ = Σ ต่อ line (BOM component qty ต่อ 1 หน่วย × จำนวนสั่ง) · <b>เทียบ</b> ยอด available (on_hand ที่ QC ผ่าน) · ถ้ารวมทุก line แล้ว ต้องใช้ > available → "ไม่พอ" ส่วนที่ขาด = ต้องใช้ − available · <b>ราคา default:</b> line ชนิด BOM = ราคาขายของ BOM · line ชนิดวัตถุดิบตรง = default_sell_price ของวัตถุดิบ · ทุกกรณีแก้ได้ (0 ได้)</div>
+<div class="ac happy"><span class="tag">Happy — suggest + auto price</span>
+<span class="gwt"><b>Given</b> Sale พิมพ์ค้นในช่องสินค้า po-create</span>
+<span class="gwt"><b>When</b> เลือก "เซรั่มวิตซี 15% (BOM-01)" จาก dropdown แบบค้นได้ และใส่จำนวน 100</span>
+<span class="gwt"><b>Then</b> บรรทัดเติม ราคา/หน่วย default = ราคาขาย BOM-01 (220) อัตโนมัติ; ถ้าเลือกวัตถุดิบตรงจะเติม default_sell_price ของวัตถุดิบแทน</span></div>
+<div class="ac edge"><span class="tag">Edge — เช็ควัตถุดิบพอ (BOM×qty เทียบ on_hand)</span>
+<span class="gwt"><b>Given</b> BOM-01 ใช้ วิตซี 0.15 กก./หน่วย, on_hand วิตซี (QC ผ่าน) = 10 กก. และสั่ง 100 หน่วย</span>
+<span class="gwt"><b>When</b> ระบบคำนวณตอนเพิ่มบรรทัด</span>
+<span class="gwt"><b>Then</b> ต้องใช้ = 0.15×100 = 15 กก. > 10 → แสดง <b>warning (ไม่บล็อก)</b> "วิตซีอาจไม่พอ: ต้องใช้ 15 มี 10 ขาด 5 กก." + เสนอสร้าง PR เฉพาะส่วนที่ขาด 5 กก. (ดู <a href="continuity.html#c15">C15</a>)</span></div>
+<div class="ac err"><span class="tag">Error — จำนวน ≤ 0 / ไม่มีสูตร BOM ราคา</span>
+<span class="gwt"><b>Given</b> ใส่จำนวนเป็น 0/ติดลบ หรือเลือก BOM ที่ยัง block เพราะไม่มี supplier active (ดู <a href="bom.html">BOM</a>)</span>
+<span class="gwt"><b>When</b> เพิ่มบรรทัด/บันทึก</span>
+<span class="gwt"><b>Then</b> error "จำนวนต้องมากกว่า 0" ที่บรรทัดนั้น; กรณี BOM ยังไม่มีต้นทุน (block) แจ้ง "สูตรนี้ยังคิดราคาทุนไม่ได้ ให้แก้ที่ BOM ก่อน"</span></div>
+</div>
+
 <h2>4. Data rules / สถานะ Entity</h2>
 <table>
 <tr><th>รายการ</th><th>กติกา (อ้าง entity-status-map.md §1.2/§1.3)</th></tr>
@@ -158,12 +176,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>สถานะ Fulfilment</td><td>ร่าง → ยืนยันแล้ว → กำลังผลิต → พร้อมจัดส่ง → กำลังจัดส่ง → ส่งถึงแล้ว · ยกเลิก↔ร่าง</td></tr>
 <tr><td>สถานะ Billing</td><td>ยังไม่วางบิล → วางบิลแล้ว → ชำระแล้ว / เกินกำหนด (ดู Invoice)</td></tr>
 <tr><td>บรรทัดสินค้า</td><td>BOM หรือวัตถุดิบตรง · จำนวน &gt; 0 · ราคา/หน่วย ≥ 0 (0 ได้) · 1 line = 1 PRD (เมื่อรับงาน)</td></tr>
+<tr><td>ราคา default</td><td>line BOM = ราคาขาย BOM · line วัตถุดิบตรง = default_sell_price · แก้ได้เสมอ</td></tr>
+<tr><td>เช็ควัตถุดิบ</td><td>ต้องใช้ = Σ(BOM component qty × จำนวน) เทียบ on_hand (QC ผ่าน) · ขาด = warning ไม่บล็อก + เสนอ PR ส่วนที่ขาด</td></tr>
 <tr><td>บังคับ comment</td><td>ยกเลิก, force override, แก้ไขเคส Hold (trace ราย field)</td></tr>
 <tr><td>สิทธิ์ (RUCDAA)</td><td>สร้าง=C · แก้=U · ยกเลิก/เปิดใหม่=D · force override=Admin (ดู <a href="rbac-deletion.html">RUCDAA</a>)</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-po.html" target="_blank">api-po.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: reopen คงเลข + audit chain, price 0, 2-track status, per-field trace ตอน Hold-edit, gapless numbering</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-po.html" target="_blank">api-po.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: reopen คงเลข + audit chain, price 0, 2-track status, per-field trace ตอน Hold-edit, gapless numbering, material-availability check (BOM explosion × qty vs on-hand), default price by item type</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">
@@ -174,5 +194,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="production.html">การผลิต →</a><a href="invoice.html">Invoice</a><a href="customer.html">ลูกค้า</a></div>
-<footer>US-PO-01..06 · 18 AC (6 happy / 6 edge / 6 error) · Module PO</footer>
+<footer>US-PO-01..07 · 21 AC (7 happy / 7 edge / 7 error) · Module PO</footer>
 </div></body></html>

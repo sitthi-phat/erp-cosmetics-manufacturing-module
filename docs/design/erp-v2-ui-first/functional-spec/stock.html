@@ -35,14 +35,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Module: คลังวัตถุดิบ + Goods Receipt <span class="badge b-must">Tier 1</span></h1>
-<p class="sub">เพิ่มวัตถุดิบ+UOM+เกณฑ์ใกล้หมด (ไม่มี default) · ราคาซื้อ/ขาย 0 ได้ · Goods Receipt multi-line → gen Lot + ปิด PR + <b>บวก stock กลับ/ชดเชยยอดติดลบ</b> · เลข Lot <code>{supplier prefix}{YYMM}</code>, GR <code>GR-{YYYYMMDD}-{NNN}</code></p>
+<p class="sub">เพิ่มวัตถุดิบ+UOM+เกณฑ์ใกล้หมด (ไม่มี default) · ราคาซื้อ/ขาย 0 ได้ · Goods Receipt multi-line → gen Lot + ปิด PR + <b>บวก stock กลับ/ชดเชยยอดติดลบ</b> · <b>มูลค่าสต็อก = คงเหลือ × ราคาซื้อล่าสุดของ Lot</b> · เลข Lot <code>{supplier prefix}{YYMM}</code>, GR <code>GR-{YYYYMMDD}-{NNN}</code></p>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>ฝ่ายคลังจัดการวัตถุดิบ+Lot, รับเข้า (Goods Receipt), และเห็นยอดติดลบจากการผลิตล่วงหน้า · เกณฑ์ "ใกล้หมด" ตั้งต่อวัตถุดิบ (% หรือจำนวน) — <b>ไม่มี default</b> ไม่เตือนจนกว่าตั้งค่า · <b>ไม่มีฟังก์ชันรับเข้าในหน้า Supplier</b> (อยู่ที่นี่)</p>
+<p>ฝ่ายคลังจัดการวัตถุดิบ+Lot, รับเข้า (Goods Receipt), เห็นยอดติดลบจากการผลิตล่วงหน้า และดูมูลค่าสต็อก · เกณฑ์ "ใกล้หมด" ตั้งต่อวัตถุดิบ (% หรือจำนวน) — <b>ไม่มี default</b> ไม่เตือนจนกว่าตั้งค่า · <b>ไม่มีฟังก์ชันรับเข้าในหน้า Supplier</b> (อยู่ที่นี่)</p>
 <p class="sub">โผล่ใน: <a href="walkthrough.html#materials">เส้นวัตถุดิบ (PR-031/GR-007/GR-008)</a></p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">📦</div><div><b>stock.html</b> — รายการวัตถุดิบ+Lot · เพิ่มวัตถุดิบ+UOM+threshold · ยอดติดลบสีแดง + badge<br><a href="../mockups/stock.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">📦</div><div><b>stock.html</b> — รายการวัตถุดิบ+Lot · เพิ่มวัตถุดิบ+UOM+threshold · ยอดติดลบสีแดง + badge · มูลค่าต่อวัตถุดิบ + pagination<br><a href="../mockups/stock.html" target="_blank">เปิด mockup ↗</a></div></div>
 <div class="mock"><div class="thumb">📥</div><div><b>goods-receipt.html</b> — รับเข้า multi-line: supplier→auto lot, จำนวน, ราคาซื้อ, เลขใบรับ, upload, อ้าง PR<br><a href="../mockups/goods-receipt.html" target="_blank">เปิด mockup ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
@@ -115,6 +115,24 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <span class="gwt"><b>Then</b> error "เกณฑ์ต้องเป็นค่าที่ถูกต้อง (จำนวน ≥ 0 หรือ % 0–100)"</span></div>
 </div>
 
+<div class="story">
+<h3><span class="sid">US-STK-05</span> — มูลค่าสต็อก (คงเหลือ × ราคาซื้อล่าสุดของ Lot) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ฝ่ายคลัง/ผู้บริหาร, <b>I want</b> เห็นมูลค่าสต็อกต่อวัตถุดิบและรวมทั้งคลัง, <b>so that</b> รู้เงินจมในคลังโดยไม่ต้องทำ COGS เต็มรูป</p>
+<div class="note"><b>สูตร (ปอนด์ยืนยัน 2026-07-09):</b> มูลค่าต่อ Lot = คงเหลือของ lot × <b>ราคาซื้อล่าสุดของ lot นั้น</b> · มูลค่าต่อวัตถุดิบ = Σ ทุก lot ของวัตถุดิบนั้น · มูลค่ารวมคลัง = Σ ทุกวัตถุดิบ · COGS/valuation FIFO เต็มรูป = <b>นอก scope</b></div>
+<div class="ac happy"><span class="tag">Happy — สูตรต่อ lot</span>
+<span class="gwt"><b>Given</b> กลีเซอรีนมี lot เก่า 10 กก. ราคาซื้อ 40 และ lot ใหม่ 5 กก. ราคาซื้อ 45</span>
+<span class="gwt"><b>When</b> เปิดหน้า stock ดูมูลค่า</span>
+<span class="gwt"><b>Then</b> มูลค่ากลีเซอรีน = (10×40)+(5×45) = 625 บาท (แต่ละ lot ใช้ราคาซื้อล่าสุดของ lot ตัวเอง); มูลค่ารวมคลัง = Σ ทุกวัตถุดิบ (ตรงกับ tile "มูลค่าสต็อก" ใน <a href="dashboard.html">Dashboard</a>)</span></div>
+<div class="ac edge"><span class="tag">Edge — lot ติดลบ / ราคาซื้อ 0</span>
+<span class="gwt"><b>Given</b> แอลกอฮอล์มียอด lot ติดลบ −30 และวัตถุดิบบางตัวราคาซื้อ = 0</span>
+<span class="gwt"><b>When</b> คิดมูลค่า</span>
+<span class="gwt"><b>Then</b> lot ติดลบ<b>หัก(ลด)</b>มูลค่ารวม (−30 × ราคาซื้อล่าสุด); วัตถุดิบราคาซื้อ 0 = มูลค่า 0 (ไม่ error)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ Read Stock</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Stock</span>
+<span class="gwt"><b>When</b> พยายามเปิดหน้า stock / tile มูลค่าสต็อก</span>
+<span class="gwt"><b>Then</b> guard 403 (มูลค่าสต็อกเป็นข้อมูลไวต่อธุรกิจ — เห็นตามสิทธิ์ Read Stock เท่านั้น)</span></div>
+</div>
+
 <h2>4. Data rules / สถานะ Entity</h2>
 <table>
 <tr><th>Entity</th><th>กติกา (entity-status-map §1.6/§1.8)</th></tr>
@@ -123,17 +141,18 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>ราคา</td><td>ซื้อ/ขาย แยก field · 0 ได้ · ติดลบไม่ได้</td></tr>
 <tr><td>เกณฑ์ใกล้หมด</td><td>ต่อวัตถุดิบ · % หรือจำนวน · <b>ไม่มี default</b></td></tr>
 <tr><td>Negative stock</td><td>ผลิตตัดติดลบได้ · แสดงแดง+badge · GR บวกกลับชดเชย + FIFO retro-link + trace</td></tr>
+<tr><td>มูลค่าสต็อก</td><td>Σ ต่อ lot (คงเหลือ × ราคาซื้อล่าสุดของ lot) · lot ติดลบหักลบ · COGS นอก scope</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-stock.html" target="_blank">api-stock.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: negative on-hand + retro-compensation on GR (FIFO back-allocate), FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-stock.html" target="_blank">api-stock.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: negative on-hand + retro-compensation on GR (FIFO back-allocate), FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix, stock valuation = Σ(on_hand per lot × last buy price of lot)</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">
 <li>ผลิตตัด stock ติดลบ (<a href="continuity.html#c16">C16</a>) · GR รับเข้า gen Lot + ปิด PR + บวกกลับ (<a href="continuity.html#c17">C17</a>)</li>
-<li>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (<a href="continuity.html#c18">C18</a>) → <a href="qc.html">QC</a> / <a href="return.html">Return</a></li>
+<li>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (<a href="continuity.html#c18">C18</a>) → <a href="qc.html">QC</a> / <a href="return.html">Return</a> · มูลค่าสต็อก → <a href="dashboard.html">Dashboard tile</a> (source เดียว)</li>
 </ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="purchase-request.html">PR →</a><a href="production.html">การผลิต</a><a href="supplier.html">Supplier</a></div>
-<footer>US-STK-01..04 · 12 AC (happy/edge/error) · Module คลัง + Goods Receipt</footer>
+<footer>US-STK-01..05 · 15 AC (happy/edge/error) · Module คลัง + Goods Receipt</footer>
 </div></body></html>

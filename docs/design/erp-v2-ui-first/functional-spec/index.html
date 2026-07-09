@@ -28,36 +28,37 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Functional Spec — ESSENCE Hub System</h1>
-<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · เขียนโดย BA · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · เอกสารนี้ = requirement ที่ใช้พัฒนา · Tech-Lead เติม API/DB + Architecture (ลิงก์แล้ว)</p>
+<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · เขียนโดย BA · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · เอกสารนี้ = requirement ที่ใช้พัฒนา · Tech-Lead เติม API/DB + Architecture (ลิงก์แล้ว) · <b>Depth-fix รอบ Gate 2</b>: ขยาย Dashboard 7 แผนก + Settings 5 หน้าจอ + Home + พฤติกรรมย่อย (search/noti/suggest/list filter)</p>
 
-<div class="note"><b>วิธีอ่าน:</b> แต่ละหน้า module มี (ก) ภาพรวม+use case (ข) ลิงก์ไป mockup จริง (ค) User Stories + Acceptance Criteria (Given/When/Then, ≥3 ต่อ story: happy/edge/error) (ง) Data rules/สถานะ entity (จ) <b>ลิงก์ไป API/DB ของ Tech-Lead (ต่อ module)</b> (ฉ) ความต่อเนื่องข้าม module · <b>Source of truth เรื่องสถานะ = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> · รวม ~47 stories / ~141 AC</p>
+<div class="note"><b>วิธีอ่าน:</b> แต่ละหน้า module มี (ก) ภาพรวม+use case (ข) ลิงก์ไป mockup จริง (ค) User Stories + Acceptance Criteria (Given/When/Then, ≥3 ต่อ story: happy/edge/error) (ง) Data rules/สถานะ entity (จ) <b>ลิงก์ไป API/DB ของ Tech-Lead (ต่อ module)</b> (ฉ) ความต่อเนื่องข้าม module · <b>Source of truth เรื่องสถานะ = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> · รวม <b>69 stories / 207 AC</b></p>
 
 <h2>โครงสร้าง Story ID</h2>
-<p class="sub">รหัส Story = <code>US-&lt;MOD&gt;-NN</code> (เช่น <code>US-PO-01</code>) · รหัส AC = <code>&lt;StoryID&gt;-A/B/C</code> · Priority (<span class="pill">Must</span>/<span class="pill">Should</span>/<span class="pill">Could</span>) · ทุก AC ครอบ happy + edge + error</p>
+<p class="sub">รหัส Story = <code>US-&lt;MOD&gt;-NN</code> (เช่น <code>US-PO-01</code>, Dashboard รายแผนก = <code>US-DSH-SALE</code>) · รหัส AC = <code>&lt;StoryID&gt;-A/B/C</code> · Priority (<span class="pill">Must</span>/<span class="pill">Should</span>/<span class="pill">Could</span>) · ทุก AC ครอบ happy + edge + error</p>
 
-<h2>โมดูล (16 กลุ่ม)</h2>
+<h2>โมดูล (16)</h2>
 <div class="tocgrid">
-  <a class="mod" href="po.html"><div class="mt">PO — ใบสั่งซื้อ <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-PO-01..06 · สร้าง/ยืนยัน/ยกเลิก+reopen/แก้ไข Hold/2 ราง</div></a>
+  <a class="mod" href="home.html"><div class="mt">Home / งานที่รอ <span class="done">พร้อม</span></div><div class="md">US-HOME-01..03 · task inbox ตามสิทธิ์ · quick actions · onboarding · empty</div></a>
+  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 แผนก (29 tile) <span class="done">พร้อม</span></div><div class="md">US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM · สูตร/event-state/drill/permission · date-filter</div></a>
+  <a class="mod" href="po.html"><div class="mt">PO — ใบสั่งซื้อ <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-PO-01..07 · สร้าง/ยืนยัน/ยกเลิก+reopen/Hold/2 ราง/suggest+material-calc</div></a>
   <a class="mod" href="production.html"><div class="mt">การผลิต — PRD/Batch <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-PRD-01..06 · รอรับงาน→รับงาน→เริ่มผลิต→QC · negative stock</div></a>
   <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-INV-01..04 · ออกตั้งแต่ Confirmed · VAT effective date · overdue</div></a>
-  <a class="mod" href="stock.html"><div class="mt">คลัง + Goods Receipt <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-STK-01..04 · GR multi-line · negative stock · ปิด PR</div></a>
+  <a class="mod" href="stock.html"><div class="mt">คลัง + Goods Receipt <span class="done">พร้อม</span></div><div class="md">Tier 1 · US-STK-01..05 · GR multi-line · negative stock · มูลค่าสต็อก=last buy price</div></a>
   <a class="mod" href="customer.html"><div class="mt">ลูกค้า (6 สถานะ) <span class="done">พร้อม</span></div><div class="md">US-CUS-01..04 · Follow-up · contact · reassign</div></a>
   <a class="mod" href="purchase-request.html"><div class="mt">คำขอสั่งซื้อ (PR) <span class="done">พร้อม</span></div><div class="md">US-PR-01..03 · auto/สร้างตรง · partial→PR ใหม่</div></a>
-  <a class="mod" href="supplier.html"><div class="mt">Supplier <span class="done">พร้อม</span></div><div class="md">US-SUP-01..02 · active/inactive · price matrix</div></a>
+  <a class="mod" href="supplier.html"><div class="mt">Supplier <span class="done">พร้อม</span></div><div class="md">US-SUP-01..03 · active/inactive · price matrix (แก้/snapshot) · filter</div></a>
   <a class="mod" href="bom.html"><div class="mt">BOM สูตรการผลิต <span class="done">พร้อม</span></div><div class="md">US-BOM-01..02 · max active supplier + snapshot + badge</div></a>
   <a class="mod" href="qc.html"><div class="mt">QC <span class="done">พร้อม</span></div><div class="md">US-QC-01..03 · ตรวจ Batch/Lot · rework+feedback</div></a>
   <a class="mod" href="shipping.html"><div class="mt">จัดส่ง (Shipment/DN) <span class="done">พร้อม</span></div><div class="md">US-SHP-01..03 · 2 ชั้น · DN=1 PO · reconcile</div></a>
   <a class="mod" href="return.html"><div class="mt">คืนของ (Return) <span class="done">พร้อม</span></div><div class="md">US-RET-01 · lot→supplier→ตัด stock+comment</div></a>
-  <a class="mod" href="traceability.html"><div class="mt">Traceability <span class="done">พร้อม</span></div><div class="md">US-TRC-01..02 · field-level audit · archive</div></a>
-  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 แผนก <span class="done">พร้อม</span></div><div class="md">US-DSH-01..02 · auto-15s · drill-down</div></a>
-  <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ) <span class="done">พร้อม</span></div><div class="md">US-SET-01..02 · RUCDAA · VAT</div></a>
-  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti <span class="done">พร้อม</span></div><div class="md">US-PLT-01..03 · login · notification · responsive</div></a>
-  <a class="mod" href="continuity.html"><div class="mt">ความต่อเนื่อง (Cascade P) <span class="done">พร้อม</span></div><div class="md">Cascade 17 + Notification matrix (epic P)</div></a>
+  <a class="mod" href="traceability.html"><div class="mt">Traceability <span class="done">พร้อม</span></div><div class="md">US-TRC-01..03 · entity/field ค้นได้ · genealogy node · audit table filter/sort</div></a>
+  <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ) <span class="done">พร้อม</span></div><div class="md">US-SET-01..05 · RUCDAA+Admin · user+bulk reassign · VAT · บริษัท · audit</div></a>
+  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti <span class="done">พร้อม</span></div><div class="md">US-PLT-01..05 · login+session warning · noti panel · global search · responsive</div></a>
 </div>
 
 <h2>หน้า Cross-cutting</h2>
 <div class="tocgrid">
-  <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification <span class="done">พร้อม</span></div><div class="md">17 แถว + noti matrix</div></a>
+  <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification <span class="done">พร้อม</span></div><div class="md">17 แถว + noti matrix (epic P)</div></a>
+  <a class="mod" href="list-conventions.html"><div class="mt">List Page Conventions <span class="done">พร้อม</span></div><div class="md">US-LST-01 · filter/sort/page-size/empty ต่อ 10 หน้า list</div></a>
   <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy <span class="done">พร้อม</span></div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (ปอนด์ยืนยันครบ)</div></a>
   <a class="mod" href="glossary.html"><div class="mt">Glossary + Doc formats <span class="done">พร้อม</span></div><div class="md">ป้ายสถานะไทย · เลขเอกสาร</div></a>
   <a class="mod" href="walkthrough.html"><div class="mt">8 Use-Case Walkthrough <span class="done">พร้อม</span></div><div class="md">acceptance script + เส้นวัตถุดิบ</div></a>
@@ -75,7 +76,8 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <table>
 <tr><th>เอกสาร</th><th>ใช้เป็น</th></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></td><td>ความจริงหลัก entity/สถานะ/cascade/PRD/Batch/negative-stock</td></tr>
-<tr><td><a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys.md</a></td><td>state machine + notification/deep-link</td></tr>
+<tr><td><a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit.md</a></td><td>Depth Standard + Dashboard 7-dept×29-tile template (สั่งงาน depth-fix)</td></tr>
+<tr><td><a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys.md</a></td><td>state machine + notification/deep-link + §12 dashboard</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/mock-data-spec.md">mock-data-spec.md</a> / <a href="../../../requirements/erp-v2-ui-first/mock-data-journeys.md">mock-data-journeys.md</a></td><td>dataset กลาง + 8 use case</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/deletion-policy.md">deletion-policy.md</a></td><td>นโยบาย soft-delete (ปอนด์ยืนยันครบ)</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/brief.md">brief.md</a></td><td>Business Key Value + scope + DoD</td></tr>
@@ -83,5 +85,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td><a href="../architecture/index.html">architecture/</a> · <a href="../../../adr/">docs/adr/</a></td><td>Tech-Lead: API + DB schema + service/system diagram + 9 ADRs</td></tr>
 </table>
 
-<footer>ESSENCE Hub System · Functional Spec · Stage 2 · BA · 2026-07-09 · 22 ไฟล์ (index + 16 module + 5 cross-cutting) · API/DB ลิงก์ครบทุก module · ทุกหน้า <span class="done">พร้อม</span> ให้ PO review</footer>
+<footer>ESSENCE Hub System · Functional Spec · Stage 2 (depth-fix) · BA · 2026-07-09 · 23 ไฟล์ (index + 16 module + 6 cross-cutting) · 69 stories / 207 AC · API/DB ลิงก์ครบทุก module · ทุกหน้า <span class="done">พร้อม</span> ให้ PO review</footer>
 </div></body></html>

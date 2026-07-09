@@ -10,7 +10,8 @@ header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-grad
 header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
 h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
 h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
-.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-could{color:#204A9E;background:#E8F0FE;border-color:#BBD1F8}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
 th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
 .story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
@@ -31,62 +32,123 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Settings</span></header>
 <div class="wrap">
 
-<h1>Module: Settings (5 หน้าจอ) <span class="badge b-should">Could</span></h1>
-<p class="sub">1) Role &amp; สิทธิ์ (+สร้าง role) 2) ผู้ใช้ (+สร้าง user) 3) Config VAT + effective date 4) ข้อมูลบริษัท 5) Audit log · RUCDAA 6 ระดับ · role ไม่จำกัด</p>
+<h1>Module: Settings (5 หน้าจอ) <span class="badge b-must">Must</span></h1>
+<p class="sub">5 แท็บ: 1) Role &amp; สิทธิ์ (RUCDAA + Admin bit) 2) ผู้ใช้ (สร้าง/ผูก Google/เปิด-ปิด/เปลี่ยน role/ลบ→bulk reassign) 3) Config VAT + effective date 4) ข้อมูลบริษัท 5) Audit log · 1 story ต่อหน้าจอ</p>
+
+<div class="note"><b>ที่มา:</b> deletion กติกา (ปอนด์ยืนยัน) = <a href="rbac-deletion.html">rbac-deletion.html</a> · ลบ Sale ต้อง bulk-reassign ลูกค้าก่อน; ลบ Role บล็อกจนย้าย user ออกหมด · RUCDAA 6 ระดับต่อ module = Read/Update/Create/Delete/Approve/Admin · VAT effective ยึด invoice date</div>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>Admin ตั้งค่าสิทธิ์ราย module (RUCDAA), จัดการ user ใต้ role, ตั้ง VAT + effective date, กรอกข้อมูลบริษัท (ใช้ในใบกำกับภาษี), ดู audit log</p>
+<p>ผู้มีสิทธิ์ Admin/Read Settings ตั้งค่าสิทธิ์ราย module (RUCDAA), จัดการ user ใต้ role (สร้าง/ผูก Google/เปิด-ปิด/ย้าย role/ลบพร้อมย้ายงาน), ตั้ง VAT + effective date, กรอกข้อมูลบริษัท (ใช้บนใบกำกับภาษี), และดู audit log ทั้งระบบ</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">⚙️</div><div><b>settings.html</b> — 5 แท็บจริง · <a href="../mockups/settings.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">⚙️</div><div><b>settings.html</b> — 5 แท็บจริง: Role / ผู้ใช้ / VAT / ข้อมูลบริษัท / Audit log · <a href="../mockups/settings.html" target="_blank">เปิด ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
 <div class="story">
-<h3><span class="sid">US-SET-01</span> — Role &amp; สิทธิ์ (RUCDAA) + สร้าง role <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Admin, <b>I want</b> สร้าง role และตั้งสิทธิ์ RUCDAA ราย module, <b>so that</b> ควบคุมการเข้าถึงได้ยืดหยุ่น</p>
+<h3><span class="sid">US-SET-01</span> — หน้าจอ 1: Role &amp; สิทธิ์ (RUCDAA + Admin bit) <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ดูแลระบบ (Admin), <b>I want</b> สร้าง role และตั้งสิทธิ์ RUCDAA 6 ระดับต่อ module รวม Admin bit, <b>so that</b> ควบคุมการเข้าถึงได้ยืดหยุ่นโดยไม่ต้องแก้โค้ด</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> Admin อยู่แท็บ Role</span>
-<span class="gwt"><b>When</b> สร้าง role "หัวหน้าคลัง" ตั้ง Stock=R,U,C / Production=R</span>
-<span class="gwt"><b>Then</b> บันทึก role + matrix 6 ระดับ (R/U/C/D/Approve/Admin) ราย module</span></div>
-<div class="ac edge"><span class="tag">Edge — Read = เห็น + รับ noti</span>
-<span class="gwt"><b>Given</b> role มี Read ของ module Production</span>
-<span class="gwt"><b>When</b> มีงานส่งเข้า Production</span>
-<span class="gwt"><b>Then</b> ผู้ใช้ role นี้เห็น module + ได้รับ notification ของ module นั้น (ดู <a href="platform.html">Notification</a>)</span></div>
+<span class="gwt"><b>Given</b> Admin อยู่แท็บ Role กด "สร้าง role"</span>
+<span class="gwt"><b>When</b> ตั้ง role "หัวหน้าคลัง" — Stock = R,U,C ; Production = R ; ที่เหลือว่าง แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> บันทึก role พร้อม matrix 6 ช่อง (R/U/C/D/Approve/<b>Admin</b>) ต่อทุก module; ผู้ใช้ role นี้เห็น Stock+Production, สร้าง/แก้ Stock ได้, แต่ลบ/approve ไม่ได้</span></div>
+<div class="ac edge"><span class="tag">Edge — Admin bit = force override</span>
+<span class="gwt"><b>Given</b> role ที่ติ๊ก Admin bit ของ module PO</span>
+<span class="gwt"><b>When</b> ผู้ใช้ role นั้นเปิด po-detail</span>
+<span class="gwt"><b>Then</b> เห็นตัวเลือก "เปลี่ยนสถานะข้ามลำดับ (force override)" (ดู <a href="po.html">US-PO-06</a>); role ที่ไม่มี Admin bit ไม่เห็นตัวเลือกนี้</span></div>
 <div class="ac err"><span class="tag">Error — ลบ role ที่มี user</span>
-<span class="gwt"><b>Given</b> role มี user ผูกอยู่</span>
-<span class="gwt"><b>When</b> พยายามลบ role</span>
-<span class="gwt"><b>Then</b> บล็อก + เสนอ "ย้าย user ไป role อื่นก่อน" (ดู <a href="rbac-deletion.html#role">Deletion §2.7</a>)</span></div>
+<span class="gwt"><b>Given</b> role มี user ผูกอยู่ ≥ 1 คน</span>
+<span class="gwt"><b>When</b> กดลบ role</span>
+<span class="gwt"><b>Then</b> บล็อก + ข้อความ "ต้องย้าย user ออกจาก role นี้ให้หมดก่อนลบ" (no force-migrate) — ดู <a href="rbac-deletion.html#role">Deletion Role</a></span></div>
 </div>
 
 <div class="story">
-<h3><span class="sid">US-SET-02</span> — Config VAT + effective date <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Admin, <b>I want</b> ตั้ง VAT พร้อมวันที่มีผล, <b>so that</b> ใบกำกับภาษีคิดอัตราถูกตามช่วงเวลา</p>
+<h3><span class="sid">US-SET-02</span> — หน้าจอ 2: จัดการผู้ใช้ (สร้าง/Google/เปิด-ปิด/เปลี่ยน role/ลบ→bulk reassign) <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Admin, <b>I want</b> สร้าง user ผูกบัญชี Google เปิด-ปิดการใช้งาน เปลี่ยน role และลบ user โดยบังคับย้ายงาน/ลูกค้าก่อน, <b>so that</b> จัดการบัญชีได้ครบโดยไม่มีลูกค้า/งานตกค้างไม่มีเจ้าภาพ</p>
+<div class="ac happy"><span class="tag">Happy — สร้าง + ผูก Google + เปลี่ยน role</span>
+<span class="gwt"><b>Given</b> Admin อยู่แท็บ "ผู้ใช้" กด "เพิ่มผู้ใช้"</span>
+<span class="gwt"><b>When</b> กรอกชื่อ/อีเมล เลือก role "พนักงานขาย" ผูกบัญชี Google และตั้ง Active</span>
+<span class="gwt"><b>Then</b> สร้าง user ล็อกอินได้ทั้ง local + Google; แถวผู้ใช้แสดง role + สถานะ Active; เปลี่ยน role/สลับ Active↔ปิดใช้งานได้จากแถวนั้น</span></div>
+<div class="ac edge"><span class="tag">Edge — ลบ Sale ต้อง bulk reassign ลูกค้าก่อน (ปอนด์ยืนยัน)</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ที่เป็น Sale ดูแลลูกค้า 12 ราย และมี PO ค้าง</span>
+<span class="gwt"><b>When</b> Admin กด "ลบผู้ใช้"</span>
+<span class="gwt"><b>Then</b> ระบบเปิดหน้าจอ <b>bulk reassign</b> บังคับเลือก Sale ปลายทางรับช่วงลูกค้าทั้ง 12 ราย; ต้องเลือกให้ครบก่อน จึงจะกด mark ลบได้; PO เดิมเดินต่อ, ห้ามสร้าง PO ใหม่ในนามผู้ถูกลบ — ดู <a href="rbac-deletion.html#sale">Deletion Sale</a></span></div>
+<div class="ac err"><span class="tag">Error — ยืนยันลบโดยยังไม่ reassign / ไม่มีสิทธิ์ D</span>
+<span class="gwt"><b>Given</b> ยังไม่เลือกผู้รับช่วงครบ หรือผู้ใช้ปัจจุบันไม่มีสิทธิ์ Delete/Admin ของ Settings</span>
+<span class="gwt"><b>When</b> กดยืนยันลบ</span>
+<span class="gwt"><b>Then</b> ไม่ลบ + error "ต้องมอบหมายลูกค้าทั้งหมดให้ผู้รับช่วงก่อน" หรือ "ไม่มีสิทธิ์ลบผู้ใช้"</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-SET-03</span> — หน้าจอ 3: Config VAT + effective date + ประวัติ <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Admin, <b>I want</b> ตั้งอัตรา VAT พร้อมวันที่มีผลและเก็บประวัติ, <b>so that</b> ใบกำกับภาษีคิดอัตราถูกตามช่วงเวลาที่ออกใบ</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> แท็บ Config VAT</span>
-<span class="gwt"><b>When</b> ตั้ง VAT 7% effective 01/01/2569</span>
-<span class="gwt"><b>Then</b> บันทึก + เก็บประวัติ; ใบกำกับภาษียึดอัตราตาม invoice date (ดู <a href="invoice.html">US-INV-02</a>)</span></div>
-<div class="ac edge"><span class="tag">Edge — ข้อมูลบริษัท (ใบกำกับ)</span>
-<span class="gwt"><b>Given</b> แท็บข้อมูลบริษัท</span>
-<span class="gwt"><b>When</b> กรอกชื่อ/เลขผู้เสียภาษี/ที่อยู่/logo</span>
-<span class="gwt"><b>Then</b> ข้อมูลนี้ปรากฏบน invoice-print</span></div>
-<div class="ac err"><span class="tag">Error — effective date ทับซ้อน/ว่าง</span>
-<span class="gwt"><b>Given</b> effective date ว่างหรือทับช่วงเดิม</span>
+<span class="gwt"><b>Given</b> แท็บ Config VAT ปัจจุบัน 7%</span>
+<span class="gwt"><b>When</b> เพิ่มรายการ VAT 7% effective 01/01/2569 แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> บันทึก + เก็บประวัติเป็นรายการ (อัตรา/วันมีผล/ผู้ตั้ง); ใบกำกับภาษียึดอัตราตาม <b>invoice date</b> (ดู <a href="invoice.html">US-INV-02</a>)</span></div>
+<div class="ac edge"><span class="tag">Edge — หลายรายการตามช่วงเวลา</span>
+<span class="gwt"><b>Given</b> มี VAT 7% (มีผล 2565) และ 7% (มีผล 2569)</span>
+<span class="gwt"><b>When</b> ออกใบกำกับลงวันที่ในปี 2568</span>
+<span class="gwt"><b>Then</b> ระบบเลือกอัตราที่ effective ครอบวันที่นั้น (รายการปี 2565); การเปลี่ยน VAT ใหม่<b>ไม่กระทบ</b>ใบเก่า</span></div>
+<div class="ac err"><span class="tag">Error — effective date ว่าง/ทับซ้อน</span>
+<span class="gwt"><b>Given</b> effective date เว้นว่าง หรือซ้ำวันที่มีผลกับรายการเดิม</span>
 <span class="gwt"><b>When</b> บันทึก</span>
-<span class="gwt"><b>Then</b> error "ต้องระบุวันที่มีผลที่ไม่ทับซ้อน"</span></div>
+<span class="gwt"><b>Then</b> error "ต้องระบุวันที่มีผลที่ไม่ทับซ้อนกับรายการเดิม" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-SET-04</span> — หน้าจอ 4: ข้อมูลบริษัท (ใช้บนใบกำกับ) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> Admin, <b>I want</b> กรอกข้อมูลบริษัทที่ต้องปรากฏบนใบกำกับภาษี, <b>so that</b> เอกสารออกถูกต้องตามสรรพากรและมีโลโก้บริษัท</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> แท็บข้อมูลบริษัท</span>
+<span class="gwt"><b>When</b> กรอกชื่อบริษัท / เลขผู้เสียภาษี 13 หลัก / ที่อยู่ / เบอร์ / อีเมล และอัปโหลด logo แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> บันทึก; ข้อมูลชุดนี้ปรากฏบน invoice-print (หัวใบกำกับภาษี) — ดู <a href="invoice.html">Invoice</a></span></div>
+<div class="ac edge"><span class="tag">Edge — logo placeholder</span>
+<span class="gwt"><b>Given</b> ยังไม่อัปโหลด logo</span>
+<span class="gwt"><b>When</b> ดูใบกำกับ</span>
+<span class="gwt"><b>Then</b> แสดง placeholder logo (ตัว "E"/กล่องว่าง) แทน — ไม่ error, ยังพิมพ์ใบได้</span></div>
+<div class="ac err"><span class="tag">Error — เลขผู้เสียภาษีผิดรูปแบบ</span>
+<span class="gwt"><b>Given</b> กรอกเลขผู้เสียภาษีไม่ครบ 13 หลัก หรือมีตัวอักษร</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "เลขประจำตัวผู้เสียภาษีต้องเป็นตัวเลข 13 หลัก" — ไม่บันทึก</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-SET-05</span> — หน้าจอ 5: Audit log (คอลัมน์/filter/search + สัมพันธ์ trace) <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> Admin/ผู้ตรวจสอบ, <b>I want</b> ดู audit log การเปลี่ยนแปลงทั้งระบบพร้อมคอลัมน์และตัวกรอง, <b>so that</b> ตรวจสอบได้ว่าใครทำอะไรเมื่อไหร่โดยไม่ต้องไปหลายหน้า</p>
+<div class="ac happy"><span class="tag">Happy — คอลัมน์ + filter + search</span>
+<span class="gwt"><b>Given</b> แท็บ Audit log</span>
+<span class="gwt"><b>When</b> กรองด้วย ผู้ใช้ = "สมหญิง" + module = "ลูกค้า" + ช่วงวันที่ + พิมพ์คำค้น "Follow-up"</span>
+<span class="gwt"><b>Then</b> แสดงตารางคอลัมน์ (เวลา / ผู้ทำ / module / entity / field / จาก→เป็น / เหตุผล) + pagination; sort ได้ตามเวลา (ใหม่→เก่า default)</span></div>
+<div class="ac edge"><span class="tag">Edge — ความสัมพันธ์กับ Traceability</span>
+<span class="gwt"><b>Given</b> audit log ใน Settings เป็น "มุมมองรวมทั้งระบบ" ของ field-level audit เดียวกับ <a href="traceability.html">Traceability</a></span>
+<span class="gwt"><b>When</b> คลิกแถว audit</span>
+<span class="gwt"><b>Then</b> deep link ไปหน้า trace ของ entity นั้น (แหล่งข้อมูลเดียวกัน ไม่ซ้ำซ้อน); retention online 1 ปี, purge/archive = Super User</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ดู audit</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Settings/Admin</span>
+<span class="gwt"><b>When</b> พยายามเปิดแท็บ Audit log หรือ URL ตรง</span>
+<span class="gwt"><b>Then</b> guard 403 / ไม่เห็นแท็บ (audit = ข้อมูลไวต่อความปลอดภัย)</span></div>
 </div>
 
 <h2>4. Data rules</h2>
-<table><tr><th>5 หน้าจอ</th><td>Role+สิทธิ์(สร้าง role) / ผู้ใช้(สร้าง user) / VAT+effective date+ประวัติ / ข้อมูลบริษัท / Audit log</td></tr>
-<tr><td>RUCDAA</td><td>Read/Update/Create/Delete/Approve/Admin ราย module · role ไม่จำกัด · user ใต้ role</td></tr>
-<tr><td>auth (NFR)</td><td>local account + Google Login · session 24 ชม. + reset 06:00 (ดู TL)</td></tr></table>
+<table>
+<tr><th>รายการ</th><th>กติกา</th></tr>
+<tr><td>5 หน้าจอ</td><td>Role+สิทธิ์(สร้าง role) / ผู้ใช้(สร้าง+Google+เปิด-ปิด+เปลี่ยน role+ลบ→bulk reassign) / VAT+effective+ประวัติ / ข้อมูลบริษัท / Audit log</td></tr>
+<tr><td>RUCDAA</td><td>Read/Update/Create/Delete/Approve/Admin ต่อ module · role ไม่จำกัดจำนวน · Admin bit = force override</td></tr>
+<tr><td>ลบผู้ใช้ (Sale)</td><td>บังคับ bulk reassign ลูกค้าทั้งหมดให้ผู้รับช่วงก่อน จึง mark ลบได้ · PO เดิมเดินต่อ ห้ามสร้างใหม่ในนามผู้ถูกลบ</td></tr>
+<tr><td>ลบ role</td><td>บล็อกจนย้าย user ออกหมด (no force-migrate)</td></tr>
+<tr><td>VAT</td><td>อัตรา + effective date + ประวัติ · ยึด invoice date · เปลี่ยนใหม่ไม่กระทบใบเก่า</td></tr>
+<tr><td>ข้อมูลบริษัท</td><td>ชื่อ/เลขภาษี 13 หลัก/ที่อยู่/เบอร์/อีเมล/logo → invoice-print</td></tr>
+<tr><td>Audit log</td><td>field-level เดียวกับ Traceability · filter (ผู้ใช้/module/ช่วงวัน) + search + sort เวลา · retention 1 ปี · Read Settings เท่านั้น</td></tr>
+<tr><td>auth (NFR)</td><td>local + Google Login · session 24 ชม. + reset 06:00 (ดู TL)</td></tr>
+</table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-settings.html" target="_blank">api-settings.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — RBAC model (RUCDAA per module), role/user, VAT effective-date history, company profile, auth (local+Google), session policy</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-settings.html" target="_blank">api-settings.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — RBAC (RUCDAA + Admin bit per module), role/user CRUD + Google link, user-delete guard + customer bulk-reassign, VAT effective-date history, company profile, audit-log query (filter/search/sort/pagination) sharing the field-audit table, auth (local+Google) + session policy</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>สิทธิ์ Read → เห็น module + noti (<a href="platform.html">Noti</a>) · VAT → <a href="invoice.html">Invoice</a> · company → invoice-print</li></ul>
+<ul class="sub"><li>สิทธิ์ Read → เห็น module + dashboard แผนก + noti (<a href="dashboard.html">Dashboard</a> / <a href="platform.html">Noti</a>) · VAT → <a href="invoice.html">Invoice</a> · ข้อมูลบริษัท → invoice-print · Audit log ↔ <a href="traceability.html">Traceability</a> (source เดียว) · ลบ Sale/Role → <a href="rbac-deletion.html">Deletion Policy</a></li></ul>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="rbac-deletion.html">RUCDAA + Deletion →</a><a href="invoice.html">Invoice</a></div>
-<footer>US-SET-01..02 · 6 AC · Module Settings</footer>
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="rbac-deletion.html">RUCDAA + Deletion →</a><a href="traceability.html">Traceability</a><a href="invoice.html">Invoice</a></div>
+<footer>US-SET-01..05 · 15 AC (5 หน้าจอ × happy/edge/error) · Module Settings</footer>
 </div></body></html>

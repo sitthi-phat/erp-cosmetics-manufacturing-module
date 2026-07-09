@@ -31,20 +31,20 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Supplier</span></header>
 <div class="wrap">
 
-<h1>Module: Supplier <span class="badge b-should">Should</span></h1>
+<h1>Module: Supplier <span class="badge b-must">Should</span></h1>
 <p class="sub">เพิ่ม/แก้ + ผูกวัตถุดิบรายตัว + ราคารับซื้อ (price matrix supplier×วัตถุดิบ) + Active/Inactive · <b>ไม่มีฟังก์ชันรับเข้าคลังในหน้านี้</b> · เลข <code>SUP-{NN}</code> · Lot prefix ต่อ supplier</p>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>ฝ่ายจัดซื้อ/คลังจัดการ supplier · ราคารับซื้อต่อ supplier ต่อวัตถุดิบ (feed BOM cost = max active supplier) · inactive → ถูกตัดจากการคิด BOM cost + ห้ามซื้อใหม่</p>
+<p>ฝ่ายจัดซื้อ/คลังจัดการ supplier · ราคารับซื้อต่อ supplier ต่อวัตถุดิบ (feed BOM cost = max active supplier) · inactive → ถูกตัดจากการคิด BOM cost + ห้ามซื้อใหม่ · การเปลี่ยนราคา/สถานะ<b>ไม่กระทบ PO/BOM เดิมที่ snapshot ราคาไว้แล้ว</b></p>
 <p class="sub">Dataset: SUP-01/02 Active, SUP-03 อโรมา <b>Inactive</b> (มีน้ำหอม → BOM-02 ต้อง override)</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">🏢</div><div><b>supplier.html</b> — รายการ + create/edit mode + Active/Inactive + price matrix + search วัตถุดิบ · <a href="../mockups/supplier.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">🏢</div><div><b>supplier.html</b> — รายการ (full-width) + search/filter + create/edit mode + Active/Inactive + price matrix + search วัตถุดิบ · <a href="../mockups/supplier.html" target="_blank">เปิด ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
 <div class="story">
-<h3><span class="sid">US-SUP-01</span> — เพิ่ม/แก้ supplier + price matrix <span class="badge b-should">Must</span></h3>
+<h3><span class="sid">US-SUP-01</span> — เพิ่ม/แก้ supplier + price matrix <span class="badge b-must">Must</span></h3>
 <p><b>As a</b> ฝ่ายจัดซื้อ, <b>I want</b> ผูกวัตถุดิบและราคารับซื้อต่อ supplier, <b>so that</b> ราคาทุน BOM คำนวณได้และรับซื้อถูกราคา</p>
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> สร้าง SUP-01 "กลีเซอรีนไทย" Lot prefix L-GLY-</span>
@@ -77,18 +77,37 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <span class="gwt"><b>Then</b> ไม่มีฟอร์มรับเข้า (ย้ายไป <a href="stock.html">Stock/Goods Receipt</a>)</span></div>
 </div>
 
+<div class="story">
+<h3><span class="sid">US-SUP-03</span> — พฤติกรรม price matrix (แก้ราคา/snapshot) + ค้น/กรองรายการ supplier <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ฝ่ายจัดซื้อ, <b>I want</b> แก้ราคาต่อคู่ (วัตถุดิบ×supplier) โดยไม่กระทบเอกสารเดิม และค้น/กรอง supplier ได้, <b>so that</b> ปรับราคาปัจจุบันได้โดยของเก่าไม่เพี้ยน และหา supplier เจอเร็ว</p>
+<div class="note"><b>snapshot:</b> ราคาที่ BOM/PO ดึงไปแล้ว = snapshot ณ เวลานั้น (มี badge ราคาที่ใช้จริง) · แก้ราคา matrix มีผลกับ<b>การคำนวณครั้งใหม่</b>เท่านั้น · <b>filter รายการ supplier:</b> สถานะ (Active/Inactive/ทั้งหมด) · ค้นชื่อ/รหัส SUP/วัตถุดิบที่ผูก · sort ชื่อ (default) · empty state เมื่อไม่พบ</div>
+<div class="ac happy"><span class="tag">Happy — แก้ราคาต่อคู่</span>
+<span class="gwt"><b>Given</b> คู่ (กลีเซอรีน × SUP-01) ราคา 45</span>
+<span class="gwt"><b>When</b> แก้ราคาเป็น 48 แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> matrix อัปเดตเป็น 48; BOM ที่คิดใหม่หลังจากนี้ใช้ 48; มี trace ราคาจาก 45→48 (ใคร/เมื่อ)</span></div>
+<div class="ac edge"><span class="tag">Edge — snapshot ไม่กระทบของเดิม + filter</span>
+<span class="gwt"><b>Given</b> BOM/PO เดิม snapshot ราคา 45 ไว้แล้ว และมี supplier 3 ราย (2 Active 1 Inactive)</span>
+<span class="gwt"><b>When</b> แก้ราคาเป็น 48 / และกรองรายการด้วยสถานะ = "Active"</span>
+<span class="gwt"><b>Then</b> BOM/PO เดิม<b>ยังแสดง 45 (snapshot)</b> ไม่เปลี่ยนตามราคาใหม่; รายการ supplier แสดงเฉพาะ 2 Active (Inactive ซ่อน); ไม่พบ = empty state "ไม่พบ supplier ตามเงื่อนไข"</span></div>
+<div class="ac err"><span class="tag">Error — ราคาใหม่ติดลบ</span>
+<span class="gwt"><b>Given</b> แก้ราคาต่อคู่เป็นค่าติดลบ</span>
+<span class="gwt"><b>When</b> บันทึก</span>
+<span class="gwt"><b>Then</b> error "ราคาต้อง ≥ 0" (0 ได้ แต่ติดลบไม่ได้) — ไม่บันทึก, คงราคาเดิม</span></div>
+</div>
+
 <h2>4. Data rules</h2>
 <table><tr><th>รายการ</th><th>กติกา</th></tr>
 <tr><td>สถานะ</td><td>Active / Inactive · soft-delete แทนลบ (แนะนำ inactive)</td></tr>
-<tr><td>price matrix</td><td>supplier × วัตถุดิบ × ราคารับซื้อ (≥0) · feed BOM cost (max active)</td></tr>
+<tr><td>price matrix</td><td>supplier × วัตถุดิบ × ราคารับซื้อ (≥0) · feed BOM cost (max active) · แก้ราคามีผลกับการคิดครั้งใหม่ · ของเดิม snapshot</td></tr>
+<tr><td>รายการ supplier</td><td>filter สถานะ + ค้นชื่อ/รหัส/วัตถุดิบ · sort ชื่อ (default) · empty state</td></tr>
 <tr><td>Lot prefix</td><td>ต่อ supplier (เช่น L-GLY-)</td></tr></table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-supplier.html" target="_blank">api-supplier.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — price matrix table, active flag affecting BOM cost calc, soft-delete guard</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-supplier.html" target="_blank">api-supplier.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — price matrix table (edit + price history/trace), active flag affecting BOM cost calc (max active), snapshot on BOM/PO (no retro change), supplier list filter/search/sort, soft-delete guard</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>ราคา active → BOM cost (<a href="bom.html">BOM §11</a>) · inactive → ตัดจากการคิด</li></ul>
+<ul class="sub"><li>ราคา active → BOM cost (<a href="bom.html">BOM §11</a>) · inactive → ตัดจากการคิด · แก้ราคา = ใช้ครั้งใหม่ ของเดิม snapshot</li></ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="bom.html">BOM →</a><a href="stock.html">Stock</a></div>
-<footer>US-SUP-01..02 · 6 AC · Module Supplier</footer>
+<footer>US-SUP-01..03 · 9 AC · Module Supplier</footer>
 </div></body></html>

@@ -4,13 +4,15 @@
 :root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
 body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
 a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
 header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
 header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
 h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
 h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
-.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-could{color:#204A9E;background:#E8F0FE;border-color:#BBD1F8}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+.evt{background:#FBF0DE;color:#7A4A0F}.st{background:#E8F0FE;color:#204A9E}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
 th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
 .story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
@@ -24,6 +26,7 @@ th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-
 .mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
 .mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.tiletbl th{background:#EAF3F2}
 .nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
 footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
 code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
@@ -31,65 +34,262 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Dashboard</span></header>
 <div class="wrap">
 
-<h1>Module: Dashboard รายแผนก (×7) <span class="badge b-should">Should</span></h1>
-<p class="sub">7 แผนก: Sale, Stock, Production, QC, Shipping, Finance, Admin · auto-refresh 15s (default, คง view เดิม) · KPI tile ทุกอัน drill-down → list + pagination + เข้า module พร้อม context</p>
+<h1>Module: Dashboard รายแผนก (×7) <span class="badge b-must">Must</span></h1>
+<p class="sub">7 แผนก: Sale · Stock · Production · QC · Shipping · Finance · Admin · รวม <b>29 tile</b> · auto-refresh 15s (default, คง view) · ทุก tile drill-down → list + pagination + deep link พร้อม context · การเห็นแผนก = <b>ยึด permission Read ล้วนๆ</b> (ไม่เกี่ยวชื่อ role)</p>
+
+<div class="note"><b>ที่มาความจริง:</b> นิยาม/สูตร/ชนิด (event/state) ต่อ tile ทั้ง 29 ตัว = <a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit §2.2</a> + <a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys §12</a> · <b>ป้ายชนิด:</b> <span class="pill evt">ในช่วง (event)</span> = นับเหตุการณ์ที่เกิดในช่วง date-filter · <span class="pill st">ตอนนี้ (state)</span> = snapshot ปัจจุบัน ไม่ขึ้นกับช่วง · มูลค่าสต็อก = จำนวนคงเหลือ × <b>ราคาซื้อล่าสุดของ Lot</b> (COGS นอก scope — ปอนด์ยืนยัน 2026-07-09)</div>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>ผู้ใช้เห็น dashboard ตาม role (หลาย role = สลับแผนกได้) · filter default = เดือนนี้ (เลือกอิสระ เดือน/ปี/date range) · Sale มี tile "ต้องติดตาม"</p>
-<p class="sub">Dataset: ลูกค้าประจำ 2, ห่างหาย 1, ต้องติดตาม 1, PO เดือนนี้ 11; คลัง ใกล้หมด(วิตามินอี), lot รอ QC 3, PR ค้าง 2; ผลิต rework 1/Hold 1; จัดส่ง SHP-0044/45/46</p>
+<p>ผู้ใช้เห็น dashboard <b>เฉพาะแผนกที่ตนมีสิทธิ์ Read</b> (มี Read module ไหน = เห็น dashboard แผนกนั้น) · ผู้ที่มี Read หลาย module สลับแผนกได้ด้วย tab/selector · filter default = <b>เดือนนี้</b> (เลือก วันนี้ / สัปดาห์นี้ / เดือนนี้ / กำหนดเอง) · แต่ละ tile ระบุ event vs state · KPI tile ทุกอัน drill-down เป็น list + pagination แล้วคลิกรายการเข้า module พร้อม context</p>
+<p class="sub">Dataset (เดือนนี้): Sale ลูกค้าประจำ 2 · ห่างหาย 1 · ต้องติดตาม 1 · PO 11 · รอชำระ 1 | Stock ใกล้หมด (วิตามินอี) · lot รอ QC 3 · PR ค้าง 2 · มูลค่าสต็อกรวม | Production คิวงาน 11 (รอรับงาน 2 + ในสายผลิต 9) · rework 1 · Hold 1 | Shipping SHP-0044/45/46 | Finance รอวางบิล/ค้างชำระ/เกินกำหนด | Admin user/role/login/audit</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">📊</div><div><b>dashboard.html</b> — 7 แผนก + refresh/auto-15s + tile drill-down + date filter · <a href="../mockups/dashboard.html" target="_blank">เปิด ↗</a></div></div>
+<div class="mock"><div class="thumb">📊</div><div><b>dashboard.html</b> — 7 แผนก (สลับตามสิทธิ์) · date-filter presets + custom range · tile drill-down + pagination · refresh/auto-15s toggle + เวลารีเฟรชล่าสุด · <a href="../mockups/dashboard.html" target="_blank">เปิด ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
+<p class="sub">แกนพฤติกรรม (DSH-01..04) + 7 story รายแผนก (SALE/STK/PRD/QC/SHP/FIN/ADM) — แต่ละ story มีตารางนิยาม tile ครบทุกตัว + AC happy/edge/error</p>
 
 <div class="story">
-<h3><span class="sid">US-DSH-01</span> — auto-refresh 15s คง view <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ผู้ใช้แผนก, <b>I want</b> dashboard รีเฟรชอัตโนมัติทุก 15 วิ โดยค้าง view เดิม, <b>so that</b> เห็นข้อมูลล่าสุดโดยไม่เด้งกลับหน้าแรก</p>
+<h3><span class="sid">US-DSH-01</span> — auto-refresh 15s คง view/drill <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้แผนก, <b>I want</b> dashboard รีเฟรชอัตโนมัติทุก 15 วิ โดยค้าง view/drill เดิมและ filter เดิม, <b>so that</b> เห็นข้อมูลล่าสุดโดยไม่เด้งกลับหน้าแรกและไม่เสียตำแหน่งที่ดูอยู่</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> อยู่ที่ dashboard ฝ่ายขาย + เปิด drill-down "ต้องติดตาม"</span>
-<span class="gwt"><b>When</b> ครบ 15 วิ (auto) หรือกด refresh</span>
-<span class="gwt"><b>Then</b> ตัวเลข/รายการอัปเดต แต่<b>ยังอยู่ที่ view/drill-down เดิม</b> (ไม่เด้งกลับ)</span></div>
+<span class="gwt"><b>Given</b> อยู่ dashboard ฝ่ายขาย filter = "เดือนนี้" + เปิด drill-down tile "ต้องติดตาม" ค้างอยู่</span>
+<span class="gwt"><b>When</b> ครบ 15 วิ (auto) หรือกดปุ่ม refresh</span>
+<span class="gwt"><b>Then</b> ตัวเลข/รายการอัปเดตค่าล่าสุด แต่<b>ยังอยู่ที่ drill-down "ต้องติดตาม" + filter "เดือนนี้" เดิม</b> (ไม่รีเซ็ตช่วง ไม่เด้งกลับ) และแสดง "อัปเดตล่าสุด HH:MM:SS"</span></div>
 <div class="ac edge"><span class="tag">Edge — ปิด auto-refresh</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ปิด toggle auto-refresh</span>
-<span class="gwt"><b>When</b> เวลาผ่าน 15 วิ</span>
-<span class="gwt"><b>Then</b> ไม่รีเฟรชอัตโนมัติ (รีเฟรชเฉพาะกดปุ่ม)</span></div>
-<div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์แผนก</span>
-<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read ของแผนกนั้น</span>
-<span class="gwt"><b>When</b> พยายามเปิด dashboard แผนกนั้น</span>
-<span class="gwt"><b>Then</b> ไม่แสดงแผนกนั้นในตัวสลับ / 403</span></div>
+<span class="gwt"><b>When</b> เวลาผ่านไป 15 วิ / 30 วิ</span>
+<span class="gwt"><b>Then</b> ตัวเลขไม่เปลี่ยนเอง (รีเฟรชเฉพาะเมื่อกดปุ่ม refresh); ป้าย "อัปเดตล่าสุด" คงเวลาเดิมจนกดเอง</span></div>
+<div class="ac err"><span class="tag">Error — โหลด aggregate ล้มเหลว</span>
+<span class="gwt"><b>Given</b> การเรียกข้อมูล dashboard ล้มเหลวชั่วคราว</span>
+<span class="gwt"><b>When</b> ถึงรอบ refresh</span>
+<span class="gwt"><b>Then</b> คงค่าล่าสุดที่แสดงอยู่ + แถบเตือน "อัปเดตไม่สำเร็จ ลองใหม่" (ไม่ล้างหน้าจอเป็นค่าว่าง/ไม่หน้าขาว)</span></div>
 </div>
 
 <div class="story">
-<h3><span class="sid">US-DSH-02</span> — KPI tile drill-down + context <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ผู้ใช้, <b>I want</b> กด KPI tile แล้วเห็นรายการ + pagination และกดเข้า module พร้อม context, <b>so that</b> จากตัวเลขไปทำงานต่อได้เร็ว</p>
+<h3><span class="sid">US-DSH-02</span> — Tile drill-down → list + pagination + deep link พร้อม context <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้, <b>I want</b> กด KPI tile แล้วเห็นรายการเบื้องหลังตัวเลขพร้อมคอลัมน์ที่กำหนด และกดรายการเข้า module ต่อได้, <b>so that</b> จากตัวเลขไปทำงานต่อได้ทันทีโดยไม่ต้องไปค้นเอง</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> Stock dashboard tile "lot รอ QC = 3"</span>
+<span class="gwt"><b>Given</b> Stock dashboard tile "ล็อตรอ QC = 3"</span>
 <span class="gwt"><b>When</b> กด tile</span>
-<span class="gwt"><b>Then</b> แสดงรายการ 3 lot + pagination; กดรายการ → เข้าหน้า QC/stock พร้อม lot ที่เลือก (context)</span></div>
+<span class="gwt"><b>Then</b> แสดง list 3 lot คอลัมน์ (lot / วัตถุดิบ) + pagination เมื่อเกินหนึ่งหน้า; คลิกแถว → เปิด <code>qc.html</code> โดยเลือก lot นั้นไว้ (context/deep link)</span></div>
 <div class="ac edge"><span class="tag">Edge — tile = 0</span>
-<span class="gwt"><b>Given</b> tile ค่าเป็น 0</span>
-<span class="gwt"><b>When</b> กด</span>
-<span class="gwt"><b>Then</b> แสดง empty state "ไม่มีรายการ" (ไม่ error)</span></div>
-<div class="ac err"><span class="tag">Error — date range ผิด</span>
-<span class="gwt"><b>Given</b> เลือก date range เริ่ม &gt; สิ้นสุด</span>
-<span class="gwt"><b>When</b> ใช้ตัวกรอง</span>
-<span class="gwt"><b>Then</b> error "ช่วงวันที่ไม่ถูกต้อง"</span></div>
+<span class="gwt"><b>Given</b> tile ค่าเป็น 0 (เช่น "รอทำใบคืน = 0")</span>
+<span class="gwt"><b>When</b> กด tile</span>
+<span class="gwt"><b>Then</b> แสดง empty state "ไม่มีรายการ" (ไม่ error, ไม่เปิด list ว่างเปล่าแบบสับสน)</span></div>
+<div class="ac err"><span class="tag">Error — drill รายการที่ไม่มีสิทธิ์เข้า module ปลายทาง</span>
+<span class="gwt"><b>Given</b> ผู้ใช้เห็น tile ผ่านสิทธิ์ Read แผนก แต่ไม่มีสิทธิ์ Read module ปลายทางของ deep link</span>
+<span class="gwt"><b>When</b> คลิกแถวเพื่อ deep link</span>
+<span class="gwt"><b>Then</b> guard 403 ที่หน้าปลายทาง (ไม่หลุดข้อมูลข้าม module)</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-03</span> — Date filter: presets + custom range + event/state <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้แผนก, <b>I want</b> เลือกช่วงเวลาของ dashboard (วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง) และเข้าใจว่า tile ไหนถูกกรองด้วยช่วง, <b>so that</b> อ่านตัวเลขได้ถูกความหมายและเจาะช่วงที่ต้องการได้</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> dashboard filter default = "เดือนนี้"</span>
+<span class="gwt"><b>When</b> เลือก chip "สัปดาห์นี้"</span>
+<span class="gwt"><b>Then</b> <b>ทุก tile ชนิด event ("ในช่วง")</b> คำนวณใหม่ตามสัปดาห์นี้พร้อมกัน (เช่น "PO เดือนนี้" → PO ในสัปดาห์นี้); <b>tile ชนิด state ("ตอนนี้")</b> เช่น "ใกล้หมด", "ล็อตรอ QC" คงค่า snapshot ปัจจุบัน ไม่เปลี่ยนตามช่วง; caption ของแต่ละ tile ระบุ "ในช่วง"/"ตอนนี้" ชัดเจน</span></div>
+<div class="ac edge"><span class="tag">Edge — custom range + คง drill ที่เปิดอยู่</span>
+<span class="gwt"><b>Given</b> เลือก "กำหนดเอง" แล้วระบุช่วง 01/07–05/07 (หรือเลือกเดือน/ปี) ขณะเปิด drill "PO" ค้างอยู่</span>
+<span class="gwt"><b>When</b> ยืนยันช่วง</span>
+<span class="gwt"><b>Then</b> tile event รีคำนวณตามช่วงใหม่ และ drill "PO" ที่เปิดอยู่รีคำนวณตามช่วงใหม่ด้วย (ไม่เด้งปิด drill)</span></div>
+<div class="ac err"><span class="tag">Error — ช่วงกลับด้าน</span>
+<span class="gwt"><b>Given</b> เลือก custom range เริ่ม > สิ้นสุด</span>
+<span class="gwt"><b>When</b> กดใช้ตัวกรอง</span>
+<span class="gwt"><b>Then</b> error "ช่วงวันที่ไม่ถูกต้อง" + <b>ไม่ยิง query</b> (คงค่าช่วงก่อนหน้า)</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-04</span> — เห็นแผนกตาม permission Read + สลับหลายแผนก <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้, <b>I want</b> เห็น dashboard เฉพาะแผนกที่ผมมีสิทธิ์ Read และสลับได้ถ้ามีหลายแผนก, <b>so that</b> เห็นเฉพาะข้อมูลที่มีสิทธิ์ ไม่เกี่ยวว่าถูกตั้งชื่อ role อะไร</p>
+<div class="ac happy"><span class="tag">Happy — ยึด permission ล้วน (ปอนด์ยืนยัน)</span>
+<span class="gwt"><b>Given</b> ผู้ใช้มีสิทธิ์ Read เฉพาะ module Sale และ Finance (ไม่ว่าชื่อ role คืออะไร)</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ตัวสลับแผนกแสดง <b>เฉพาะ Sale + Finance</b> (2 แท็บ); แผนกที่ไม่มี Read ไม่ปรากฏในตัวสลับ; เริ่มที่แผนกแรกที่มีสิทธิ์</span></div>
+<div class="ac edge"><span class="tag">Edge — มี Read module เดียว / ครบทุก module</span>
+<span class="gwt"><b>Given</b> ผู้ใช้มี Read แผนกเดียว (เช่น Production เท่านั้น) — หรืออีกกรณีมี Read ครบทุก module</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> กรณีแผนกเดียว: แสดงแผนกนั้นโดยไม่มีตัวสลับ; กรณีมีครบ: เห็นทั้ง 7 แผนกในตัวสลับ (superset ตามสิทธิ์ ไม่ใช่ตามชื่อ Admin)</span></div>
+<div class="ac err"><span class="tag">Error — เข้าถึง URL แผนกที่ไม่มีสิทธิ์</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read module ของแผนกหนึ่ง</span>
+<span class="gwt"><b>When</b> พิมพ์ URL/parameter ของ dashboard แผนกนั้นตรงๆ</span>
+<span class="gwt"><b>Then</b> guard ปฏิเสธ 403 (ไม่แสดงตัวเลข/รายการของแผนกที่ไม่มีสิทธิ์)</span></div>
+</div>
+
+<h3>รายแผนก (7 story — ทุก tile มีนิยาม/สูตร/ชนิด/drill/สิทธิ์)</h3>
+
+<div class="story">
+<h3><span class="sid">US-DSH-SALE</span> — Dashboard ฝ่ายขาย (5 tile) · Read Sale <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Sale, <b>I want</b> เห็นสถานะลูกค้า/ออเดอร์/การชำระของฝ่ายขายเป็น KPI พร้อม drill, <b>so that</b> ตามงานขายและลูกค้าที่ต้องดูแลได้ครบ</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตรนับ / เงื่อนไขเข้ากลุ่ม</th><th>ชนิด</th><th>drill (คอลัมน์ → ปลายทาง)</th></tr>
+<tr><td>ลูกค้าประจำ</td><td>count(customer.status=ลูกค้าประจำ(Active) AND มี order ในช่วง)</td><td><span class="pill evt">event</span></td><td>ชื่อลูกค้า/สถานะ → customer-detail</td></tr>
+<tr><td>ห่างหาย</td><td>count(customer เปลี่ยน→ห่างหาย(Inactive) ในช่วง โดย scheduler; เกณฑ์ = inactive_after_months ของลูกค้า default 3, ชุด {1,3,6,8})</td><td><span class="pill evt">event</span></td><td>ชื่อ/เหตุ (ไม่มี order เกิน N เดือน) → customer-detail</td></tr>
+<tr><td>PO</td><td>count(po.created_date อยู่ในช่วง)</td><td><span class="pill evt">event</span></td><td>PO/ลูกค้า/สถานะ → po-detail</td></tr>
+<tr><td>รอชำระ</td><td>count(invoice.status=รอชำระ AND ยังไม่เกินกำหนด AND issued ในช่วง)</td><td><span class="pill evt">event</span></td><td>INV/ลูกค้า/ครบกำหนด → invoice-detail</td></tr>
+<tr><td>ต้องติดตาม</td><td>count(customer.status=ต้องติดตาม(Follow-up) ที่ยังค้าง)</td><td><span class="pill st">state</span></td><td>ชื่อ/เหตุผล(comment) → customer-detail</td></tr></table>
+<div class="ac happy"><span class="tag">Happy — สูตร + drill</span>
+<span class="gwt"><b>Given</b> เดือนนี้มีลูกค้าประจำที่มี order 2 ราย และ PO 11 ใบ</span>
+<span class="gwt"><b>When</b> ดู tile "ลูกค้าประจำ" แล้วกด</span>
+<span class="gwt"><b>Then</b> tile = 2 (event, caption "ในช่วง"); drill แสดง 2 แถว (ชื่อลูกค้า/สถานะ) → คลิกไป customer-detail ของรายนั้น</span></div>
+<div class="ac edge"><span class="tag">Edge — "ต้องติดตาม" เป็น state ไม่ขึ้นกับช่วง</span>
+<span class="gwt"><b>Given</b> tile "ต้องติดตาม" = 1 (เดอร์มา แคร์ จาก PO-188 Hold) และผู้ใช้เปลี่ยน filter เป็น "วันนี้"</span>
+<span class="gwt"><b>When</b> เปลี่ยนช่วง</span>
+<span class="gwt"><b>Then</b> tile "ต้องติดตาม" ยังคง = 1 (state, caption "ตอนนี้" ไม่เปลี่ยนตามช่วง); drill แสดงเหตุผลจาก comment</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Sale</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Sale</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก Sale ในตัวสลับ / เข้า URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-STK</span> — Dashboard ฝ่ายคลัง (4 tile รวมมูลค่าสต็อก) · Read Stock <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Stock, <b>I want</b> เห็นวัตถุดิบใกล้หมด/ล็อตรอ QC/PR ค้าง และมูลค่าสต็อกรวม, <b>so that</b> เติมของทัน ตรวจรับทัน และรู้เงินจมในคลัง</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>ใกล้หมด</td><td>count(วัตถุดิบที่ on_hand ≤ low_stock_threshold; <b>เฉพาะที่ตั้ง threshold</b> — null = ไม่นับ)</td><td><span class="pill st">state</span></td><td>วัตถุดิบ/คงเหลือ → stock</td></tr>
+<tr><td>ล็อตรอ QC</td><td>count(lot.qc_status=รอตรวจรับ)</td><td><span class="pill st">state</span></td><td>lot/วัตถุดิบ → qc</td></tr>
+<tr><td>คำขอ PR ค้าง</td><td>count(PR.status ∈ {เปิดคำขอ, รับทราบ, รับบางส่วน})</td><td><span class="pill st">state</span></td><td>PR/วัตถุดิบ/สถานะ → purchase-request</td></tr>
+<tr><td>มูลค่าสต็อก</td><td>Σ(on_hand ต่อ lot × <b>ราคาซื้อล่าสุดของ lot นั้น</b>) — เป็นยอดเงิน (COGS นอก scope; ปอนด์ยืนยัน); lot ติดลบหักลบยอด</td><td><span class="pill st">state</span></td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr></table>
+<div class="ac happy"><span class="tag">Happy — สูตรมูลค่าสต็อก</span>
+<span class="gwt"><b>Given</b> วัตถุดิบ A มี 2 lot: lot เก่า 10 กก. ราคาซื้อ 40, lot ใหม่ 5 กก. ราคาซื้อ 45</span>
+<span class="gwt"><b>When</b> ดู tile "มูลค่าสต็อก"</span>
+<span class="gwt"><b>Then</b> มูลค่าของ A = (10×<b>45</b>) ... ไม่ — คิดต่อ lot: (10×40)+(5×45)=625 โดยแต่ละ lot ใช้<b>ราคาซื้อล่าสุดของ lot ตัวเอง</b>; tile รวมทุกวัตถุดิบ; drill เรียงจากมูลค่าสูงสุด</span></div>
+<div class="ac edge"><span class="tag">Edge — "ใกล้หมด" นับเฉพาะที่ตั้ง threshold + lot ติดลบ</span>
+<span class="gwt"><b>Given</b> วัตถุดิบ X ไม่ได้ตั้ง threshold (null) แม้เหลือน้อย และวัตถุดิบ Y (แอลกอฮอล์) มียอดติดลบ −30</span>
+<span class="gwt"><b>When</b> ดู tile "ใกล้หมด" และ "มูลค่าสต็อก"</span>
+<span class="gwt"><b>Then</b> X <b>ไม่ถูกนับ</b>ใน "ใกล้หมด" (null=ไม่เตือน); ยอดติดลบของ Y หัก(ลด)มูลค่าสต็อกรวม (แสดงผลติดลบของรายการนั้น)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Stock</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Stock</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก Stock / URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-PRD</span> — Dashboard ฝ่ายผลิต (4 tile) · Read Production <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Production, <b>I want</b> เห็นคิวงาน/งานเสี่ยงล่าช้า/งานพัก/งานเสร็จ, <b>so that</b> จัดลำดับการผลิตและกันงานตกค้าง</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>คิวงานผลิต</td><td>count(คิวรอรับงาน=รอรับงาน) + count(PRD.status ∈ {รับงาน, กำลังผลิต, รอ QC, Rework}) — caption "รอรับงาน X + ในสายผลิต Y"</td><td><span class="pill st">state</span></td><td>รายการ/สถานะ (รอรับงาน=ยังไม่มีเลข PRD) → production</td></tr>
+<tr><td>เสี่ยงล่าช้า</td><td>count(PRD ที่ potential_delay=true; เกณฑ์ 2 วันผลิต + 1 วันส่ง เทียบวันต้องการรับ)</td><td><span class="pill st">state</span></td><td>PRD/เหลือกี่วัน → production</td></tr>
+<tr><td>พักงาน (Hold)</td><td>count(PRD.status=พักงาน(Hold))</td><td><span class="pill st">state</span></td><td>PRD/เหตุ Hold → production</td></tr>
+<tr><td>ผลิตเสร็จ</td><td>count(Batch ผ่าน QC หรือ PRD→พร้อมส่งมอบ ในช่วง)</td><td><span class="pill evt">event</span></td><td>PRD/สถานะ → production</td></tr></table>
+<div class="ac happy"><span class="tag">Happy — คิวงานแยกรอรับงาน/ในสายผลิต</span>
+<span class="gwt"><b>Given</b> มี 2 line รอรับงาน (PO-185) และ 9 PRD ในสายผลิต</span>
+<span class="gwt"><b>When</b> ดู tile "คิวงานผลิต" แล้วกด</span>
+<span class="gwt"><b>Then</b> tile = 11 caption "รอรับงาน 2 + ในสายผลิต 9"; drill แยกกลุ่ม — แถวรอรับงานแสดง "ยังไม่มีเลข PRD" คลิกไปหน้า production คิวรอรับงาน</span></div>
+<div class="ac edge"><span class="tag">Edge — "ผลิตเสร็จ" เป็น event, Hold เป็น state</span>
+<span class="gwt"><b>Given</b> filter "วันนี้" กับ "เดือนนี้"</span>
+<span class="gwt"><b>When</b> สลับช่วง</span>
+<span class="gwt"><b>Then</b> "ผลิตเสร็จ" (event) เปลี่ยนตามช่วง; "พักงาน (Hold)" (state) คงค่าปัจจุบัน (เช่น = 1) ไม่ขึ้นกับช่วง</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Production</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Production</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก Production / URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-QC</span> — Dashboard ฝ่าย QC (4 tile) · Read QC <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read QC, <b>I want</b> เห็นล็อต/แบตช์รอตรวจ ผลผ่าน และของที่ต้องทำใบคืน, <b>so that</b> ตรวจรับทันและจัดการของเสีย</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>ล็อตรอตรวจรับ</td><td>count(lot.qc_status=รอตรวจรับ)</td><td><span class="pill st">state</span></td><td>lot → qc</td></tr>
+<tr><td>แบตช์รอ QC</td><td>count(batch.status=รอ QC)</td><td><span class="pill st">state</span></td><td>batch → qc</td></tr>
+<tr><td>ผ่าน QC</td><td>count(qc_record.result=ผ่าน ในช่วง; รวม lot + batch)</td><td><span class="pill evt">event</span></td><td>รายการ/ชนิด → qc</td></tr>
+<tr><td>รอทำใบคืน</td><td>count(lot.qc_status=ระงับ AND ยังไม่มี return_doc)</td><td><span class="pill st">state</span></td><td>lot เสีย → return</td></tr></table>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> มี 3 lot รอตรวจรับ</span>
+<span class="gwt"><b>When</b> กด tile "ล็อตรอตรวจรับ"</span>
+<span class="gwt"><b>Then</b> tile = 3 (state); drill แสดง lot → คลิกไป qc พร้อม lot ที่เลือก</span></div>
+<div class="ac edge"><span class="tag">Edge — "รอทำใบคืน" = 0</span>
+<span class="gwt"><b>Given</b> ไม่มี lot ระงับที่ค้างใบคืน</span>
+<span class="gwt"><b>When</b> กด tile "รอทำใบคืน"</span>
+<span class="gwt"><b>Then</b> tile = 0 → empty state "ไม่มีรายการ" (ไม่ error)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read QC</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read QC</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก QC / URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-SHP</span> — Dashboard ฝ่ายจัดส่ง (4 tile) · Read Shipping <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Shipping, <b>I want</b> เห็นงานรอจัดส่ง/กำลังนำส่ง/ส่งถึง/เลื่อน-ปฏิเสธ, <b>so that</b> คุมรอบรถและติดตามของที่มีปัญหา</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>รอจัดส่ง</td><td>count(PO.fulfil=พร้อมจัดส่ง; <b>รวม PO ที่มี postpone_flag</b>)</td><td><span class="pill st">state</span></td><td>PO/ลูกค้า/Postpone → shipping</td></tr>
+<tr><td>กำลังนำส่ง</td><td>count(DN.status=กำลังนำส่ง)</td><td><span class="pill st">state</span></td><td>SHP/DN → delivery-note</td></tr>
+<tr><td>ส่งถึงแล้ว</td><td>count(DN→ส่งถึงแล้ว(Delivered) ในช่วง)</td><td><span class="pill evt">event</span></td><td>DN → delivery-note</td></tr>
+<tr><td>เลื่อน/ปฏิเสธ</td><td>count(DN→ถูกปฏิเสธ(Rejected) หรือ เลื่อน(Postponed) ในช่วง)</td><td><span class="pill evt">event</span></td><td>PO/เหตุ → delivery-note</td></tr></table>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> SHP-0046 มี DN-122 Delivered / DN-123 Rejected / DN-124 Postponed 10/07</span>
+<span class="gwt"><b>When</b> กด tile "เลื่อน/ปฏิเสธ" (event) ในช่วงเดือนนี้</span>
+<span class="gwt"><b>Then</b> นับ DN-123 + DN-124; drill แสดง PO/เหตุ → คลิกไป delivery-note</span></div>
+<div class="ac edge"><span class="tag">Edge — "รอจัดส่ง" รวม Postpone</span>
+<span class="gwt"><b>Given</b> PO-178 พร้อมจัดส่งแต่มี postpone_flag 10/07</span>
+<span class="gwt"><b>When</b> ดู tile "รอจัดส่ง" (state)</span>
+<span class="gwt"><b>Then</b> PO-178 ถูกนับรวมใน "รอจัดส่ง" พร้อม badge Postpone (ไม่หายไปจากคิว)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Shipping</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Shipping</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก Shipping / URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-FIN</span> — Dashboard การเงิน (4 tile) · Read Finance/Invoice <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Finance, <b>I want</b> เห็นงานรอวางบิล/ค้างชำระ/รับชำระ/เกินกำหนด, <b>so that</b> เก็บเงินและวางบิลได้ครบตามกำหนด</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>รอวางบิล</td><td>count(PO.billing=ยังไม่วางบิล AND fulfil ≥ ยืนยันแล้ว(Confirmed))</td><td><span class="pill st">state</span></td><td>PO → invoices</td></tr>
+<tr><td>ค้างชำระ</td><td>count(invoice ครบกำหนดในช่วง AND ยังไม่จ่าย)</td><td><span class="pill evt">event</span></td><td>INV/ลูกค้า/+วัน → invoice-detail</td></tr>
+<tr><td>รับชำระ</td><td>Σ(ยอดรับชำระในช่วง) — <b>เป็นยอดเงิน ไม่ใช่ count</b></td><td><span class="pill evt">event</span></td><td>รายการรับชำระ → invoice-detail</td></tr>
+<tr><td>เกินกำหนด</td><td>count(invoice.status=เกินกำหนด(Overdue) ที่ยังค้าง)</td><td><span class="pill st">state</span></td><td>INV/+วัน → invoice-detail</td></tr></table>
+<div class="ac happy"><span class="tag">Happy — "รับชำระ" เป็นยอดเงิน</span>
+<span class="gwt"><b>Given</b> เดือนนี้รับชำระ INV รวม 128,500 บาท</span>
+<span class="gwt"><b>When</b> ดู tile "รับชำระ"</span>
+<span class="gwt"><b>Then</b> tile แสดง <b>ยอดเงิน 128,500 บาท</b> (ไม่ใช่จำนวนใบ); drill = รายการรับชำระ → invoice-detail</span></div>
+<div class="ac edge"><span class="tag">Edge — "เกินกำหนด" state vs "ค้างชำระ" event</span>
+<span class="gwt"><b>Given</b> filter เปลี่ยนเป็น "สัปดาห์นี้"</span>
+<span class="gwt"><b>When</b> สลับช่วง</span>
+<span class="gwt"><b>Then</b> "ค้างชำระ" (event: ครบกำหนดในช่วง) เปลี่ยนตามช่วง; "เกินกำหนด" (state: ที่ยังค้างตอนนี้) คงค่าปัจจุบันไม่ขึ้นกับช่วง</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Finance</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Finance/Invoice</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนกการเงิน / URL ตรง = 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-DSH-ADM</span> — Dashboard ผู้ดูแลระบบ (4 tile) · Read Admin/Settings <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Admin/Settings, <b>I want</b> เห็นจำนวนผู้ใช้/role/การเข้าใช้/เหตุการณ์ trace, <b>so that</b> ดูแลบัญชีผู้ใช้และตรวจสอบการใช้งานระบบ</p>
+<table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
+<tr><td>ผู้ใช้ทั้งหมด</td><td>count(user ที่ไม่ถูก soft-delete)</td><td><span class="pill st">state</span></td><td>user/role/สถานะ → settings</td></tr>
+<tr><td>Role</td><td>count(role)</td><td><span class="pill st">state</span></td><td>role/จำนวนสิทธิ์ → settings</td></tr>
+<tr><td>เข้าใช้</td><td>count(login events ในช่วง)</td><td><span class="pill evt">event</span></td><td>user/เวลา → trace</td></tr>
+<tr><td>เหตุการณ์ trace</td><td>count(audit_log ในช่วง)</td><td><span class="pill evt">event</span></td><td>audit ล่าสุด → trace</td></tr></table>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> เดือนนี้มี login 340 ครั้ง และ audit event 1,280 รายการ</span>
+<span class="gwt"><b>When</b> กด tile "เหตุการณ์ trace"</span>
+<span class="gwt"><b>Then</b> tile = 1,280 (event); drill แสดง audit ล่าสุด → คลิกไป trace/audit log</span></div>
+<div class="ac edge"><span class="tag">Edge — "ผู้ใช้ทั้งหมด" ไม่นับ soft-delete</span>
+<span class="gwt"><b>Given</b> มี user 25 คน ในนั้น 3 คนถูก mark ลบ (soft-delete)</span>
+<span class="gwt"><b>When</b> ดู tile "ผู้ใช้ทั้งหมด" (state)</span>
+<span class="gwt"><b>Then</b> tile = 22 (ไม่รวมที่ถูก soft-delete); drill ไม่แสดงผู้ใช้ที่ลบ</span></div>
+<div class="ac err"><span class="tag">Error — ไม่มี Read Admin</span>
+<span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Admin/Settings</span>
+<span class="gwt"><b>When</b> เปิด dashboard</span>
+<span class="gwt"><b>Then</b> ไม่เห็นแผนก Admin / URL ตรง = 403</span></div>
 </div>
 
 <h2>4. Data rules</h2>
 <table><tr><th>รายการ</th><th>กติกา</th></tr>
-<tr><td>7 แผนก</td><td>Sale/Stock/Production/QC/Shipping/Finance/Admin · แสดงตาม Read permission · สลับได้ถ้าหลาย role</td></tr>
-<tr><td>refresh</td><td>auto 15s (default) คง view · ปิดได้</td></tr>
-<tr><td>tile</td><td>ทุกอัน drill-down → list + pagination + deep link + context</td></tr>
-<tr><td>filter</td><td>default เดือนนี้ · เลือกอิสระ เดือน/ปี/date range · caption event/state</td></tr></table>
+<tr><td>7 แผนก / 29 tile</td><td>Sale(5) · Stock(4) · Production(4) · QC(4) · Shipping(4) · Finance(4) · Admin(4) · แสดงตาม Read permission ราย module · สลับได้ถ้ามีหลายแผนก</td></tr>
+<tr><td>ชนิด tile</td><td><span class="pill evt">event</span> = นับเหตุการณ์ในช่วง filter · <span class="pill st">state</span> = snapshot ปัจจุบัน ไม่ขึ้นกับช่วง · caption ต่อ tile ระบุ "ในช่วง"/"ตอนนี้"</td></tr>
+<tr><td>filter</td><td>default เดือนนี้ · presets วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง (เลือกเดือน-ปี หรือ date range) · มีผลกับทุก tile event พร้อมกัน · เริ่ม>สิ้นสุด = error ไม่ยิง query</td></tr>
+<tr><td>refresh</td><td>auto 15s (default) คง filter+view+drill · ปิดได้ · แสดงเวลารีเฟรชล่าสุด</td></tr>
+<tr><td>drill-down</td><td>ทุก tile → list + pagination + deep link พร้อม context · tile=0 → empty state "ไม่มีรายการ"</td></tr>
+<tr><td>มูลค่าสต็อก</td><td>Σ(on_hand ต่อ lot × ราคาซื้อล่าสุดของ lot) · COGS นอก scope (ปอนด์ยืนยัน 2026-07-09)</td></tr>
+<tr><td>สิทธิ์</td><td>เห็นแผนก = มี Read bit ของ module นั้น (ไม่เกี่ยวชื่อ role) · ไม่มีสิทธิ์ = ไม่อยู่ในตัวสลับ + URL ตรง 403</td></tr></table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-dashboard.html" target="_blank">api-dashboard.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — per-department aggregates, drill-down queries + pagination, &lt;2s response (hard 3s), Read-permission scoping</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-dashboard.html" target="_blank">api-dashboard.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — per-department aggregates (event vs state), drill-down queries + pagination + deep-link context, Read-permission scoping ราย module (ไม่ผูก role name), stock valuation = last-buy-price per lot, &lt;2s response (hard 3s)</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>ทุก tile ↔ module (ดู <a href="continuity.html">Cascade</a>) · noti badge (ดู <a href="platform.html">Notification</a>)</li></ul>
+<ul class="sub"><li>ทุก tile ↔ module (ดู <a href="continuity.html">Cascade</a>) · นับตรงกับ <a href="home.html">Home task inbox</a> + <a href="platform.html#top">Notification badge</a> ของ user คนเดียวกัน (source เดียว) · สิทธิ์ Read = เห็นแผนก + รับ noti (<a href="rbac-deletion.html">RUCDAA</a>)</li></ul>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="platform.html">Platform →</a><a href="customer.html">ลูกค้า</a></div>
-<footer>US-DSH-01..02 · 6 AC · Module Dashboard</footer>
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="platform.html">Platform →</a><a href="home.html">Home</a><a href="customer.html">ลูกค้า</a></div>
+<footer>US-DSH-01..04 + US-DSH-SALE/STK/PRD/QC/SHP/FIN/ADM · 11 stories · 33 AC (happy/edge/error) · 29 tile นิยามครบ · Module Dashboard ×7</footer>
 </div></body></html>

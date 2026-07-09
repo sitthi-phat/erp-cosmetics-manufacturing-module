@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ba + tech-lead",
-      "status": "WAITING_HUMAN_GATE",
+      "current_agent": "po",
+      "status": "READY_FOR_PO_REVIEW",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -1552,6 +1552,50 @@
           "summary": "Depth audit complete per Pond Gate-2 directive. Dashboard+Settings shallow, Home missing, Trace/Platform sub-behaviors missing; 11 transaction modules deep enough. po-spec-depth-audit.md = BA work order (P0: Dashboard 7-dept via PO template, Home, Settings 5 screens / P1: Trace, Platform noti+global search+session, PO suggest logic, supplier matrix, list filters everywhere, stock-value formula / P2: polish). Entry appended by dispatcher (contention).",
           "overridden_by": null,
           "updated_at": "2026-07-09T23:30:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "depth-fix",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "P0 Dashboard 7-dept x 29-tile full spec + date-filter + permission-based visibility",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P0 Settings 5 screens (US-SET-01..05) incl user-mgmt bulk-reassign + audit-log screen",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P0 Home verified complete + index card",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "P1 Trace/Platform(global search, session warning)/PO suggest+calc/Supplier matrix/Stock value=last-lot-price/list-conventions x10 pages",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pond 3 answers folded; index+rtm recounted 69 stories/207 AC; 0 broken links (23 files)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTTP verify: dispatcher curled all 11 touched files on :3000 = 200",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/ (11 files touched incl list-conventions.html new)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Depth-fix complete per po-spec-depth-audit: 47/141 -> 69/207 stories/AC. Dashboard 2->11 stories (29 tiles), Settings 2->5 screens, Home verified, P1/P2 closed, Pond answers folded. Entry appended by dispatcher; HTTP 200 verified by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T15:00:00+07:00"
         }
       ]
     }
