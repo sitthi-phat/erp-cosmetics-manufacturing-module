@@ -1024,6 +1024,68 @@
           "summary": "TWO TASKS. (1) SYNC PRD lifecycle to Pond's r4.1 answers — 2 of 3 changed the earlier defaults. PRD is now MANUAL: PO Confirmed → each line enters a 'รอรับงาน (Awaiting Acceptance)' production queue (NO PRD yet); Production presses 'รับงาน' → that generates the PRD (status รับงาน) → 'เริ่มผลิต' generates the Batch. Added NEGATIVE STOCK rule: material shortage never blocks; production cuts stock negative (with trace); Goods Receipt adds it back and must show 'การรับนี้ชดเชยยอดติดลบ X หน่วย'; display = stock.html red+badge, production warning on รับงาน/เริ่มผลิต, GR notice. Rewrote entity-status-map.md (§1.2/§1.4/§1.6/§2 cascade/§3 diagram/§4 fixes/§5) + status-journeys.md (§2A/§3/§3.1/§3.2/§3.3 new) so the two docs stay single-source. NEW mockup fixes for UX (earlier PRD-numbering + po-detail PRD column already done): 'รับงาน' button + 'รอรับงาน' queue in production; negative-stock red/badge on stock + production warning; GR compensation notice. (2) DELETION POLICY business draft (deletion-policy.md) answering Pond's new question — central rule = NO hard delete, soft-delete flag 'deleted' (still searchable/viewable read-only, cannot be reference of new docs, existing docs keep running, mandatory audit+comment, Delete=D bit / restore=Admin); trade docs PO/INV/DN/GR/PR/Shipment have NO delete, only cancel/void (gapless). Per-entity rules for Customer, Sale/User, Material, BOM, Supplier, Contact, Role, PRD/Batch + matrix + handoff notes to Tech-Lead (soft-delete schema + reference guard) and BA (per-entity AC). Batched 5 deletion decision-points to Pond with options+default. Feature-level status unchanged (Gate 1 round 4 open); mockups untouched; no git.",
           "overridden_by": null,
           "updated_at": "2026-07-10T11:00:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "stage2-prep",
+          "status": "IN_PROGRESS",
+          "gate_checklist": [
+            {
+              "item": "Absorbed new Stage-2 output format (single functional-spec web mapping use case -> API + table/field; separate linked Architecture page w/ service+system diagram; ADRs still normative)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Absorbed new business rules (PRD on manual accept 1-line=1-PRD gapless/month; NEGATIVE STOCK allowed; soft-delete + reference-guard; gapless per year/month) + all 9 NFR answers (perf <2s hard-cap 3s, 50 concurrent, >200 PO/day+>50 GR/day, audit online 1yr + Super-User manual purge, GCP Cloud SQL backup, local+Google auth, session 24h+06:00 daily reset, Asia/Bangkok store-UTC)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Analyzed negative-stock vs ledger accuracy: recommend append-only stock_movement ledger (on-hand = derived; relative-delta materialized balance). Negative-allowed REMOVES the check-then-decrement race behind DEF-09; GR 'compensate negative' is automatic netting",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Surfaced the one GMP decision negative-stock creates (raw-lot->batch link when material consumed before its lot exists) + valuation/COGS scope question",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "STILL PREP ONLY — no ADR/design/schema/API/web written; deferred until Gate 1 approved",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch feature-level current_agent/status",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [],
+          "questions_for_pond": [
+            {
+              "q": "GMP lot linkage ตอน negative stock: เมื่อฝ่ายผลิตตัด stock ก่อนของเข้า (ยังไม่มี lot ในระบบ) พอทำ Goods Receipt ทีหลัง อยากให้ระบบผูก 'การตัด stock ย้อนหลัง' เข้ากับ lot ใหม่แบบอัตโนมัติ (FIFO) เพื่อคง traceability raw-lot -> batch ตาม GMP ไหม?",
+              "options": [
+                "ใช่ — back-allocate อัตโนมัติแบบ FIFO (ผมแนะนำ, คง GMP), แสดงใน trace",
+                "ให้ operator เลือก 'lot ที่คาดว่าจะใช้' เป็น provisional lot ตอนเริ่มผลิต แล้ว GR มายืนยัน",
+                "ยอมให้ trace ระดับ material ช่วงติดลบ (ไม่ผูก lot จนกว่าคน map เอง)",
+                "อื่น ๆ (ระบุ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "การคิดต้นทุนสินค้าคงคลัง / COGS (มูลค่าสต็อกแบบ FIFO หรือเฉลี่ย) อยู่ใน scope ของระบบไหม? — negative stock ทำให้ต้นทุนของที่ตัดไปก่อนของเข้ากำกวม",
+              "options": [
+                "ไม่อยู่ใน scope — ใช้ต้นทุนจาก BOM snapshot, stock ledger เก็บเชิงปริมาณอย่างเดียว (ผมแนะนำ = ง่ายกว่ามาก)",
+                "อยู่ใน scope — ต้องคิดมูลค่าสต็อก/COGS จริง (ต้องเพิ่มงาน valuation)",
+                "อื่น ๆ (ระบุ)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "COURSE-CORRECTION ACK (Stage-2 prep, still no build). Absorbed Pond's new output format (one functional-spec web: use case -> API + table/field + linked Architecture page w/ service & system diagram; ADRs remain the decision record) and new business rules (PRD-on-manual-accept, NEGATIVE STOCK, soft-delete+reference-guard, gapless) plus all 9 NFR answers. Key architecture position returned to dispatcher: model stock as an APPEND-ONLY stock_movement ledger (on-hand derived; materialized balance via atomic relative delta) — this makes negative stock natural, makes GR 'compensate-negative' automatic netting, and REMOVES the check-then-decrement race that caused DEF-09 (load 50 concurrent/>200 PO/day is light for single-PC MySQL; only remaining lock = gapless counter). Raised 3 guardrails on the web format (single source of truth -> repo OpenAPI+DDL post-approval; ADRs stay normative; self-contained SVG diagrams) and revised effort to ~12-16 dev-days + new ADR 'Stock Ledger & Negative Stock'. Two questions for Pond I cannot decide: (1) GMP raw-lot->batch linkage when material is consumed before its lot exists (recommend auto FIFO back-allocation at GR), (2) whether inventory valuation/COGS is in scope (recommend NOT — use BOM snapshot cost, quantity-only ledger). Deletion-policy Q1-Q5 are business-only (no tech blocker); soft-delete + reference-guard done as a base-repository pattern like generic audit. Deferred all deliverables until Gate 1. Did NOT touch feature-level status.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T10:00:00+07:00"
         }
       ]
     }
