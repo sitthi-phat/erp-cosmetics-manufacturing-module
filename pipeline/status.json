@@ -1401,6 +1401,45 @@
           "summary": "STAGE 2 DESIGN COMPLETE. Added 11 remaining API pages (customer/qc/shipping/supplier/bom/pr/settings/trace/notification/dashboard/return) to the 4 Tier-1 already delivered = 15 module API specs, all same standard: action-endpoint-per-transition + envelope + pagination + noti/deep-link + Thai narrative + cross-links to BA functional-spec (16 files) + db-schema anchors + mockups. Updated architecture/index.html §5 to link every module; coverage now complete (17 cascades + deletion 7 + exception classes + NFR9 all have a home; every db-schema module has an API page). Self-reviewed: 195 cross-links across 17 architecture files resolve, 0 broken. Full Stage-2 Tech-Lead deliverable set = 9 ADRs + db-schema.html + architecture index (system+service SVG diagrams) + 15 api-*.html. Feature-level status left untouched (parallel agents).",
           "overridden_by": null,
           "updated_at": "2026-07-09T21:00:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "functional-spec",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Functional Spec web ครบ: index + 16 module + 5 cross-cutting = 22 ไฟล์ self-contained — save ทีละไฟล์กัน session loss",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "47 user stories / 141 AC (3 ต่อ story: happy/edge/error, Given/When/Then measurable)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ทุก story อ้าง mockup element จริง + entity-status-map + cascade + UC; ครอบ PRD manual-accept + negative-stock/FIFO retro",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Exception 30 เคส map ใน RTM; Cascade 17 + Notification matrix ใน continuity.html",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Deletion 7 กติกา + RUCDAA สะท้อนครบ; ไม่มีการประดิษฐ์ business rule",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/ (22 files: index, 16 modules, continuity, rbac-deletion, glossary, walkthrough, rtm)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Functional Spec web complete: 22 files, 47 stories/141 AC, all journeys+exceptions+deletion+Pond answers covered. TODO: reconcile placeholder links to TL api-*.html (TL finished all 15). Entry appended by dispatcher (write contention).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T20:30:00+07:00"
         }
       ]
     }
