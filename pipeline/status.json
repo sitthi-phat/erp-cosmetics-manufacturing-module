@@ -1501,6 +1501,40 @@
           "summary": "STAGE 2 PO REVIEW = PASS (Gate 2 open). Both sides verified by opening real files; every journey/cascade/UC/exception covered with story+AC+endpoint+schema; 3 non-blocking confirm/polish items. po-stage2-review.md has 15-min Gate-2 guide. Entry applied by dispatcher (write contention).",
           "overridden_by": null,
           "updated_at": "2026-07-09T22:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "spec-depth-audit",
+          "status": "READY_FOR_BA",
+          "gate_checklist": [
+            {
+              "item": "Depth Standard defined: step-by-step behavior + formula/condition per number/group + role view + edge/empty/error",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Dashboard template by PO: date-filter behavior + 7-dept x 29-tile table (formula/condition/event-state/drill/permission)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "All 17 modules swept: 11 deep enough; Dashboard+Settings shallow; Home missing (in progress); Trace+Platform missing sub-behaviors",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Gap list P0/P1/P2 as BA work order; 3 confirm points flagged",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/po-spec-depth-audit.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Depth audit complete per Pond Gate-2 directive. Dashboard+Settings shallow, Home missing, Trace/Platform sub-behaviors missing; 11 transaction modules deep enough. po-spec-depth-audit.md = BA work order (P0: Dashboard 7-dept via PO template, Home, Settings 5 screens / P1: Trace, Platform noti+global search+session, PO suggest logic, supplier matrix, list filters everywhere, stock-value formula / P2: polish). Entry appended by dispatcher (contention).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T23:30:00+07:00"
         }
       ]
     }
