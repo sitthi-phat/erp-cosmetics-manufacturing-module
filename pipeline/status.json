@@ -932,6 +932,98 @@
           "summary": "Two small fixes from PO's entity-status-map analysis (data/label only). (1) Standardized all PRD numbers to PRD-{YYYYMM}-{NNNNNN} (e.g. PRD-202607-000091) across production/po-detail/qc/dashboard/settings — 1 line item = 1 PRD, PRD created at PO Confirmed (status 'รับงาน'). (2) Added a 'ใบสั่งผลิต (PRD)' column per line in po-detail line-items table so each line shows its PRD next to the Batch (PO-181: line1=PRD-202607-000091, line2=PRD-202607-000088). Playwright spot-check: render OK, 0 JS errors. Feature-level status unchanged (WAITING_HUMAN_GATE).",
           "overridden_by": null,
           "updated_at": "2026-07-10T09:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "prd-sync+deletion-draft",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "TASK 1 — Synced Pond's 3 PRD-lifecycle answers (2 changed the earlier defaults): (1) PRD NOT auto — PO Confirmed puts each line into a 'รอรับงาน (Awaiting Acceptance)' production queue; Production presses 'รับงาน' → THAT is when the PRD is created (number generated at acceptance, not at Confirm); (2) 1 line = 1 PRD confirmed; (3) material shortage does NOT block + negative stock allowed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Added 'รอรับงาน' pre-PRD queue state + moved PRD number generation to the 'รับงาน' step in entity-status-map.md (§1.2 PO Confirmed row, §1.4 PRD table + pre-state note, §2 cascade rows 1-2, §3 diagram, answers block) and status-journeys.md (§2A, §3 header/mermaid/§3.1/§3.2 table)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Added Negative Stock rule (entity-status-map §1.6 + §3.3 in journeys): production can cut stock negative (not blocked) + trace; GR adds back with a 'ชดเชยยอดติดลบ X หน่วย' notice; display points = stock.html (red + badge), production (warn on รับงาน/เริ่มผลิต), goods-receipt (compensation notice)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Updated mockup-fix list for UX (entity-status-map §4): NEW — 'รับงาน' button + 'รอรับงาน' queue in production; negative-stock red/badge on stock.html + production warning; GR compensation notice. (Earlier PRD-numbering + po-detail PRD column already done by ux-ui prd-format-fix.)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "TASK 2 — Drafted business Deletion Policy (deletion-policy.md): central soft-delete principle + per-entity rules (Customer, Sale/User, Material, BOM, Supplier, Contact, Role, trade docs PO/INV/DN/GR/PR/Shipment, PRD/Batch) with ลบได้เมื่อไหร่ / เกิดอะไรกับของที่ผูก / ใครมีสิทธิ์ (RUCDAA); matrix table; notes to Tech-Lead + BA to continue",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "5 deletion decision-points that cannot be decided for Pond → questions_for_pond with options + default (Customer w/ active PO; Sale reassign vs pool; deleted Material remaining stock; PR/GR void vs delete; Role delete block vs force-migrate)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch feature-level current_agent/status (Gate 1 round 4 stays open); did not edit mockups; no git",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/entity-status-map.md",
+            "docs/requirements/erp-v2-ui-first/status-journeys.md",
+            "docs/requirements/erp-v2-ui-first/deletion-policy.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "ลบลูกค้าที่มี PO active ทำยังไง?",
+              "options": [
+                "[DEFAULT] flag 'ถูกลบ' ได้เสมอ แต่ PO เดิมวิ่งต่อจนจบ + ห้ามสร้าง PO ใหม่",
+                "บล็อกไม่ให้ลบจนกว่าไม่มี PO/ยอดค้าง (เข้มกว่า)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ลบ Sale ที่มีลูกค้า/งานค้าง?",
+              "options": [
+                "[DEFAULT] บังคับ reassign ก่อนลบ (Sale Manager/Admin เลือกผู้รับช่วง)",
+                "auto ย้ายลูกค้าเข้า 'pool ไม่มีผู้ดูแล' ให้แจกภายหลัง"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ลบวัตถุดิบที่ยังมี stock คงเหลือ?",
+              "options": [
+                "[DEFAULT] ใช้ของคงเหลือผลิตต่อได้จนหมด (ไม่เติมใหม่)",
+                "freeze ห้ามใช้ทันทีที่ลบ (ล็อก Lot ที่เหลือ)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "PR/GR ลบยังไง?",
+              "options": [
+                "[DEFAULT] ไม่มีลบ ใช้ 'ยกเลิก (void)' เหมือนเอกสารการค้าอื่น (คง gapless)",
+                "ลบได้จริงเฉพาะ PR/GR ที่ยังไม่ผูก Lot"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ลบ Role ที่มี user อยู่ใต้?",
+              "options": [
+                "[DEFAULT] ห้ามลบจนกว่าย้าย user ออกหมด",
+                "force-migrate (ตอนลบเลือก role ปลายทางแล้วย้าย user ทั้งหมดอัตโนมัติ)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "TWO TASKS. (1) SYNC PRD lifecycle to Pond's r4.1 answers — 2 of 3 changed the earlier defaults. PRD is now MANUAL: PO Confirmed → each line enters a 'รอรับงาน (Awaiting Acceptance)' production queue (NO PRD yet); Production presses 'รับงาน' → that generates the PRD (status รับงาน) → 'เริ่มผลิต' generates the Batch. Added NEGATIVE STOCK rule: material shortage never blocks; production cuts stock negative (with trace); Goods Receipt adds it back and must show 'การรับนี้ชดเชยยอดติดลบ X หน่วย'; display = stock.html red+badge, production warning on รับงาน/เริ่มผลิต, GR notice. Rewrote entity-status-map.md (§1.2/§1.4/§1.6/§2 cascade/§3 diagram/§4 fixes/§5) + status-journeys.md (§2A/§3/§3.1/§3.2/§3.3 new) so the two docs stay single-source. NEW mockup fixes for UX (earlier PRD-numbering + po-detail PRD column already done): 'รับงาน' button + 'รอรับงาน' queue in production; negative-stock red/badge on stock + production warning; GR compensation notice. (2) DELETION POLICY business draft (deletion-policy.md) answering Pond's new question — central rule = NO hard delete, soft-delete flag 'deleted' (still searchable/viewable read-only, cannot be reference of new docs, existing docs keep running, mandatory audit+comment, Delete=D bit / restore=Admin); trade docs PO/INV/DN/GR/PR/Shipment have NO delete, only cancel/void (gapless). Per-entity rules for Customer, Sale/User, Material, BOM, Supplier, Contact, Role, PRD/Batch + matrix + handoff notes to Tech-Lead (soft-delete schema + reference guard) and BA (per-entity AC). Batched 5 deletion decision-points to Pond with options+default. Feature-level status unchanged (Gate 1 round 4 open); mockups untouched; no git.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T11:00:00+07:00"
         }
       ]
     }
