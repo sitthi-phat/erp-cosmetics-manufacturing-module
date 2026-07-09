@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "READY_FOR_UXUI",
+      "current_agent": "po",
+      "status": "READY_FOR_PO_REVIEW",
       "human_gates": {
         "gate1_look": {
           "approved": false,
@@ -180,6 +180,95 @@
           "summary": "TWO TASKS DONE. (1) Reviewed round-4 mockups on Pond's behalf — VERDICT PASS: deep-read production (Batch per line + Rework badge + run-history + feedback; status changer has NO 'QC ไม่ผ่าน'), qc (decide per line/Batch, fail reworks only that Batch, previous-run history, Lot→Batch GMP chain, reconcile x/N), po-detail (explicit 'เปลี่ยนสถานะ PO' card with mandatory reason + per-line Batch/QC overview + trace), goods-receipt (multi-line header+lines, 1 GR many PR, partial→confirm-dialog to create PR for shortfall), supplier (full-width layout replacing cramped right panel + create/edit mode + price matrix + Active toggle), dashboard (date-filter presets incl custom range + per-tile ในช่วง/ตอนนี้ captions), customer-create (empty real create form). All PO §8 P0/P1/P2 closed; Pond's 9 r3 categories 9/9; Batch format B-{PO}-{line}-{run} + rework loop (ก-ง) verified vs status-journeys §3.1/§3.2. Recorded po-mockup-review-r4.md. (2) FINALIZED mock-data-spec.md (was draft, deferred) now aligned to real round-4 doc numbering: one interconnected dataset (3 suppliers incl 1 inactive, 8 materials+lots, 4 BOM, 7 customers covering all 6 statuses, PR/GR multi-line+partial) driving all 8 production use cases — UC1 PO Draft (PO-202607-000191), UC2 Hold→Follow-up (PO-...000188), UC3 QC pass-all (PO-...000176), UC4 QC fail per-line rework in progress (PO-...000181, matches embedded mockup), UC5 rework full loop run1 fail→run2 pass (PO-...000170), UC6 single ship success (SHP-20260708-0044→DN-...00119→INV-2026-000135), UC7 multi-PO round all delivered (SHP-...0045), UC8 partial round 1 delivered+1 rejected+1 postponed (SHP-...0046) — plus a 'which screen shows which data' table + cross-page consistency checklist. REMAINING = round 4.5: UX embeds this single dataset to replace each page's own samples so data is identical across modules; then Gate 1 opens. Set current_agent=ux-ui, status=READY_FOR_UXUI. Did not edit mockups.",
           "overridden_by": null,
           "updated_at": "2026-07-09T17:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "design-r4.5-data",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Embedded central dataset (mock-data-spec.md) replacing per-page samples — same data visible across modules",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "PO-202607-000181 (เดอร์มา, line2 rework run1→run2) consistent across po-list / po-detail / production / qc / trace (Batch B-PO-202607-000181-1-1 & -2-2, run1 -2-1 failed feedback)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "เดอร์มา แคร์ = Follow-up (from PO-188 Hold) consistent across customers / customer-detail / dashboard Sale tile+drill (ต้องติดตาม=1 counts เดอร์มา) + trace audit",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "SHP-20260708-0046 Partially consistent across shipping (recent rounds + detail card) / delivery-note (DN-122 Delivered, DN-123 Rejected→raise Sale, DN-124 Postponed 10/07); PO-175/178 statuses match po-list + home",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "GR-20260708-008 partial (แอลกอฮอล์ 200/250 → dialog PR-000032) consistent across goods-receipt / purchase-request (PR-028 รับบางส่วน + PR-032 เปิดคำขอ) / stock (แอลกอฮอล์ L-TT-ALC-2607 รอ QC) / qc incoming lots",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "8 use cases present: PO-191 Draft, PO-188 Hold, PO-176 QC-pass→UC6 ship, PO-181 rework-in-progress, PO-170 rework-complete, SHP-0044 single, SHP-0045 full round, SHP-0046 partial round (po-list shows all 11 dataset POs)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "7 customers = all 6 statuses (Lead สวยใส, Active บิวตี้/กลอรี่, Follow-up เดอร์มา, Inactive กลอสซี่, Blacklist เครดิตดำ+เหตุผล, Disabled ปิดกิจการ+เหตุผล); CUS codes = spec format",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Shared notification panel rewritten (all 25 shell pages) to dataset: rework B-…-181-2-1, PR-032 from GR-008, PO-170 ready-to-ship, DN-123 rejected→raise Sale — UTF-8 clean (fixed a perl double-encode)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "trace genealogy = B-PO-202607-000170-1-2 (run1 fail→run2 pass)→line1→PO-170→กลอรี่ + field-audit reflects dataset (PR-028 partial, CUS-000021 Active→Follow-up via PO-188, BOM-02 override)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Dashboard Sale numbers match dataset (ลูกค้าประจำ 2, ห่างหาย 1, PO 11, รอชำระ 3, ต้องติดตาม 1) + drills; stock/qc lot counts aligned (รอ QC 4, ใกล้หมด 1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "INV-2026-000135 (PO-176, บิวตี้ เอเชีย, รอชำระ, credit 30, VAT7% effective 01/01/2569) consistent across invoices / invoice-detail; doc-number formats per spec",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Data-only changes — no structure/layout touched; Playwright spot-check render OK on 15 data-changed pages, NO page JS errors, noti opens with correct Thai+arrow encoding",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/po-list.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/goods-receipt.html",
+            "docs/design/erp-v2-ui-first/mockups/purchase-request.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/trace.html",
+            "docs/design/erp-v2-ui-first/mockups/home.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/invoices.html",
+            "docs/design/erp-v2-ui-first/mockups/invoice-detail.html",
+            "docs/design/erp-v2-ui-first/ux-audit/"
+          ],
+          "questions_for_pond": [],
+          "summary": "Round 4.5 (data embed only — no structure/layout changes). Replaced every page's own sample data with the single central dataset from mock-data-spec.md so the same records read consistently across modules. Key threads wired end-to-end: (1) PO-202607-000181 (เดอร์มา, line2 rework, Batch B-{PO}-{line}-{run}) identical on po-list/po-detail/production/qc/trace; (2) เดอร์มา แคร์=Follow-up from PO-188 Hold on customers/customer-detail/dashboard-Sale-tile(ต้องติดตาม=1)/trace; (3) SHP-20260708-0046 Partially (DN-122 Delivered / DN-123 Rejected→raise Sale / DN-124 Postponed 10/07) on shipping/delivery-note + PO-175/178 on po-list/home; (4) GR-008 partial แอลกอฮอล์ 200/250→dialog PR-000032 on goods-receipt/purchase-request/stock/qc. po-list now lists all 11 dataset POs (8 use cases); customers = 7 covering all 6 statuses with comment reasons; INV-2026-000135 for PO-176; trace genealogy = PO-170 run1-fail→run2-pass. Rewrote the shared notification panel on all 25 shell pages to dataset events (and fixed a perl wide-char double-encoding of that line — verified clean UTF-8 via Playwright). Ran the spec's cross-page consistency checklist — all pass. Playwright spot-check: render OK, 0 JS errors, noti encoding correct. Handoff: READY_FOR_PO_REVIEW (final cross-page check before Gate 1 round 4).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T19:30:00+07:00"
         }
       ]
     }
