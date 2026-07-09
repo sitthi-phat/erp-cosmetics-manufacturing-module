@@ -14,7 +14,7 @@
 3. **เลข Batch เกิดตอน:** ฝ่ายผลิตกด **"เริ่มผลิต"** ของ PRD นั้น → gen **Batch run แรก** `B-{PO}-{line}-1` · cascade ขึ้นไป: Batch(กำลังผลิต) → PRD(กำลังผลิต) · Batch(รอ QC) → PRD(รอ QC) · **Batch ผ่าน QC → PRD line = พร้อมส่งมอบ** · **ทุก PRD ของ PO พร้อมส่งมอบ → PO = พร้อมจัดส่ง** · Batch ไม่ผ่าน → PRD = Rework(กลับกำลังผลิต) + gen Batch run ถัดไป
 4. **"ส่งตรวจคุณภาพ" สร้าง Batch ไหม?** **ไม่ใช่** — Batch สร้างตอน **"เริ่มผลิต"** · "ส่งตรวจ QC" คือ **Batch ที่มีอยู่แล้วเปลี่ยนสถานะ** (กำลังผลิต → รอ QC) แล้วส่งไปหน้า QC · Batch สร้างครั้งเดียวต่อ run (+ run ใหม่เฉพาะตอน rework)
 
-**★ วัตถุดิบขาด + Negative Stock (ปอนด์ตอบ r4.1):** วัตถุดิบไม่พอ **ไม่บล็อก**สายผลิต — กด "รับงาน" สร้าง PRD ได้เลย + **เตือนว่าวัตถุดิบอาจไม่พร้อม** · **อนุญาตตัด stock ติดลบ** เมื่อผลิตจริง (เหตุผลปอนด์: ของจริงอาจมาถึงแล้วแต่ยังไม่ได้ทำใบรับในระบบ ห้ามหยุดสายผลิต) · เมื่อทำ **Goods Receipt** ระบบ **บวก stock กลับ** และ **ต้องแสดงชัดว่าเคยติดลบ** (ดู §1.6 + §4)
+**★ วัตถุดิบขาด + Negative Stock (ปอนด์ตอบ r4.1):** วัตถุดิบไม่พอ **ไม่บล็อก**สายผลิต — กด "รับงาน" สร้าง PRD ได้เลย + **เตือนว่าวัตถุดิบอาจไม่พร้อม** · **อนุญาตตัด stock ติดลบ** เมื่อผลิตจริง (เหตุผลปอนด์: ของจริงอาจมาถึงแล้วแต่ยังไม่ได้ทำใบรับในระบบ ห้ามหยุดสายผลิต) · เมื่อทำ **Goods Receipt** ระบบ **บวก stock กลับ + FIFO retro-link** และ **ต้องแสดงชัดว่าเคยติดลบ** (ดู §1.6 + §4)
 
 **ความสัมพันธ์เชิงตัวเลข:** **1 PO : N PRD (N=line) : M Batch (M≥N; +1 ทุกครั้งที่ rework)** · 1 PO : 1..K DN (ปกติ 1, เพิ่มเมื่อ reject/postpone แล้วส่งรอบใหม่) · 1 Shipment(รอบ) : หลาย DN · 1 PO : 1 Invoice (+versions)
 
@@ -88,10 +88,12 @@
 **★ Negative Stock Rule (ปอนด์ตอบ r4.1):**
 - การผลิต (Batch เริ่มผลิต) **ตัด stock ได้แม้ยอดคงเหลือไม่พอ → ยอดคงเหลือติดลบได้** (ไม่บล็อก) · ทุกครั้งที่เกิดติดลบ **บันทึก trace** (Batch ไหน/วัตถุดิบใด/ติดลบเท่าไร/เมื่อไหร่/ใคร)
 - เมื่อทำ **Goods Receipt** วัตถุดิบตัวที่ติดลบ → ระบบ **บวก stock กลับ** (ชดเชยยอดติดลบก่อน แล้วส่วนเกินเข้า stock ปกติ)
+- **★ FIFO retro-link (ปอนด์ยืนยัน — GMP):** GR ที่เข้ามาชดเชยยอดติดลบ → ระบบ **ผูกการใช้วัตถุดิบ (consumption) ที่ตัดติดลบไว้ก่อนหน้า เข้ากับ Lot ใหม่ที่รับเข้าแบบ FIFO อัตโนมัติ** (Lot เก่าสุดก่อน) → ทำให้ **Batch ↔ Lot ครบสายย้อนหลัง** (genealogy ไม่มีรูโหว่) · retro-link ทุกครั้งบันทึก trace (Batch/consumption ใด ↔ Lot ใด/จำนวน/เวลา) · ถ้า GR ที่รับไม่พอชดเชยยอดติดลบทั้งหมด → ผูกเท่าที่มี แล้วรอ GR ถัดไปผูกส่วนที่เหลือ (ยังติดลบต่อจนกว่าจะครบ)
 - **จุดแสดงผลบังคับ (ให้ UX/UI):**
   - **stock.html:** วัตถุดิบที่ยอดติดลบ = **ตัวเลขสีแดง + badge "ติดลบ (รอรับเข้า)"** + ปริมาณติดลบ
   - **production:** ตอน "รับงาน"/"เริ่มผลิต" ที่วัตถุดิบไม่พอ → **เตือน "วัตถุดิบอาจไม่พร้อม / จะตัด stock ติดลบ X หน่วย"** (ให้ทำต่อได้)
-  - **goods-receipt:** ถ้ารายการที่รับไปชดเชยยอดติดลบ → **กล่องแจ้ง "การรับนี้ชดเชยยอดติดลบ X หน่วย"** ก่อนยืนยัน
+  - **goods-receipt:** ถ้ารายการที่รับไปชดเชยยอดติดลบ → **กล่องแจ้ง "การรับนี้ชดเชยยอดติดลบ X หน่วย (ผูก Lot ย้อนแบบ FIFO)"** ก่อนยืนยัน
+  - **trace:** genealogy Batch แสดง Lot ที่ผูกย้อนแบบ FIFO ด้วย (ระบุว่า retro-link จาก GR ใด)
 
 ### 1.7 PR — คำขอสั่งซื้อ · `PR-{NNNNNN}` · หน้า: purchase-request / pr-create
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
@@ -103,7 +105,7 @@
 | ปิดคำขอ (Closed) / ยกเลิก | Stock (manual, ยกเลิกบังคับ comment) | ปิด/ยกเลิก |
 
 ### 1.8 GR — ใบรับเข้า · `GR-{YYYYMMDD}-{NNN}` · หน้า: goods-receipt
-event บันทึกรับเข้า (header 1 supplier + หลาย line) → **gen Lot รายบรรทัด** + **ปิด/อัปเดต PR ที่อ้าง** + **บวก stock กลับ (ชดเชยยอดติดลบถ้ามี — โชว์ notice)** · ผู้ทำ = Stock · (ไม่มี lifecycle ยาว — เป็นเอกสารบันทึก)
+event บันทึกรับเข้า (header 1 supplier + หลาย line) → **gen Lot รายบรรทัด** + **ปิด/อัปเดต PR ที่อ้าง** + **บวก stock กลับ (ชดเชยยอดติดลบถ้ามี + FIFO retro-link — โชว์ notice)** · ผู้ทำ = Stock · (ไม่มี lifecycle ยาว — เป็นเอกสารบันทึก)
 
 ### 1.9 Shipment (รอบจัดส่ง) · `SHP-{YYYYMMDD}-{NNNN}` · หน้า: shipping / delivery-note
 | สถานะรอบ | ใครเปลี่ยน | เกิดตอน |
@@ -144,7 +146,7 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 | 14 | **Overdue** (scheduler) | billing=เกินกำหนด | invoices, dashboard(Finance) | Finance + Sale |
 | 15 | **PO วัตถุดิบขาด** (ตอนเปิด PO) | เตือน(ไม่บล็อก) + gen PR(ส่วนที่ขาด) | po-create, purchase-request | Stock + Production |
 | 16 | **ผลิตตัด stock ติดลบ** (Batch เริ่มผลิต, วัตถุดิบไม่พอ) | stock ติดลบ + trace; badge สีแดงในหน้า stock; ไม่บล็อกการผลิต | stock, production, trace | Stock |
-| 17 | **Goods Receipt บันทึกรับ** (Stock) | gen Lot(รอตรวจรับ) รายบรรทัด + ปิด/อัปเดต PR + **บวก stock กลับ/ชดเชยยอดติดลบ (โชว์ notice)** | goods-receipt, purchase-request, stock | Stock/Production |
+| 17 | **Goods Receipt บันทึกรับ** (Stock) | gen Lot(รอตรวจรับ) รายบรรทัด + ปิด/อัปเดต PR + **บวก stock กลับ + FIFO retro-link consumption ที่ติดลบเข้า Lot ใหม่ (โชว์ notice)** | goods-receipt, purchase-request, stock, trace | Stock/Production |
 | 18 | **Lot QC ขาเข้า ผ่าน/ไม่ผ่าน** (QC) | ผ่าน→Lot พร้อมใช้ (+อาจปิด PR) / ไม่ผ่าน→Lot ระงับ→คืนของ | qc, stock, return | Stock |
 | 19 | **PO ยกเลิก → เปิดใหม่(ร่าง)** (Sale/Admin) | คงเลข PO เดิม + trace lifecycle; คิว/PRD/Batch ที่เกิดแล้วถูกยกเลิกตาม (trace) | po-detail | Production |
 
@@ -190,8 +192,8 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
                                                          ▼
                                               billing = วางบิลแล้ว → (รับชำระ) → ชำระแล้ว / (เลยเครดิต) → เกินกำหนด
 ```
-**เส้นวัตถุดิบ (ขนาน):** PO วัตถุดิบขาด → **PR** (PR-{NNNNNN}) → [Stock] **Goods Receipt** (GR-{YYYYMMDD}-{NNN}) → gen **Lot** (รอตรวจรับ) + **บวก stock กลับ/ชดเชยติดลบ** → [QC] ตรวจรับ → Lot พร้อมใช้ → ใช้ในการผลิต Batch
-**หมายเหตุ negative stock:** ถ้าผลิตก่อนของเข้า → Batch ตัด stock ติดลบ (badge แดงหน้า stock) → GR เข้ามาบวกกลับ (notice "ชดเชยยอดติดลบ")
+**เส้นวัตถุดิบ (ขนาน):** PO วัตถุดิบขาด → **PR** (PR-{NNNNNN}) → [Stock] **Goods Receipt** (GR-{YYYYMMDD}-{NNN}) → gen **Lot** (รอตรวจรับ) + **บวก stock กลับ/ชดเชยติดลบ + FIFO retro-link** → [QC] ตรวจรับ → Lot พร้อมใช้ → ใช้ในการผลิต Batch
+**หมายเหตุ negative stock:** ถ้าผลิตก่อนของเข้า → Batch ตัด stock ติดลบ (badge แดงหน้า stock) → GR เข้ามาบวกกลับ + ผูก Lot ย้อน FIFO ให้ genealogy ครบ (notice "ชดเชยยอดติดลบ")
 
 ---
 
@@ -200,15 +202,16 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 |---|---|---|
 | **PRD manual accept (รอรับงาน → รับงาน)** | ⚠ ต้องแก้ | **เดิม mockup ทำ PRD auto ตอน Confirm** — ต้องเพิ่ม **คิว "รอรับงาน" + ปุ่ม "รับงาน"** ในหน้า production; เลข PRD ออกตอนกดรับงาน (ก่อนกด = ยังไม่มีเลข PRD) |
 | **Negative stock display** | ⚠ ต้องเพิ่ม | stock.html: ยอดติดลบ = **สีแดง + badge "ติดลบ (รอรับเข้า)"**; production: เตือน "จะตัด stock ติดลบ X หน่วย" ตอนรับงาน/เริ่มผลิต |
-| **GR negative notice** | ⚠ ต้องเพิ่ม | goods-receipt: กล่องแจ้ง **"การรับนี้ชดเชยยอดติดลบ X หน่วย"** ก่อนยืนยัน |
+| **GR negative notice + FIFO retro-link** | ⚠ ต้องเพิ่ม | goods-receipt: กล่องแจ้ง **"การรับนี้ชดเชยยอดติดลบ X หน่วย (ผูก Lot ย้อน FIFO)"** ก่อนยืนยัน; trace: แสดง Lot ที่ผูกย้อนใน genealogy |
 | 1 line = 1 PRD | ✅ ตรง | production แสดง PRD ต่อ line ของ PO-181 |
 | Batch เกิดตอนเริ่มผลิต (ไม่ใช่ส่งตรวจ) | ✅ ตรง | production alert อธิบายชัด |
-| **PRD numbering format** | ⚠ ต้องแก้ | ปัจจุบัน `PRD-000091` (สั้น) → ควรเป็น **`PRD-{YYYYMM}-{NNNNNN}`** (gapless ต่อเดือน) — แก้ที่ production/dashboard/qc/settings |
-| **po-detail แสดง PRD ต่อ line** | ⚠ ควรเพิ่ม | เพิ่มคอลัมน์/ลิงก์ PRD ต่อ line (แสดง "รอรับงาน" ถ้ายังไม่ได้รับงาน) |
+| **PRD numbering format** | ✅ แก้แล้ว (ux-ui prd-format-fix) | `PRD-{YYYYMM}-{NNNNNN}` แล้วที่ production/dashboard/qc/settings/po-detail |
+| **po-detail แสดง PRD ต่อ line** | ✅ แก้แล้ว (ux-ui prd-format-fix) | มีคอลัมน์ PRD ต่อ line แล้ว (ปรับให้แสดง "รอรับงาน" เมื่อยังไม่รับงาน — รวมในงาน manual-accept ข้างบน) |
 | คำศัพท์สถานะ PRD สม่ำเสมอ | ⚠ ตรวจ | dashboard(ฝ่ายผลิต) ใช้คำ รอรับงาน/รับงาน/กำลังผลิต/รอ QC/พร้อมส่งมอบ/Hold/Rework ตรงกับ production |
 
 ---
 
 ## 5. คำถามถึงปอนด์
-- **r4 (3 ข้อ): ตอบครบแล้ว ✅** — (1) PRD **ไม่ auto** ฝ่ายผลิตกด "รับงาน" เอง (เพิ่มคิว "รอรับงาน") · (2) **1 line = 1 PRD** ✅ · (3) วัตถุดิบขาด**ไม่บล็อก** + อนุญาต **stock ติดลบ** (GR บวกกลับ + โชว์ชัด)
-- **ไม่มีคำถามค้างใหม่จาก lifecycle** — ประเด็นถัดไปอยู่ที่ **Deletion Policy** (`deletion-policy.md`) ซึ่งมีคำถามถึงปอนด์แยกไฟล์
+- **r4 (3 ข้อ): ตอบครบแล้ว ✅** — (1) PRD **ไม่ auto** ฝ่ายผลิตกด "รับงาน" เอง (เพิ่มคิว "รอรับงาน") · (2) **1 line = 1 PRD** ✅ · (3) วัตถุดิบขาด**ไม่บล็อก** + อนุญาต **stock ติดลบ** (GR บวกกลับ + FIFO retro-link + โชว์ชัด)
+- **Deletion Policy: ตอบครบ 7 ข้อ ล็อกแล้ว ✅** — ดู `deletion-policy.md` (soft delete ทุก entity, ไม่มีคำถามเปิด)
+- **ไม่มีคำถามค้างใหม่**
