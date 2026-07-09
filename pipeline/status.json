@@ -880,7 +880,7 @@
                 "[DEFAULT] 1 line = 1 PRD",
                 "1 PO = 1 PRD"
               ],
-              "answer": null
+              "answer": "ยืนยัน 1 line item = 1 PRD (ถ้าไม่ติดอะไรก็ OK) (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "PO Confirmed ทั้งที่วัตถุดิบขาด → สร้าง PRD ไหม?",
