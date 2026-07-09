@@ -53,3 +53,8 @@ Engineer เข้าใจและพร้อมพัฒนา**
 > ระหว่างนี้ทีมทำได้เฉพาะ **doc sync/ปิดเอกสาร** (ห้ามเริ่ม development) · เอกสาร lifecycle ปิดครบแล้ว:
 > `entity-status-map.md` (PRD manual-accept + negative stock + FIFO retro-link),
 > `status-journeys.md` (sync), `deletion-policy.md` (7 กติกา ล็อกแล้ว)
+
+## เพิ่มเติมจากปอนด์ (2026-07-09 หลัง approve Gate 1)
+- **งานของ Tech-Lead (API/DB/Architecture) ปอนด์จะ review เองด้วยที่ GATE 2** — ไม่ใช่แค่ผ่าน PO
+  → TL ต้องทำให้**สมบูรณ์ที่สุด**: อ่านเข้าใจได้โดยไม่ต้องเดา, diagram ชัด, ทุก case มี API/field รองรับ
+- Gate 2 review package = เว็บ Functional Spec (BA) + Architecture/API/DB (TL) ครบชุดเดียว
