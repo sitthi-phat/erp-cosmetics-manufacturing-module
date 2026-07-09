@@ -1106,7 +1106,7 @@
                 "แยกไฟล์/module (แนะนำ)",
                 "single-page + anchor"
               ],
-              "answer": null
+              "answer": "ทำหน้า main (index) แล้ว link ไปไฟล์แยกต่อ module (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "Format: BA/TL แบ่ง section ownership ในหน้าเดียวกัน (BA: Requirement/Story/AC, TL: API & DB) โอเคไหม?",
@@ -1114,7 +1114,7 @@
                 "โอเค (แนะนำ)",
                 "แยกไฟล์ cross-link"
               ],
-              "answer": null
+              "answer": "แยกไฟล์ BA กับ TL คนละชุด แล้ว cross-link ถึงกัน (ไม่เขียนไฟล์เดียวกัน) (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "Format: อ้างอิง mockup แบบลิงก์เปิดแท็บใหม่ + thumbnail (แนะนำ) หรือ iframe embed?",
@@ -1123,14 +1123,14 @@
                 "iframe",
                 "ทั้งสอง"
               ],
-              "answer": null
+              "answer": "ลิงก์เปิดแท็บใหม่ + thumbnail (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "Tooling: HTML self-contained สไตล์ mockup gallery ไม่มี build ใช่ไหม?",
               "options": [
                 "ใช่ (แนะนำ)"
               ],
-              "answer": null
+              "answer": "ใช่ — HTML self-contained ไม่มี build (ปอนด์ตอบ 2026-07-09)"
             }
           ],
           "summary": "BA ack new output (Functional Spec static web). Planned structure: index + per-module pages (16 epics, fixed sections a-f w/ TL placeholder) + cross-cutting pages (cascade/noti/RUCDAA/deletion/glossary) + 8-UC walkthrough + traceability matrix. Content blockers before writing: Gate1 approval, mockup fixes (accept queue/negative stock), deletion Q1-5 answers. Original 6 business questions now all answered in new docs. Entry appended by dispatcher on BA request (concurrent-write contention).",
