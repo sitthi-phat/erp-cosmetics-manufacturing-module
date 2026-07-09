@@ -1,7 +1,7 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>จัดส่ง (Shipment/DN) · Functional Spec · ESSENCE Hub</title><style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
 body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
 a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
 .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
@@ -106,7 +106,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note">Placeholder: <a href="#">api-db/shipping.html ↗ (รอ TL)</a> — รองรับ: 2-tier Shipment/DN reconcile, per-PO DN, postpone flag+date, round auto-close, search PO by customer fields</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-shipping.html" target="_blank">api-shipping.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: 2-tier Shipment/DN reconcile, per-PO DN, postpone flag+date, round auto-close, search PO by customer fields</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub"><li>PO พร้อมจัดส่ง→คิว (<a href="continuity.html#c9">C9</a>) · Delivered→PO ส่งถึง+overdue (<a href="continuity.html#c10">C10</a>) · Reject (<a href="continuity.html#c11">C11</a>) · Postpone (<a href="continuity.html#c12">C12</a>)</li></ul>

@@ -88,10 +88,10 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <span class="gwt"><b>Given</b> การผลิตตัดกลีเซอรีนจนยอดคงเหลือ = −4 กก.</span>
 <span class="gwt"><b>When</b> เปิดหน้า stock</span>
 <span class="gwt"><b>Then</b> แสดงยอด <b>−4 เป็นตัวเลขสีแดง + badge "ติดลบ (รอรับเข้า)"</b> + ปริมาณติดลบ</span></div>
-<div class="ac edge"><span class="tag">Edge — GR ชดเชยยอดติดลบ</span>
+<div class="ac edge"><span class="tag">Edge — GR ชดเชยยอดติดลบ + FIFO retro-link</span>
 <span class="gwt"><b>Given</b> ยอดกลีเซอรีน −4 กก. และรับเข้า 6 กก.</span>
 <span class="gwt"><b>When</b> ยืนยัน GR</span>
-<span class="gwt"><b>Then</b> ก่อนยืนยันแสดง notice "การรับนี้ชดเชยยอดติดลบ 4 หน่วย"; หลังรับ ยอดคงเหลือ = +2 (ชดเชย 4 ก่อน แล้วส่วนเกิน 2 เข้าปกติ) + trace</span></div>
+<span class="gwt"><b>Then</b> ก่อนยืนยันแสดง notice "การรับนี้ชดเชยยอดติดลบ 4 หน่วย"; หลังรับ ยอดคงเหลือ = +2; ระบบ <b>back-allocate การตัดที่ติดลบเข้า lot ใหม่แบบ FIFO</b> (คง Batch↔Lot GMP) + trace</span></div>
 <div class="ac err"><span class="tag">Error — ราคาซื้อติดลบ</span>
 <span class="gwt"><b>Given</b> กรอกราคาซื้อเป็นค่าติดลบ</span>
 <span class="gwt"><b>When</b> บันทึก</span>
@@ -122,11 +122,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>GR</td><td><code>GR-{YYYYMMDD}-{NNN}</code> · header 1 supplier + หลาย line · gen Lot รายบรรทัด</td></tr>
 <tr><td>ราคา</td><td>ซื้อ/ขาย แยก field · 0 ได้ · ติดลบไม่ได้</td></tr>
 <tr><td>เกณฑ์ใกล้หมด</td><td>ต่อวัตถุดิบ · % หรือจำนวน · <b>ไม่มี default</b></td></tr>
-<tr><td>Negative stock</td><td>ผลิตตัดติดลบได้ · แสดงแดง+badge · GR บวกกลับชดเชย + trace</td></tr>
+<tr><td>Negative stock</td><td>ผลิตตัดติดลบได้ · แสดงแดง+badge · GR บวกกลับชดเชย + FIFO retro-link + trace</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note">Placeholder: <a href="#">api-db/stock.html ↗ (รอ TL)</a> — รองรับ: negative on-hand + retro-compensation on GR, FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-stock.html" target="_blank">api-stock.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: negative on-hand + retro-compensation on GR (FIFO back-allocate), FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">

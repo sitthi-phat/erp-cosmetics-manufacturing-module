@@ -108,7 +108,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="ac edge"><span class="tag">Edge — reassign</span>
 <span class="gwt"><b>Given</b> Sale Manager ต้องการย้ายลูกค้าจากสมชายไปสมหญิง</span>
 <span class="gwt"><b>When</b> กด reassign</span>
-<span class="gwt"><b>Then</b> customer.sale เปลี่ยน; แสดง 2 dashboard (เดิม/ใหม่) + trace (<a href="continuity.html#c14">ref</a>)</span></div>
+<span class="gwt"><b>Then</b> customer.sale เปลี่ยน; แสดง 2 dashboard (เดิม/ใหม่) + trace (<a href="continuity.html#c14b">ref</a>)</span></div>
 <div class="ac err"><span class="tag">Error — ปลด Blacklist โดยไม่ใช่ Admin</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Admin</span>
 <span class="gwt"><b>When</b> พยายามปลด Blacklist</span>
@@ -123,10 +123,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>Manual + comment บังคับ</td><td>Follow-up, Disabled, Blacklist</td></tr>
 <tr><td>สิทธิ์พิเศษ</td><td>reassign = Sale Manager/Admin · ปลด Blacklist = Admin</td></tr>
 <tr><td>contact</td><td>ไม่จำกัด · มีผู้ติดต่อหลัก (ลบไม่ได้ถ้าเป็นคนเดียว)</td></tr>
+<tr><td>ลบลูกค้า</td><td>soft-delete: flag ได้เสมอ; PO เดิมวิ่งต่อ; ห้ามสร้าง PO ใหม่ (ดู <a href="rbac-deletion.html#cus">Deletion</a>)</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note">Placeholder: <a href="#">api-db/customer.html ↗ (รอ TL)</a> — รองรับ: 6-status FSM, Active/Inactive scheduler (config ต่อลูกค้า), reassign audit, soft-delete + reference guard</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-customer.html" target="_blank">api-customer.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: 6-status FSM, Active/Inactive scheduler (config ต่อลูกค้า), reassign audit, soft-delete + reference guard</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub"><li>PO ใบแรก→Active (<a href="continuity.html#c1">C1</a>) · Hold→Follow-up (<a href="continuity.html#c8">C8</a>) · reassign 2 dashboard (<a href="continuity.html#c14b">C14b</a>)</li></ul>

@@ -28,12 +28,12 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Functional Spec — ESSENCE Hub System</h1>
-<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · เขียนโดย BA · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · เอกสารนี้ = requirement ที่ใช้พัฒนา (Tech-Lead เติม API/DB + Architecture ในไฟล์ที่ลิงก์)</p>
+<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · เขียนโดย BA · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · เอกสารนี้ = requirement ที่ใช้พัฒนา · Tech-Lead เติม API/DB + Architecture (ลิงก์แล้ว)</p>
 
-<div class="note"><b>วิธีอ่าน:</b> แต่ละหน้า module มี (ก) ภาพรวม+use case (ข) ลิงก์ไป mockup จริง (ค) User Stories + Acceptance Criteria (Given/When/Then, ≥3 ต่อ story: happy/edge/error) (ง) Data rules/สถานะ entity (จ) ลิงก์ไป API/DB ของ Tech-Lead (placeholder) (ฉ) ความต่อเนื่องข้าม module · <b>Source of truth เรื่องสถานะ = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> · รวม ~50 stories / ~150 AC</p>
+<div class="note"><b>วิธีอ่าน:</b> แต่ละหน้า module มี (ก) ภาพรวม+use case (ข) ลิงก์ไป mockup จริง (ค) User Stories + Acceptance Criteria (Given/When/Then, ≥3 ต่อ story: happy/edge/error) (ง) Data rules/สถานะ entity (จ) <b>ลิงก์ไป API/DB ของ Tech-Lead (ต่อ module)</b> (ฉ) ความต่อเนื่องข้าม module · <b>Source of truth เรื่องสถานะ = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> · รวม ~47 stories / ~141 AC</p>
 
 <h2>โครงสร้าง Story ID</h2>
-<p class="sub">รหัส Story = <code>US-&lt;MOD&gt;-NN</code> (เช่น <code>US-PO-01</code>) · รหัส AC = <code>&lt;StoryID&gt;-A/B/C</code> · Priority ยึด Business Key Value (<span class="pill">Must</span>/<span class="pill">Should</span>/<span class="pill">Could</span>) · ทุก AC ครอบ happy + edge + error</p>
+<p class="sub">รหัส Story = <code>US-&lt;MOD&gt;-NN</code> (เช่น <code>US-PO-01</code>) · รหัส AC = <code>&lt;StoryID&gt;-A/B/C</code> · Priority (<span class="pill">Must</span>/<span class="pill">Should</span>/<span class="pill">Could</span>) · ทุก AC ครอบ happy + edge + error</p>
 
 <h2>โมดูล (16 กลุ่ม)</h2>
 <div class="tocgrid">
@@ -58,12 +58,18 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h2>หน้า Cross-cutting</h2>
 <div class="tocgrid">
   <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification <span class="done">พร้อม</span></div><div class="md">17 แถว + noti matrix</div></a>
-  <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy <span class="done">พร้อม</span></div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix</div></a>
+  <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy <span class="done">พร้อม</span></div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (ปอนด์ยืนยันครบ)</div></a>
   <a class="mod" href="glossary.html"><div class="mt">Glossary + Doc formats <span class="done">พร้อม</span></div><div class="md">ป้ายสถานะไทย · เลขเอกสาร</div></a>
   <a class="mod" href="walkthrough.html"><div class="mt">8 Use-Case Walkthrough <span class="done">พร้อม</span></div><div class="md">acceptance script + เส้นวัตถุดิบ</div></a>
   <a class="mod" href="rtm.html"><div class="mt">Requirement Traceability Matrix <span class="done">พร้อม</span></div><div class="md">Story↔mockup↔journey↔UC + 30-exception</div></a>
-  <a class="mod" href="#"><div class="mt">Architecture (Tech-Lead) <span class="wip">รอ TL</span></div><div class="md">service + system diagram (TL จะเพิ่มไฟล์ + ลิงก์)</div></a>
 </div>
+
+<h2>Architecture + API/DB (Tech-Lead)</h2>
+<div class="tocgrid">
+  <a class="mod" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub <span class="done">พร้อม</span></div><div class="md">system + service diagram (Phase2 local → Phase3 GCP) + ADRs</div></a>
+  <a class="mod" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema <span class="done">พร้อม</span></div><div class="md">ทุก entity + hard cases (ledger, PRD, RUCDAA, VAT, soft-delete)</div></a>
+</div>
+<p class="sub">API ต่อ module ลิงก์อยู่ในหัวข้อ "5. API / Database" ของแต่ละหน้า module (<code>../architecture/api-&lt;module&gt;.html</code>)</p>
 
 <h2>อ้างอิงเอกสารต้นทาง</h2>
 <table>
@@ -71,10 +77,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td><a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></td><td>ความจริงหลัก entity/สถานะ/cascade/PRD/Batch/negative-stock</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys.md</a></td><td>state machine + notification/deep-link</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/mock-data-spec.md">mock-data-spec.md</a> / <a href="../../../requirements/erp-v2-ui-first/mock-data-journeys.md">mock-data-journeys.md</a></td><td>dataset กลาง + 8 use case</td></tr>
-<tr><td><a href="../../../requirements/erp-v2-ui-first/deletion-policy.md">deletion-policy.md</a></td><td>นโยบาย soft-delete</td></tr>
+<tr><td><a href="../../../requirements/erp-v2-ui-first/deletion-policy.md">deletion-policy.md</a></td><td>นโยบาย soft-delete (ปอนด์ยืนยันครบ)</td></tr>
 <tr><td><a href="../../../requirements/erp-v2-ui-first/brief.md">brief.md</a></td><td>Business Key Value + scope + DoD</td></tr>
 <tr><td><a href="../mockups/index.html">mockups/index.html</a></td><td>หน้าจอจริง (spec ภาพ) 28 หน้า</td></tr>
+<tr><td><a href="../architecture/index.html">architecture/</a> · <a href="../../../adr/">docs/adr/</a></td><td>Tech-Lead: API + DB schema + service/system diagram + 9 ADRs</td></tr>
 </table>
 
-<footer>ESSENCE Hub System · Functional Spec · Stage 2 · BA · 2026-07-09 · 22 ไฟล์ (index + 16 module + 5 cross-cutting) · ทุกหน้า <span class="done">พร้อม</span> ให้ PO review</footer>
+<footer>ESSENCE Hub System · Functional Spec · Stage 2 · BA · 2026-07-09 · 22 ไฟล์ (index + 16 module + 5 cross-cutting) · API/DB ลิงก์ครบทุก module · ทุกหน้า <span class="done">พร้อม</span> ให้ PO review</footer>
 </div></body></html>
