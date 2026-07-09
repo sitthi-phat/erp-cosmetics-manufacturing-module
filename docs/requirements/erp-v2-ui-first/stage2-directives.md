@@ -36,3 +36,20 @@ Engineer เข้าใจและพร้อมพัฒนา**
 4. **PO ตรวจงาน BA ทุกครั้งที่แก้/เพิ่ม**: requirement ต้องครบ **ทุก journey flow
    ต้องจบทุก case** แล้วจึงส่งปอนด์
 5. ทีมมีข้อกังวลอะไร ให้ถามปอนด์มาได้เลย (batch เป็นชุด)
+
+## Web Format Decisions (ปอนด์ยืนยัน 2026-07-09 — ก่อนกลับมา review Gate 1)
+รูปแบบเอกสารเว็บของ Stage 2 (Functional Spec + Architecture) ล็อกตามนี้:
+- **Main index (หน้าเดียวรวม)** เป็นประตูหลัก → ลิงก์ไปหน้าย่อย · **เนื้อหาแยกไฟล์ต่อ module**
+  (ไม่ยัดทุกอย่างไฟล์เดียว — โหลดง่าย + ทีมแก้แยกส่วนได้ไม่ชนกัน)
+- **BA และ Tech-Lead แยกไฟล์กัน** แล้ว **cross-link ถึงกัน** (BA use case ↔ TL API/schema ของ module
+  เดียวกัน ลิงก์ไป-กลับได้) — ไม่เขียนทับไฟล์เดียวกัน
+- **ทุกจุดที่อ้างหน้าจอ = ลิงก์ไป mockup จริง + thumbnail** (เห็นภาพก่อนคลิก)
+- **No-build HTML เท่านั้น** (static HTML/CSS/JS แบบ mockup gallery — เปิดไฟล์ตรง ๆ ได้
+  ไม่มี build step / ไม่มี framework) เพื่อให้ปอนด์เปิดรีวิวจาก local ได้ทันที
+- โครง: `functional-spec/index.html` (main) → `functional-spec/<module>.html` (BA) +
+  `architecture/*.html` (TL, link จาก index) — จัดโครงจริงตอน Stage 2 เริ่ม (หลัง Gate 1 ผ่าน)
+
+> **สถานะ ณ ตอนนี้:** ปอนด์พักช่วงสั้น ๆ แล้วจะ **กลับมา review Gate 1 ทั้งหมดใน ~1 ชม.** —
+> ระหว่างนี้ทีมทำได้เฉพาะ **doc sync/ปิดเอกสาร** (ห้ามเริ่ม development) · เอกสาร lifecycle ปิดครบแล้ว:
+> `entity-status-map.md` (PRD manual-accept + negative stock + FIFO retro-link),
+> `status-journeys.md` (sync), `deletion-policy.md` (7 กติกา ล็อกแล้ว)
