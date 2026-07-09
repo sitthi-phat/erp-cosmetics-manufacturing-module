@@ -1086,6 +1086,56 @@
           "summary": "COURSE-CORRECTION ACK (Stage-2 prep, still no build). Absorbed Pond's new output format (one functional-spec web: use case -> API + table/field + linked Architecture page w/ service & system diagram; ADRs remain the decision record) and new business rules (PRD-on-manual-accept, NEGATIVE STOCK, soft-delete+reference-guard, gapless) plus all 9 NFR answers. Key architecture position returned to dispatcher: model stock as an APPEND-ONLY stock_movement ledger (on-hand derived; materialized balance via atomic relative delta) — this makes negative stock natural, makes GR 'compensate-negative' automatic netting, and REMOVES the check-then-decrement race that caused DEF-09 (load 50 concurrent/>200 PO/day is light for single-PC MySQL; only remaining lock = gapless counter). Raised 3 guardrails on the web format (single source of truth -> repo OpenAPI+DDL post-approval; ADRs stay normative; self-contained SVG diagrams) and revised effort to ~12-16 dev-days + new ADR 'Stock Ledger & Negative Stock'. Two questions for Pond I cannot decide: (1) GMP raw-lot->batch linkage when material is consumed before its lot exists (recommend auto FIFO back-allocation at GR), (2) whether inventory valuation/COGS is in scope (recommend NOT — use BOM snapshot cost, quantity-only ledger). Deletion-policy Q1-Q5 are business-only (no tech blocker); soft-delete + reference-guard done as a base-repository pattern like generic audit. Deferred all deliverables until Gate 1. Did NOT touch feature-level status.",
           "overridden_by": null,
           "updated_at": "2026-07-10T10:00:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "stage2-prep-r2",
+          "status": "IN_PROGRESS",
+          "gate_checklist": [
+            {
+              "item": "Acknowledged functional-spec-web output format; re-planned structure; inputs read (entity-status-map, mock-data specs/journeys, deletion-policy, 28 mockups)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [],
+          "questions_for_pond": [
+            {
+              "q": "Format: Functional Spec แยกไฟล์ 1 หน้า/module (BA แนะนำ) หรือ single-page ยาว?",
+              "options": [
+                "แยกไฟล์/module (แนะนำ)",
+                "single-page + anchor"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Format: BA/TL แบ่ง section ownership ในหน้าเดียวกัน (BA: Requirement/Story/AC, TL: API & DB) โอเคไหม?",
+              "options": [
+                "โอเค (แนะนำ)",
+                "แยกไฟล์ cross-link"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Format: อ้างอิง mockup แบบลิงก์เปิดแท็บใหม่ + thumbnail (แนะนำ) หรือ iframe embed?",
+              "options": [
+                "ลิงก์+thumbnail (แนะนำ)",
+                "iframe",
+                "ทั้งสอง"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Tooling: HTML self-contained สไตล์ mockup gallery ไม่มี build ใช่ไหม?",
+              "options": [
+                "ใช่ (แนะนำ)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "BA ack new output (Functional Spec static web). Planned structure: index + per-module pages (16 epics, fixed sections a-f w/ TL placeholder) + cross-cutting pages (cascade/noti/RUCDAA/deletion/glossary) + 8-UC walkthrough + traceability matrix. Content blockers before writing: Gate1 approval, mockup fixes (accept queue/negative stock), deletion Q1-5 answers. Original 6 business questions now all answered in new docs. Entry appended by dispatcher on BA request (concurrent-write contention).",
+          "overridden_by": null,
+          "updated_at": "2026-07-09T11:30:00+07:00"
         }
       ]
     }
