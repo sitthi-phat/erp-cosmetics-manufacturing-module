@@ -986,7 +986,7 @@
                 "[DEFAULT] flag 'ถูกลบ' ได้เสมอ แต่ PO เดิมวิ่งต่อจนจบ + ห้ามสร้าง PO ใหม่",
                 "บล็อกไม่ให้ลบจนกว่าไม่มี PO/ยอดค้าง (เข้มกว่า)"
               ],
-              "answer": null
+              "answer": "mark delete flag ที่ลูกค้า — PO ที่เกิดก่อนหน้าเดินต่อปกติ แต่ห้ามสร้างใหม่ (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "ลบ Sale ที่มีลูกค้า/งานค้าง?",
@@ -994,7 +994,7 @@
                 "[DEFAULT] บังคับ reassign ก่อนลบ (Sale Manager/Admin เลือกผู้รับช่วง)",
                 "auto ย้ายลูกค้าเข้า 'pool ไม่มีผู้ดูแล' ให้แจกภายหลัง"
               ],
-              "answer": null
+              "answer": "mark delete flag + ต้องเลือกว่าจะ assign ลูกค้าทั้งหมดให้ใคร (แบบยกชุด/bulk) ให้เสร็จก่อนจึงลบได้ (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "ลบวัตถุดิบที่ยังมี stock คงเหลือ?",
@@ -1002,7 +1002,7 @@
                 "[DEFAULT] ใช้ของคงเหลือผลิตต่อได้จนหมด (ไม่เติมใหม่)",
                 "freeze ห้ามใช้ทันทีที่ลบ (ล็อก Lot ที่เหลือ)"
               ],
-              "answer": null
+              "answer": "mark delete flag — ห้ามสร้าง PO ที่เกี่ยวกับวัตถุดิบนี้หรือ BOM ที่เกี่ยวข้องเพิ่ม, ของที่สร้างไปแล้วใช้จนหมดได้ (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "PR/GR ลบยังไง?",
@@ -1010,7 +1010,7 @@
                 "[DEFAULT] ไม่มีลบ ใช้ 'ยกเลิก (void)' เหมือนเอกสารการค้าอื่น (คง gapless)",
                 "ลบได้จริงเฉพาะ PR/GR ที่ยังไม่ผูก Lot"
               ],
-              "answer": null
+              "answer": "ใช้ void เท่านั้น ไม่มีลบ (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "ลบ Role ที่มี user อยู่ใต้?",
@@ -1018,7 +1018,7 @@
                 "[DEFAULT] ห้ามลบจนกว่าย้าย user ออกหมด",
                 "force-migrate (ตอนลบเลือก role ปลายทางแล้วย้าย user ทั้งหมดอัตโนมัติ)"
               ],
-              "answer": null
+              "answer": "ห้ามลบจนย้าย user ออกหมด (ปอนด์ตอบ 2026-07-09)"
             }
           ],
           "summary": "TWO TASKS. (1) SYNC PRD lifecycle to Pond's r4.1 answers — 2 of 3 changed the earlier defaults. PRD is now MANUAL: PO Confirmed → each line enters a 'รอรับงาน (Awaiting Acceptance)' production queue (NO PRD yet); Production presses 'รับงาน' → that generates the PRD (status รับงาน) → 'เริ่มผลิต' generates the Batch. Added NEGATIVE STOCK rule: material shortage never blocks; production cuts stock negative (with trace); Goods Receipt adds it back and must show 'การรับนี้ชดเชยยอดติดลบ X หน่วย'; display = stock.html red+badge, production warning on รับงาน/เริ่มผลิต, GR notice. Rewrote entity-status-map.md (§1.2/§1.4/§1.6/§2 cascade/§3 diagram/§4 fixes/§5) + status-journeys.md (§2A/§3/§3.1/§3.2/§3.3 new) so the two docs stay single-source. NEW mockup fixes for UX (earlier PRD-numbering + po-detail PRD column already done): 'รับงาน' button + 'รอรับงาน' queue in production; negative-stock red/badge on stock + production warning; GR compensation notice. (2) DELETION POLICY business draft (deletion-policy.md) answering Pond's new question — central rule = NO hard delete, soft-delete flag 'deleted' (still searchable/viewable read-only, cannot be reference of new docs, existing docs keep running, mandatory audit+comment, Delete=D bit / restore=Admin); trade docs PO/INV/DN/GR/PR/Shipment have NO delete, only cancel/void (gapless). Per-entity rules for Customer, Sale/User, Material, BOM, Supplier, Contact, Role, PRD/Batch + matrix + handoff notes to Tech-Lead (soft-delete schema + reference guard) and BA (per-entity AC). Batched 5 deletion decision-points to Pond with options+default. Feature-level status unchanged (Gate 1 round 4 open); mockups untouched; no git.",
@@ -1071,7 +1071,7 @@
                 "ยอมให้ trace ระดับ material ช่วงติดลบ (ไม่ผูก lot จนกว่าคน map เอง)",
                 "อื่น ๆ (ระบุ)"
               ],
-              "answer": null
+              "answer": "ใช่ — GR หลังติดลบให้ผูก consumption ย้อนเข้า lot ใหม่แบบ FIFO อัตโนมัติ (ปอนด์ตอบ 2026-07-09)"
             },
             {
               "q": "การคิดต้นทุนสินค้าคงคลัง / COGS (มูลค่าสต็อกแบบ FIFO หรือเฉลี่ย) อยู่ใน scope ของระบบไหม? — negative stock ทำให้ต้นทุนของที่ตัดไปก่อนของเข้ากำกวม",
@@ -1080,7 +1080,7 @@
                 "อยู่ใน scope — ต้องคิดมูลค่าสต็อก/COGS จริง (ต้องเพิ่มงาน valuation)",
                 "อื่น ๆ (ระบุ)"
               ],
-              "answer": null
+              "answer": "ใช่ — GR หลังติดลบให้ผูก consumption ย้อนเข้า lot ใหม่แบบ FIFO อัตโนมัติ (ปอนด์ตอบ 2026-07-09)"
             }
           ],
           "summary": "COURSE-CORRECTION ACK (Stage-2 prep, still no build). Absorbed Pond's new output format (one functional-spec web: use case -> API + table/field + linked Architecture page w/ service & system diagram; ADRs remain the decision record) and new business rules (PRD-on-manual-accept, NEGATIVE STOCK, soft-delete+reference-guard, gapless) plus all 9 NFR answers. Key architecture position returned to dispatcher: model stock as an APPEND-ONLY stock_movement ledger (on-hand derived; materialized balance via atomic relative delta) — this makes negative stock natural, makes GR 'compensate-negative' automatic netting, and REMOVES the check-then-decrement race that caused DEF-09 (load 50 concurrent/>200 PO/day is light for single-PC MySQL; only remaining lock = gapless counter). Raised 3 guardrails on the web format (single source of truth -> repo OpenAPI+DDL post-approval; ADRs stay normative; self-contained SVG diagrams) and revised effort to ~12-16 dev-days + new ADR 'Stock Ledger & Negative Stock'. Two questions for Pond I cannot decide: (1) GMP raw-lot->batch linkage when material is consumed before its lot exists (recommend auto FIFO back-allocation at GR), (2) whether inventory valuation/COGS is in scope (recommend NOT — use BOM snapshot cost, quantity-only ledger). Deletion-policy Q1-Q5 are business-only (no tech blocker); soft-delete + reference-guard done as a base-repository pattern like generic audit. Deferred all deliverables until Gate 1. Did NOT touch feature-level status.",
