@@ -240,6 +240,22 @@
           "summary": "Answered Pond's 4 lifecycle questions + wrote entity-status-map.md (the 'one map to rule them all' Pond asked for). KEY: formally defined PRD (ใบสั่งผลิต / Production Order) as a distinct entity — the mockups already use PRD per line (PRD-000091=line1, PRD-000088=line2 of PO-181, auto-created on PO Confirm) but status-journeys hadn't named it. ANSWERS: (1) create non-draft PO = 'ยืนยันแล้ว (Confirmed)'; sending to production is AUTOMATIC — system auto-creates PRD per line at status 'รับงาน' (production does NOT press accept, just presses 'เริ่มผลิต' when ready) [default, confirm]; (2) PRD number created at PO Confirmed, 1 line item = 1 PRD, format PRD-{YYYYMM}-{NNNNNN}; (3) Batch created when production presses 'เริ่มผลิต' — Batch(กำลังผลิต)→PRD(กำลังผลิต); Batch QC-pass→PRD line ready; all PRD ready→PO Ready-to-Deliver; Batch QC-fail→PRD Rework + gen next Batch run; (4) NO — 'ส่งตรวจ QC' only changes the EXISTING Batch (กำลังผลิต→รอ QC); Batch is created once per run at 'เริ่มผลิต' (+new run only on rework), NOT at send-to-QC. RELATIONSHIP: 1 PO : N PRD (N=line count) : M Batch (M≥N, +1 per rework run). entity-status-map.md contains: 11 entities each with own statuses/role-who-changes/mockup-page/doc-format/when-created; a 17-row cascade table; a single-line end-to-end text diagram (customer→PO→PRD→Batch→QC→Shipment/DN→Invoice→Paid); a mockup-conformance check (2 UX fixes: PRD numbering format PRD-000091→PRD-{YYYYMM}-{NNNNNN}; po-detail should show PRD per line) — flagged as fix list, did not edit mockups. Synced status-journeys.md §3 (renamed to PRD + Batch, added relationship + pointer to entity-status-map.md as single source of truth). 3 lifecycle questions batched to Pond with defaults (not blocking). Feature-level status unchanged (Gate 1 round 4 still open).",
           "overridden_by": null,
           "updated_at": "2026-07-09T23:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "prd-format-fix",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {"item": "PRD numbering converted to standard PRD-{YYYYMM}-{NNNNNN} everywhere (per entity-status-map.md §1.4): production.html, po-detail.html, qc.html, dashboard.html, settings.html — all PRD-000NNN → PRD-202607-000NNN (dataset month)", "pass": true, "missing": null},
+            {"item": "po-detail.html line-items table gains a 'ใบสั่งผลิต (PRD)' column per line (PRD-202607-000091=line1 โลชั่น, PRD-202607-000088=line2 โฟม) alongside existing Batch/QC columns — shows 1 line = 1 PRD; links to production", "pass": true, "missing": null},
+            {"item": "Data/label only — no structure/layout changes; Playwright spot-check render OK on production/po-detail/qc/dashboard/settings, 0 JS errors; verified 6 distinct PRD codes all in new format", "pass": true, "missing": null},
+            {"item": "Feature-level status untouched (WAITING_HUMAN_GATE, Gate 1 round 4 open)", "pass": true, "missing": null}
+          ],
+          "output_files": ["docs/design/erp-v2-ui-first/mockups/production.html", "docs/design/erp-v2-ui-first/mockups/po-detail.html", "docs/design/erp-v2-ui-first/mockups/qc.html", "docs/design/erp-v2-ui-first/mockups/dashboard.html", "docs/design/erp-v2-ui-first/mockups/settings.html"],
+          "questions_for_pond": [],
+          "summary": "Two small fixes from PO's entity-status-map analysis (data/label only). (1) Standardized all PRD numbers to PRD-{YYYYMM}-{NNNNNN} (e.g. PRD-202607-000091) across production/po-detail/qc/dashboard/settings — 1 line item = 1 PRD, PRD created at PO Confirmed (status 'รับงาน'). (2) Added a 'ใบสั่งผลิต (PRD)' column per line in po-detail line-items table so each line shows its PRD next to the Batch (PO-181: line1=PRD-202607-000091, line2=PRD-202607-000088). Playwright spot-check: render OK, 0 JS errors. Feature-level status unchanged (WAITING_HUMAN_GATE).",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T09:00:00+07:00"
         }
       ]
     }
