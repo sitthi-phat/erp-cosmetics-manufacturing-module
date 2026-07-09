@@ -1,0 +1,121 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home / งานที่รอ · Functional Spec · ESSENCE Hub</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:24px;margin:14px 0 6px}h2{font-size:19px;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg)}
+h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid}
+.b-must{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}.b-should{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
+th,td{border:1px solid var(--border2);padding:8px 10px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
+.story{border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:8px;padding:14px 16px;margin:16px 0;background:#fff}
+.story h3{margin-top:0}.story .sid{font-family:monospace;font-weight:700;color:var(--primary)}
+.ac{margin:9px 0;padding:9px 12px;border-radius:7px;background:#FAFBFC;border:1px solid var(--border2)}
+.ac .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ac.happy{border-left:3px solid var(--success)}.ac.happy .tag{color:var(--success)}
+.ac.edge{border-left:3px solid var(--warning)}.ac.edge .tag{color:var(--warning)}
+.ac.err{border-left:3px solid var(--error)}.ac.err .tag{color:var(--error)}
+.gwt{display:block;margin:2px 0}.gwt b{color:var(--info)}
+.mock{display:flex;gap:12px;align-items:center;border:1px dashed var(--border);border-radius:8px;padding:12px;background:#FAFCFC;margin:10px 0;flex-wrap:wrap}
+.mock .thumb{width:110px;height:70px;border-radius:6px;background:linear-gradient(135deg,#E6F4F3,#CFE7E5);border:1px solid var(--border);display:grid;place-items:center;color:var(--primary);font-size:20px;flex-shrink:0}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.warn{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › Home</span></header>
+<div class="wrap">
+
+<h1>Module: Home / หน้าหลัก — งานที่รอ (Task Inbox) <span class="badge b-must">Tier 3</span></h1>
+<p class="sub">หน้าแรกหลัง login · <b>รวมงานค้างของ user ตาม role</b> + ทางลัดงานที่ทำบ่อย + onboarding ผู้ใช้ใหม่ · ข้อมูลนับ<b>จาก source เดียวกับ dashboard/notification</b> (ไม่คำนวณซ้ำ)</p>
+
+<h2>1. ภาพรวม + Use cases</h2>
+<p>เมื่อ login เข้ามา user เห็น "สวัสดี คุณ&lt;ชื่อ&gt; 👋" + role, การ์ด <b>"งานที่รอคุณอยู่"</b> (task inbox เฉพาะงานของ role นั้น, กด "เปิด" = deep link ไปหน้างานจริง), <b>"งานที่ทำบ่อย"</b> (quick actions ตามสิทธิ์), และกล่อง onboarding (💡 + "ต้องรู้ก่อนเริ่ม" อธิบาย Lot vs Batch) · เมนูซ้ายและ quick action แสดงเฉพาะ module ที่ role มีสิทธิ์ Read</p>
+<p class="sub">โผล่ใน use case: <a href="walkthrough.html#uc1">UC1</a>, <a href="walkthrough.html#uc2">UC2</a>, <a href="walkthrough.html#uc6">UC6</a>, <a href="walkthrough.html#uc8">UC8</a> (home column) · dataset: user = สมชาย (ฝ่ายขาย/CS) เห็น PO-175 ถูกปฏิเสธ, PO-178 Postpone 10/07, PO-176 รอชำระ INV-135</p>
+
+<h2>2. หน้าจอ (mockup จริง)</h2>
+<div class="mock"><div class="thumb">🏠</div><div><b>home.html</b> — greeting+role · การ์ด "งานที่รอคุณอยู่" (task inbox + deep link "เปิด") · "งานที่ทำบ่อย" (quick actions) · onboarding 💡 + "ต้องรู้ก่อนเริ่ม" · noti bell (5)<br><a href="../mockups/home.html" target="_blank">เปิด mockup ↗</a></div></div>
+
+<h2>3. User Stories + Acceptance Criteria</h2>
+
+<div class="story">
+<h3><span class="sid">US-HOME-01</span> — งานที่รอ (Task inbox ต่อ role) + deep link <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้ใช้ (ตาม role), <b>I want</b> เห็นงานค้างที่รอผมทำอยู่ในหน้าแรก และกดไปทำต่อได้ทันที, <b>so that</b> ไม่พลาดงานและเริ่มทำได้เร็วโดยไม่ต้องไล่หาเอง</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> สมชาย (ฝ่ายขาย/CS) login โดยมี PO-202607-000175 (ถูกปฏิเสธ), PO-178 (Postpone 10/07), PO-176 (รอชำระ INV-135)</span>
+<span class="gwt"><b>When</b> เปิดหน้า Home แล้วกด "เปิด" ที่แถว PO-175</span>
+<span class="gwt"><b>Then</b> การ์ด "งานที่รอคุณอยู่" แสดง 3 งานพร้อม badge สถานะ ("ถูกปฏิเสธ → ต้องติดต่อลูกค้า" / "Postpone 10/07" / "รอชำระ · ครบ 07/08"); กด "เปิด" = deep link ไป <code>po-detail.html</code> ของ PO นั้น</span></div>
+<div class="ac edge"><span class="tag">Edge — งานตาม role ต่างกัน + นับตรง source เดียว</span>
+<span class="gwt"><b>Given</b> user เป็นฝ่ายผลิต (มีสิทธิ์ Read Production) หรือการเงิน (Read Finance)</span>
+<span class="gwt"><b>When</b> เปิด Home</span>
+<span class="gwt"><b>Then</b> ฝ่ายผลิตเห็น "งานรอรับ (รอรับงาน)"/Rework, การเงินเห็น "รอชำระ/เกินกำหนด" — เฉพาะงานของ role ตนเอง; จำนวนงานค้าง<b>ตรงกับ dashboard tile และ notification</b> ของ user คนนั้น (ข้อมูล source เดียวกัน)</span></div>
+<div class="ac err"><span class="tag">Error — งานที่ไม่มีสิทธิ์ Read</span>
+<span class="gwt"><b>Given</b> user ไม่มีสิทธิ์ Read ของ module ที่งานสังกัด</span>
+<span class="gwt"><b>When</b> โหลด task inbox</span>
+<span class="gwt"><b>Then</b> งานนั้น<b>ไม่แสดง</b>ในหน้า Home (task inbox scope ตามสิทธิ์ Read); กด deep link ตรงไปหน้าที่ไม่มีสิทธิ์ → guard 403</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-HOME-02</span> — Onboarding ผู้ใช้ใหม่ + เมนูตามสิทธิ์ <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> พนักงานที่ไม่เคยใช้ ERP, <b>I want</b> คำแนะนำเริ่มต้นและเห็นเฉพาะเมนู/งานที่ทำได้, <b>so that</b> ใช้งานเองได้โดยไม่มีคนสอนและไม่กดผิด</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> user login เข้า Home</span>
+<span class="gwt"><b>When</b> ดูหน้าแรก</span>
+<span class="gwt"><b>Then</b> แสดงกล่องแนะนำ 💡 "ยังใหม่กับระบบใช่ไหม? การ์ดด้านล่างพาคุณไปงานหลักทีละขั้น…" + การ์ด "ต้องรู้ก่อนเริ่ม" (อธิบาย <span class="pill">Lot</span> = ล็อตวัตถุดิบ vs <span class="pill">Batch</span> = รอบผลิต, สถานะภาษาไทยเสมอ, ทุกการเปลี่ยนสถานะมี trace)</span></div>
+<div class="ac edge"><span class="tag">Edge — เมนู/quick action ตามสิทธิ์</span>
+<span class="gwt"><b>Given</b> role ที่ไม่มีสิทธิ์ Read บาง module</span>
+<span class="gwt"><b>When</b> ดูเมนูซ้าย + การ์ด "งานที่ทำบ่อย"</span>
+<span class="gwt"><b>Then</b> แสดงเฉพาะ module/ทางลัดที่ role มีสิทธิ์ Read (ผู้ใช้ไม่เห็นเมนูที่ทำไม่ได้)</span></div>
+<div class="ac err"><span class="tag">Error — ไม่แสดง enum/รหัสดิบ</span>
+<span class="gwt"><b>Given</b> เนื้อหา onboarding + task inbox</span>
+<span class="gwt"><b>When</b> render</span>
+<span class="gwt"><b>Then</b> ทุกสถานะเป็นป้ายภาษาไทยอ่านออก (เช่น "รอ QC", "บัญชีดำ") — ไม่มี enum/รหัสดิบโผล่</span></div>
+</div>
+
+<div class="story">
+<h3><span class="sid">US-HOME-03</span> — Quick actions (งานที่ทำบ่อย) + empty state <span class="badge b-should">Should</span></h3>
+<p><b>As a</b> ผู้ใช้ routine, <b>I want</b> ทางลัดงานที่ทำบ่อยและหน้าโล่งที่ไม่น่ากลัวเมื่อไม่มีงานค้าง, <b>so that</b> เริ่มงานได้ในคลิกเดียวและรู้ว่าไม่มีงานตกค้าง</p>
+<div class="ac happy"><span class="tag">Happy</span>
+<span class="gwt"><b>Given</b> สมชาย (ฝ่ายขาย) อยู่ Home</span>
+<span class="gwt"><b>When</b> กดการ์ด "เปิดใบสั่งซื้อใหม่"</span>
+<span class="gwt"><b>Then</b> แสดง quick actions 3 อัน (เปิด PO→<code>po-create.html</code>, ลูกค้าของฉัน→<code>customers.html</code>, ติดตาม PO→<code>po-list.html</code>); คลิก = ไปหน้านั้นทันที (ลดคลิก)</span></div>
+<div class="ac edge"><span class="tag">Edge — empty state (ไม่มีงานค้าง)</span>
+<span class="gwt"><b>Given</b> user ที่ไม่มีงานค้างเลย</span>
+<span class="gwt"><b>When</b> เปิด Home</span>
+<span class="gwt"><b>Then</b> การ์ด "งานที่รอคุณอยู่" แสดง empty state "ไม่มีงานค้าง 🎉" (ไม่ error) + ยังเห็น quick actions + onboarding ปกติ</span></div>
+<div class="ac err"><span class="tag">Error — โหลดข้อมูลล้มเหลว</span>
+<span class="gwt"><b>Given</b> API dashboard/noti ตอบผิดพลาดชั่วคราว</span>
+<span class="gwt"><b>When</b> เปิด Home</span>
+<span class="gwt"><b>Then</b> แสดงข้อความ "โหลดงานที่รอไม่สำเร็จ ลองใหม่" + ปุ่มลองใหม่ (ไม่หน้าขาว/ค้าง) · quick actions/onboarding ยังใช้ได้</span></div>
+</div>
+
+<h2>4. Data rules / สถานะ Entity</h2>
+<table>
+<tr><th>รายการ</th><th>กติกา</th></tr>
+<tr><td>Task inbox</td><td>รวมงานค้างของ user ตาม role (scope = สิทธิ์ Read) · <b>ไม่มี entity ใหม่</b> — รวมจากสถานะ PO/PRD/DN/Invoice ที่เกี่ยวกับ user</td></tr>
+<tr><td>แหล่งข้อมูล/การนับ</td><td>source เดียวกับ dashboard aggregates + notification (ไม่คำนวณซ้ำ ต้องได้ตัวเลขตรงกัน)</td></tr>
+<tr><td>deep link</td><td>ทุกงาน "เปิด" → หน้ารายละเอียดจริง (po-detail/production/invoice…) พร้อม context</td></tr>
+<tr><td>onboarding</td><td>ข้อความคงที่ + Lot vs Batch glossary (ดู <a href="glossary.html">Glossary</a>) · ไม่มี enum ดิบ</td></tr>
+<tr><td>สิทธิ์</td><td>แสดงงาน/เมนู/quick action ตาม Read permission ราย module (ดู <a href="rbac-deletion.html">RUCDAA</a>)</td></tr>
+</table>
+
+<h2>5. API / Database (Tech-Lead)</h2>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-dashboard.html" target="_blank">api-dashboard.html ↗</a> (aggregates/task list ต่อ role) · <a href="../architecture/api-notification.html" target="_blank">api-notification.html ↗</a> (inbox ราย user) · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — <b>ไม่ต้องมี API ใหม่</b>: Home reuse dashboard aggregates (scope ตาม Read) + notification inbox; ต้องให้ตัวเลข task inbox = dashboard tile = noti badge (source เดียวกัน). <b>ถึง TL:</b> ยืนยันว่า api-dashboard มี endpoint "my-tasks/per-role task list" ที่ Home เรียกใช้ได้ ถ้ายังไม่มีให้เพิ่ม 1 endpoint รวมงานค้างของ user (ไม่ใช่ per-module tile)</div>
+
+<h2>6. ความต่อเนื่องข้าม module</h2>
+<ul class="sub">
+<li>ทุกเหตุการณ์ที่ยิง notification (<a href="continuity.html#noti">Noti matrix</a>) → โผล่ใน task inbox ของ role ปลายทางด้วย (เช่น DN Rejected→งานฝ่ายขาย, PO Confirmed→งานฝ่ายผลิต, Overdue→งานการเงิน)</li>
+<li>นับตรงกับ <a href="dashboard.html">Dashboard</a> tile + <a href="platform.html#top">Notification</a> ของ user คนเดียวกัน</li>
+</ul>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="dashboard.html">Dashboard →</a><a href="platform.html">Platform/Noti</a></div>
+<footer>US-HOME-01..03 · 9 AC (happy/edge/error) · Module Home / งานที่รอ</footer>
+</div></body></html>
