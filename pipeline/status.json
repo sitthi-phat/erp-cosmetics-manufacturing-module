@@ -1677,7 +1677,7 @@
                 "per-lot: Σ(lot.on_hand × lot.buy_price) [PO แนะนำ]",
                 "latest-lot: total × ราคาซื้อ lot ล่าสุด"
               ],
-              "answer": null
+              "answer": "per-lot: Σ(lot.on_hand × lot.buy_price) ตามที่ PO แนะนำ (ปอนด์ตอบ 2026-07-10)"
             }
           ],
           "summary": "Stage 2 review round 2 PASS. Depth-fix + tri-layer alignment verified. 1 reconcile point (stock-value formula M1, PO recommends per-lot). Gate 2 r2 open. Entry applied by dispatcher.",
