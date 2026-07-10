@@ -108,3 +108,53 @@ for it. (Confirmed direction; if COGS enters scope later it is a superseding ADR
   features beyond InnoDB row locking (available in Cloud SQL for MySQL).
 - Engineer/QA: the "compensate negative" behaviour is emergent from summation — test it as an
   invariant, not as bespoke branching code.
+
+---
+
+## Addendum (2026-07-10): Reservation layer + `available` + cancel-after-start
+
+Pond confirmed a **reservation (lock)** layer on top of the physical ledger
+(`docs/requirements/erp-v2-ui-first/stock-reservation.md`). This does **not** replace the
+append-only physical ledger or negative-stock/FIFO retro-link above — it adds a second,
+separate balance.
+
+### Three balances per material
+- **on_hand** = Σ physical `stock_movement` (unchanged; may go negative → red badge + GR retro-link).
+- **reserved** = Σ active `reservation` rows (always ≥ 0).
+- **available = on_hand − reserved** — the "can still promise" number; **may go negative**
+  (over-reserve = warn, not block), shown as "จองเกิน (รอรับเข้า)".
+
+### Reservation lifecycle (per `po_line` × material, qty = Σ BOM_line.qty × po_line.qty)
+- **PO Confirmed → `reserved`** (reserved += qty). No physical movement yet.
+- **"เริ่มผลิต" (start, per Batch) → convert `reserved`→`consumed`** (Pond Q1 = Option A):
+  reserved −= qty **and** a physical `production_consume` movement (−on_hand, FIFO lot,
+  negative allowed + retro-link). Net `available` is unchanged at start (it was already
+  reduced at Confirm) — GMP Batch↔Lot preserved because the lot is chosen FIFO *at consume time*.
+- **PO Cancel BEFORE start → auto `released`** (reserved −= qty; available returns).
+- **PO Cancel AFTER start (new branch, Pond)** — for the already-**consumed** portion the user
+  chooses per cancel:
+  - `return_materials=true` → **`cancel_return`** movement (+on_hand per lot that was consumed,
+    reversing the consumption) + mandatory reason + trace.
+  - `return_materials=false` → **`write_off`** marker movement (qty 0, reason recorded) — the
+    consumption stays; nothing returns to stock. Still fully traced.
+  Any still-**reserved** (not yet started) lines of that PO are `released` as usual.
+- **Hold edit / reopen** → recompute Σ BOM×qty → delta reserve/release (+trace).
+- **Rework run+1** → consumes additional material **directly from available** (production_consume,
+  negative allowed + warn) — **not** pre-reserved (Pond Q4).
+
+### Physical `stock_movement.reason` (extended)
+`goods_receipt`, `production_consume`, `return_out`, `adjust`, `retro_alloc`,
+**`cancel_return`** (reverse consumption on cancel-after-start), **`write_off`** (cancel-after-start,
+no return — qty-0 marker for trace). RESERVE/RELEASE/CONSUME are **reservation-state transitions**
+(in the `reservation` table + `reserved_balance` cache), kept separate from the physical ledger so
+on_hand always reflects physical reality.
+
+### Rules confirmed by Pond (Q2–Q5)
+- Near-low / dashboard "ใกล้หมด" uses **available ≤ threshold** (not on_hand).
+- Over-reserve (available < 0) is **allowed + warned**, never blocked.
+- **Stock value = on_hand × latest-lot buy_price only** — reserved is **not** deducted (goods are
+  still physically in the warehouse).
+
+### Integrity (J6) — now two caches
+The nightly integrity job asserts **both** `stock_balance == Σ physical movements` **and**
+`reserved_balance == Σ active reservations`, rebuilding either from its source on mismatch.

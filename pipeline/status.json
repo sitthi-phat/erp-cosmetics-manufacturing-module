@@ -1900,6 +1900,41 @@
           "summary": "Document Hub complete — everything readable as HTML from functional-spec/index.html (6 sections). Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T18:00:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "reservation-design",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "ADR-001 addendum + reservation table + reserved_balance + cancel_return/write_off reasons",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "APIs: confirm/cancel(branch)/suggest(available)/Hold delta; production start convert FIFO; rework cuts available",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Dashboard low_stock=available, value=on_hand; J6 dual-cache; index par7b coverage",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "250 cross-links 0 broken; 8 touched files HTTP 200",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/adr/001-stock-ledger-negative-stock.md",
+            "docs/design/erp-v2-ui-first/architecture/ (7 files)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Reservation layer implemented in schema/API per Pond 5 answers incl cancel-after-start return/write-off branch. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T21:00:00+07:00"
         }
       ]
     }

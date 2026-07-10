@@ -41,9 +41,9 @@
  <h2><span class="dot" style="background:#E0912F"></span>Action การผลิต (แต่ละปุ่ม = 1 endpoint)</h2>
  <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
   <tr><td><code>POST /production/accept</code><br>body: queueItemId</td><td>รอรับงาน→รับงาน · <b>gen เลข PRD</b> (PRD-{YYYYMM}-{6}, gapless) · ยังไม่ตัดสต็อก · เตือนถ้าวัตถุดิบอาจไม่พร้อม</td><td>Create production</td></tr>
-  <tr><td><code>POST /production/{prdId}/start</code></td><td>รับงาน→กำลังผลิต · <b>gen Batch run แรก</b> (B-{PO}-{line}-1) · <b>ตัดสต็อกวัตถุดิบตาม BOM (ติดลบได้)</b> · PO→กำลังผลิต · เตือน "จะตัดติดลบ X"</td><td>Update production</td></tr>
+  <tr><td><code>POST /production/{prdId}/start</code></td><td>รับงาน→กำลังผลิต · <b>gen Batch run แรก</b> (B-{PO}-{line}-1) · <b>convert จอง→ตัดจริง (Option A):</b> reservation reserved→consumed (Reserved ลด) <b>พร้อม</b> physical <code>production_consume</code> (−on_hand, <b>เลือก lot FIFO ณ ตอนนี้</b>, ติดลบได้+retro-link) — <b>Available ไม่ขยับ</b> (หักตอนจองแล้ว) · PO→กำลังผลิต · เตือน "จะตัดติดลบ X"</td><td>Update production</td></tr>
   <tr><td><code>POST /production/{prdId}/submit-qc</code></td><td>Batch→รอ QC · โผล่คิว QC + noti QC</td><td>Update production</td></tr>
-  <tr><td><code>POST /production/{prdId}/rework</code></td><td>(หลัง QC ไม่ผ่าน) → <b>gen Batch run ถัดไป</b> (run+1) กลับกำลังผลิต</td><td>Update production</td></tr>
+  <tr><td><code>POST /production/{prdId}/rework</code></td><td>(หลัง QC ไม่ผ่าน) → <b>gen Batch run ถัดไป</b> (run+1) กลับกำลังผลิต · <b>ใช้วัตถุดิบเพิ่มที่ไม่ได้จองไว้เดิม → ตัดจาก available โดยตรง</b> (production_consume, ติดลบได้+เตือน; ไม่ pre-reserve — ปอนด์ Q4)</td><td>Update production</td></tr>
   <tr><td><code>POST /production/{prdId}/hold</code></td><td>→Hold · <b>raise Sale หรือ Stock</b> (noti) · เหตุลูกค้า → Sale ตั้ง Follow-up ได้</td><td>Update · <b>comment บังคับ</b></td></tr>
   <tr><td><code>POST /production/{prdId}/resume</code></td><td>Hold→กำลังผลิต (หลังแก้ PO เสร็จ)</td><td>Update production</td></tr>
  </table>
@@ -51,7 +51,7 @@
 </section>
 <section id="neg">
  <h2><span class="dot" style="background:#D64545"></span>สต็อกติดลบ (ตอน start)</h2>
- <div class="danger">ตอน <code>start</code> ถ้าวัตถุดิบไม่พอ ระบบ <b>ไม่บล็อก</b> — เขียน <code>stock_movement</code> qty ลบ (lot_id อาจ null ถ้ายังไม่มี lot) ตั้ง <code>caused_negative=true</code> + trace. หน้า stock โชว์ตัวเลขแดง + badge "ติดลบ (รอรับเข้า)". พอทำ Goods Receipt → retro-alloc ผูก lot FIFO + บวกกลับ. รายละเอียด <a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001</a>.</div>
+ <div class="danger">ตอน <code>start</code> ระบบ <b>convert reservation → consume จริง</b> (reserved ลด + ตัด on_hand FIFO). ถ้าวัตถุดิบไม่พอ ระบบ <b>ไม่บล็อก</b> — เขียน <code>stock_movement</code> qty ลบ (lot_id อาจ null ถ้ายังไม่มี lot) ตั้ง <code>caused_negative=true</code> + trace. หน้า stock โชว์ตัวเลขแดง + badge "ติดลบ (รอรับเข้า)". พอทำ Goods Receipt → retro-alloc ผูก lot FIFO + บวกกลับ. รายละเอียด <a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001</a>.</div>
 </section>
 <section id="err">
  <h2><span class="dot" style="background:#D64545"></span>error</h2>

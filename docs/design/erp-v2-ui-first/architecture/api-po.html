@@ -62,14 +62,14 @@ pre{background:#0B2E2C;color:#CFE0DE;border-radius:8px;padding:12px 14px;overflo
   สร้าง PO (สถานะ ร่าง) → <b>ออกเลข PO ทันที</b> (gapless, ADR-008). body: customer_id, lines[{item_type, bom_id|material_id, qty, unit_price≥0 <b>(0 ได้)</b>}], want_date. ตอบ suggest วัตถุดิบ + เตือนถ้าขาด (ไม่บล็อก). <span class="rt">สิทธิ์: Create po</span> หน้า <a href="../mockups/po-create.html">po-create</a>
  </div></div>
  <div class="ep"><div class="h"><span class="m patch">PATCH</span><span class="path">/api/po/{id}</span></div><div class="b">
-  แก้ header/line (จำนวน/สินค้า/ราคา/วันส่ง) — ได้เสมอตามสถานะที่อนุญาต รวม<b>เคส Hold ที่ Sale แก้ได้ทั้งหมด</b>. ทุก field ที่แก้ลง audit. ต้องส่ง <code>version</code> (กันแก้ชนกัน → 409). <span class="rt">สิทธิ์: Update po</span>
+  แก้ header/line (จำนวน/สินค้า/ราคา/วันส่ง) — รวม<b>เคส Hold ที่ Sale แก้ได้ทั้งหมด</b>. ทุก field ลง audit + <code>version</code> (409 ถ้าชน). <b>ปรับ reservation อัตโนมัติ:</b> แก้จำนวน/สินค้า → recompute ΣBOM×qty ใหม่ → delta <b>reserve เพิ่ม / release ส่วนเกิน</b> (เฉพาะ reservation ที่ยัง reserved; ที่ consume แล้วไม่ย้อน) + trace. <span class="rt">Update po</span>
  </div></div>
  <div class="ep"><div class="h"><span class="m post">POST</span><span class="path">/api/po/suggest</span></div><div class="b">
   <b>suggest + auto-calc (US-PO-07)</b> ตอนเพิ่มสินค้า: ส่ง lines[{item_type, bom_id|material_id, qty}] → ระบบคืนต่อบรรทัด:<br>
   ① <b>ราคา default ต่อชนิด</b>: BOM → <code>bom.sell_price</code> · วัตถุดิบตรง → <code>material.default_sell_price</code> (แก้ทับได้เสมอ, 0 ได้)<br>
   ② <b>วัตถุดิบที่ต้องใช้</b>: สำหรับ line ที่เป็น BOM คำนวณ <code>Σ(bom_line.qty × po_line.qty)</code> ต่อวัตถุดิบ (รวมข้ามหลาย BOM line)<br>
-  ③ <b>เทียบ on_hand</b>: ต่อวัตถุดิบ คืน <code>required</code> vs <code>on_hand</code> (จาก stock_balance) → <code>shortBy</code> ถ้าขาด<br>
-  ④ <b>สรุป</b>: <code>{ ok | shortages:[{material, required, onHand, shortBy}] }</code> — ขาด = <b>เตือน (ไม่บล็อก)</b> + เสนอสร้าง PR ส่วนที่ขาด.
+  ③ <b>เทียบ available</b> (=on_hand−reserved ไม่ใช่ on_hand): ต่อวัตถุดิบ คืน <code>required</code> vs <code>available</code> → <code>shortBy</code> ถ้าขาด (required &gt; available)<br>
+  ④ <b>สรุป</b>: <code>{ ok | shortages:[{material, required, available, shortBy}] }</code> — ขาด = <b>เตือน (ไม่บล็อก)</b> + เสนอสร้าง PR ส่วนที่ขาด.
   <span class="rt">Read po/stock/bom</span>
  </div></div>
  <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/po/material-check?poId=</span></div><div class="b">
@@ -80,9 +80,9 @@ pre{background:#0B2E2C;color:#CFE0DE;border-radius:8px;padding:12px 14px;overflo
  <h2><span class="dot" style="background:#E0912F"></span>เปลี่ยนสถานะ (action endpoints)</h2>
  <div class="why">แต่ละปุ่มบนหน้าจอ = 1 endpoint. เซิร์ฟเวอร์ตรวจว่าเปลี่ยนสถานะนี้ถูกต้องไหม + สิทธิ์พอไหม + comment ครบไหม แล้วทำ cascade + audit + แจ้งเตือน <b>ในทรานแซกชันเดียว</b>.</div>
  <table><tr><th>Endpoint</th><th>ทำอะไร (cascade)</th><th>สิทธิ์ / comment</th></tr>
-  <tr><td><code>POST /po/{id}/confirm</code></td><td>ร่าง→ยืนยัน · สร้างคิว "รอรับงาน" ต่อ line (ยังไม่เกิด PRD) · ลูกค้า Lead→Active · ยิง noti Production · เช็ควัตถุดิบขาด→สร้าง PR</td><td>Approve po</td></tr>
-  <tr><td><code>POST /po/{id}/cancel</code></td><td>→ยกเลิก (ได้ทุกขั้น) · คิว/PRD/Batch ที่เกิดถูกยกเลิกตาม (trace)</td><td>Delete po · <b>comment บังคับ</b></td></tr>
-  <tr><td><code>POST /po/{id}/reopen</code></td><td>ยกเลิก→ร่าง · <b>คงเลข PO เดิม</b> · lifecycle event ใน audit</td><td>Admin po · comment บังคับ</td></tr>
+  <tr><td><code>POST /po/{id}/confirm</code></td><td>ร่าง→ยืนยัน · สร้างคิว "รอรับงาน" ต่อ line · <b>สร้าง reservation ต่อ line = ΣBOM×qty (Reserved เพิ่ม, Available ลด) ในทรานแซกชันเดียว</b> · จองเกิน available = เตือนไม่บล็อก · ลูกค้า Lead→Active · noti Production · วัตถุดิบขาด (required &gt; available)→สร้าง PR</td><td>Approve po</td></tr>
+  <tr><td><code>POST /po/{id}/cancel</code><br>body: <code>reason</code>, <code>returnMaterials?</code></td><td>→ยกเลิก (ได้ทุกขั้น) · คิว/PRD/Batch ยกเลิกตาม (trace) · <b>reservation:</b> line ที่ <b>ยังไม่เริ่มผลิต → RELEASE อัตโนมัติ</b> (Available คืน) · line ที่ <b>เริ่มผลิต/consume ไปแล้ว → ใช้ <code>returnMaterials</code></b>: <code>true</code>=คืนของ (<b>cancel_return</b>: +on_hand ราย lot ที่ตัดไป) / <code>false</code>=ไม่คืน (<b>write_off</b>: คงการตัดไว้ + trace)</td><td>Delete po · <b>comment + returnMaterials บังคับถ้ามี line ที่ผลิตแล้ว</b></td></tr>
+  <tr><td><code>POST /po/{id}/reopen</code></td><td>ยกเลิก→ร่าง · <b>คงเลข PO เดิม</b> · lifecycle event ใน audit · <b>re-reserve เกิดใหม่ตอน confirm รอบใหม่</b> (ไม่ auto ตอน reopen)</td><td>Admin po · comment บังคับ</td></tr>
   <tr><td><code>POST /po/{id}/override-status</code></td><td>ข้ามลำดับสถานะ (force) — เฉพาะกรณีจำเป็น</td><td><b>Admin po</b> · comment บังคับ</td></tr>
  </table>
  <div class="note">สถานะ "กำลังผลิต / พร้อมจัดส่ง / กำลังจัดส่ง / ส่งถึง" ของ PO เป็น <b>auto จาก cascade</b> ของ Production/Shipping (ไม่ใช่ endpoint ตรงของ PO) — ดู <a href="api-production.html">api-production</a> และ shipping.</div>

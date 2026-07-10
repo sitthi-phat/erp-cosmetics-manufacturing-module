@@ -27,6 +27,7 @@
  <a href="../mockups/goods-receipt.html">Mockup: goods-receipt</a>
  <h4>ในหน้านี้</h4>
  <a href="#read">อ่านสต็อก</a>
+ <a href="#availability">3 ยอด + availability</a>
  <a href="#value">มูลค่าสต็อก</a>
  <a href="#master">วัตถุดิบ (master)</a>
  <a href="#gr">รับเข้า GR</a>
@@ -35,9 +36,16 @@
 <main>
 <section id="read">
  <h2><span class="dot" style="background:#2C7BE5"></span>อ่านสต็อก</h2>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock</span></div><div class="b">รายการวัตถุดิบ + ยอดคงเหลือ (จาก stock_balance) + สถานะ "ใกล้หมด/ติดลบ". <b>ยอดติดลบ = ค่าลบ</b> (UI โชว์แดง + badge). ค้นได้. <span class="rt">Read stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock</span></div><div class="b">รายการวัตถุดิบ + <b>3 ยอด: คงคลัง(on_hand) / จองแล้ว(reserved) / ใช้ได้(available)</b> · สถานะ "ใกล้หมด" (<b>available ≤ threshold</b>) / "ติดลบ" (on_hand&lt;0) / "จองเกิน" (available&lt;0). ค้นได้. <span class="rt">Read stock</span></div></div>
  <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/{materialId}/ledger</span></div><div class="b">ประวัติ movement ทั้งหมด (รับ/ตัดผลิต/คืน/ปรับ/retro) — ไล่ที่มาของทุกยอด. keyset paging.</div></div>
  <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/dashboard</span></div><div class="b">tile คลัง: ใกล้หมด / ล็อตรอ QC / คำขอ PR ค้าง — drill-down เป็นรายการ + กดเข้า module (auto-refresh 15s).</div></div>
+</section>
+<section id="availability">
+ <h2><span class="dot" style="background:#2C7BE5"></span>3 ยอด + availability (reservation layer)</h2>
+ <div class="why"><b>ปอนด์ยืนยัน reservation layer:</b> จองวัตถุดิบตอน <b>PO Confirmed</b> (Reserved เพิ่ม) → ตัดจริง (Consume FIFO) ตอน <b>เริ่มผลิต</b>. ยอด <b>ใช้ได้ (available) = on_hand − reserved</b> ใช้รับปาก PO ใหม่ · จองเกิน (available&lt;0) = <b>เตือนไม่บล็อก</b>. ดู <a href="../../../adr/001-stock-ledger-negative-stock.md">ADR-001 addendum</a> + <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>.</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/availability?materialId=</span></div><div class="b">คืน <b>3 ยอด</b> ต่อวัตถุดิบ: <code>{ onHand, reserved, available }</code> (available=onHand−reserved) + flags <code>overReserved</code>(available&lt;0), <code>negative</code>(onHand&lt;0). ใช้ใน stock grid, <a href="api-po.html#write">PO suggest</a>, <a href="api-dashboard.html#stock">dashboard tile ใกล้หมด</a>. <span class="rt">Read stock</span></div></div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/{materialId}/reservations</span></div><div class="b">มุมมอง "วัตถุดิบนี้ถูกจองโดย PO ใดบ้าง" (reservation ledger, US-STK-06): list po_line + qty + status(reserved/consumed/released).</div></div>
+ <div class="note">reservation ไม่แตะ physical ledger — RESERVE/RELEASE/CONSUME เป็น transition ของตาราง <code>reservation</code> (+cache <code>reserved_balance</code>). ตอนเริ่มผลิต: reserved→consumed <b>พร้อม</b> physical <code>production_consume</code> (−on_hand FIFO, ติดลบได้). ดู <a href="api-production.html#action">api-production › start</a>.</div>
 </section>
 <section id="value">
  <h2><span class="dot" style="background:#2C7BE5"></span>มูลค่าสต็อก (Stock value) — ปอนด์ยืนยัน: ราคาซื้อล่าสุดของ lot</h2>

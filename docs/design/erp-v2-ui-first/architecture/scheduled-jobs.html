@@ -118,8 +118,8 @@
 <section id="j6">
  <div class="job"><div class="jh"><span class="jn">J6 · ตรวจสต็อกให้ตรง (Stock Ledger Integrity)</span><span class="freq night">ทุกคืน</span></div><div class="jb">
   <table>
-   <tr><th>ทำอะไร (ทีละขั้น)</th><td>เทียบ "ยอดคงเหลือที่เก็บไว้ใช้แสดงเร็ว" (<code>stock_balance</code>) กับ "ผลรวมจริงจากบัญชีเดินสะพัด" (<code>Σ stock_movement</code>) ต่อวัตถุดิบ/lot → ถ้าไม่ตรง (ไม่ควรเกิด) → คำนวณใหม่จาก ledger + บันทึก log</td></tr>
-   <tr><th>กระทบ entity</th><td>แก้เฉพาะ cache <code>stock_balance</code> ให้ตรงกับความจริง (ledger เป็นความจริงเสมอ)</td></tr>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>เทียบ <b>2 cache</b>: (1) <code>stock_balance</code> กับ <code>Σ stock_movement</code> (physical/on_hand) และ (2) <b><code>reserved_balance</code> กับ <code>Σ reservation ที่ active</code></b> ต่อวัตถุดิบ/lot → ถ้าไม่ตรง (ไม่ควรเกิด) → คำนวณใหม่จากแหล่งจริง + บันทึก log</td></tr>
+   <tr><th>กระทบ entity</th><td>แก้เฉพาะ cache <code>stock_balance</code> + <code>reserved_balance</code> ให้ตรงกับความจริง (ledger + reservation เป็นความจริงเสมอ)</td></tr>
    <tr><th>แจ้งเตือน</th><td>— (แจ้ง Admin เฉพาะกรณีเจอไม่ตรง)</td></tr>
    <tr><th>ถ้าเครื่องปิด/พลาด</th><td>เป็นงานบำรุงรักษา — พลาดได้ไม่กระทบผู้ใช้ (ยอดคำนวณจาก ledger ได้เสมอ) <span class="k idem">idempotent</span></td></tr>
    <tr><th>ผูก story/AC</th><td>ADR-001 (stock ledger) · รองรับ negative stock + retro-alloc</td></tr>
