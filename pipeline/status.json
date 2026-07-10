@@ -2011,6 +2011,87 @@
           "summary": "Per-lot stock value + night-shift closure applied. M1 resolved. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T22:30:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "gcp-docs-proposal",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "Compared 3 hosting options (Cloud Run+IAP / GCS+LB+IAP / Firebase+Auth) with pros/cons/cost/difficulty; recommended Cloud Run(nginx static)+IAP",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Runbook written (Thai, step-by-step): docs/infra/erp-v2-ui-first/gcp-docs-hosting.md — prereqs, OAuth consent, enable APIs, build/deploy, enable IAP, per-user grant, test, update/add/remove access, cost, troubleshooting",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Deploy artifacts prepared (NOT run): deploy/docs-site/Dockerfile (nginx:alpine, copies docs/design + dashboard + dashboard.html + pipeline/status.json preserving repo paths), nginx.conf (listen 8080, / -> functional-spec, utf-8, status.json no-store), cloudbuild.yaml, deploy.sh (full gcloud flow with PROJECT_ID/EMAILS placeholders)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "status.json dashboard dependency handled — status.json copied into image as a build-time snapshot (documented as snapshot, refreshes on redeploy)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No gcloud/deploy executed (Phase = local only). Readiness checked: gcloud SDK 562 authenticated as josukekung@gmail.com, region asia-southeast1; current project gen-lang-client-0453424159 (AI-Studio auto — needs a dedicated project + billing); Docker CLI present but daemon not running (not required, build uses Cloud Build)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch feature-level current_agent/status; appended history entry only; no secrets committed",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/infra/erp-v2-ui-first/gcp-docs-hosting.md",
+            "deploy/docs-site/Dockerfile",
+            "deploy/docs-site/nginx.conf",
+            "deploy/docs-site/cloudbuild.yaml",
+            "deploy/docs-site/deploy.sh"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "จะใช้ GCP project id ไหน + เปิด billing แล้วหรือยัง? (เครื่องนี้ชี้ project gen-lang-client-0453424159 ซึ่งเป็น auto จาก AI Studio — แนะนำแยก project ใหม่)",
+              "options": [
+                "สร้าง project ใหม่เฉพาะงานเอกสาร (แนะนำ)",
+                "ใช้ project เดิมที่มีอยู่ (บอก id)",
+                "ใช้ gen-lang-client-0453424159"
+              ],
+              "answer": null
+            },
+            {
+              "q": "รายชื่ออีเมล Google ที่จะให้เข้าถึงได้ (allow รายตัว) มีใครบ้าง?",
+              "options": [
+                "ส่งลิสต์อีเมลมา (จะใส่ใน deploy.sh ALLOWED_EMAILS)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "อีเมลเหล่านั้นเป็น Google Workspace domain เดียวกัน หรือ gmail ส่วนตัว? (มีผลกับ OAuth consent Internal/External — IAP allow-list ทำงานเหมือนกันทั้งคู่)",
+              "options": [
+                "Workspace domain เดียว -> consent Internal",
+                "มี gmail ส่วนตัว -> consent External (Testing)"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ต้องการ custom domain ไหม หรือใช้ *.run.app ได้เลย?",
+              "options": [
+                "ใช้ *.run.app ได้เลย (แนะนำ ทำได้ทันที)",
+                "อยากได้ custom domain (เพิ่ม domain mapping ทีหลัง)"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "GCP docs-hosting PROPOSAL + prepared artifacts (no deploy — Phase=local). Recommended Cloud Run (nginx static) + IAP: allow per Google account via IAM roles/iap.httpsResourceAccessor, works on *.run.app (no LB/domain needed), scale-to-zero, ~<200 THB/mo, container-first (no rework for Phase 3-4), and NO edit to any HTML. Delivered runbook docs/infra/erp-v2-ui-first/gcp-docs-hosting.md (Thai step-by-step incl OAuth consent, enable APIs, Cloud Build, deploy, enable IAP, per-user grant, test, redeploy/add/remove access, cost, troubleshooting) + deploy/docs-site/{Dockerfile,nginx.conf,cloudbuild.yaml,deploy.sh}. Image mirrors repo paths so relative links work; dashboard's pipeline/status.json baked in as a snapshot. Readiness: gcloud 562 authed (josukekung@gmail.com), region asia-southeast1, project=gen-lang-client-0453424159 (needs dedicated project+billing); Docker daemon down but not needed (Cloud Build). Batched 4 questions to Pond (project/billing, email allow-list, Workspace-vs-gmail, custom domain). Feature-level status untouched.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T23:30:00+07:00"
         }
       ]
     }

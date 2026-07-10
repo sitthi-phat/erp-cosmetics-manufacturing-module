@@ -37,7 +37,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h1>Module: Dashboard รายแผนก (×7) <span class="badge b-must">Must</span></h1>
 <p class="sub">7 แผนก: Sale · Stock · Production · QC · Shipping · Finance · Admin · รวม <b>29 tile</b> · auto-refresh 15s (default, คง view) · ทุก tile drill-down → list + pagination + deep link พร้อม context · การเห็นแผนก = <b>ยึด permission Read ล้วนๆ</b> (ไม่เกี่ยวชื่อ role)</p>
 
-<div class="note"><b>ที่มาความจริง:</b> นิยาม/สูตร/ชนิด (event/state) ต่อ tile ทั้ง 29 ตัว = <a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit §2.2</a> + <a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys §12</a> · <b>ป้ายชนิด:</b> <span class="pill evt">ในช่วง (event)</span> = นับเหตุการณ์ที่เกิดในช่วง date-filter · <span class="pill st">ตอนนี้ (state)</span> = snapshot ปัจจุบัน ไม่ขึ้นกับช่วง · มูลค่าสต็อก = จำนวนคงเหลือ × <b>ราคาซื้อล่าสุดของ Lot</b> (COGS นอก scope — ปอนด์ยืนยัน 2026-07-09)</div>
+<div class="note"><b>ที่มาความจริง:</b> นิยาม/สูตร/ชนิด (event/state) ต่อ tile ทั้ง 29 ตัว = <a href="../../../requirements/erp-v2-ui-first/po-spec-depth-audit.md">po-spec-depth-audit §2.2</a> + <a href="../../../requirements/erp-v2-ui-first/status-journeys.md">status-journeys §12</a> · <b>ป้ายชนิด:</b> <span class="pill evt">ในช่วง (event)</span> = นับเหตุการณ์ที่เกิดในช่วง date-filter · <span class="pill st">ตอนนี้ (state)</span> = snapshot ปัจจุบัน ไม่ขึ้นกับช่วง · <b>ใกล้หมด = เทียบ Available (on_hand−Reserved)</b> · มูลค่าสต็อก = จำนวน <b>on_hand</b> × ราคาซื้อล่าสุดของ Lot (ไม่หัก Reserved; COGS นอก scope — ปอนด์ยืนยัน) · Reservation = <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a></div>
 
 <h2>1. ภาพรวม + Use cases</h2>
 <p>ผู้ใช้เห็น dashboard <b>เฉพาะแผนกที่ตนมีสิทธิ์ Read</b> (มี Read module ไหน = เห็น dashboard แผนกนั้น) · ผู้ที่มี Read หลาย module สลับแผนกได้ด้วย tab/selector · filter default = <b>เดือนนี้</b> (เลือก วันนี้ / สัปดาห์นี้ / เดือนนี้ / กำหนดเอง) · แต่ละ tile ระบุ event vs state · KPI tile ทุกอัน drill-down เป็น list + pagination แล้วคลิกรายการเข้า module พร้อม context</p>
@@ -143,21 +143,21 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-DSH-STK</span> — Dashboard ฝ่ายคลัง (4 tile รวมมูลค่าสต็อก) · Read Stock <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ผู้มีสิทธิ์ Read Stock, <b>I want</b> เห็นวัตถุดิบใกล้หมด/ล็อตรอ QC/PR ค้าง และมูลค่าสต็อกรวม, <b>so that</b> เติมของทัน ตรวจรับทัน และรู้เงินจมในคลัง</p>
+<h3><span class="sid">US-DSH-STK</span> — Dashboard ฝ่ายคลัง (4 tile: ใกล้หมด=Available, มูลค่า=on_hand) · Read Stock <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ผู้มีสิทธิ์ Read Stock, <b>I want</b> เห็นวัตถุดิบใกล้หมด (ตามยอดใช้ได้)/ล็อตรอ QC/PR ค้าง และมูลค่าสต็อกรวม, <b>so that</b> เติมของทัน ตรวจรับทัน และรู้เงินจมในคลัง</p>
 <table class="tiletbl"><tr><th>tile</th><th>สูตร/เงื่อนไข</th><th>ชนิด</th><th>drill</th></tr>
-<tr><td>ใกล้หมด</td><td>count(วัตถุดิบที่ on_hand ≤ low_stock_threshold; <b>เฉพาะที่ตั้ง threshold</b> — null = ไม่นับ)</td><td><span class="pill st">state</span></td><td>วัตถุดิบ/คงเหลือ → stock</td></tr>
+<tr><td>ใกล้หมด</td><td>count(วัตถุดิบที่ <b>Available (on_hand − Reserved) ≤ low_stock_threshold</b>; <b>เฉพาะที่ตั้ง threshold</b> — null = ไม่นับ)</td><td><span class="pill st">state</span></td><td>วัตถุดิบ/ใช้ได้ (+คงคลัง/จองแล้ว) → stock</td></tr>
 <tr><td>ล็อตรอ QC</td><td>count(lot.qc_status=รอตรวจรับ)</td><td><span class="pill st">state</span></td><td>lot/วัตถุดิบ → qc</td></tr>
 <tr><td>คำขอ PR ค้าง</td><td>count(PR.status ∈ {เปิดคำขอ, รับทราบ, รับบางส่วน})</td><td><span class="pill st">state</span></td><td>PR/วัตถุดิบ/สถานะ → purchase-request</td></tr>
-<tr><td>มูลค่าสต็อก</td><td>Σ(on_hand ต่อ lot × <b>ราคาซื้อล่าสุดของ lot นั้น</b>) — เป็นยอดเงิน (COGS นอก scope; ปอนด์ยืนยัน); lot ติดลบหักลบยอด</td><td><span class="pill st">state</span></td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr></table>
-<div class="ac happy"><span class="tag">Happy — สูตรมูลค่าสต็อก</span>
-<span class="gwt"><b>Given</b> วัตถุดิบ A มี 2 lot: lot เก่า 10 กก. ราคาซื้อ 40, lot ใหม่ 5 กก. ราคาซื้อ 45</span>
+<tr><td>มูลค่าสต็อก</td><td>Σ(<b>on_hand</b> ต่อ lot × ราคาซื้อล่าสุดของ lot นั้น) — เป็นยอดเงิน · <b>ไม่หัก Reserved</b> (ของยังอยู่ในคลัง; COGS นอก scope); lot on_hand ติดลบหักลบยอด</td><td><span class="pill st">state</span></td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr></table>
+<div class="ac happy"><span class="tag">Happy — สูตรมูลค่าสต็อก (on_hand ไม่หักจอง)</span>
+<span class="gwt"><b>Given</b> วัตถุดิบ A มี 2 lot: lot เก่า 10 กก. ราคาซื้อ 40, lot ใหม่ 5 กก. ราคาซื้อ 45 · ถูกจอง 8 กก.</span>
 <span class="gwt"><b>When</b> ดู tile "มูลค่าสต็อก"</span>
-<span class="gwt"><b>Then</b> มูลค่าของ A = (10×<b>45</b>) ... ไม่ — คิดต่อ lot: (10×40)+(5×45)=625 โดยแต่ละ lot ใช้<b>ราคาซื้อล่าสุดของ lot ตัวเอง</b>; tile รวมทุกวัตถุดิบ; drill เรียงจากมูลค่าสูงสุด</span></div>
-<div class="ac edge"><span class="tag">Edge — "ใกล้หมด" นับเฉพาะที่ตั้ง threshold + lot ติดลบ</span>
-<span class="gwt"><b>Given</b> วัตถุดิบ X ไม่ได้ตั้ง threshold (null) แม้เหลือน้อย และวัตถุดิบ Y (แอลกอฮอล์) มียอดติดลบ −30</span>
-<span class="gwt"><b>When</b> ดู tile "ใกล้หมด" และ "มูลค่าสต็อก"</span>
-<span class="gwt"><b>Then</b> X <b>ไม่ถูกนับ</b>ใน "ใกล้หมด" (null=ไม่เตือน); ยอดติดลบของ Y หัก(ลด)มูลค่าสต็อกรวม (แสดงผลติดลบของรายการนั้น)</span></div>
+<span class="gwt"><b>Then</b> มูลค่าของ A คิด<b>ต่อ lot จาก on_hand</b> = (10×40)+(5×45) = 625 (<b>ไม่หัก Reserved 8</b>; แต่ละ lot ใช้ราคาซื้อล่าสุดของ lot ตัวเอง); tile รวมทุกวัตถุดิบทั้งคลัง; drill เรียงจากมูลค่าสูงสุด → stock</span></div>
+<div class="ac edge"><span class="tag">Edge — "ใกล้หมด" ใช้ Available + เฉพาะที่ตั้ง threshold</span>
+<span class="gwt"><b>Given</b> วัตถุดิบ X ไม่ได้ตั้ง threshold (null) แม้ Available ต่ำ; วัตถุดิบ Y on_hand=66 แต่ถูกจอง 70 → Available −4; วัตถุดิบ Z on_hand เพียงพอแต่ถูกจองจน Available ≤ threshold</span>
+<span class="gwt"><b>When</b> ดู tile "ใกล้หมด" (state)</span>
+<span class="gwt"><b>Then</b> X <b>ไม่ถูกนับ</b> (null=ไม่เตือน); Y และ Z <b>ถูกนับ</b> เพราะ <b>Available ≤ threshold</b> (นับตามยอดที่รับปากได้จริง ไม่ใช่ on_hand); มูลค่าสต็อกยังคิดจาก on_hand ปกติ</span></div>
 <div class="ac err"><span class="tag">Error — ไม่มี Read Stock</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Stock</span>
 <span class="gwt"><b>When</b> เปิด dashboard</span>
@@ -281,15 +281,16 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>filter</td><td>default เดือนนี้ · presets วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง (เลือกเดือน-ปี หรือ date range) · มีผลกับทุก tile event พร้อมกัน · เริ่ม>สิ้นสุด = error ไม่ยิง query</td></tr>
 <tr><td>refresh</td><td>auto 15s (default) คง filter+view+drill · ปิดได้ · แสดงเวลารีเฟรชล่าสุด</td></tr>
 <tr><td>drill-down</td><td>ทุก tile → list + pagination + deep link พร้อม context · tile=0 → empty state "ไม่มีรายการ"</td></tr>
-<tr><td>มูลค่าสต็อก</td><td>Σ(on_hand ต่อ lot × ราคาซื้อล่าสุดของ lot) · COGS นอก scope (ปอนด์ยืนยัน 2026-07-09)</td></tr>
+<tr><td>ใกล้หมด</td><td>เกณฑ์เทียบ <b>Available (on_hand − Reserved)</b> · เฉพาะวัตถุดิบที่ตั้ง threshold (null=ไม่นับ)</td></tr>
+<tr><td>มูลค่าสต็อก</td><td>Σ(<b>on_hand</b> ต่อ lot × ราคาซื้อล่าสุดของ lot) · <b>ไม่หัก Reserved</b> · COGS นอก scope (ปอนด์ยืนยัน)</td></tr>
 <tr><td>สิทธิ์</td><td>เห็นแผนก = มี Read bit ของ module นั้น (ไม่เกี่ยวชื่อ role) · ไม่มีสิทธิ์ = ไม่อยู่ในตัวสลับ + URL ตรง 403</td></tr></table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-dashboard.html" target="_blank">api-dashboard.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — per-department aggregates (event vs state), drill-down queries + pagination + deep-link context, Read-permission scoping ราย module (ไม่ผูก role name), stock valuation = last-buy-price per lot, &lt;2s response (hard 3s)</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-dashboard.html" target="_blank">api-dashboard.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — per-department aggregates (event vs state), drill-down queries + pagination + deep-link context, Read-permission scoping ราย module (ไม่ผูก role name), <b>ใกล้หมด = Available (on_hand−Reserved) ≤ threshold</b>, stock valuation = on_hand-per-lot × last-buy-price (ไม่หัก reserved), &lt;2s response (hard 3s)</div>
 
 <h2>6. ความต่อเนื่อง</h2>
-<ul class="sub"><li>ทุก tile ↔ module (ดู <a href="continuity.html">Cascade</a>) · นับตรงกับ <a href="home.html">Home task inbox</a> + <a href="platform.html#top">Notification badge</a> ของ user คนเดียวกัน (source เดียว) · สิทธิ์ Read = เห็นแผนก + รับ noti (<a href="rbac-deletion.html">RUCDAA</a>)</li></ul>
+<ul class="sub"><li>ทุก tile ↔ module (ดู <a href="continuity.html">Cascade</a>) · นับตรงกับ <a href="home.html">Home task inbox</a> + <a href="platform.html#top">Notification badge</a> ของ user คนเดียวกัน (source เดียว) · สิทธิ์ Read = เห็นแผนก + รับ noti (<a href="rbac-deletion.html">RUCDAA</a>) · ใกล้หมด/มูลค่า ↔ <a href="stock.html">Stock</a> (3 ยอด)</li></ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="platform.html">Platform →</a><a href="home.html">Home</a><a href="customer.html">ลูกค้า</a></div>
-<footer>US-DSH-01..04 + US-DSH-SALE/STK/PRD/QC/SHP/FIN/ADM · 11 stories · 33 AC (happy/edge/error) · 29 tile นิยามครบ · Module Dashboard ×7</footer>
+<footer>US-DSH-01..04 + US-DSH-SALE/STK/PRD/QC/SHP/FIN/ADM · 11 stories · 33 AC (happy/edge/error) · 29 tile นิยามครบ · Module Dashboard ×7 · ใกล้หมด=Available</footer>
 </div></body></html>

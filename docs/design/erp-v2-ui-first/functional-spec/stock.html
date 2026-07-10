@@ -35,28 +35,30 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Module: คลังวัตถุดิบ + Goods Receipt <span class="badge b-must">Tier 1</span></h1>
-<p class="sub">เพิ่มวัตถุดิบ+UOM+เกณฑ์ใกล้หมด (ไม่มี default) · ราคาซื้อ/ขาย 0 ได้ · Goods Receipt multi-line → gen Lot + ปิด PR + <b>บวก stock กลับ/ชดเชยยอดติดลบ</b> · <b>มูลค่าสต็อก = คงเหลือ × ราคาซื้อล่าสุดของ Lot</b> · เลข Lot <code>{supplier prefix}{YYMM}</code>, GR <code>GR-{YYYYMMDD}-{NNN}</code></p>
+<p class="sub">เพิ่มวัตถุดิบ+UOM+เกณฑ์ใกล้หมด (ไม่มี default) · ราคาซื้อ/ขาย 0 ได้ · Goods Receipt multi-line → gen Lot + ปิด PR + <b>บวก stock กลับ/ชดเชยยอดติดลบ</b> · <b>3 ยอด: คงคลัง/จองแล้ว/ใช้ได้</b> · <b>มูลค่าสต็อก = on_hand × ราคาซื้อล่าสุดของ Lot</b> · เลข Lot <code>{supplier prefix}{YYMM}</code>, GR <code>GR-{YYYYMMDD}-{NNN}</code></p>
+
+<div class="note"><b>3 ยอดต่อวัตถุดิบ (ปอนด์ล็อก 2026-07-10):</b> <b>คงคลัง (on_hand)</b> = ยอดกายภาพจริง (Σ movement ราย lot; ติดลบได้จากผลิตล่วงหน้า) · <b>จองแล้ว (Reserved)</b> = Σ reservation ที่ยัง active (≥0) · <b>ใช้ได้ (Available) = on_hand − Reserved</b> (ติดลบได้จากจองเกิน) · **negative 2 ชนิดต้องแยก:** Available&lt;0 = "จองเกิน (รอรับเข้า)" · on_hand&lt;0 = "ติดลบ (รอรับเข้า)" — ทั้งคู่เตือนไม่บล็อก · ที่มา: <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a></div>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>ฝ่ายคลังจัดการวัตถุดิบ+Lot, รับเข้า (Goods Receipt), เห็นยอดติดลบจากการผลิตล่วงหน้า และดูมูลค่าสต็อก · เกณฑ์ "ใกล้หมด" ตั้งต่อวัตถุดิบ (% หรือจำนวน) — <b>ไม่มี default</b> ไม่เตือนจนกว่าตั้งค่า · <b>ไม่มีฟังก์ชันรับเข้าในหน้า Supplier</b> (อยู่ที่นี่)</p>
+<p>ฝ่ายคลังจัดการวัตถุดิบ+Lot, รับเข้า (Goods Receipt), เห็น 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) รวมยอดติดลบ 2 ชนิด และดูมูลค่าสต็อก · เกณฑ์ "ใกล้หมด" ตั้งต่อวัตถุดิบ (% หรือจำนวน) เทียบ <b>Available</b> — <b>ไม่มี default</b> ไม่เตือนจนกว่าตั้งค่า · <b>ไม่มีฟังก์ชันรับเข้าในหน้า Supplier</b> (อยู่ที่นี่)</p>
 <p class="sub">โผล่ใน: <a href="walkthrough.html#materials">เส้นวัตถุดิบ (PR-031/GR-007/GR-008)</a></p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">📦</div><div><b>stock.html</b> — รายการวัตถุดิบ+Lot · เพิ่มวัตถุดิบ+UOM+threshold · ยอดติดลบสีแดง + badge · มูลค่าต่อวัตถุดิบ + pagination<br><a href="../mockups/stock.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">📦</div><div><b>stock.html</b> — รายการวัตถุดิบ+Lot · 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) · เพิ่มวัตถุดิบ+UOM+threshold · ยอดติดลบสีแดง + badge · มูลค่าต่อวัตถุดิบ + pagination<br><a href="../mockups/stock.html" target="_blank">เปิด mockup ↗</a></div></div>
 <div class="mock"><div class="thumb">📥</div><div><b>goods-receipt.html</b> — รับเข้า multi-line: supplier→auto lot, จำนวน, ราคาซื้อ, เลขใบรับ, upload, อ้าง PR<br><a href="../mockups/goods-receipt.html" target="_blank">เปิด mockup ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
 <div class="story">
-<h3><span class="sid">US-STK-01</span> — เพิ่มวัตถุดิบใหม่ + UOM + เกณฑ์ใกล้หมด <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เพิ่มวัตถุดิบที่ไม่เคยมี พร้อมหน่วยนับและเกณฑ์ใกล้หมด, <b>so that</b> รับเข้าของใหม่ได้ถูกต้องและเตือนสต็อกตามที่ตั้ง</p>
+<h3><span class="sid">US-STK-01</span> — เพิ่มวัตถุดิบใหม่ + UOM + เกณฑ์ใกล้หมด (เทียบ Available) <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เพิ่มวัตถุดิบที่ไม่เคยมี พร้อมหน่วยนับและเกณฑ์ใกล้หมด, <b>so that</b> รับเข้าของใหม่ได้ถูกต้องและเตือนสต็อกตามยอดที่ใช้ได้จริง (หักจองแล้ว)</p>
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> ฝ่ายคลังอยู่หน้า stock</span>
 <span class="gwt"><b>When</b> เพิ่ม "วิตามินอี" UOM=กก. เกณฑ์ใกล้หมด = 2 กก.</span>
-<span class="gwt"><b>Then</b> ระบบสร้างวัตถุดิบ <code>RM-xxx</code>; เมื่อยอดคงเหลือ ≤ 2 กก. จะแสดง "ใกล้หมด" ใน Stock Dashboard</span></div>
+<span class="gwt"><b>Then</b> ระบบสร้างวัตถุดิบ <code>RM-xxx</code>; เมื่อ <b>Available (on_hand − Reserved) ≤ 2 กก.</b> จะแสดง "ใกล้หมด" ใน Stock Dashboard (ดู <a href="dashboard.html">US-DSH-STK</a>)</span></div>
 <div class="ac edge"><span class="tag">Edge — ไม่ตั้งเกณฑ์ (ไม่มี default)</span>
 <span class="gwt"><b>Given</b> เพิ่มวัตถุดิบโดยไม่กรอกเกณฑ์ใกล้หมด</span>
-<span class="gwt"><b>When</b> ยอดคงเหลือลดลงมาก</span>
+<span class="gwt"><b>When</b> Available ลดลงมาก (แม้จองจนติดลบ)</span>
 <span class="gwt"><b>Then</b> ระบบ<b>ไม่เตือน</b> "ใกล้หมด" (ไม่มี default) จนกว่าจะตั้งค่า</span></div>
 <div class="ac err"><span class="tag">Error — ไม่ระบุ UOM / ชื่อซ้ำ</span>
 <span class="gwt"><b>Given</b> เว้น UOM ว่าง หรือใช้ชื่อวัตถุดิบซ้ำที่มีอยู่</span>
@@ -70,7 +72,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> ฝ่ายคลังทำ GR ของ SUP-01 อ้าง PR-000031 (กลีเซอรีน 6 กก.)</span>
 <span class="gwt"><b>When</b> บันทึก GR-20260708-007</span>
-<span class="gwt"><b>Then</b> gen Lot <code>L-GLY-2607</code> (สถานะ "รอตรวจรับ"); PR-000031 → "ของเข้าครบ (Fulfilled)" อัตโนมัติ พร้อมเหตุผลว่ารับจาก lot ไหน — ดู <a href="continuity.html#c17">Cascade C17</a></span></div>
+<span class="gwt"><b>Then</b> gen Lot <code>L-GLY-2607</code> (สถานะ "รอตรวจรับ"); on_hand เพิ่ม → <b>Available เพิ่มอัตโนมัติ</b> (ไม่แตะ Reserved); PR-000031 → "ของเข้าครบ (Fulfilled)" อัตโนมัติ — ดู <a href="continuity.html#c17">Cascade C17</a></span></div>
 <div class="ac edge"><span class="tag">Edge — รับบางส่วน → เสนอ PR ใหม่</span>
 <span class="gwt"><b>Given</b> GR รับแอลกอฮอล์ 200/250 ล. อ้าง PR-000028</span>
 <span class="gwt"><b>When</b> บันทึก GR-20260708-008</span>
@@ -82,16 +84,16 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-STK-03</span> — Negative stock + บวกกลับตอนรับเข้า <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เห็นยอดวัตถุดิบที่ติดลบจากการผลิตล่วงหน้า และให้ GR บวกกลับชดเชย, <b>so that</b> รู้ว่ามีของค้างรับและยอดถูกต้องเมื่อของเข้า</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> การผลิตตัดกลีเซอรีนจนยอดคงเหลือ = −4 กก.</span>
+<h3><span class="sid">US-STK-03</span> — 3 ยอด + ยอดติดลบ 2 ชนิด (จองเกิน / กายภาพ) + GR บวกกลับ <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายคลัง, <b>I want</b> เห็น 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) และแยกให้ชัดว่าติดลบเพราะจองเกินหรือเพราะผลิตล่วงหน้า และให้ GR บวกกลับ, <b>so that</b> เข้าใจสถานะจริงและรู้ว่ามีของค้างรับ</p>
+<div class="ac happy"><span class="tag">Happy — 3 ยอด + จองเกิน (Available ติดลบ)</span>
+<span class="gwt"><b>Given</b> กลีเซอรีน on_hand = 66, ถูกจองโดย PO = 70</span>
 <span class="gwt"><b>When</b> เปิดหน้า stock</span>
-<span class="gwt"><b>Then</b> แสดงยอด <b>−4 เป็นตัวเลขสีแดง + badge "ติดลบ (รอรับเข้า)"</b> + ปริมาณติดลบ</span></div>
-<div class="ac edge"><span class="tag">Edge — GR ชดเชยยอดติดลบ + FIFO retro-link</span>
-<span class="gwt"><b>Given</b> ยอดกลีเซอรีน −4 กก. และรับเข้า 6 กก.</span>
-<span class="gwt"><b>When</b> ยืนยัน GR</span>
-<span class="gwt"><b>Then</b> ก่อนยืนยันแสดง notice "การรับนี้ชดเชยยอดติดลบ 4 หน่วย"; หลังรับ ยอดคงเหลือ = +2; ระบบ <b>back-allocate การตัดที่ติดลบเข้า lot ใหม่แบบ FIFO</b> (คง Batch↔Lot GMP) + trace</span></div>
+<span class="gwt"><b>Then</b> แสดง <b>คงคลัง 66 · จองแล้ว 70 · ใช้ได้ −4</b>; ช่อง "ใช้ได้" เป็น <b>แดง + badge "จองเกิน (รอรับเข้า)"</b> (on_hand ยัง 66 ปกติ ไม่แดง)</span></div>
+<div class="ac edge"><span class="tag">Edge — on_hand ติดลบ (ผลิตล่วงหน้า) + GR ชดเชย + FIFO retro-link</span>
+<span class="gwt"><b>Given</b> การผลิตตัด on_hand กลีเซอรีนจนเหลือ <b>−4 กก.</b> แล้วรับเข้า 6 กก.</span>
+<span class="gwt"><b>When</b> เปิด stock / ยืนยัน GR</span>
+<span class="gwt"><b>Then</b> on_hand −4 = <b>แดง + badge "ติดลบ (รอรับเข้า)"</b>; ก่อนยืนยัน GR แสดง notice "การรับนี้ชดเชยยอดติดลบ 4 หน่วย"; หลังรับ on_hand = +2; ระบบ <b>back-allocate การตัดที่ติดลบเข้า lot ใหม่แบบ FIFO</b> (คง Batch↔Lot GMP) + trace</span></div>
 <div class="ac err"><span class="tag">Error — ราคาซื้อติดลบ</span>
 <span class="gwt"><b>Given</b> กรอกราคาซื้อเป็นค่าติดลบ</span>
 <span class="gwt"><b>When</b> บันทึก</span>
@@ -107,7 +109,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <span class="gwt"><b>Then</b> ระบบยอมรับราคาขาย 0; ราคาขายใช้เป็น default ตอนขายวัตถุดิบใน PO</span></div>
 <div class="ac edge"><span class="tag">Edge — FIFO หลาย Lot</span>
 <span class="gwt"><b>Given</b> วัตถุดิบมี Lot เก่า L-GLY-2506 และใหม่ L-GLY-2607</span>
-<span class="gwt"><b>When</b> การผลิตตัด stock</span>
+<span class="gwt"><b>When</b> การผลิตตัด stock (consume)</span>
 <span class="gwt"><b>Then</b> ระบบตัดจาก Lot เก่าก่อน (FIFO) และ trace ระบุ Lot ที่ใช้</span></div>
 <div class="ac err"><span class="tag">Error — แก้ threshold เป็นค่าลบ</span>
 <span class="gwt"><b>Given</b> ตั้งเกณฑ์ใกล้หมดเป็นค่าติดลบ หรือ % &gt; 100</span>
@@ -116,43 +118,61 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-STK-05</span> — มูลค่าสต็อก (คงเหลือ × ราคาซื้อล่าสุดของ Lot) <span class="badge b-should">Should</span></h3>
+<h3><span class="sid">US-STK-05</span> — มูลค่าสต็อก (on_hand × ราคาซื้อล่าสุดของ Lot · ไม่หัก Reserved) <span class="badge b-should">Should</span></h3>
 <p><b>As a</b> ฝ่ายคลัง/ผู้บริหาร, <b>I want</b> เห็นมูลค่าสต็อกต่อวัตถุดิบและรวมทั้งคลัง, <b>so that</b> รู้เงินจมในคลังโดยไม่ต้องทำ COGS เต็มรูป</p>
-<div class="note"><b>สูตร (ปอนด์ยืนยัน 2026-07-09):</b> มูลค่าต่อ Lot = คงเหลือของ lot × <b>ราคาซื้อล่าสุดของ lot นั้น</b> · มูลค่าต่อวัตถุดิบ = Σ ทุก lot ของวัตถุดิบนั้น · มูลค่ารวมคลัง = Σ ทุกวัตถุดิบ · COGS/valuation FIFO เต็มรูป = <b>นอก scope</b></div>
-<div class="ac happy"><span class="tag">Happy — สูตรต่อ lot</span>
-<span class="gwt"><b>Given</b> กลีเซอรีนมี lot เก่า 10 กก. ราคาซื้อ 40 และ lot ใหม่ 5 กก. ราคาซื้อ 45</span>
+<div class="note"><b>สูตร (ปอนด์ล็อก):</b> มูลค่าคิดจาก <b>คงคลัง (on_hand กายภาพ) เท่านั้น — ไม่หัก Reserved</b> (ของยังอยู่ในคลังจริง แค่ถูกจองไว้) · มูลค่าต่อ Lot = on_hand ของ lot × <b>ราคาซื้อล่าสุดของ lot นั้น</b> · รวมวัตถุดิบ = Σ ทุก lot · รวมคลัง = Σ ทุกวัตถุดิบ · COGS/valuation FIFO เต็มรูป = <b>นอก scope</b></div>
+<div class="ac happy"><span class="tag">Happy — สูตรต่อ lot (ไม่หักจอง)</span>
+<span class="gwt"><b>Given</b> กลีเซอรีนมี lot เก่า 10 กก. ราคาซื้อ 40 และ lot ใหม่ 5 กก. ราคาซื้อ 45 · ถูกจองไป 8 กก.</span>
 <span class="gwt"><b>When</b> เปิดหน้า stock ดูมูลค่า</span>
-<span class="gwt"><b>Then</b> มูลค่ากลีเซอรีน = (10×40)+(5×45) = 625 บาท (แต่ละ lot ใช้ราคาซื้อล่าสุดของ lot ตัวเอง); มูลค่ารวมคลัง = Σ ทุกวัตถุดิบ (ตรงกับ tile "มูลค่าสต็อก" ใน <a href="dashboard.html">Dashboard</a>)</span></div>
-<div class="ac edge"><span class="tag">Edge — lot ติดลบ / ราคาซื้อ 0</span>
-<span class="gwt"><b>Given</b> แอลกอฮอล์มียอด lot ติดลบ −30 และวัตถุดิบบางตัวราคาซื้อ = 0</span>
+<span class="gwt"><b>Then</b> มูลค่ากลีเซอรีน = (10×40)+(5×45) = 625 บาท (คิดจาก on_hand 15 <b>ไม่หัก Reserved 8</b>); รวมคลัง = Σ ทุกวัตถุดิบ (ตรงกับ tile "มูลค่าสต็อก" ใน <a href="dashboard.html">Dashboard</a>)</span></div>
+<div class="ac edge"><span class="tag">Edge — lot on_hand ติดลบ / ราคาซื้อ 0</span>
+<span class="gwt"><b>Given</b> แอลกอฮอล์มี lot on_hand ติดลบ −30 และวัตถุดิบบางตัวราคาซื้อ = 0</span>
 <span class="gwt"><b>When</b> คิดมูลค่า</span>
-<span class="gwt"><b>Then</b> lot ติดลบ<b>หัก(ลด)</b>มูลค่ารวม (−30 × ราคาซื้อล่าสุด); วัตถุดิบราคาซื้อ 0 = มูลค่า 0 (ไม่ error)</span></div>
+<span class="gwt"><b>Then</b> lot on_hand ติดลบ<b>หัก(ลด)</b>มูลค่ารวม (−30 × ราคาซื้อล่าสุด); วัตถุดิบราคาซื้อ 0 = มูลค่า 0 · <b>Reserved ไม่กระทบมูลค่า</b> (ไม่ error)</span></div>
 <div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ Read Stock</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Read Stock</span>
 <span class="gwt"><b>When</b> พยายามเปิดหน้า stock / tile มูลค่าสต็อก</span>
 <span class="gwt"><b>Then</b> guard 403 (มูลค่าสต็อกเป็นข้อมูลไวต่อธุรกิจ — เห็นตามสิทธิ์ Read Stock เท่านั้น)</span></div>
 </div>
 
+<div class="story">
+<h3><span class="sid">US-STK-06</span> — มุมมอง "วัตถุดิบถูกจองโดย PO ใด" (Reservation view) <span class="badge b-could">Could</span></h3>
+<p><b>As a</b> ฝ่ายคลัง/จัดซื้อ, <b>I want</b> ดูว่าวัตถุดิบที่ถูกจองอยู่ ถูกจองโดย PO/line ใดบ้าง, <b>so that</b> เข้าใจว่าทำไม Available ต่ำ/ติดลบ และวางแผนสั่งซื้อได้</p>
+<div class="ac happy"><span class="tag">Happy — drill "จองแล้ว"</span>
+<span class="gwt"><b>Given</b> กลีเซอรีน จองแล้ว 70 (จาก PO-181 line1 = 2, PO-188 = 2.4, PO-185 = ...)</span>
+<span class="gwt"><b>When</b> คลิกยอด "จองแล้ว" ของกลีเซอรีน</span>
+<span class="gwt"><b>Then</b> แสดงรายการ reservation ที่ยัง active: PO/line/จำนวนจอง/สถานะ (Reserved) + deep link → po-detail; รวมยอดตรงกับ "จองแล้ว 70"</span></div>
+<div class="ac edge"><span class="tag">Edge — ไม่มีการจอง</span>
+<span class="gwt"><b>Given</b> วัตถุดิบที่ Reserved = 0</span>
+<span class="gwt"><b>When</b> คลิก/ดูมุมมองจอง</span>
+<span class="gwt"><b>Then</b> empty state "ยังไม่มี PO จองวัตถุดิบนี้" (Available = on_hand); ไม่ error</span></div>
+<div class="ac err"><span class="tag">Error — reservation ที่ consume/release ไปแล้ว</span>
+<span class="gwt"><b>Given</b> reservation ที่ถูก consume (เริ่มผลิตแล้ว) หรือ released (PO cancel)</span>
+<span class="gwt"><b>When</b> ดูมุมมองจอง (active เท่านั้น)</span>
+<span class="gwt"><b>Then</b> รายการที่ consume/release <b>ไม่นับใน "จองแล้ว"</b> (แสดงเฉพาะ active) — ดูประวัติได้ที่ <a href="traceability.html">trace</a></span></div>
+</div>
+
 <h2>4. Data rules / สถานะ Entity</h2>
 <table>
-<tr><th>Entity</th><th>กติกา (entity-status-map §1.6/§1.8)</th></tr>
+<tr><th>Entity</th><th>กติกา (entity-status-map §1.6/§1.8 + stock-reservation)</th></tr>
 <tr><td>Lot</td><td>รอตรวจรับ → พร้อมใช้ผลิต (QC ผ่าน) / ระงับ (QC ไม่ผ่าน→คืน) / หมด · <code>{supplier prefix}{YYMM}</code></td></tr>
 <tr><td>GR</td><td><code>GR-{YYYYMMDD}-{NNN}</code> · header 1 supplier + หลาย line · gen Lot รายบรรทัด</td></tr>
+<tr><td>3 ยอด</td><td>คงคลัง (on_hand, ติดลบได้) · จองแล้ว (Reserved ≥0) · ใช้ได้ (Available = on_hand − Reserved, ติดลบได้)</td></tr>
+<tr><td>ยอดติดลบ 2 ชนิด</td><td>Available&lt;0 = "จองเกิน (รอรับเข้า)" (จองเกินของ) · on_hand&lt;0 = "ติดลบ (รอรับเข้า)" (ผลิตล่วงหน้า) — ทั้งคู่เตือนไม่บล็อก</td></tr>
 <tr><td>ราคา</td><td>ซื้อ/ขาย แยก field · 0 ได้ · ติดลบไม่ได้</td></tr>
-<tr><td>เกณฑ์ใกล้หมด</td><td>ต่อวัตถุดิบ · % หรือจำนวน · <b>ไม่มี default</b></td></tr>
-<tr><td>Negative stock</td><td>ผลิตตัดติดลบได้ · แสดงแดง+badge · GR บวกกลับชดเชย + FIFO retro-link + trace</td></tr>
-<tr><td>มูลค่าสต็อก</td><td>Σ ต่อ lot (คงเหลือ × ราคาซื้อล่าสุดของ lot) · lot ติดลบหักลบ · COGS นอก scope</td></tr>
+<tr><td>เกณฑ์ใกล้หมด</td><td>ต่อวัตถุดิบ · เทียบ <b>Available</b> · % หรือจำนวน · <b>ไม่มี default</b></td></tr>
+<tr><td>มูลค่าสต็อก</td><td>Σ ต่อ lot (on_hand × ราคาซื้อล่าสุดของ lot) · <b>ไม่หัก Reserved</b> · lot ติดลบหักลบ · COGS นอก scope</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-stock.html" target="_blank">api-stock.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: negative on-hand + retro-compensation on GR (FIFO back-allocate), FIFO lot allocation, PR auto-close/partial, atomic stock cut + concurrency (DEF-09), Lot numbering per supplier prefix, stock valuation = Σ(on_hand per lot × last buy price of lot)</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-stock.html" target="_blank">api-stock.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: negative on-hand + retro-compensation on GR (FIFO back-allocate), FIFO lot allocation, PR auto-close/partial, atomic stock cut, Lot numbering, <b>reservation table + reserved_balance + available=on_hand−reserved</b> (ใช้ใน stock/suggest/dashboard/US-STK-06), stock valuation = Σ(on_hand per lot × last buy price) ไม่หัก reserved</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">
-<li>ผลิตตัด stock ติดลบ (<a href="continuity.html#c16">C16</a>) · GR รับเข้า gen Lot + ปิด PR + บวกกลับ (<a href="continuity.html#c17">C17</a>)</li>
-<li>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (<a href="continuity.html#c18">C18</a>) → <a href="qc.html">QC</a> / <a href="return.html">Return</a> · มูลค่าสต็อก → <a href="dashboard.html">Dashboard tile</a> (source เดียว)</li>
+<li>PO Confirmed → จองวัตถุดิบ (Reserved↑, Available↓) · เริ่มผลิต → convert จอง→ตัด on_hand FIFO (ติดลบได้) (<a href="continuity.html#c3">C3</a>/<a href="continuity.html#c16">C16</a>) · GR → on_hand↑/Available↑ + gen Lot + ปิด PR + บวกกลับ (<a href="continuity.html#c17">C17</a>)</li>
+<li>Lot QC ขาเข้า ผ่าน/ไม่ผ่าน (<a href="continuity.html#c18">C18</a>) → <a href="qc.html">QC</a> / <a href="return.html">Return</a> · มูลค่าสต็อก/ใกล้หมด → <a href="dashboard.html">Dashboard tile</a></li>
 </ul>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="purchase-request.html">PR →</a><a href="production.html">การผลิต</a><a href="supplier.html">Supplier</a></div>
-<footer>US-STK-01..05 · 15 AC (happy/edge/error) · Module คลัง + Goods Receipt</footer>
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="purchase-request.html">PR →</a><a href="production.html">การผลิต</a><a href="supplier.html">Supplier</a><a href="po.html">PO</a></div>
+<footer>US-STK-01..06 · 18 AC (happy/edge/error) · Module คลัง + Goods Receipt · + 3 ยอด/Reservation</footer>
 </div></body></html>
