@@ -2092,6 +2092,45 @@
           "summary": "GCP docs-hosting PROPOSAL + prepared artifacts (no deploy — Phase=local). Recommended Cloud Run (nginx static) + IAP: allow per Google account via IAM roles/iap.httpsResourceAccessor, works on *.run.app (no LB/domain needed), scale-to-zero, ~<200 THB/mo, container-first (no rework for Phase 3-4), and NO edit to any HTML. Delivered runbook docs/infra/erp-v2-ui-first/gcp-docs-hosting.md (Thai step-by-step incl OAuth consent, enable APIs, Cloud Build, deploy, enable IAP, per-user grant, test, redeploy/add/remove access, cost, troubleshooting) + deploy/docs-site/{Dockerfile,nginx.conf,cloudbuild.yaml,deploy.sh}. Image mirrors repo paths so relative links work; dashboard's pipeline/status.json baked in as a snapshot. Readiness: gcloud 562 authed (josukekung@gmail.com), region asia-southeast1, project=gen-lang-client-0453424159 (needs dedicated project+billing); Docker daemon down but not needed (Cloud Build). Batched 4 questions to Pond (project/billing, email allow-list, Workspace-vs-gmail, custom domain). Feature-level status untouched.",
           "overridden_by": null,
           "updated_at": "2026-07-10T23:30:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "gcp-docs-deploy-attempt",
+          "status": "BLOCKED_NEED_INPUT",
+          "gate_checklist": [
+            {
+              "item": "Pond's confirmations folded into deploy.sh: PROJECT_ID=essence-hub-502015, ALLOWED_EMAILS=[josukekung@gmail.com, arunee.key@gmail.com], region asia-southeast1, *.run.app, consent=External(Testing)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Project + billing verified: essence-hub-502015 ACTIVE, projectNumber 238060462485, billingEnabled=true (billingAccounts/01E51E-E35196-659A3D)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Real gcloud deploy executed",
+              "pass": false,
+              "missing": "BLOCKED by Claude Code permission classifier ([Production Deploy] against production project). Per operating rules a cross-session coordinator message is NOT the user's consent; only the permission system or Pond directly can authorize. Did NOT work around. No APIs enabled, no resources created."
+            }
+          ],
+          "output_files": [
+            "deploy/docs-site/deploy.sh"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "การ deploy จริงถูก permission system ของ Claude Code บล็อก (ถือว่าเป็น production deploy) — ข้อความจาก coordinator ไม่นับเป็นการอนุมัติของปอนด์เอง ต้องการให้เดินต่ออย่างไร?",
+              "options": [
+                "ปอนด์รัน `bash deploy/docs-site/deploy.sh` เองจากเครื่อง (ค่าเติมครบแล้ว) — ปลอดภัยสุด",
+                "ปอนด์อนุญาต Bash rule ให้รัน gcloud จริง แล้วสั่งให้ผมเดินต่อ",
+                "ให้ผมหยุดไว้ที่ proposal เท่านั้น"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "DEPLOY ATTEMPT BLOCKED BY PERMISSION SYSTEM. Folded Pond's confirmed values into deploy.sh (project essence-hub-502015 + 2 allow emails). Verified project ACTIVE + billing enabled via read-only gcloud. The first state-changing command (gcloud services enable) was DENIED by the Claude Code auto-mode classifier as a Production Deploy — and per my rules an agent/coordinator message is never the user's consent, so I stopped instead of working around it. Nothing was created on GCP (no APIs enabled, no Artifact Registry, no Cloud Run, no IAP). Next step needs Pond's own authorization: either Pond runs deploy.sh (fully filled in), or grants a Bash permission rule for real gcloud. Feature-level status untouched.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T23:55:00+07:00"
         }
       ]
     }

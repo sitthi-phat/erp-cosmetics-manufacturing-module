@@ -15,15 +15,15 @@
 set -euo pipefail
 
 # ------------------------- EDIT THESE (placeholders) -------------------------
-PROJECT_ID="REPLACE_WITH_GCP_PROJECT_ID"     # e.g. essence-hub-docs
+PROJECT_ID="essence-hub-502015"                # confirmed by Pond (billing enabled)
 REGION="asia-southeast1"                       # Singapore — lowest latency for TH
 SERVICE="essence-docs"                         # Cloud Run service name
 AR_REPO="docs"                                 # Artifact Registry repo name
 
 # Google accounts allowed to view the site (one per line). Personal gmail is OK.
 ALLOWED_EMAILS=(
-  "pond@example.com"
-  # "someone.else@gmail.com"
+  "josukekung@gmail.com"
+  "arunee.key@gmail.com"
 )
 # -----------------------------------------------------------------------------
 
