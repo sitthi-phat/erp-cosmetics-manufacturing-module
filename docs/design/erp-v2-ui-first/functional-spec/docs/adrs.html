@@ -1,0 +1,696 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ADRs 000–009 · สถาปัตยกรรม (TL) · ESSENCE Hub</title>
+<link rel="stylesheet" href="_doc.css"></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· สถาปัตยกรรม (Tech-Lead)</span><span class="crumb"><a href="../index.html">สารบัญ</a> › สถาปัตยกรรม › ADRs</span></header>
+<div class="wrap">
+<div class="srcnote">📄 หน้านี้เป็น <b>view สำหรับอ่าน</b> (render จาก Markdown) — <b>แหล่งแก้ไขจริง</b>: <code>docs/adr/00X-*.md</code> (10 ไฟล์) · sync ณ 2026-07-10</div>
+<h1 style="color:#10322F;margin:14px 0 6px">Architecture Decision Records (ADR-000 … ADR-009)</h1>
+<div class="toc"><b>สารบัญ ADR</b>
+<ul>
+<li><a href="#adr-000">ADR-000 — Core Tech Stack (React + Node.js + MySQL)</a></li>
+<li><a href="#adr-001">ADR-001 — Stock Append-Only Ledger + Negative Stock (FIFO retro-link)</a></li>
+<li><a href="#adr-002">ADR-002 — Backend Framework, ORM, Frontend Libraries</a></li>
+<li><a href="#adr-003">ADR-003 — Generic Field-Level Audit (app-layer)</a></li>
+<li><a href="#adr-004">ADR-004 — State-Machine Action Endpoints + Envelope + Pagination</a></li>
+<li><a href="#adr-005">ADR-005 — Notification via Outbox + Read-bit Fan-out</a></li>
+<li><a href="#adr-006">ADR-006 — Storage Abstraction (GCS-ready)</a></li>
+<li><a href="#adr-007">ADR-007 — Auth (local + Google) + RUCDAA + Session Policy</a></li>
+<li><a href="#adr-008">ADR-008 — Gapless Document Numbering</a></li>
+<li><a href="#adr-009">ADR-009 — Soft-Delete + Reference-Guard</a></li>
+</ul></div>
+
+<section class="docsec" id="adr-000"><div class="content" id="b000">…</div></section>
+<section class="docsec" id="adr-001"><div class="content" id="b001">…</div></section>
+<section class="docsec" id="adr-002"><div class="content" id="b002">…</div></section>
+<section class="docsec" id="adr-003"><div class="content" id="b003">…</div></section>
+<section class="docsec" id="adr-004"><div class="content" id="b004">…</div></section>
+<section class="docsec" id="adr-005"><div class="content" id="b005">…</div></section>
+<section class="docsec" id="adr-006"><div class="content" id="b006">…</div></section>
+<section class="docsec" id="adr-007"><div class="content" id="b007">…</div></section>
+<section class="docsec" id="adr-008"><div class="content" id="b008">…</div></section>
+<section class="docsec" id="adr-009"><div class="content" id="b009">…</div></section>
+
+<div class="nav"><a href="../index.html">← สารบัญ Document Hub</a><a href="../../architecture/index.html" target="_blank">Architecture Hub ↗</a><a href="../../architecture/db-schema.html" target="_blank">DB Schema ↗</a></div>
+<footer>ESSENCE Hub System · Document Hub · view รวม ADR-000…009 จาก docs/adr/*.md · ต้นฉบับแก้ที่ docs/adr</footer>
+</div>
+
+<script type="text/markdown" data-target="#b000">
+# ADR-000: Core Tech Stack — React + Node.js + MySQL
+
+- **สถานะ**: Accepted
+- **วันที่**: 2026-07-06
+- **ผู้ตัดสินใจ**: ปอนด์ (Engineering Manager / Final Approver)
+- **ขอบเขต**: ทุก feature ในโปรเจกต์ ERP Cosmetics Factory (เริ่มจาก `erp-core-prototype`)
+
+## บริบท (Context)
+
+โปรเจกต์นี้พัฒนาระบบ ERP สำหรับโรงงานผลิตเครื่องสำอาง เริ่มจาก prototype
+ครอบคลุม flow order-to-cash (ลูกค้า → PO → stock/สูตร → ผลิต → จัดส่ง → invoice)
+พร้อม User Management, audit log และ dashboard ตามส่วนงาน
+ทีมต้องการ stack กลางที่ทุก agent (Tech-Lead, Engineer, QA, DevOps) ใช้ร่วมกัน
+เพื่อไม่ต้องตัดสินใจซ้ำในทุก feature
+
+## การตัดสินใจ (Decision)
+
+ปอนด์กำหนด tech stack หลักของโปรเจกต์ดังนี้:
+
+| Layer | เทคโนโลยี |
+|---|---|
+| Frontend | **React** (web application) |
+| Backend | **Node.js** |
+| Database | **MySQL** |
+
+## ผลที่ตามมา (Consequences)
+
+- Tech-Lead ออกแบบสถาปัตยกรรมบน stack นี้ — ไม่ต้องเสนอ/เปรียบเทียบ stack ทางเลือกอีก
+  (รายละเอียดรอง เช่น framework ฝั่ง backend, ORM, UI library, state management
+  ยังเป็นอำนาจตัดสินใจของ Tech-Lead ผ่าน ADR ฉบับถัดไป)
+- Engineer เขียนโค้ดเป็น JavaScript/TypeScript ทั้ง frontend และ backend
+- DevOps เตรียม environment สำหรับ Node.js runtime + MySQL
+- การเปลี่ยน stack หลักในอนาคตต้องออก ADR ใหม่และให้ปอนด์ approve เท่านั้น
+
+## ทางเลือกที่พิจารณา (Alternatives Considered)
+
+ไม่มีการเปรียบเทียบทางเลือกอย่างเป็นทางการ — เป็นการตัดสินใจโดยตรงของปอนด์
+(stakeholder / final approver) ตามความคุ้นเคยของทีมและความเหมาะสมกับ prototype
+</script>
+
+<script type="text/markdown" data-target="#b001">
+# ADR-001: Stock as an Append-Only Ledger + Negative Stock (FIFO retro-link)
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead (proposed), Pond (confirmed negative-stock + FIFO retro-link, r4.1)
+- **Scope**: All inventory/material movement in ESSENCE Hub System (`erp-v2-ui-first`)
+- **Supersedes / relates to**: ADR-000 (stack). Directly addresses the DEF-09 defect class from prototype-v1 (stock oversell race).
+
+## Context
+
+Cosmetics manufacturing is GMP-regulated: every finished Batch must be traceable to the
+raw-material Lots it consumed (raw Lot → Batch → FG). Two business rules from Pond (r4.1,
+`entity-status-map.md` §1.6) shape the inventory model:
+
+1. **Material shortage never blocks production.** A Batch may start ("เริ่มผลิต") and consume
+   material even when on-hand is insufficient — because the physical goods may already be on
+   the floor before the Goods Receipt (GR) is entered. **On-hand may go negative.**
+2. When the GR is later entered, the system must **add stock back**, compensate the negative
+   first, and **show clearly that it went negative** (red badge on `stock.html`, notice on
+   `goods-receipt.html`).
+
+The prototype stored on-hand as a single mutable scalar and did a *check-then-decrement*
+("is there enough? then subtract"). This produced **DEF-09**: concurrent decrements raced and
+corrupted the balance. It also could not answer the GMP question "which movement drove the
+balance negative, by which Batch, when".
+
+NFR constraints (Pond-answered): ≤50 concurrent users, >200 PO/day + >50 GR/day (light for a
+single MySQL instance), page response <2s (hard cap 3s).
+
+## Decision
+
+**Model inventory as an append-only ledger. On-hand is derived, never mutated in place.**
+
+### 1. `stock_movement` — the source of truth (append-only, never UPDATE/DELETE)
+Every quantity change is one immutable row:
+
+| column | note |
+|---|---|
+| `id` | PK |
+| `material_id` | FK |
+| `lot_id` | **nullable** — null = "unallocated" consumption before the lot exists (see §3) |
+| `qty` | signed decimal; **negative = consume**, positive = receive/return-in |
+| `reason` | enum: `production_consume`, `goods_receipt`, `return_out`, `adjust`, `retro_alloc` |
+| `ref_type` / `ref_id` | Batch / GR / Return / adjustment that caused it |
+| `caused_negative` | boolean flag set at insert time if this movement drove the running balance below 0 (for fast reporting/trace) |
+| `created_by`, `created_at` | who/when (UTC) |
+| `note` | free text (mandatory on `adjust`/`return_out`) |
+
+- **No `CHECK(qty >= 0)` and no pre-read balance check on consume.** Consumption simply appends
+  a negative row. This is what makes negative stock legal *and* removes the DEF-09 race — there
+  is no check-then-act window to lose.
+
+### 2. Derived on-hand + a materialized balance for speed
+- Truth = `SUM(qty)` over the ledger per `(material_id, lot_id)`.
+- For read performance we keep a materialized `stock_balance(material_id, lot_id, qty_on_hand,
+  updated_at)` updated **in the same transaction** as the movement insert using an **atomic
+  relative delta**: `UPDATE stock_balance SET qty_on_hand = qty_on_hand + :delta ...`.
+  A relative update is safe under InnoDB row locking and needs **no prior read** — so negatives
+  are naturally allowed and there is still no race. `stock_balance` is a cache: it can always be
+  rebuilt from `stock_movement`.
+- Material-level on-hand for the `stock.html` grid = `SUM(qty_on_hand)` across that material's
+  lots (may be negative → render red + "ติดลบ (รอรับเข้า)" badge).
+
+### 3. Negative stock and GMP lot linkage — FIFO retro-link (Pond confirmed)
+When a Batch consumes a material for which **no receivable Lot exists yet**, the consume
+movement is written with `lot_id = NULL` (an *unallocated* consumption).
+
+- When a **Goods Receipt** later creates the real Lot, a **retro-allocation** step runs in the
+  GR transaction: it finds open unallocated consumptions for that material (oldest first) and
+  writes paired `retro_alloc` movements that move the consumption onto the new Lot (FIFO),
+  restoring the raw-Lot → Batch link that GMP requires. The original unallocated rows are kept
+  (append-only) and marked reconciled; the retro-link is visible in `trace.html`.
+- The "this receipt compensates X negative units" notice on `goods-receipt.html` is simply
+  computed from the pre-GR material balance being < 0 — it is **not special logic**, it is the
+  natural netting of a summing ledger.
+
+### 4. Costing is out of scope (quantity-only ledger)
+The ledger tracks **quantity only**. Product cost comes from the **BOM cost snapshot**
+(ADR-linked, `status-journeys.md` §11). No FIFO/moving-average inventory valuation or COGS is
+computed — negative stock would otherwise make consumed-cost ambiguous, and no requirement asks
+for it. (Confirmed direction; if COGS enters scope later it is a superseding ADR.)
+
+## Alternatives considered
+
+- **A. Keep a scalar on-hand + `CHECK >= 0`, block on shortage.** Rejected: violates Pond's
+  "never block production" rule and cannot represent negative stock.
+- **B. Scalar on-hand, allow negative, no ledger.** Rejected: cannot answer GMP "which
+  Batch/when drove it negative" nor reconstruct history; still races on concurrent updates.
+- **C. Ledger + pessimistic `SELECT ... FOR UPDATE` before every consume.** Rejected as
+  unnecessary: since we *allow* negative there is nothing to guard, and the lock would
+  reintroduce the DEF-09 contention point for no benefit at this load.
+- **D. Provisional/expected lot chosen by operator at production start.** Considered for §3;
+  rejected as the default because it forces data entry the operator often cannot provide
+  (the lot truly does not exist yet). FIFO retro-link at GR is automatic and lower-friction.
+  (Kept as a possible future opt-in.)
+
+## Consequences
+
+- **DEF-09 class eliminated by design** — no check-then-decrement window; appends and relative
+  deltas are atomic.
+- **Full GMP traceability** — every gram in/out is an immutable row with Batch/Lot/reason/user.
+- Reports and the stock grid **must render negative balances** (red + badge), never clamp to 0.
+- `stock_balance` is a derived cache → an integrity job can periodically assert
+  `stock_balance.qty_on_hand == SUM(stock_movement.qty)` and rebuild on mismatch.
+- **Retro-allocation** is a real background/GR-time step that must be covered by integration
+  tests (unallocated consume → GR → FIFO retro-link → trace shows raw-Lot→Batch).
+- Phase 2 (local PC) → Phase 3 (GCP) unaffected: pure relational design, no engine-specific
+  features beyond InnoDB row locking (available in Cloud SQL for MySQL).
+- Engineer/QA: the "compensate negative" behaviour is emergent from summation — test it as an
+  invariant, not as bespoke branching code.
+</script>
+
+<script type="text/markdown" data-target="#b002">
+# ADR-002: Backend Framework, ORM, and Frontend Libraries
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead
+- **Scope**: `erp-v2-ui-first` implementation. Detail decision permitted under ADR-000.
+
+## Context
+
+ADR-000 locks the stack to React + Node.js + MySQL and delegates framework/ORM/UI-library
+choices to the Tech-Lead. We need a stable, boring, well-documented set that a mixed AI team can
+implement consistently, that runs on a local PC (Phase 2) and lifts to GCP (Phase 3) without
+rework, and that supports: transactional multi-table writes (state transitions + ledger + audit
+in one tx), row-level locking (gapless counters), and a large clickable UI matching the mockups.
+
+## Decision
+
+| Concern | Choice | Why |
+|---|---|---|
+| Language | **TypeScript** (FE + BE) | one language, typed contracts shared FE/BE |
+| Backend HTTP | **NestJS** (Express platform) | opinionated modular structure (one module per business module), DI, guards for RUCDAA, interceptors for the generic audit + envelope |
+| ORM | **Prisma** | typed schema = single DDL source (feeds `db-schema.html`), explicit transactions (`$transaction`), raw SQL escape hatch for `SELECT ... FOR UPDATE` gapless counters and ledger sums |
+| DB | **MySQL 8 / InnoDB** (ADR-000) | row locking, CTEs, JSON columns for audit old/new |
+| Frontend | **React + Vite + TypeScript** | fast dev; mockups are static HTML to be ported |
+| UI kit | **Ant Design (antd)** | matches the mockups' table/form density; humanized Thai labels via a wrapper layer (no raw enums) |
+| Data fetching | **TanStack Query** | caching + 15s dashboard auto-refresh (keep-view), pagination |
+| Auth token | **JWT (access) + server session-epoch check** | see ADR-007 (24h expiry + 06:00 forced re-login) |
+| Validation | **zod** (shared FE/BE schemas) | one validation truth |
+| Migrations | **Prisma Migrate** → SQL in `db/migrations/` | reviewable, replayable on local + Cloud SQL |
+
+- **One NestJS module per business module** (customers, po, production, stock, purchase-request,
+  goods-receipt, supplier, bom, qc, shipping, invoice, trace, settings, notification, auth).
+- Cross-cutting concerns are framework-level, not per-module: `AuditInterceptor` (ADR-003),
+  `RbacGuard` (ADR-007), `ResponseEnvelopeInterceptor` (ADR-004), `OutboxService` (ADR-005),
+  `StorageService` (ADR-006), `SequenceService` (ADR-008), soft-delete base repository (ADR-009).
+
+## Alternatives considered
+
+- **Plain Express**: rejected — no structure for a 15-module app; we'd rebuild DI/guards/interceptors.
+- **Fastify**: viable and fast, but NestJS's guard/interceptor model maps 1:1 onto our cross-cutting
+  needs (RBAC, audit, envelope) and is more prescriptive for a multi-author team.
+- **TypeORM / Sequelize / Knex**: Prisma's generated types and single-file schema give us a
+  cleaner DDL source-of-truth and safer transactions; raw SQL is still available where needed.
+- **MUI instead of antd**: antd's dense data-grid/table + form ergonomics better match the ERP
+  mockups already delivered.
+
+## Consequences
+
+- Prisma `schema.prisma` becomes the canonical DDL; `db-schema.html` is generated/derived from it,
+  keeping one truth (guardrail G1 from prep).
+- NestJS guards/interceptors enforce RUCDAA, audit, and envelope **globally** — a module author
+  cannot forget them.
+- Runs on Node 20 LTS locally and on Cloud Run/GCE + Cloud SQL later with no code change
+  (env-config only). Storage/secret access goes through abstractions (ADR-006/007).
+- Team must standardize on TS strict mode + zod at the boundary; no `any` at controller edges.
+</script>
+
+<script type="text/markdown" data-target="#b003">
+# ADR-003: Generic Field-Level Audit (app-layer interceptor, not per-table triggers)
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead
+- **Scope**: Every mutable entity in `erp-v2-ui-first`
+
+## Context
+
+Pond requires field-level audit **everywhere** (`pond-gate1-r2-feedback.md` §12, brief §5):
+"ใครทำอะไร ค่าไหนเปลี่ยน จากอะไรเป็นอะไร". `trace.html` already renders it as
+`timestamp | user | entity | field | old → new` (verified in mockup). Many state transitions
+also require a **mandatory comment/reason** (QC fail, Hold, Follow-up, cancel, return, override,
+delete). Audit must be retained **online 1 year, then Super-User manual purge/archive to text
+file — no auto-purge** (Pond NFR). Writing audit code per table would be large and error-prone
+(the R1 risk).
+
+## Decision
+
+**One central audit mechanism at the application (ORM) layer — never per-table DB triggers.**
+
+- A Prisma **middleware/extension** wraps every `create/update/delete`. For updates it diffs the
+  before-image against the after-image and, for each changed field, appends a row to `audit_log`.
+- `audit_log` columns: `id`, `entity_type`, `entity_id`, `field` (null for create/delete/action),
+  `old_value` (JSON/text), `new_value` (JSON/text), `action` (`create|update|delete|transition`),
+  `reason` (nullable; **required** where the transition mandates a comment), `actor_id`, `at` (UTC),
+  `request_id` (correlates all field-rows from one save).
+- **Status transitions** are also audited here (old status → new status, with reason) so the
+  status-history view and the field-audit view come from the same table (avoids "two truths").
+- Sensitive fields (password hash, tokens) are on an **audit-exclude list**; only "changed"
+  (boolean) is recorded, never the value.
+- A `reason` is enforced by the **service/action endpoint** (ADR-004), passed into the audit
+  context, so mandatory-comment rules live in one place.
+
+### Retention & archive
+- No auto-purge. Rows stay online ≥1 year.
+- A **Super-User-only** archive/purge action exports a date range to a text file via the storage
+  abstraction (ADR-006, GCS-ready) and then may purge those exported rows. Both the export and the
+  purge are themselves audited.
+- Index `(entity_type, entity_id, at)` and `(at)` for trace search by entity + date-range/time.
+
+## Alternatives considered
+
+- **Per-table DB triggers**: rejected — dozens of triggers to write/maintain, no access to the
+  acting user or the mandatory reason, and MySQL trigger portability/debuggability is poor.
+- **CDC / binlog capture**: overkill for this scale, and still lacks user + reason context;
+  operationally heavy for a local-PC phase.
+- **Per-service manual audit calls**: rejected — the R1 problem; authors will forget fields.
+- **Temporal/system-versioned tables**: not needed; we want a queryable field-diff stream and a
+  simple archive story, which `audit_log` gives directly.
+
+## Consequences
+
+- Adding a new entity gets audit "for free" — no per-table work (mitigates R1).
+- `trace.html` and the Settings → Audit-log screen read one table; status-history is a filtered
+  view of it.
+- The diff runs inside the write transaction, so audit is atomic with the change (no lost/partial
+  audit). At >200 PO/day this is well within budget.
+- Archive/purge is a deliberate Super-User action with its own audit trail — satisfies GMP +
+  Pond's retention answer.
+</script>
+
+<script type="text/markdown" data-target="#b004">
+# ADR-004: State-Machine Action Endpoints + Response Envelope + Pagination
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead
+- **Scope**: All REST APIs in `erp-v2-ui-first`
+
+## Context
+
+`status-journeys.md` and `entity-status-map.md` define strict lifecycles for Customer, PO
+(2-track), PRD, Batch, Lot, PR, GR, Shipment, DN, Invoice — every transition must: be legal for
+the current state + actor's RUCDAA rights, capture a (sometimes mandatory) comment, write audit +
+status-history, and fire cross-module cascades/notifications **in one transaction**. The UI must
+not show raw enums, must paginate every list, and must support dashboard drill-down and
+notification deep-links. We need one consistent API shape so BA use-cases map 1:1 to endpoints.
+
+## Decision
+
+### 1. Transitions are explicit action endpoints, not `PATCH {status}`
+`POST /api/{module}/{id}/{action}` (e.g. `POST /po/{id}/confirm`, `/po/{id}/cancel`,
+`/po/{id}/reopen`, `/production/{prdId}/accept`, `/production/{prdId}/start`,
+`/qc/{batchId}/pass`, `/qc/{batchId}/fail`, `/shipping/{dnId}/deliver|reject|postpone`).
+
+- The server owns the state machine: it validates `from → to` legality, checks RUCDAA
+  (incl. `Admin` bit for force-override), enforces mandatory `reason`, then executes the
+  transition + cascades + audit + outbox events **inside one `$transaction`**.
+- Generic `PATCH` cannot express "which transition + which rights + which cascade" and would let
+  the client set illegal states — forbidden.
+
+### 2. Standard response envelope
+```
+{ "data": <payload|null>,
+  "meta": { "page": 1, "pageSize": 20, "total": 1204 },   // lists only
+  "error": null }
+```
+On error: `{ "data": null, "error": { "code": "PO_INVALID_TRANSITION", "message": "<Thai>",
+"details": {...} } }`. `code` is a stable machine string; `message` is human Thai for direct UI
+display (no raw enum). A global Nest interceptor wraps all responses.
+
+### 3. Pagination & search
+- Every list endpoint: `?page&pageSize&sort&q&<filters>`; `meta.total` for the pager shown in
+  mockups. Trace/audit (up to ~1.2M rows) uses **keyset/seek pagination** on `(at, id)` to stay
+  <2s (hard cap 3s) — offset paging only for small module lists.
+- Multi-field search matches the mockups (e.g. PO search by 3 date types; shipping search by PO
+  ID or customer name/company/contact phone/contact name).
+
+### 4. Dashboard drill-down & notification deep-link
+- Each KPI tile has a **summary** endpoint (counts) and a **list** endpoint that accepts the same
+  filter context, so clicking a tile opens the list pre-filtered and each row deep-links into the
+  owning module with context (auto-refresh 15s keeps the current view via query params, not
+  server state).
+- Notification items carry `deepLink` (route + params) so the bell → item → work screen path is
+  data-driven (ADR-005).
+
+### 5. Concurrency
+- Mutable-by-many entities (PO, PRD, stock balance) carry a `version` (optimistic lock); a stale
+  write returns `409 CONFLICT_STALE`. Gapless number issuance uses `SELECT ... FOR UPDATE`
+  (ADR-008). Stock consume needs neither (ADR-001).
+
+## Alternatives considered
+
+- **REST `PATCH /status`**: rejected (illegal-state risk, no per-transition rights/cascade).
+- **GraphQL**: unnecessary; REST + envelope maps cleanly to per-screen use-cases and is simpler
+  for the team and for the static API spec pages.
+- **RPC-style single endpoint**: harder to document per screen and to secure per action.
+
+## Consequences
+
+- BA use-cases map 1:1 to action endpoints (documented per module in `api-<module>.html`).
+- All transition rules, rights, mandatory comments, cascades, audit, and events live behind one
+  pattern — testable uniformly (QA writes one transition-matrix test per entity).
+- UI never receives raw enums; errors are display-ready Thai.
+- Keyset pagination keeps trace search within the performance NFR.
+</script>
+
+<script type="text/markdown" data-target="#b005">
+# ADR-005: Notification via Transactional Outbox + Read-bit Fan-out
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead
+- **Scope**: Cross-module Notification/Inbox in `erp-v2-ui-first`
+
+## Context
+
+Every cross-module hand-off must raise a notification (`status-journeys.md` §10, brief). Rules:
+recipients = **all users whose role has the `Read` bit on the destination module** (RUCDAA);
+the bell (top-right) shows a total badge → expand list → click item = **deep-link to the work
+screen + acknowledge** (badge counted per user). Events are produced inside the same transaction
+as the state transition that caused them (they must not be lost if that tx commits, nor sent if
+it rolls back). Load is light (≤50 users, >200 PO/day). Must be portable Phase 2 (local) → Phase
+3 (GCP).
+
+## Decision
+
+### 1. Transactional outbox
+- Each state transition (ADR-004) writes its domain event into an **`outbox`** table **in the
+  same `$transaction`** as the change + audit. No event is emitted directly during the request.
+- A lightweight **dispatcher** (in-process polling loop, ~1s) reads unsent `outbox` rows and
+  materializes notifications. This guarantees exactly-once-effect coupling with the state change
+  and needs **no external broker** in Phase 2. In Phase 3 the dispatcher can be swapped for
+  Pub/Sub without touching producers (they only write `outbox`).
+
+### 2. Read-bit fan-out, per-user acknowledge
+- `notification` table = the event (type, `entity_ref`, `deep_link`, `module`, `created_at`).
+- Recipients are **not** copied per user at write time (avoids fan-out storms). Instead a user's
+  inbox = notifications for modules where the user's role has `Read`, **minus** the rows that user
+  has acknowledged, tracked in `notification_ack(notification_id, user_id, ack_at)`.
+- Badge count per user = `count(matching notifications) - count(acks)`; opening an item inserts an
+  ack (idempotent) → badge decrements (mockup: 5 → click one → 4).
+- Optional per-module left-menu badges reuse the same query filtered by module.
+
+### 3. Delivery to the browser
+- Phase 2: the bell polls a `GET /notifications?unacknowledged` endpoint (aligned with the 15s
+  dashboard cadence). WebSocket/SSE is **not** required for this load and is deferred (keeps the
+  local deployment simple and portable). If real-time is later wanted, add SSE without schema
+  change.
+
+## Alternatives considered
+
+- **Emit notifications directly in the request handler**: rejected — lost on rollback / sent on
+  failure; the outbox makes it atomic.
+- **Copy a notification row per recipient at write time**: rejected — recomputing recipients when
+  roles change is messy and fan-out is wasteful; Read-bit-at-read-time is always correct.
+- **External broker (Kafka/RabbitMQ) now**: rejected — operational weight unjustified at ≤50
+  users on a local PC; outbox + Pub/Sub-later keeps the Phase 3 door open.
+- **WebSocket push now**: deferred — polling meets the need; revisit if UX demands instant.
+
+## Consequences
+
+- Notifications are atomic with the state change (no ghosts, no losses).
+- Role changes instantly and correctly change who sees what (no backfill).
+- No broker to run in Phase 2; a clean seam (`outbox` → dispatcher) to adopt Pub/Sub in Phase 3.
+- QA tests: transition → exactly one outbox row → recipients = Read-bit holders → ack decrements
+  that user's badge only.
+</script>
+
+<script type="text/markdown" data-target="#b006">
+# ADR-006: Storage Abstraction (uploads + trace archive) — GCS-ready
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead
+- **Scope**: All binary/file I/O in `erp-v2-ui-first`
+
+## สรุป (สำหรับผู้อ่านที่ไม่ใช่ engineer)
+ระบบมีการเก็บ "ไฟล์" อยู่ 2 จุด: (1) เอกสารใบรับจาก supplier ที่ upload ตอนรับของ และ
+(2) ไฟล์ text ที่ Super User กด archive ประวัติ trace. เราจะ **ไม่ผูกโค้ดกับฮาร์ดดิสก์ของเครื่อง
+โดยตรง** แต่เขียนผ่าน "ตัวกลางเก็บไฟล์" ตัวเดียว — ตอนรันบน PC (เฟส 2) เก็บลงโฟลเดอร์ในเครื่อง,
+ตอนย้ายขึ้น GCP (เฟส 3) เปลี่ยนไปเก็บบน Google Cloud Storage ได้โดย **ไม่ต้องแก้โค้ดส่วนงาน**
+เลย. นี่คือเงื่อนไขที่ทำให้เส้นทาง "เริ่มที่ PC แล้วค่อยขึ้น cloud" ไม่ถูกปิด.
+
+## Context
+
+Two file needs exist: supplier receipt-document uploads (`goods-receipt.html`) and Super-User
+trace archive text files (ADR-003). The charter mandates Phase 2 on a local PC, Phase 3 on GCP —
+no design may close off that path. Binaries must **not** live in MySQL, and code must not bind to
+`fs`/local paths directly.
+
+## Decision
+
+- Define a single `StorageService` interface: `put(key, bytes, meta)`, `get(key)`,
+  `getSignedUrl(key, ttl)`, `delete(key)` (soft — see below), `list(prefix)`.
+- **Phase 2 driver**: `LocalDiskStorage` writes under a configured `STORAGE_ROOT` on the PC.
+- **Phase 3 driver**: `GcsStorage` writes to a GCS bucket. Selected by env (`STORAGE_DRIVER`); no
+  business code changes.
+- DB stores only **metadata** (`file_asset`: id, `key`, `filename`, `mime`, `size`, `sha256`,
+  `uploaded_by`, `at`, `entity_ref`). Downloads go through short-lived signed URLs (local driver
+  serves via an authenticated route).
+- Trace archive export (ADR-003) writes a text file via the same interface and records a
+  `file_asset` row; the archive action is audited.
+- Files are **never hard-deleted** while referenced; deletion follows the soft-delete policy
+  (ADR-009) at the metadata level.
+
+## Alternatives considered
+
+- **BLOBs in MySQL**: rejected — bloats DB/backups, slow, poor for large PDFs/images.
+- **Direct `fs` calls in services**: rejected — binds to local disk, breaks the GCP path.
+- **S3 SDK targeting a local MinIO**: viable but adds an extra service to run locally; a plain
+  disk driver is simpler for Phase 2 and the interface still lifts to GCS.
+
+## Consequences
+
+- Phase 2 → Phase 3 migration for files = swap driver + copy bucket; zero business-code change.
+- Backups: Phase 2 must include `STORAGE_ROOT` in the backup job; Phase 3 uses GCS durability +
+  Cloud SQL backup (Pond NFR).
+- Signed-URL downloads keep RBAC intact (no public file URLs).
+</script>
+
+<script type="text/markdown" data-target="#b007">
+# ADR-007: Authentication (local + Google) + RUCDAA Authorization + Session Policy
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead (design), Pond (auth + session answers, NFR 2026-07-08)
+- **Scope**: AuthN/AuthZ for all of `erp-v2-ui-first`
+
+## สรุป (สำหรับผู้อ่านที่ไม่ใช่ engineer)
+เข้าระบบได้ 2 ทาง: (1) username/password ที่สร้างในระบบเอง หรือ (2) ปุ่ม **Login with Google**
+โดย Admin เป็นคนผูกบัญชี Google เข้ากับ user ในหน้าตั้งค่า. เรื่องสิทธิ์ใช้ **RUCDAA** = แต่ละ
+role กำหนดได้ราย module ว่าทำอะไรได้บ้าง 6 อย่าง: อ่าน(R)/แก้(U)/สร้าง(C)/ลบ(D)/อนุมัติ(A)/
+สิทธิ์พิเศษ Admin(A) — เช่นปลด blacklist, reopen PO, archive trace ต้องมีบิต Admin. Session
+(การล็อกอินค้างไว้) หมดอายุใน 24 ชม. และ **ทุกเช้า 06:00 ระบบเตะออกทั้งหมดให้ล็อกอินใหม่**
+ตามที่ปอนด์กำหนด. รหัสผ่านเก็บแบบเข้ารหัส (bcrypt) ไม่เคยเก็บเป็นตัวอักษรจริง.
+
+## Context
+
+Pond answers: create local accounts (MySQL) **and** support Google Login, with the user linked
+in the admin page; session expires 24h **and** all sessions are force-reset every day at 06:00.
+Authorization = RUCDAA per module (`status-journeys.md` §9): Read, Update, Create, Delete,
+Approve, **Admin**. Roles are unlimited; users sit under a role. The `Read` bit also drives
+notification visibility (ADR-005). Special capabilities (reassign customer, archive trace, unban
+blacklist, status force-override, PO cancel/reopen, undelete) require the **Admin** bit.
+
+## Decision
+
+### Authentication
+- **Local**: username + bcrypt(password). No plaintext ever stored; password fields are on the
+  audit-exclude list (ADR-003).
+- **Google**: OAuth 2.0 / OIDC. Admin links a Google `sub`/email to an existing user in Settings;
+  login matches on the verified Google identity. (Phase 2 local still needs outbound internet for
+  Google's endpoints — acceptable per Pond's choice.)
+- On success the server issues a **JWT access token** (24h `exp`) carrying `user_id`, `role_id`,
+  and `iat`.
+
+### Session policy (24h + daily 06:00 reset)
+- A global `session_epoch` timestamp is stored server-side and **advanced to 06:00 every day**
+  by a scheduler. A token is valid only if `iat >= session_epoch` **and** not past its 24h `exp`.
+  This forces every user to re-login after 06:00 without tracking per-session rows.
+- (Night-shift note: this logs everyone out at 06:00 including an active night shift — flagged to
+  BA/PO as a UX confirmation; the mechanism honors Pond's rule as stated.)
+
+### Authorization (RUCDAA)
+- Tables: `role`, `role_permission(role_id, module, r, u, c, d, approve, admin)`, `user(role_id,
+  ...)`. Roles unlimited; company profile in Settings.
+- A global **`RbacGuard`** (NestJS) checks the required bit for each endpoint/action (read =R,
+  create =C, update =U, delete =D, approve/transition =A, special/override/undelete =Admin).
+  Frontend hides controls the user lacks, but the **server is authoritative** — never trust the
+  client.
+- Roles seeded: Sale, Sale Manager, Stock, Production, QA/QC, Shipping, Finance, Super User,
+  System Admin (mockup Settings). Super User = trace archive; Sale Manager = reassign + team
+  dashboard + set Follow-up.
+
+## Alternatives considered
+
+- **Session table per login** instead of `session_epoch`: works but adds a hot table and cleanup;
+  the epoch trick meets "24h + 06:00 reset" with far less machinery.
+- **Google-only or password-only**: rejected — Pond wants both.
+- **Permissions as a bitmask integer**: compact but unreadable in DB/audit; explicit boolean
+  columns are clearer for a Pond-reviewed schema and for the Settings matrix.
+
+## Consequences
+
+- One guard enforces RUCDAA everywhere; adding the `Admin` bit gates all special capabilities
+  consistently.
+- The `Read` bit doubles as notification scope (ADR-005) — single source for "who can see this".
+- Daily 06:00 re-login is a one-line scheduler + one comparison; no session GC.
+- Google OAuth requires a GCP OAuth client even in Phase 2 (env secret via ADR-006-style config).
+</script>
+
+<script type="text/markdown" data-target="#b008">
+# ADR-008: Gapless Document Numbering (per year / per month)
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead (design), Pond (gapless confirmed, NFR 2026-07-08)
+- **Scope**: All business document numbers in `erp-v2-ui-first`
+
+## สรุป (สำหรับผู้อ่านที่ไม่ใช่ engineer)
+เลขเอกสาร (PO, ใบสั่งผลิต PRD, ใบแจ้งหนี้ ฯลฯ) ต้อง **เรียงต่อเนื่องห้ามข้ามเลข** ตามข้อกำหนด
+สรรพากร — เช่น 0001, 0002, 0003 ห้ามกระโดดเป็น 0005. เราออกเลขด้วย "ตัวนับ" ที่ล็อกทีละคนตอน
+สร้างเอกสาร เพื่อกันเลขชนกันหรือเลขหายเวลาหลายคนสร้างพร้อมกัน. กรณีพิเศษ: **PO ที่ยกเลิกแล้วเปิดใหม่
+ใช้เลขเดิม** ไม่ออกเลขใหม่ (ปอนด์กำหนด). เลข Batch ผูกกับ PO/line/รอบผลิต จึงไม่ต้องใช้ตัวนับกลาง.
+
+## Context
+
+Pond: numbers must be **gapless per year/month** (tax compliance). Formats (from
+`entity-status-map.md`): `PO-{YYYYMM}-{NNNNNN}`, `PRD-{YYYYMM}-{NNNNNN}`, `INV-{YYYY}-{NNNNNN}`,
+`PR-{NNNNNN}`, `GR-{YYYYMMDD}-{NNN}`, `SHP-{YYYYMMDD}-{NNNN}`, `DN-{YYYYMMDD}-{NNNNN}`, Lot
+`{supplierPrefix}{YYMM}`, Batch `B-{PO}-{line}-{run}`. Special cases: **PO reopen keeps the same
+number** (no new number on Cancelled→Draft); commercial docs are **voided, never deleted**, so
+numbers never disappear (ADR-009). Gapless means issuance must be **serialized** — but load is
+light (>200 PO/day, ≤50 users).
+
+## Decision
+
+- A `sequence` table: `(name, period_key, current_value, updated_at)` where `name` = doc type and
+  `period_key` = the reset scope (`YYYY` or `YYYYMM` or `YYYYMMDD` per format).
+- `SequenceService.next(name, periodKey)` runs `SELECT ... FOR UPDATE` on the row (create at 0 if
+  absent), increments, and returns the formatted number — **inside the caller's transaction**, so
+  a rollback also rolls back the number (no gap) and a commit guarantees contiguity.
+- Number issuance happens at the exact lifecycle point defined by the flow:
+  - PO number at **Draft create**; PRD number at **Production "รับงาน"** (accept), not at PO
+    confirm; Batch number at **"เริ่มผลิต"** (composed from PO/line/run, no central counter);
+    Invoice at issue; GR/PR/DN/Shipment at their create events.
+- **PO reopen** (Cancelled→Draft) reuses the existing PO number; the reopen is a lifecycle event
+  in audit (ADR-003), not a new sequence draw.
+- Voided commercial docs keep their number occupied (gapless preserved); a replacement doc draws
+  the next number and references the voided one.
+
+## Alternatives considered
+
+- **DB AUTO_INCREMENT / UUID**: rejected — auto-increment leaves gaps on rollback and can't reset
+  per month; UUIDs aren't human/tax-friendly.
+- **Application-side counter (in-memory / Redis)**: rejected — not durable/transactional with the
+  business write; risks gaps or duplicates on crash.
+- **Post-hoc renumbering**: rejected — illegal for issued tax documents.
+
+## Consequences
+
+- Contiguous, period-scoped numbers that satisfy tax rules; number and document commit or roll
+  back together.
+- The `FOR UPDATE` on the sequence row is the one intentional serialization point — negligible at
+  this load, and the only lock left after ADR-001 removed the stock-consume lock.
+- Reopen-keeps-number and void-not-delete are both representable without breaking contiguity.
+</script>
+
+<script type="text/markdown" data-target="#b009">
+# ADR-009: Soft-Delete + Reference-Guard (no hard delete)
+
+- **Status**: Accepted
+- **Date**: 2026-07-09
+- **Deciders**: Tech-Lead (design), Pond (soft-delete policy, `deletion-policy.md`)
+- **Scope**: All master/reference entities in `erp-v2-ui-first`
+
+## สรุป (สำหรับผู้อ่านที่ไม่ใช่ engineer)
+ระบบ **ไม่มีการลบข้อมูลถาวร** เลย. "ลบ" = ติดธง "ถูกลบ" (soft delete) — ยัง **ค้นหา/ดูย้อนหลังได้**
+(อ่านอย่างเดียว มี badge "ถูกลบ") แต่ **จะหายจากตัวเลือกของงานใหม่** (สร้างเอกสาร/สูตร/ผูกใหม่ไม่ได้)
+ส่วน **ของเดิมที่ผูกไว้แล้ววิ่งต่อจนจบได้** เพื่อไม่ให้ประวัติเสีย. ทุกการลบต้องมีเหตุผล (บังคับ
+comment) และเก็บ audit. เอกสารการค้า (PO/Invoice/DN/GR/PR/Shipment) **ไม่มีปุ่มลบ** ใช้ "ยกเลิก
+(void)" แทน เพื่อคงเลขให้ต่อเนื่องตามสรรพากร. การกู้คืน (undelete) ทำได้เฉพาะสิทธิ์ Admin.
+
+## Context
+
+Pond's `deletion-policy.md`: no permanent delete; "delete" = a `deleted` flag; deleted records
+stay searchable (read-only) but must **not** be referenceable by new work and disappear from
+new-work dropdowns; existing references keep working; every delete is audited with a **mandatory
+reason**; delete = RUCDAA `D` bit, undelete = `Admin` bit; commercial documents have **no
+delete**, only void (gapless per ADR-008); blocked deletes must offer an alternative (e.g. use
+Disabled/Blacklist, reassign, migrate users first). Covers the 7 entity rules + 5 policy
+questions in that file.
+
+## Decision
+
+- Master entities carry `deleted_at`, `deleted_by`, `delete_reason` (soft-delete columns). No row
+  is ever physically removed.
+- A **soft-delete base repository** applies a default `WHERE deleted_at IS NULL` to all normal
+  reads and dropdown/reference queries, so deleted records **auto-disappear from new work**.
+  Trace/search endpoints pass an explicit `includeDeleted` flag to still find them (read-only,
+  with a "ถูกลบ" badge).
+- A **reference-guard**: creating/linking a new document validates that every referenced master
+  (customer, material, BOM, supplier, contact, role) is not soft-deleted; otherwise
+  `409 REFERENCE_DELETED` with a Thai message and the suggested alternative.
+- **Existing references keep working**: already-linked documents (PO snapshotting a BOM, a Lot of
+  a deleted material, etc.) run to completion — the guard only blocks *new* links.
+- **Commercial documents** (PO, Invoice, DN, GR, PR, Shipment, PRD, Batch): **no delete path** —
+  a `void/cancel` status only (ADR-008 keeps the number). PRD/Batch are GMP evidence and are only
+  cancelled by cascade from a cancelled PO (with trace), never deleted.
+- **Undelete/restore** requires the `Admin` bit; it clears the soft-delete columns and is audited.
+- Entity-specific guards from `deletion-policy.md` are enforced at the service layer: customer
+  with active PO (existing PO runs, no new PO); user delete requires reassign first; material
+  keeps existing Lots usable but blocks new stock/BOM use; role delete blocked while users are
+  attached; single primary contact must be replaced first.
+
+## Alternatives considered
+
+- **Hard delete + ON DELETE cascade**: rejected — destroys audit/GMP history and tax records;
+  directly against Pond's policy.
+- **Archive-to-separate-table on delete**: rejected — complicates search "still find it" and
+  cross-entity references; a flag on the same row is simpler and keeps FKs valid.
+- **Delete allowed for PR/GR** (policy Q4): default is void-not-delete for gapless consistency;
+  kept as a business toggle pending Pond's answer, but the schema (void status) supports either.
+
+## Consequences
+
+- Nothing is ever lost; history, trace, and tax numbering stay intact.
+- One base repository + one guard implement the policy for all entities (no per-table work),
+  mirroring the generic-audit approach (ADR-003) — mitigates the "field-level everywhere" risk.
+- Lists/dropdowns are clean by default; trace still surfaces deleted rows on demand.
+- The 7 entity rules and the commercial-doc "void only" rule are all representable; the 5 open
+  policy questions change only service-level thresholds, not the schema.
+</script>
+<script src="_md.js"></script>
+</body></html>

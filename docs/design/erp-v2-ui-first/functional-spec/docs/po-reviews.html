@@ -1,0 +1,309 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PO Reviews (Stage-2 / Depth Audit / Mockup) · ESSENCE Hub</title>
+<link rel="stylesheet" href="_doc.css"></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· เอกสารหลักการ (PO)</span><span class="crumb"><a href="../index.html">สารบัญ</a> › เอกสาร PO › ผลตรวจ PO</span></header>
+<div class="wrap">
+<div class="srcnote">📄 หน้านี้เป็น <b>view สำหรับอ่าน</b> (render จาก Markdown) รวม 3 เอกสารผลตรวจของ PO — <b>แหล่งแก้ไขจริง</b>: <code>docs/requirements/erp-v2-ui-first/po-stage2-review.md · po-spec-depth-audit.md · po-mockup-review-r4.md</code> · sync ณ 2026-07-10</div>
+<h1 style="color:#10322F;margin:14px 0 6px">PO Reviews — Gate 2 Package</h1>
+<div class="toc"><b>สารบัญผลตรวจ</b>
+<ul>
+<li><a href="#stage2-review">① Stage-2 Review (Gate 2) — PASS + 1 จุด reconcile</a></li>
+<li><a href="#depth-audit">② Spec Depth Audit — work order depth-fix (Depth Standard + Dashboard template)</a></li>
+<li><a href="#mockup-review-r4">③ Mockup Review รอบ 4 + 4.5 (Gate 1) — PASS</a></li>
+</ul></div>
+
+<section class="docsec" id="stage2-review"><div class="content" id="rv1">…</div></section>
+<a id="depth-audit"></a>
+<section class="docsec"><div class="content" id="rv2">…</div></section>
+<a id="mockup-review"></a>
+<section class="docsec" id="mockup-review-r4"><div class="content" id="rv3">…</div></section>
+
+<div class="nav"><a href="../index.html">← สารบัญ Document Hub</a><a href="../rtm.html">RTM (BA) →</a><a href="entity-status-map.html">Entity Status Map</a></div>
+<footer>ESSENCE Hub System · Document Hub · view รวมผลตรวจ PO (stage2-review + depth-audit + mockup-review-r4) · ต้นฉบับแก้ที่ docs/requirements</footer>
+</div>
+
+<script type="text/markdown" data-target="#rv1">
+# PO Review — Stage 2 Package (Gate 2) · ESSENCE Hub System
+
+slug: `erp-v2-ui-first` · ตรวจโดย PO · 2026-07-09 · **รอบ 1 = PASS · รอบ 2 (depth-fix + tri-layer) = PASS + 1 จุดต้อง reconcile** · เปิด Gate 2
+ขอบเขตตรวจ: BA `functional-spec/` (24 ไฟล์ · 69 stories/207 AC) + TL `architecture/` (index + db-schema + 17 api) + `docs/adr/001–009`
+
+## สรุปภาษาไทย
+ตรวจงาน BA และ Tech-Lead ครบทั้งสองฝั่งโดยเปิดไฟล์จริง — **ทุก journey จบทุก case**: entity ทุกตัว/ทุกสถานะ + cascade C1–C19 + 8 use case + 30 exception มี story+AC และมีตาราง DB/endpoint รองรับครบ · AC เขียนแบบ Given/When/Then วัดผลได้ อ้าง element จริงใน mockup และตรงกับกติกาล่าสุดทุกข้อ (PRD กดรับงานเอง, stock ติดลบ+FIFO retro-link, deletion 7 กติกา, VAT ตามวันออกใบ, เครดิตระดับลูกค้า, เลข gapless, session 06:00) · ฝั่ง TL มี endpoint ต่อทุก transition + schema รองรับทุก AC + 9 ADR + coverage ครบ · **รอบ 2:** BA แก้ depth ครบ (Home, Dashboard 29 tiles, Settings 5 จอ, Platform, list-conventions) + TL delta 8 ไฟล์ — tri-layer (spec↔API↔DB) ตรงกันเกือบทั้งหมด · **เจอ 1 misalignment ต้อง reconcile: สูตรมูลค่าสต็อก (BA per-lot 625 vs TL/DB latest-lot 675)** — ต้องเลือกสูตรเดียวก่อน build
+
+---
+
+## 1. ผลตรวจตามเกณฑ์ (รอบ 1)
+
+### เกณฑ์ 1 — ทุก journey จบทุก case ✅
+- **Entity + สถานะ (entity-status-map §1):** ครบทุก entity — Customer(6), PO 2 ราง, PRD(รอรับงาน→รับงาน→กำลังผลิต→รอ QC→พร้อมส่งมอบ/Rework/Hold), Batch, Lot, PR, GR, Shipment, DN, Invoice · แต่ละตัวมี module + story + ตาราง DB
+- **Cascade C1–C19:** `continuity.html` มีครบ 17 แถว + 2 แถวเสริม (reassign, return) + Notification matrix 14 แถวพร้อม deep link ปลายทางถูกต้อง · ตรงกับ TL `architecture/index §7` (endpoint ต่อแถว) และ db-schema (outbox/notification/ack)
+- **8 Use Case + เส้นวัตถุดิบ:** `walkthrough.html` เดินครบ UC1–UC8 + materials line ทุกขั้นผูก story (PO-191 draft, PO-188 Hold→Follow-up, PO-176 QC pass, PO-181 rework ราย line, PO-170 rework ครบวง, SHP-0044/45/46) — ตรง dataset กลาง
+- **30 exception:** `rtm.html` §exception ผูกทุกกลุ่มกับ story จริง (วัตถุดิบขาด, ราคา 0, QC ไม่ผ่าน, Hold, reject/postpone, PR ค้าง, supplier inactive, BOM block, negative stock, void/gapless, soft-delete ฯลฯ)
+
+### เกณฑ์ 2 — คุณภาพ AC (สุ่มลึก 5 module: PO/Production/Invoice/Stock/Customer) ✅
+- ทุก story มี **Given/When/Then ครบ happy/edge/error** (≥3 AC/story) · อ้าง element จริง (ปุ่ม "ยืนยัน PO", การ์ด "เปลี่ยนสถานะ PO", คิว "รอรับงาน", badge "ติดลบ (รอรับเข้า)", ปุ่ม "รับงาน/เริ่มผลิต/ส่งตรวจ QC/ผลิตซ้ำ")
+- **ตรงกติกาล่าสุดทุกข้อ:** PRD เกิดตอน "รับงาน" (ไม่ auto, US-PRD-01) · negative stock + FIFO retro-link (US-STK-03 edge) · VAT ยึด invoice date (US-INV-02) · เครดิตระดับลูกค้า + นับ overdue หลังส่งของ (US-INV-03) · void ไม่ลบ/gapless (US-INV-04) · deletion 7 กติกา + COGS out of scope (rbac-deletion) · Follow-up comment บังคับ (US-CUS-03)
+- **ไม่พบ AC คลุมเครือ/วัดไม่ได้** ในกลุ่มที่สุ่ม
+
+### เกณฑ์ 3 — ฝั่ง Tech-Lead ✅
+- **API ครบทุก transition:** `api-production` = accept/start/submit-qc/rework/hold/resume (QC pass/fail อยู่ module QC ถูกต้อง) · index §7 coverage แสดง endpoint ต่อ cascade ครบ 1–19
+- **DB รองรับทุก AC:** `production_queue_item`(รอรับงาน ไม่มีเลข)→`production_order`(PRD)→`batch`(run_no) · `stock_movement` append-only (lot_id null ช่วงติดลบ + reason retro_alloc) + `batch_material_consumption` เติม lot ย้อน FIFO · `sequence`(gapless) · `audit_log`(field-level) · `outbox/notification/notification_ack`(Read-bit + ack ราย user) · `vat_config`(effective date) · soft-delete columns ทุก master · `shipment` 1:N `delivery_note`(po 1:1) · `invoice_version`
+- **NFR ครบ 9 ข้อ:** perf <2s เพดาน 3s, 50 users, >200 PO/วัน, audit 1 ปี+manual purge, Cloud SQL backup, UTC+พ.ศ., local+Google+session 06:00, gapless — map ไว้ใน §6
+- **จุด TL ขอ confirm:** (ก) noti 14 เหตุการณ์ deep link ปลายทางถูก — ตรวจแล้วตรง continuity matrix · (ข) dashboard tile ใช้ list endpoint เดียวกับ drill (api-dashboard) — วางไว้ใน design แล้ว · (ค) QC ขาเข้า fail → Return — db-schema §qc/§return เชื่อม `qc_record(target=lot)`→`return_doc` (auto-raise) รองรับ
+
+### เกณฑ์ 4 — ลิงก์ (สุ่มคลิก) ✅
+เดิน index → module (po/production/stock) → mockup → api → db → กลับ — path ทั้งหมดถูก (`../architecture/api-*.html`, `../functional-spec/*.html`, `../../../requirements/…`, `../../../adr/…`) · ไม่พบเส้นตายในชุดที่สุ่ม
+
+### เกณฑ์ 5 — ไม่ประดิษฐ์กติกาใหม่ ✅ (มี 1 จุดควรยืนยัน — ดู §2)
+ทุกกติกาหลักอ้าง entity-status-map / deletion-policy / คำตอบปอนด์ที่บันทึกไว้ · ไม่มีกติกาที่ขัดกับที่ปอนด์ตอบ
+
+---
+
+## 2. ข้อ "ควรยืนยัน" ตอน review (ไม่บล็อก — polish/confirm)
+1. **รอบ Active→Inactive = ชุด {1, 3, 6, 8} เดือน (default 3):** BA (US-CUS-02) + TL (db-schema customer) กำหนดชุดค่านี้ — ปอนด์เคยยืนยันแค่ "default 3 เดือน ปรับได้" · **ควรเคาะ**ว่าจำกัดชุดนี้ หรือให้กรอกอิสระ (จุดเดียว แก้ได้ทันทีถ้าต่าง)
+2. **ตัวเลขสรุป stories/AC ไม่ตรงกัน:** index = ~47 stories/~141 AC, rtm = ~50/~150 — เป็นตัวเลขพาดหัว (coverage เท่ากัน) · ให้ BA sync ตัวเลขให้ตรง (cosmetic)
+3. **ลิงก์ anchor เล็กน้อย:** US-PRD-06 (Potential Delay) อ้าง `continuity.html#c16` (ซึ่งเป็น stock-ติดลบ) — ควรชี้แถว noti ของ Potential Delay โดยตรง (cosmetic)
+
+> ทั้ง 3 ข้อไม่กระทบความครบของ requirement — เป็นการ confirm ค่า 1 จุด + จัดหน้าตา 2 จุด · ไม่ต้องวนกลับก่อนเปิด Gate 2
+
+---
+
+## 5. รอบ 2 — Depth-fix + Tri-layer Alignment (spec ↔ API ↔ DB)
+
+### 5.1 ผลตรวจ depth-fix (Pond Gate-2 feedback) — ผ่านทุก module ตาม Depth Standard §1 ของ po-spec-depth-audit
+| module | ก่อน | หลัง (ตรวจแล้ว) |
+|---|---|---|
+| **Dashboard** | 2 story | **US-DSH-01..04 (behavior) + 7 story รายแผนก (SALE/STK/PRD/QC/SHP/FIN/ADM)** ครบ 29 tile — ทุก tile มีตารางสูตรนับ/เงื่อนไข/ชนิด event-state/drill columns→ปลายทาง/สิทธิ์ Read + date-filter behavior + refresh คง view + multi-role ✅ |
+| **Home** | ไม่มี | **US-HOME-01..03** task-inbox ราย role (scope=Read) + quick actions + onboarding (Lot vs Batch) + empty/error · นับ source เดียวกับ dashboard/noti ✅ |
+| **Settings** | 2 story | **US-SET-01..05** ครบ 5 จอ (Role+Admin bit / User+Google+เปิดปิด+**bulk-reassign ก่อนลบ Sale** / VAT+ประวัติ / บริษัท / Audit-log screen) ✅ |
+| **Platform** | 3 story | **US-PLT-01..05** — session warning ก่อน 06:00 · noti routing Read-bit · **noti panel** (grouping/mark-all/badge "9+"/empty/ดูทั้งหมด) · **global search** · responsive+RBAC ✅ |
+| **PO** | 6 story | +**US-PO-07 suggest/material-calc** (ราคา default ต่อชนิด, ΣBOM×qty vs on_hand, shortBy, เตือนไม่บล็อก) ✅ |
+| **Stock** | 4 story | +**US-STK-05 มูลค่าสต็อก** ✅ (ดู 5.3 — สูตรต้อง reconcile) |
+| **cross-cutting** | — | +**list-conventions US-LST-01** (search/filter/sort/page-size/empty ต่อ 10 หน้า list) ✅ |
+
+### 5.2 Tri-layer alignment (AC ใหม่ ↔ API ↔ DB) — สุ่มลึก
+| AC group | API (TL) | DB (TL) | ผล |
+|---|---|---|---|
+| Dashboard 29 tiles | `api-dashboard` — ต่อ tile มี tileKey + summary + list(drill) endpoint + drill columns→deepLink; date filter `?range=`; **สิทธิ์ = Read module (ไม่ใช่ role)** | per-tile source ครบใน db-schema | ✅ ตรงเป๊ะ (tileKey ↔ ตาราง BA) |
+| Home task-inbox | `/api/home` = aggregator ของ `/api/notifications` + `/api/dashboard/departments` (ไม่มี endpoint ใหม่) | reuse | ✅ ตรง Home spec "นับ source เดียว" |
+| Global search US-PLT-04 | `/api/search?q=` ครอบ customer/po/invoice/material/lot/batch/prd/supplier/bom/dn จัดกลุ่มตาม type + deepLink + **กรองตาม Read** + ซ่อน soft-deleted | index prefix/like บนเลขเอกสาร/ชื่อ | ✅ |
+| Settings 5 จอ + bulk-reassign | `DELETE /api/users/{id}` ต้องมี `reassignToUserId` → ย้ายลูกค้า/งานทั้งหมด **ทรานแซกชันเดียว + audit ต่อรายการ** + `reassignable-load` | user/role_permission/audit | ✅ ตรง deletion §2.2 |
+| US-PO-07 suggest | `POST /api/po/suggest` → ราคา default (BOM.sell_price / material.default_sell_price), ΣBOM×qty, required vs on_hand, shortBy, เตือนไม่บล็อก+PR | bom_line, stock_balance | ✅ |
+| US-STK-05 มูลค่าสต็อก | `GET /api/stock/value` (on_hand, latest lot buy_price, value) | **lot.buy_price + received_at + IDX (material_id, received_at desc)** เพิ่มแล้ว | ⚠ **สูตรไม่ตรง BA — ดู 5.3** |
+| list-conventions | `api-list-conventions` | — | ✅ |
+| session warning | `GET /api/auth/session` (expiresAt + nextForcedResetAt) | app_config.session_epoch | ✅ |
+
+### 5.3 ตัดสิน 2 จุดที่ TL ขอ confirm
+- **(ก) Admin เห็นทุกแผนก? → ยืนยันปิด (Read-bit ล้วน).** ทั้ง `dashboard US-DSH-04` และ `api-dashboard §perm` implement "ยึด Read ของ module ไม่เกี่ยว role" ตรงคำตอบปอนด์แล้ว · หมายเหตุ: `api-dashboard §admin` ยังมี note "[ยังต้องยืนยัน PO/ปอนด์]" ค้าง → **PO ยืนยันแล้ว = Read-bit ล้วน; ให้ TL ลบ flag นั้น** (โค้ด/ดีไซน์ถูกแล้ว ไม่ต้องแก้ logic)
+- **(ข) มูลค่าสต็อก — ⚠ MISALIGNMENT (M1) ต้อง reconcile:** สองชั้นตีความคำปอนด์ "ราคาซื้อล่าสุดของ Lot" ต่างกัน:
+  - **BA** (`US-STK-05` + `US-DSH-STK`): **per-lot** = Σ ทุก lot (lot.on_hand × buy_price ของ lot นั้น) · ตัวอย่าง glycerin (10@40)+(5@45) = **625**
+  - **TL/DB** (`db-schema lot`, `api-stock/value`, `api-dashboard stock_value`): **latest-lot** = total on_hand × buy_price ของ lot ที่รับล่าสุด · = 15×45 = **675**
+  - **PO ตัดสิน/แนะนำ:** ใช้ **per-lot (625)** — แม่นกว่า (แต่ละ lot ตามที่จ่ายจริง), ตรงกับโครง `stock_balance` ราย (material,lot) + `lot.buy_price`, รองรับ lot ติดลบตรงไปตรงมา, และยัง "ไม่ใช่เฉลี่ยถ่วงน้ำหนัก" ตามที่ปอนด์สั่ง · **ถ้าปอนด์ยืนยัน per-lot → TL แก้ wording db-schema/api-stock/api-dashboard เป็น "Σ per lot (lot.on_hand × lot.buy_price)"** (1 บรรทัดต่อไฟล์) · ถ้าปอนด์ต้องการ latest-lot จริง → BA แก้ตัวอย่าง 625→675 + Data rules · **ไม่ block Gate 2 (tile "Should") แต่ต้องเลือกก่อน Stage 3**
+
+### 5.4 HTTP :3000 (กติกาบังคับ) — PO ทำเองไม่ได้ในรอบนี้
+เครื่องมือ PO รอบนี้มีแค่ไฟล์ (Read/Write/Grep/Glob) **ไม่มี shell/browser** → ตรวจ content/alignment ครบด้วยการเปิดไฟล์จริงแล้ว (spec เป็น static self-contained HTML no-build) แต่ **curl/เปิด render จริงบน :3000 ต้องให้ agent ที่มี browser (ux-ui) หรือ dispatcher ยืนยันก่อนเชิญปอนด์** — flag ไว้เป็น pre-invite check (คาดว่าผ่านเพราะ no-build HTML แต่ควร render ยืนยัน)
+
+---
+
+## 3. คู่มือ review Gate 2 สำหรับปอนด์ (~15 นาที · อัปเดตชี้ของใหม่)
+
+**เริ่มที่:** `functional-spec/index.html` (สารบัญ BA · เปิดผ่าน http://localhost:3000/…) + `architecture/index.html` (TL)
+
+| ลำดับ | เปิดหน้า | ดูอะไร (นาที) |
+|---|---|---|
+| 1 | functional-spec/**walkthrough** | เดิน 8 use case — เห็นภาพรวมทั้งระบบใน 1 หน้า (~3) |
+| 2 | functional-spec/**dashboard** ★ใหม่ | **7 แผนก × 29 tile** — กด US-DSH-STK/SALE ดูตารางสูตร+ชนิด event/state + date-filter behavior (ที่ปอนด์ทักว่าตื้น — แก้แล้ว) (~3) |
+| 3 | functional-spec/**home** ★ใหม่ | "งานที่รอคุณอยู่" task-inbox ตาม role + onboarding (~1.5) |
+| 4 | functional-spec/**platform** ★ใหม่ | global search + noti panel (grouping/mark-all/9+) + session warning (~1.5) |
+| 5 | functional-spec/**settings** ★ขยาย | 5 หน้าจอครบ (User + bulk-reassign, Audit-log screen) (~1) |
+| 6 | functional-spec/**production** + **stock** US-STK-03 | รอรับงาน→รับงาน+negative stock+FIFO retro (~2) |
+| 7 | architecture/**index** §1–2 diagram + §7 coverage · (ทางเลือก) **db-schema** §material | system/service diagram + stock ledger ติดลบ (~2) |
+
+**จุดตัดสินใจที่ควรยืนยันตอน review:**
+- ✅ requirement + NFR + depth ครบพอเริ่ม dev หรือยัง (Gate 2 = อนุมัติสิ่งนี้)
+- ❓ **สูตรมูลค่าสต็อก (M1):** per-lot 625 (PO แนะนำ) หรือ latest-lot 675 — เคาะ 1 คำ (§5.3ข)
+- ❓ รอบ Active→Inactive: ชุด {1,3,6,8} หรือกรอกอิสระ (§2 ข้อ 1)
+- ✅ ยืนยัน COGS/valuation อยู่นอก scope (BA/TL ตั้งตามคำตอบปอนด์)
+- ✅ ถ้าอนุมัติ → Stage 3 (Engineer ∥ QA ∥ BA); อยากปรับ UI → วน Stage 1 incremental
+
+---
+
+## 4. สถานะ handoff
+- **รอบ 1 = PASS · รอบ 2 (depth+tri-layer) = PASS** (depth-fix ครบ, spec↔API↔DB ตรง) → เปิด **Gate 2**
+- **ต้อง reconcile ก่อน Stage 3:** M1 สูตรมูลค่าสต็อก (per-lot vs latest-lot) — เคาะที่ review
+- **ให้ TL:** ลบ flag "[ยังต้องยืนยัน]" ใน api-dashboard §admin (PO ยืนยัน Read-bit ล้วนแล้ว) + แก้ wording สูตรมูลค่าสต็อกตามที่ปอนด์เคาะ
+- **ให้ dispatcher/ux-ui:** render check :3000 ก่อนเชิญปอนด์ (PO ไม่มี browser tool)
+- **cosmetic (§2):** BA sync ตัวเลข story/AC + anchor US-PRD-06
+</script>
+
+<script type="text/markdown" data-target="#rv2">
+# Spec Depth Audit — เอกสารสั่งงาน BA (Gate 2 rework) · ESSENCE Hub System
+
+slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-09 · ที่มา: `pond-gate2-feedback.md` — "PO คุยกับ BA ให้ครบทุก module ครบทุก function จริงๆ"
+วิธีตรวจ: เปิด spec จริงทั้ง 17 module + cross-cutting เทียบ mockup + entity-status-map ทีละหน้า
+
+## สรุปภาษาไทย
+ปอนด์ทักถูก — **Dashboard และ Settings ตื้น**: ประกาศหลายหน้าจอ/หลายแผนก แต่เขียน story แค่ 2 อัน ไม่มีนิยาม/สูตร/เงื่อนไขรายตัว · โมดูล transaction ส่วนใหญ่ (PO/ผลิต/Invoice/Stock/ลูกค้า/QC/จัดส่ง/PR/BOM/Return) **ลึกพอ** (3 AC happy/edge/error อ้าง element จริง) แต่ยังขาด "พฤติกรรมย่อย" บางจุด (suggest logic, search/filter fields, notification panel, genealogy interaction) · เอกสารนี้ = (1) นิยามมาตรฐานความลึกขั้นต่ำ (2) **Dashboard template เต็ม** (7 แผนก × 29 tile — PO เขียนให้เพราะเป็นเจ้าของ §12) (3) gap list ต่อ module จัด P0/P1/P2
+
+---
+
+## 1. นิยาม "ความลึกขั้นต่ำต่อ module" (Definition of Depth) — บทเรียนจาก Dashboard
+ทุก **function บนหน้าจอ** (ไม่ใช่แค่ชื่อ + AC ผิวๆ) ต้องมีครบ 4 ด้าน:
+
+| # | ด้าน | ต้องมีอะไร |
+|---|---|---|
+| ก | **พฤติกรรม step-by-step** | user ทำอะไร → ระบบตอบอะไร ทีละขั้น (ไม่ใช่ "กดแล้วได้ผล") · ปุ่ม/field/state จริงในหน้าจอ |
+| ข | **เงื่อนไข/นิยาม/สูตรของทุกตัวเลข-ทุกกลุ่ม** | ทุก KPI/badge/สถานะ: นับจากอะไร (สูตร) · เข้ากลุ่มด้วยเงื่อนไขใด · ผูก config ตัวไหน (เช่นรอบ Active, threshold ใกล้หมด) · event vs state |
+| ค | **มุมมองตามสิทธิ์/role** | ใคร (Read/Update/Create/Approve/Admin) เห็นอะไร/ทำอะไรได้ · หลาย role พร้อมกันเป็นยังไง |
+| ง | **edge cases + empty/error** | 0 รายการ, ค่าไม่ครบ, ไม่มีสิทธิ์, ข้อมูลทับซ้อน, concurrent, พฤติกรรม refresh/filter คงค่า |
+
+> **เกณฑ์ผ่าน:** ถ้า Engineer/QA อ่าน spec แล้ว **ยังต้องเดา** พฤติกรรม/สูตร/เงื่อนไขของ function ใด = ยังไม่ผ่าน · ทุกหน้าจอที่ประกาศ (เช่น "Settings 5 หน้าจอ", "Dashboard 7 แผนก") ต้องมี story/AC ครบ **ทุกหน้าจอ/ทุกแผนก** ไม่ใช่รวมเป็นก้อนเดียว
+
+---
+
+## 2. Dashboard — เคสต้นแบบ (spec ที่ BA ต้องเขียนให้ครบ · PO ให้ข้อมูลครบแล้ว)
+
+### 2.1 พฤติกรรม Date Filter (ต้องเขียนเป็น story/AC เต็ม)
+- **Preset:** `วันนี้` / `สัปดาห์นี้` / `เดือนนี้ (default)` / `กำหนดเอง (custom range)` — chip เลือกได้ทีละอัน · custom = เลือกเดือน/ปี หรือ date range (ปฏิทิน) · มีผลกับ **ทุก tile พร้อมกัน**
+- **caption ต่อ tile:** `ในช่วง` (event — นับเหตุการณ์ที่เกิดในช่วงที่เลือก) vs `ตอนนี้` (state — snapshot ปัจจุบัน ไม่ขึ้นกับช่วง) — ทุก tile ต้องระบุว่าเป็นชนิดไหน
+- **refresh:** auto ทุก 15 วิ (default, toggle ปิดได้) — **คง filter + คง view/drill ที่เปิดอยู่** (ไม่รีเซ็ตช่วง ไม่เด้งกลับ tile) · แสดงเวลา refresh ล่าสุด
+- **edge:** custom range เริ่ม>สิ้นสุด = error "ช่วงวันที่ไม่ถูกต้อง" ไม่ยิง query · เปลี่ยน preset ระหว่าง drill เปิดอยู่ = drill รีคำนวณตามช่วงใหม่ (ถ้า tile เป็น event)
+
+### 2.2 ตาราง 7 แผนก × ทุก tile — **BA เขียนเป็น story ต่อแผนก (US-DSH-Sale, -Stock, ... 7 อัน)**
+
+**แผนก Sale — Read Sale (5 tile)**
+| tile | สูตรนับ / เงื่อนไขเข้ากลุ่ม | ชนิด | drill-down (คอลัมน์ → คลิกไป) |
+|---|---|---|---|
+| ลูกค้าประจำ | count(customer.status=Active AND มี order ในช่วง) | event | ชื่อลูกค้า/สถานะ → customer-detail |
+| ห่างหาย | count(customer transition→Inactive ในช่วง โดย scheduler; เกณฑ์ = inactive_after_months ของลูกค้า default 3) | event | ชื่อ/เหตุ(ไม่มี order เกิน N เดือน) → customer-detail |
+| PO | count(po.created_date ในช่วง) | event | PO/ลูกค้า/สถานะ → po-detail |
+| รอชำระ | count(invoice.status=รอชำระ AND ยังไม่เกินกำหนด AND issued ในช่วง) | event | INV/ลูกค้า/ครบกำหนด → invoice-detail |
+| ต้องติดตาม | count(customer.status=Follow-up ที่ยังค้าง) | **state** | ชื่อ/เหตุผล comment → customer-detail |
+
+**แผนก Stock — Read Stock (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| ใกล้หมด | count(material ที่ on_hand ≤ low_stock_threshold; **เฉพาะที่ตั้ง threshold** — null=ไม่นับ) | state | วัตถุดิบ/คงเหลือ → stock |
+| ล็อตรอ QC | count(lot.qc_status=รอตรวจรับ) | state | lot/วัตถุดิบ → qc |
+| คำขอ PR ค้าง | count(PR.status ∈ {เปิดคำขอ, รับทราบ, รับบางส่วน}) | state | PR/วัตถุดิบ/สถานะ → purchase-request |
+| มูลค่าสต็อก | Σ(on_hand × ราคาอ้างอิง) — **นิยามราคาอ้างอิงให้ชัด** (COGS อยู่นอก scope → ใช้ last buy price หรือ default_buy_price) | state | วัตถุดิบมูลค่าสูงสุด → stock · **[ต้องยืนยันสูตรกับ PO/ปอนด์]** |
+
+**แผนก Production — Read Production (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| คิวงานผลิต | count(queue_item=รอรับงาน) + count(PRD.status ∈ {รับงาน, กำลังผลิต, รอ QC, Rework}) — caption แยก "รอรับงาน X + ในสายผลิต Y" | state | รายการ/สถานะ (รอรับงาน=ยังไม่มีเลข PRD) → production |
+| เสี่ยงล่าช้า | count(PRD ที่ overlay potential_delay=true; เกณฑ์ 2 วันผลิต+1 วันส่ง) | state | PRD/เหลือกี่วัน → production |
+| พักงาน (Hold) | count(PRD.status=Hold) | state | PRD/เหตุ Hold → production |
+| ผลิตเสร็จ | count(Batch→QC ผ่าน หรือ PRD→พร้อมส่งมอบ ในช่วง) | event | PRD/สถานะ → production |
+
+**แผนก QC — Read QC (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| ล็อตรอตรวจรับ | count(lot.qc_status=รอตรวจรับ) | state | lot → qc |
+| แบตช์รอ QC | count(batch.status=รอ QC) | state | batch → qc |
+| ผ่าน QC | count(qc_record.result=pass ในช่วง; รวม lot+batch) | event | รายการ/ชนิด → qc |
+| รอทำใบคืน | count(lot.qc_status=ระงับ AND ยังไม่มี return_doc) | state | lot เสีย → return |
+
+**แผนก Shipping — Read Shipping (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| รอจัดส่ง | count(PO.fulfil=พร้อมจัดส่ง; **รวม PO ที่มี postpone_flag**) | state | PO/ลูกค้า/Postpone → shipping |
+| กำลังนำส่ง | count(DN.status=กำลังนำส่ง) | state | SHP/DN → delivery-note |
+| ส่งถึงแล้ว | count(DN→Delivered ในช่วง) | event | DN → delivery-note |
+| เลื่อน/ปฏิเสธ | count(DN→Rejected หรือ Postponed ในช่วง) | event | PO/เหตุ → delivery-note |
+
+**แผนก Finance — Read Finance/Invoice (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| รอวางบิล | count(PO.billing=ยังไม่วางบิล AND fulfil ≥ Confirmed) | state | PO → invoices |
+| ค้างชำระ | count(invoice ครบกำหนดในช่วง AND ยังไม่จ่าย) | event | INV/ลูกค้า/+วัน → invoice-detail |
+| รับชำระ | Σ(ยอดรับชำระในช่วง) — **เป็นยอดเงิน ไม่ใช่ count** | event | รายการรับชำระ → invoice-detail |
+| เกินกำหนด | count(invoice.status=Overdue ที่ยังค้าง) | state | INV/+วัน → invoice-detail |
+
+**แผนก Admin — Read Admin/Settings (4 tile)**
+| tile | สูตร/เงื่อนไข | ชนิด | drill |
+|---|---|---|---|
+| ผู้ใช้ทั้งหมด | count(user ที่ไม่ถูก soft-delete) | state | user/role/สถานะ → settings |
+| Role | count(role) | state | role/จำนวนสิทธิ์ → settings |
+| เข้าใช้ | count(login events ในช่วง) | event | user/เวลา → trace |
+| เหตุการณ์ trace | count(audit_log ในช่วง) | event | audit ล่าสุด → trace |
+
+### 2.3 มุมมองตามสิทธิ์ + edge (ต้องเขียนเป็น AC)
+- **สิทธิ์:** เห็นเฉพาะแผนกที่มี Read bit · **หลาย role = สลับแผนกได้** (tab/selector) · ไม่มีสิทธิ์แผนกใด = ไม่เห็นในตัวสลับ + เข้า URL ตรง 403
+- **drill-down:** ทุก tile กด → list + pagination + คลิกรายการเข้า module พร้อม context (deep link) · tile=0 → empty state "ไม่มีรายการ"
+- **edge:** date range ผิด = error · auto-refresh ค้าง filter+view · Admin เห็นได้ทุกแผนก (superset) หรือเฉพาะ Admin dashboard — **[BA ยืนยันกับ PO]**
+
+---
+
+## 3. Gap List ต่อ Module — จัด P0/P1/P2 (ย่อ; ฉบับเต็มดูต้นฉบับ)
+
+### P0 — ปอนด์ชี้ / function หลักหาย
+- **Dashboard**: story ต่อแผนก (7) ครบทุก tile ตาม §2.2 + date-filter behavior (§2.1) + refresh คง view + multi-role
+- **Home**: body หน้าหลัก (งานที่รอตามสิทธิ์, ทางลัด, สรุป noti, onboarding) + empty state
+- **Settings**: แยก story ต่อหน้าจอครบ 5 (Role / **User + bulk-reassign ก่อนลบ Sale** / VAT+ประวัติ / ข้อมูลบริษัท / **Audit log screen**)
+
+### P1 — เงื่อนไข/พฤติกรรมไม่ครบ
+- Traceability (entity/field ค้นได้ + genealogy node + audit table filter/sort) · Platform (noti panel + **global search** + session 06:00 warning) · PO (**suggest/material-calc**) · Supplier (price matrix behaviors + filter) · **ทุก list page: filter/sort/empty enumerate** · Stock: มูลค่าสต็อก = ราคาซื้อล่าสุดของ lot
+
+### P2 — polish
+- field-level validation ทุกฟอร์ม · empty state มาตรฐาน · multi-role switch UX · mock-data tile↔drill ตรงกัน · badge/สถานะไทยสม่ำเสมอ
+
+---
+
+## 4. คำสั่งถึง BA (ลำดับทำ)
+1. **P0 ก่อน** (Dashboard 7-dept template §2 · Home · Settings 5 screens) → ให้ PO review
+2. **P1** (Traceability, Platform noti+search, PO suggest logic, Supplier matrix, list-page filters, Stock มูลค่าสูตร)
+3. **P2** polish
+4. จุด **[ยืนยัน PO/ปอนด์]**: (ก) สูตร "มูลค่าสต็อก" (ข) Admin เห็นทุกแผนกหรือเฉพาะ Admin dashboard (ค) รอบ Active→Inactive จำกัดชุด {1,3,6,8} หรืออิสระ
+> เกณฑ์ปิดงาน = §1 (ทุก function ครบ 4 ด้าน) · PO จะ re-review ทุก module ก่อนเปิด Gate 2 อีกครั้ง
+</script>
+
+<script type="text/markdown" data-target="#rv3">
+# PO Mockup Review — รอบ 4 + 4.5 (ผลตรวจ) — ESSENCE Hub System
+
+ผู้ review: PO (แทนปอนด์ — ละเอียดที่สุด) · 2026-07-09 · ต่อจาก `po-mockup-review.md` §8
+รอบ 4 = โครงสร้าง/flow (ผ่าน §1–§5) · **รอบ 4.5 = ฝัง dataset กลาง — ตรวจความตรงข้ามหน้า (§6) = ผ่าน → เปิด Gate 1**
+
+## สรุปภาษาไทย
+รอบ 4 mockups โครงสร้าง+flow ครบ (Batch/rework loop, create pages, GR multi-line, dashboard filter). รอบ 4.5 UX ฝัง `mock-data-spec.md` (dataset เดียว 8 use cases) ลงทุกหน้า. **PO ตรวจเองข้ามหน้าแล้ว (เปิดไฟล์จริง เทียบ mock-data-spec) — ข้อมูลตรงกันทุกจุดที่ตรวจ = ผ่าน** เปิด Gate 1 รอบ 4 ให้ปอนด์
+
+## 1–5 (รอบ 4) — ผ่านทั้งหมด
+P0/P1/P2 จาก §8 ปิดครบ · โจทย์ปอนด์รอบ 3 9/9 · Batch `B-{PO}-{line}-{run}` + rework loop (ก-ง) ตรง journeys §3.1/§3.2 (รายละเอียดในเวอร์ชันก่อนหน้าของไฟล์นี้)
+
+---
+
+## 6. ผลตรวจรอบ 4.5 — ความตรงของข้อมูลข้ามหน้า (เปิดไฟล์จริง เทียบ `mock-data-spec.md`)
+
+| # | จุดตรวจ | ผล | หลักฐาน (ไฟล์จริง) |
+|---|---|---|---|
+| 1 | **PO-202607-000181** rework (line2 run1→run2) ตรงทุกหน้า | ✅ | po-list: "กำลังผลิต · line2 rework" · production: B-PO-202607-000181-1-1 (รอ QC) + B-PO-202607-000181-2-2 badge Rework + feedback "เนื้อโฟมเป็นก้อน" · qc: B-…-181-2-2 Rework + ประวัติ run1 · po-detail: line1 รอ QC / line2 Rework run2 (ผ่าน 0/2) · trace: audit "B-…-181-2-1 → ไม่ผ่าน (ตีกลับ line #2)" |
+| 2 | **เดอร์มา แคร์ = ต้องติดตาม** โยง PO-188 Hold | ✅ | customers: CUS-000021 badge "ต้องติดตาม" + "ติดตาม: โทรยืนยันการแก้สูตร PO-202607-000188 (งานผลิตติด Hold)" · customer-detail: Follow-up + link PO-188 · dashboard: tile ต้องติดตาม + drill-down · po-list: PO-188 เดอร์มา "กำลังผลิต · Hold" |
+| 3 | **SHP-20260708-0046 = ส่งบางส่วน** | ✅ | delivery-note: DN-00122(PO-174) ส่งถึงแล้ว / DN-00123(PO-175) ถูกปฏิเสธ / DN-00124(PO-178) เลื่อนส่ง 10/07 + notify raise Sale / Postpone · po-list: PO-175 "ถูกปฏิเสธ กลับคิว", PO-178 "Postpone 10/07" |
+| 4 | **GR-008 partial → PR-032** | ✅ | purchase-request: PR-000028 แอลกอฮอล์ 250 "รับบางส่วน (200/250)" + PR-000032 "50 ล. · ของขาดจาก GR-008 · เปิดคำขอ" · flow เปิด→รับทราบ→รับบางส่วน 200/250 |
+| 5 | **8 use cases ครบใน po-list** + INV-135↔PO-176 + doc format | ✅ | po-list 11 rows = 8 UC (PO-191/188/185/181/178/176/175/174/173/172/170) ตรง §C · invoice-detail crumb INV-2026-000135 ผูก PO-202607-000176 · format ถูก PO-{YYYYMM}-{NNNNNN}, B-{PO}-{line}-{run}, DN-{YYYYMMDD}-{NNNNN}, SHP-… |
+| 6 | Thai encoding (arrow/ป้าย) | ✅ | อ่านไฟล์จริงหลายหน้า — ภาษาไทย + arrow/emoji แสดงถูก ไม่มี mojibake (perl arrow bug แก้แล้ว) |
+| — | Sale assignment สอดคล้อง | ✅ | เดอร์มา/กลอรี่=สมหญิง · บิวตี้=สมชาย · สวยใส/ปิดกิจการ=อารดา ตรงทุกหน้า |
+| — | ลูกค้า 7 ราย ครบ 6 สถานะ | ✅ | ผู้สนใจ/ประจำ/ห่างหาย/ต้องติดตาม/ปิดใช้งาน/บัญชีดำ (customers) |
+
+**คำตัดสิน: ผ่าน** — ข้อมูลก้อนเดียวกันตรงกันข้าม module ทุกจุดที่ตรวจ · ไม่พบข้อมูลขัดกัน · เปิด Gate 1 รอบ 4
+
+---
+
+## 7. คู่มือ review สำหรับปอนด์ (เดินเรื่อง 8 use cases ให้เห็นครบใน ~10 นาที)
+เริ่มที่ **`index.html`** (สารบัญ + ป้าย 🟢ใหม่/🔵แก้) แล้วเดินตามเส้นเรื่องนี้:
+
+1. **หน้าหลัก + Dashboard (1 นาที):** ดู home (งานที่รอ) → dashboard กดสลับแผนก + กด tile "ต้องติดตาม" (drill-down) + ลอง date filter (เดือนนี้/กำหนดเอง) สังเกต caption "ในช่วง/ตอนนี้"
+2. **ลูกค้า (1.5 นาที):** customers เห็นครบ 6 สถานะ → กด **เดอร์มา แคร์ (ต้องติดตาม)** → customer-detail เห็นเหตุโยง **PO-188 Hold** + note timeline · ลอง "เพิ่มลูกค้า"/"เพิ่มผู้ติดต่อ" (หน้า create จริง ฟอร์มว่าง)
+3. **เปิด PO ใหม่ = UC1 (1 นาที):** po-create (PO-191 ร่าง, สวยใส/Lead) เห็น suggest + เช็ควัตถุดิบ
+4. **การผลิต + QC = UC2/4/5 (2.5 นาที — หัวใจ GMP):** production เห็นคิว → **PO-181 line2 badge "Rework" (B-…-181-2-2) + feedback** · หน้าผลิต**ไม่มีปุ่ม "QC ไม่ผ่าน"** · ไป qc แท็บ "ตรวจแบตช์" → ตัดสินราย Batch, เห็น **ประวัติ run1 ไม่ผ่าน** + **Lot→Batch (GMP chain)** · ดู PO-188 (Hold), PO-170 (rework run2 ผ่าน)
+5. **PO detail = reconcile (1 นาที):** po-detail (PO-181) เห็น **การ์ดเปลี่ยนสถานะ PO** + ตารางราย line/Batch/QC (ผ่าน 0/2) + trace มี rework
+6. **คลัง/จัดซื้อ = UC ของขาด (1.5 นาที):** goods-receipt (multi-line, 1 GR หลาย PR, **กล่องยืนยันสร้าง PR ของขาด**) → purchase-request (PR-028 รับบางส่วน→PR-032) → supplier (layout ใหม่เต็มจอ, active/inactive, price matrix) → bom-create (block ถ้าไม่มี supplier active)
+7. **จัดส่ง = UC6/7/8 (1.5 นาที):** shipping (สร้างรอบ 2 ทาง + คนขับ/รถ) → delivery-note **SHP-0046 (ส่งบางส่วน)**: DN-122 ส่งถึง / DN-123 ถูกปฏิเสธ→raise Sale / DN-124 เลื่อน 10/07
+8. **การเงิน + trace (0.5 นาที):** invoices → INV-135 (PO-176) ใบกำกับภาษีไทย · trace ค้น **B-PO-202607-000170** เห็น Lot→Batch(run1 ไม่ผ่าน→run2 ผ่าน)→line→PO→ลูกค้า + audit ระดับ field
+
+> ทุกหน้ามี **กระดิ่งแจ้งเตือน (มุมบนขวา)** กดดูรายการ→deep link · responsive (ลองย่อจอ) · ทุกเลขเอกสารเชื่อมถึงกัน (คลิกได้)
+> **จุดที่อยากให้ปอนด์ยืนยันเป็นพิเศษ:** (ก) rework loop เข้าใจง่าย ไม่งงไหม (ข) การจัดส่ง 2 ชั้น (รอบ/DN) ชัดไหม (ค) Batch format `B-{PO}-{line}-{run}` โอเคไหม
+</script>
+<script src="_md.js"></script>
+</body></html>

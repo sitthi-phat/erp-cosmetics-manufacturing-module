@@ -1866,6 +1866,40 @@
           "summary": "Stock reservation designed per Pond. stock-reservation.md authoritative + entity-status-map updated. BA/TL change-lists ready. 5 questions to Pond (consume point primary). Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T11:00:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "document-hub",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "PO .md docs -> styled HTML views (verbatim) + adrs.html (000-009 TOC/anchors) under functional-spec/docs/",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "index.html restructured into 6-section Document Hub; 0 .md hrefs, 0 broken links",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Source .md untouched (read-only views + srcnote)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTTP verified by dispatcher: 8 pages 200, ADR-000..009 all present in adrs.html",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/docs/ (9 files) + index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Document Hub complete — everything readable as HTML from functional-spec/index.html (6 sections). Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T18:00:00+07:00"
         }
       ]
     }
