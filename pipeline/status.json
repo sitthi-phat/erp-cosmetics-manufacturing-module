@@ -1495,7 +1495,7 @@
                 "ยืนยัน out of scope",
                 "ต้องคิด COGS จริง (เพิ่มงาน)"
               ],
-              "answer": null
+              "answer": "ยืนยัน out of scope — ใช้ BOM snapshot (ปอนด์ตอบไปแล้ว 2026-07-09 — ปิดซ้ำเพื่อความครบ)"
             }
           ],
           "summary": "STAGE 2 PO REVIEW = PASS (Gate 2 open). Both sides verified by opening real files; every journey/cascade/UC/exception covered with story+AC+endpoint+schema; 3 non-blocking confirm/polish items. po-stage2-review.md has 15-min Gate-2 guide. Entry applied by dispatcher (write contention).",
