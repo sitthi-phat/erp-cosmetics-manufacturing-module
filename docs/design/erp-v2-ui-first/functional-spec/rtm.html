@@ -13,6 +13,7 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;background:#fff}
 th,td{border:1px solid var(--border2);padding:6px 9px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.pass{background:#E6F5EC;color:#1E7A44;font-weight:600;font-size:11.5px;padding:1px 7px;border-radius:10px;border:1px solid #B7E0C6}
 .nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
 footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
 code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
@@ -22,7 +23,7 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 
 <h1>Requirement Traceability Matrix</h1>
 <p class="sub">Story ↔ mockup ↔ journey (entity-status-map/status-journeys) ↔ Use Case · ให้ Tech-Lead/QA ผูก API/DB + test ต่อได้</p>
-<div class="note">รวม <b>69 stories / 207 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case · <b>depth-fix Gate 2:</b> Dashboard 7 แผนก×29 tile, Settings 5 หน้าจอ, Home, พฤติกรรมย่อย (noti panel/global search/PO suggest/list filter)</div>
+<div class="note">รวม <b>69 stories / 207 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case · <b>depth-fix Gate 2:</b> Dashboard 7 แผนก×29 tile, Settings 5 หน้าจอ, Home, พฤติกรรมย่อย (noti panel/global search/PO suggest/list filter) · <b>+ ผล cross-review User Journeys 6 สาย (ท้ายหน้า)</b></div>
 
 <h2>Story coverage — 16 module + cross-cutting</h2>
 <table>
@@ -84,6 +85,19 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 <tr><td>Soft-delete (search เจอ/ไม่โผล่ dropdown/ของเดิมวิ่งต่อ)</td><td><a href="rbac-deletion.html">Deletion (ทุก entity)</a></td></tr>
 </table>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="walkthrough.html">8 Use Cases</a><a href="continuity.html">Cascade</a></div>
-<footer>RTM · 69 stories / 207 AC · Story↔mockup↔journey↔UC + 30+ exception coverage · Cross-cutting · ESM = entity-status-map.md</footer>
+<h2>ผล Cross-Review: User Journeys 6 สาย ↔ Stories/AC <span class="pass">6/6 PASS</span></h2>
+<p class="sub">BA เดินทุก step ของ <a href="user-journeys.html">User Journeys</a> ทั้ง 6 สาย + เปิด story จริงอ่าน AC (ไม่ดูแค่ ID) · <b>ผล: ทุก step มี story+AC รองรับ · 0 gap · 0 orphan · ไม่มีกติกาใหม่ใน journey</b> · จำนวน stories/AC ไม่เปลี่ยน (69/207)</p>
+<table>
+<tr><th>#</th><th>จุดตรวจเข้ม (PO ระบุ)</th><th>ผล</th><th>หลักฐาน (เปิด AC จริง)</th></tr>
+<tr><td>1</td><td>เจ้าของ auto-transition ข้าม module ไม่ตกหล่น/ไม่ซ้ำ 2 เจ้า</td><td><span class="pass">PASS</span></td><td><b>Lead→Active</b>: trigger = <a href="po.html">US-PO-02</a> (action ยืนยัน PO), สะท้อนใน <a href="customer.html">US-CUS-02</a> (customer FSM) — ทั้งคู่ anchor <b>Cascade C1 = single source</b> (ไม่ใช่ 2 implementation) · <b>ทุก PRD ผ่าน→PO พร้อมจัดส่ง</b>: เจ้าเดียว = <a href="qc.html">US-QC-01</a> (C5); PRD/PO แค่ reconcile-display (US-PRD-04 "ผ่าน x/y", US-PO-06 read-only) ไม่ประกาศ transition ซ้ำ</td></tr>
+<tr><td>2</td><td>Negative stock เตือน 2 จังหวะ (รับงาน + เริ่มผลิต)</td><td><span class="pass">PASS</span></td><td>รับงาน = <a href="production.html">US-PRD-01</a> edge ("วัตถุดิบอาจไม่พร้อม" ไม่บล็อก) · เริ่มผลิต = <a href="production.html">US-PRD-02</a> edge ("จะตัด stock ติดลบ X หน่วย" + trace + แดง+badge) — ครบทั้ง 2 จุด</td></tr>
+<tr><td>3</td><td>Rework loop ครบทุก step ไม่ขาดตอน</td><td><span class="pass">PASS</span></td><td>QC ไม่ผ่าน+feedback บังคับ+ประวัติ run = <a href="qc.html">US-QC-02</a> (happy+edge run history) · Rework เฉพาะ line+badge+gen run ถัดไป+reconcile 0/2 = <a href="production.html">US-PRD-04</a> · วนกลับ QC run2 เห็นประวัติ run1 = US-QC-02 edge — วงครบ</td></tr>
+<tr><td>4</td><td>DN ปฏิเสธ→raise Sale→Follow-up ข้าม 3 module มี story รับช่วงครบ</td><td><span class="pass">PASS</span></td><td>DN reject→PO กลับคิว+raise Sale (C11) = <a href="shipping.html">US-SHP-02</a> edge → noti เข้า Sale inbox = <a href="home.html">US-HOME-01</a> (ระบุ "DN Rejected→งานฝ่ายขาย") + <a href="platform.html">US-PLT-02</a> → Sale ตั้ง Follow-up (reason-agnostic) = <a href="customer.html">US-CUS-03</a> / re-ship = <a href="shipping.html">US-SHP-01</a> — ไม่มีรูตรงกลาง</td></tr>
+<tr><td>5</td><td>ทุก noti ใน journeys โผล่ Home task-inbox role ปลายทาง + นับตรง dashboard</td><td><span class="pass">PASS</span></td><td><a href="home.html">US-HOME-01</a> ระบุ task inbox = <b>source เดียวกับ dashboard tile + notification</b> (นับต้องตรง) scope ตาม Read; ตัวอย่างครอบ PO Confirmed→ผลิต, DN Rejected→ขาย, Overdue→การเงิน · เหตุการณ์ noti ทั้ง 6 สาย (Confirmed/ส่งตรวจ/QC ผ่าน-ไม่ผ่าน/Delivered/Reject/Postpone/Overdue/Hold) enumerate ใน <a href="continuity.html#noti">Noti matrix</a> (PO เจ้าของ) → route เข้า inbox role ปลายทาง</td></tr>
+<tr><td>6</td><td>journey ไม่เล่ากติกาที่ story ไม่มี (ห้ามประดิษฐ์)</td><td><span class="pass">PASS</span></td><td>กติกาใน journey ตรวจครบ: เช็คเด้ง 2 ครั้ง→Blacklist=<a href="customer.html">US-CUS-04</a> · เครดิต 30 วันระดับลูกค้า=<a href="invoice.html">US-INV-01/03</a> · VAT ตาม invoice date=US-INV-02+<a href="settings.html">US-SET-03</a> · versioning+void=US-INV-04 · FIFO cut=US-PRD-02+US-STK-04 · suggest/ΣBOM×qty=<a href="po.html">US-PO-07</a> · 1 DN=1 PO/Partially=US-SHP-01/03 · Lot fail→return=US-QC-03+US-RET-01 — ทุกข้อมี AC (0 กติกาใหม่)</td></tr>
+</table>
+<div class="note"><b>ข้อสังเกต (ไม่ใช่ gap):</b> (ก) Lead→Active ปรากฏใน 2 story โดยตั้งใจ (action-side US-PO-02 + entity-FSM-side US-CUS-02) แต่ implementation จริงมีจุดเดียว = Cascade C1 — แนะนำคง C1 เป็น single source (ทำแล้ว ทั้งคู่อ้าง C1) · (ข) Scheduler-driven transitions (Active→Inactive, Overdue, Potential Delay) = งานตั้งเวลา ดู <a href="../architecture/scheduled-jobs.html" target="_blank">scheduled-jobs.html</a> (TL) · (ค) ไม่พบ orphan story — story ที่ไม่โผล่ใน 6 journey ล้วนเป็น utility/master-data/cross-cutting (US-PO-03 ค้นหา, US-STK-01/04/05, US-SUP/BOM master, US-DSH/PLT/TRC/LST cross-cutting) ถูกต้องตามหน้าที่</div>
+
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="user-journeys.html">User Journeys</a><a href="walkthrough.html">8 Use Cases</a><a href="continuity.html">Cascade</a></div>
+<footer>RTM · 69 stories / 207 AC · Story↔mockup↔journey↔UC + 30+ exception + Journey cross-review 6/6 PASS · Cross-cutting · ESM = entity-status-map.md</footer>
 </div></body></html>

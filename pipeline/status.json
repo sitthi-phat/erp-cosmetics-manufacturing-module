@@ -1754,6 +1754,41 @@
           "summary": "6 user journeys created per Pond request (bridge for reading stories). Handoff to BA for journeys<->stories cross-review with 6 strict checks. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T09:30:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "journey-cross-review",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Walked all 6 journeys, opened real AC; 6/6 strict checks PASS",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "0 gap / 0 orphan — stories/AC unchanged 69/207",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "index links User Journeys + scheduled-jobs (TL request); rtm cross-review section added",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTTP verified by dispatcher on :3000 (200)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/index.html",
+            "docs/design/erp-v2-ui-first/functional-spec/rtm.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Journeys<->stories cross-review 6/6 PASS, 0 gaps, 0 orphans (69/207 unchanged). Evidence table in rtm. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T16:00:00+07:00"
         }
       ]
     }
