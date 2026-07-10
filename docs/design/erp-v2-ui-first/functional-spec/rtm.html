@@ -23,34 +23,34 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 
 <h1>Requirement Traceability Matrix</h1>
 <p class="sub">Story ↔ mockup ↔ journey (entity-status-map/status-journeys) ↔ Use Case · ให้ Tech-Lead/QA ผูก API/DB + test ต่อได้</p>
-<div class="note">รวม <b>69 stories / 207 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case · <b>depth-fix Gate 2:</b> Dashboard 7 แผนก×29 tile, Settings 5 หน้าจอ, Home, พฤติกรรมย่อย (noti panel/global search/PO suggest/list filter) · <b>+ ผล cross-review User Journeys 6 สาย (ท้ายหน้า)</b></div>
+<div class="note">รวม <b>70 stories / 210 AC</b> (happy+edge+error ครบทุก story) · ทุก story อ้าง element จริงใน mockup รอบ 4.5 · ทุก journey จบทุก case · <b>depth-fix Gate 2:</b> Dashboard 7 แผนก×29 tile, Settings 5 หน้าจอ, Home, พฤติกรรมย่อย (noti panel/global search/PO suggest/list filter) · <b>+ Stock Reservation r5 (ปอนด์ล็อก 2026-07-10):</b> จอง (Confirmed) → ตัดจริง (เริ่มผลิต FIFO) → คืน/dialog (cancel) · 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) · US-STK-06 ใหม่ (ใครจอง) · ที่มา <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a> · <b>+ ผล cross-review User Journeys 6 สาย (ท้ายหน้า)</b></div>
 
 <h2>Story coverage — 16 module + cross-cutting</h2>
 <table>
 <tr><th>Story</th><th>Module</th><th>mockup</th><th>journey/cascade</th><th>UC</th></tr>
 <tr><td>US-HOME-01..03</td><td><a href="home.html">Home</a></td><td>home</td><td>task inbox = dashboard/noti source เดียว</td><td>UC1/2/6/8</td></tr>
-<tr><td>US-PO-01..07</td><td><a href="po.html">PO</a></td><td>po-create/list/detail</td><td>ESM §1.2/1.3 · C1/C15/C19</td><td>UC1/2/4</td></tr>
-<tr><td>US-PRD-01..06</td><td><a href="production.html">การผลิต</a></td><td>production, po-detail</td><td>ESM §1.4/1.5 · C2/C3/C4/C6/C8/C16</td><td>UC2/3/4/5</td></tr>
+<tr><td>US-PO-01..07</td><td><a href="po.html">PO</a></td><td>po-create/list/detail</td><td>ESM §1.2/1.3 · C1/C15/C19/<b>C20</b> · reservation (จอง/คืน/dialog/Hold-delta)</td><td>UC1/2/4</td></tr>
+<tr><td>US-PRD-01..06</td><td><a href="production.html">การผลิต</a></td><td>production, po-detail</td><td>ESM §1.4/1.5 · C2/C3/C4/C6/C7/C8/C16 · convert จอง→ตัดจริง FIFO</td><td>UC2/3/4/5</td></tr>
 <tr><td>US-QC-01..03</td><td><a href="qc.html">QC</a></td><td>qc</td><td>ESM §1.5/1.6 · C5/C6/C18</td><td>UC3/4/5</td></tr>
 <tr><td>US-SHP-01..03</td><td><a href="shipping.html">จัดส่ง</a></td><td>shipping, delivery-note</td><td>ESM §1.9/1.10 · C9/C10/C11/C12</td><td>UC6/7/8</td></tr>
 <tr><td>US-INV-01..04</td><td><a href="invoice.html">Invoice</a></td><td>invoices/detail/print</td><td>ESM §1.3/1.11 · C13/C14</td><td>UC6</td></tr>
-<tr><td>US-STK-01..05</td><td><a href="stock.html">Stock/GR</a></td><td>stock, goods-receipt</td><td>ESM §1.6/1.8 · C16/C17 · valuation=last buy</td><td>materials</td></tr>
+<tr><td>US-STK-01..06</td><td><a href="stock.html">Stock/GR</a></td><td>stock, goods-receipt</td><td>ESM §1.6/1.8 · C1/C3/C16/C17/<b>C20</b> · 3 ยอด · valuation=on_hand-per-lot×last-buy (ไม่หัก reserved) · US-STK-06 reservation view</td><td>materials</td></tr>
 <tr><td>US-PR-01..03</td><td><a href="purchase-request.html">PR</a></td><td>purchase-request, pr-create</td><td>ESM §1.7 · C15/C17</td><td>materials</td></tr>
 <tr><td>US-SUP-01..03</td><td><a href="supplier.html">Supplier</a></td><td>supplier</td><td>ESM §1 · BOM cost · price matrix snapshot</td><td>materials</td></tr>
 <tr><td>US-BOM-01..02</td><td><a href="bom.html">BOM</a></td><td>bom, bom-create</td><td>ESM §11</td><td>materials</td></tr>
 <tr><td>US-CUS-01..04</td><td><a href="customer.html">ลูกค้า</a></td><td>customers/detail/create</td><td>ESM §1.1 · C1/C8/C14b</td><td>UC1/2/4</td></tr>
 <tr><td>US-RET-01</td><td><a href="return.html">Return</a></td><td>return</td><td>ESM journeys §6 · C18</td><td>materials</td></tr>
-<tr><td><b>US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM</b></td><td><a href="dashboard.html">Dashboard ×7</a></td><td>dashboard</td><td>ESM/journeys §12 · ทุก cascade (drill) · po-spec-depth-audit §2.2</td><td>ทุก UC</td></tr>
+<tr><td><b>US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM</b></td><td><a href="dashboard.html">Dashboard ×7</a></td><td>dashboard</td><td>ESM/journeys §12 · ทุก cascade (drill) · po-spec-depth-audit §2.2 · ใกล้หมด=Available, มูลค่า=on_hand</td><td>ทุก UC</td></tr>
 <tr><td>US-TRC-01..03</td><td><a href="traceability.html">Trace</a></td><td>trace</td><td>field-audit ทุกแถว · genealogy Lot→Batch→FG</td><td>UC4/5/6</td></tr>
 <tr><td><b>US-SET-01..05</b></td><td><a href="settings.html">Settings (5 หน้าจอ)</a></td><td>settings</td><td>RUCDAA+Admin · user bulk-reassign · VAT · company · audit</td><td>—</td></tr>
 <tr><td><b>US-PLT-01..05</b></td><td><a href="platform.html">Platform</a></td><td>login/home/responsive/shell (search+bell)</td><td>Noti matrix · RBAC guard · session 06:00 · global search</td><td>ทุก UC</td></tr>
 <tr><td>US-LST-01</td><td><a href="list-conventions.html">List Conventions</a></td><td>ทุกหน้า list (10)</td><td>filter/sort/page-size/empty มาตรฐาน</td><td>ทุก UC</td></tr>
 </table>
 
-<h2>Exception coverage (30+ เคส) — ผูกกับ story</h2>
+<h2>Exception coverage (35+ เคส) — ผูกกับ story</h2>
 <table>
 <tr><th>กลุ่ม exception</th><th>story ที่ครอบ</th></tr>
-<tr><td>วัตถุดิบขาด warning-not-block + auto PR + suggest/material-calc</td><td>US-PO-01, US-PO-07, US-PRD-01, US-PR-01</td></tr>
+<tr><td>วัตถุดิบขาด warning-not-block + auto PR + suggest/material-calc (เทียบ Available)</td><td>US-PO-01, US-PO-07, US-PRD-01, US-PR-01</td></tr>
 <tr><td>ราคา 0 / ราคาติดลบ block</td><td>US-PO-01, US-STK-03/04</td></tr>
 <tr><td>PO cancel ทุก stage + reopen คงเลข</td><td>US-PO-04</td></tr>
 <tr><td>QC ไม่ผ่าน → Rework + feedback บังคับ</td><td>US-QC-02, US-PRD-04</td></tr>
@@ -61,9 +61,16 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 <tr><td>Supplier inactive → ตัดจาก BOM cost · price snapshot</td><td>US-SUP-02, US-SUP-03, US-BOM-02</td></tr>
 <tr><td>BOM ไม่มี active supplier → block override</td><td>US-BOM-02, US-PO-07</td></tr>
 <tr><td>BOM cost stale badge</td><td>US-BOM-01</td></tr>
-<tr><td>GR → ปิด PR อัตโนมัติ / partial → PR ใหม่</td><td>US-STK-02, US-PR-03</td></tr>
-<tr><td>Negative stock + บวกกลับ FIFO retro</td><td>US-PRD-02, US-STK-03</td></tr>
-<tr><td>มูลค่าสต็อก = last buy price of lot (COGS นอก scope)</td><td>US-STK-05, US-DSH-STK</td></tr>
+<tr><td>GR → ปิด PR อัตโนมัติ / partial → PR ใหม่ · on_hand↑→Available↑</td><td>US-STK-02, US-PR-03</td></tr>
+<tr><td>Negative stock (on_hand&lt;0) + บวกกลับ FIFO retro</td><td>US-PRD-02, US-STK-03</td></tr>
+<tr><td>มูลค่าสต็อก = on_hand-per-lot × last buy price (ไม่หัก reserved · COGS นอก scope)</td><td>US-STK-05, US-DSH-STK</td></tr>
+<tr><td><b>Reservation lifecycle:</b> จอง (Confirmed) → ตัดจริง (เริ่มผลิต FIFO) → คืน (cancel-ก่อนผลิต/reopen)</td><td>US-PO-02, US-PRD-02, US-PO-04</td></tr>
+<tr><td><b>จองเกิน Available (Available&lt;0) = เตือนไม่บล็อก</b> (warning-not-block)</td><td>US-PO-02, US-PO-07, US-STK-03</td></tr>
+<tr><td><b>Cancel หลังเริ่มผลิต = dialog คืน/ไม่คืน (write-off) + เหตุผลบังคับ + trace</b> · reservation ที่ยังไม่ consume=release เสมอ</td><td>US-PO-04</td></tr>
+<tr><td><b>Hold edit (จำนวน/สินค้า) → ปรับ reservation delta (reserve เพิ่ม / release ส่วนเกิน) + trace</b></td><td>US-PO-05</td></tr>
+<tr><td><b>Rework run เพิ่ม = ตัดจาก Available/on_hand FIFO (ไม่ pre-reserve, ติดลบได้)</b></td><td>US-PRD-04</td></tr>
+<tr><td><b>3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) + ยอดติดลบ 2 ชนิด (จองเกิน vs กายภาพ) + ใครจอง (drill)</b></td><td>US-STK-03, US-STK-06</td></tr>
+<tr><td><b>ใกล้หมด เทียบ Available (on_hand−Reserved) + null=ไม่นับ</b></td><td>US-STK-01, US-DSH-STK</td></tr>
 <tr><td>DN Reject/Postpone/reconcile Partially</td><td>US-SHP-02/03, US-DSH-SHP</td></tr>
 <tr><td>overdue หลังส่งของ+เลยเครดิต</td><td>US-INV-03, US-DSH-FIN</td></tr>
 <tr><td>void ไม่ลบ (gapless)</td><td>US-INV-04, Deletion §2.8</td></tr>
@@ -86,18 +93,18 @@ code{background:#EEF1F4;padding:1px 4px;border-radius:4px;font-size:11.5px}
 </table>
 
 <h2>ผล Cross-Review: User Journeys 6 สาย ↔ Stories/AC <span class="pass">6/6 PASS</span></h2>
-<p class="sub">BA เดินทุก step ของ <a href="user-journeys.html">User Journeys</a> ทั้ง 6 สาย + เปิด story จริงอ่าน AC (ไม่ดูแค่ ID) · <b>ผล: ทุก step มี story+AC รองรับ · 0 gap · 0 orphan · ไม่มีกติกาใหม่ใน journey</b> · จำนวน stories/AC ไม่เปลี่ยน (69/207)</p>
+<p class="sub">BA เดินทุก step ของ <a href="user-journeys.html">User Journeys</a> ทั้ง 6 สาย + เปิด story จริงอ่าน AC (ไม่ดูแค่ ID) · <b>ผล: ทุก step มี story+AC รองรับ · 0 gap · 0 orphan · ไม่มีกติกาใหม่ใน journey</b> · การ cross-review เองไม่เพิ่ม stories/AC — จำนวนที่เปลี่ยน (69/207 → <b>70/210</b>) มาจากชุด Stock Reservation r5 (US-STK-06 ใหม่) ที่ปอนด์ล็อก</p>
 <table>
 <tr><th>#</th><th>จุดตรวจเข้ม (PO ระบุ)</th><th>ผล</th><th>หลักฐาน (เปิด AC จริง)</th></tr>
 <tr><td>1</td><td>เจ้าของ auto-transition ข้าม module ไม่ตกหล่น/ไม่ซ้ำ 2 เจ้า</td><td><span class="pass">PASS</span></td><td><b>Lead→Active</b>: trigger = <a href="po.html">US-PO-02</a> (action ยืนยัน PO), สะท้อนใน <a href="customer.html">US-CUS-02</a> (customer FSM) — ทั้งคู่ anchor <b>Cascade C1 = single source</b> (ไม่ใช่ 2 implementation) · <b>ทุก PRD ผ่าน→PO พร้อมจัดส่ง</b>: เจ้าเดียว = <a href="qc.html">US-QC-01</a> (C5); PRD/PO แค่ reconcile-display (US-PRD-04 "ผ่าน x/y", US-PO-06 read-only) ไม่ประกาศ transition ซ้ำ</td></tr>
 <tr><td>2</td><td>Negative stock เตือน 2 จังหวะ (รับงาน + เริ่มผลิต)</td><td><span class="pass">PASS</span></td><td>รับงาน = <a href="production.html">US-PRD-01</a> edge ("วัตถุดิบอาจไม่พร้อม" ไม่บล็อก) · เริ่มผลิต = <a href="production.html">US-PRD-02</a> edge ("จะตัด stock ติดลบ X หน่วย" + trace + แดง+badge) — ครบทั้ง 2 จุด</td></tr>
-<tr><td>3</td><td>Rework loop ครบทุก step ไม่ขาดตอน</td><td><span class="pass">PASS</span></td><td>QC ไม่ผ่าน+feedback บังคับ+ประวัติ run = <a href="qc.html">US-QC-02</a> (happy+edge run history) · Rework เฉพาะ line+badge+gen run ถัดไป+reconcile 0/2 = <a href="production.html">US-PRD-04</a> · วนกลับ QC run2 เห็นประวัติ run1 = US-QC-02 edge — วงครบ</td></tr>
+<tr><td>3</td><td>Rework loop ครบทุก step ไม่ขาดตอน</td><td><span class="pass">PASS</span></td><td>QC ไม่ผ่าน+feedback บังคับ+ประวัติ run = <a href="qc.html">US-QC-02</a> (happy+edge run history) · Rework เฉพาะ line+badge+gen run ถัดไป+reconcile 0/2+ตัด Available run เพิ่ม = <a href="production.html">US-PRD-04</a> · วนกลับ QC run2 เห็นประวัติ run1 = US-QC-02 edge — วงครบ</td></tr>
 <tr><td>4</td><td>DN ปฏิเสธ→raise Sale→Follow-up ข้าม 3 module มี story รับช่วงครบ</td><td><span class="pass">PASS</span></td><td>DN reject→PO กลับคิว+raise Sale (C11) = <a href="shipping.html">US-SHP-02</a> edge → noti เข้า Sale inbox = <a href="home.html">US-HOME-01</a> (ระบุ "DN Rejected→งานฝ่ายขาย") + <a href="platform.html">US-PLT-02</a> → Sale ตั้ง Follow-up (reason-agnostic) = <a href="customer.html">US-CUS-03</a> / re-ship = <a href="shipping.html">US-SHP-01</a> — ไม่มีรูตรงกลาง</td></tr>
-<tr><td>5</td><td>ทุก noti ใน journeys โผล่ Home task-inbox role ปลายทาง + นับตรง dashboard</td><td><span class="pass">PASS</span></td><td><a href="home.html">US-HOME-01</a> ระบุ task inbox = <b>source เดียวกับ dashboard tile + notification</b> (นับต้องตรง) scope ตาม Read; ตัวอย่างครอบ PO Confirmed→ผลิต, DN Rejected→ขาย, Overdue→การเงิน · เหตุการณ์ noti ทั้ง 6 สาย (Confirmed/ส่งตรวจ/QC ผ่าน-ไม่ผ่าน/Delivered/Reject/Postpone/Overdue/Hold) enumerate ใน <a href="continuity.html#noti">Noti matrix</a> (PO เจ้าของ) → route เข้า inbox role ปลายทาง</td></tr>
-<tr><td>6</td><td>journey ไม่เล่ากติกาที่ story ไม่มี (ห้ามประดิษฐ์)</td><td><span class="pass">PASS</span></td><td>กติกาใน journey ตรวจครบ: เช็คเด้ง 2 ครั้ง→Blacklist=<a href="customer.html">US-CUS-04</a> · เครดิต 30 วันระดับลูกค้า=<a href="invoice.html">US-INV-01/03</a> · VAT ตาม invoice date=US-INV-02+<a href="settings.html">US-SET-03</a> · versioning+void=US-INV-04 · FIFO cut=US-PRD-02+US-STK-04 · suggest/ΣBOM×qty=<a href="po.html">US-PO-07</a> · 1 DN=1 PO/Partially=US-SHP-01/03 · Lot fail→return=US-QC-03+US-RET-01 — ทุกข้อมี AC (0 กติกาใหม่)</td></tr>
+<tr><td>5</td><td>ทุก noti ใน journeys โผล่ Home task-inbox role ปลายทาง + นับตรง dashboard</td><td><span class="pass">PASS</span></td><td><a href="home.html">US-HOME-01</a> ระบุ task inbox = <b>source เดียวกับ dashboard tile + notification</b> (นับต้องตรง) scope ตาม Read; ตัวอย่างครอบ PO Confirmed→ผลิต, DN Rejected→ขาย, Overdue→การเงิน, จองเกิน available→Stock · เหตุการณ์ noti ทั้ง 6 สาย enumerate ใน <a href="continuity.html#noti">Noti matrix</a> (PO เจ้าของ) → route เข้า inbox role ปลายทาง</td></tr>
+<tr><td>6</td><td>journey ไม่เล่ากติกาที่ story ไม่มี (ห้ามประดิษฐ์) — รวม Stock Reservation r5</td><td><span class="pass">PASS</span></td><td>กติกาใน journey ตรวจครบ: เช็คเด้ง 2 ครั้ง→Blacklist=<a href="customer.html">US-CUS-04</a> · เครดิต 30 วันระดับลูกค้า=<a href="invoice.html">US-INV-01/03</a> · VAT ตาม invoice date=US-INV-02+<a href="settings.html">US-SET-03</a> · versioning+void=US-INV-04 · <b>จอง (Confirmed)=<a href="po.html">US-PO-02</a> · convert จอง→ตัดจริง FIFO (เริ่มผลิต)=US-PRD-02 · คืน/dialog (cancel)=US-PO-04 · ปรับจอง delta (Hold)=US-PO-05 · 3 ยอด/ใครจอง=<a href="stock.html">US-STK-03/06</a></b> · suggest/ΣBOM×qty vs Available=<a href="po.html">US-PO-07</a> · 1 DN=1 PO/Partially=US-SHP-01/03 · Lot fail→return=US-QC-03+US-RET-01 — ทุกข้อมี AC (0 กติกาใหม่)</td></tr>
 </table>
-<div class="note"><b>ข้อสังเกต (ไม่ใช่ gap):</b> (ก) Lead→Active ปรากฏใน 2 story โดยตั้งใจ (action-side US-PO-02 + entity-FSM-side US-CUS-02) แต่ implementation จริงมีจุดเดียว = Cascade C1 — แนะนำคง C1 เป็น single source (ทำแล้ว ทั้งคู่อ้าง C1) · (ข) Scheduler-driven transitions (Active→Inactive, Overdue, Potential Delay) = งานตั้งเวลา ดู <a href="../architecture/scheduled-jobs.html" target="_blank">scheduled-jobs.html</a> (TL) · (ค) ไม่พบ orphan story — story ที่ไม่โผล่ใน 6 journey ล้วนเป็น utility/master-data/cross-cutting (US-PO-03 ค้นหา, US-STK-01/04/05, US-SUP/BOM master, US-DSH/PLT/TRC/LST cross-cutting) ถูกต้องตามหน้าที่</div>
+<div class="note"><b>ข้อสังเกต (ไม่ใช่ gap):</b> (ก) Lead→Active ปรากฏใน 2 story โดยตั้งใจ (action-side US-PO-02 + entity-FSM-side US-CUS-02) แต่ implementation จริงมีจุดเดียว = Cascade C1 — แนะนำคง C1 เป็น single source (ทำแล้ว ทั้งคู่อ้าง C1) · (ข) Scheduler-driven transitions (Active→Inactive, Overdue, Potential Delay) = งานตั้งเวลา ดู <a href="../architecture/scheduled-jobs.html" target="_blank">scheduled-jobs.html</a> (TL) · (ค) US-STK-06 (reservation view) = <b>Could</b> เป็น utility drill ของ 3 ยอด — ไม่โผล่เป็น step หลักใน 6 journey แต่รองรับทางแยก "ทำไม Available ต่ำ/ติดลบ" (ถูกต้องตามหน้าที่) · (ง) ไม่พบ orphan story — story ที่ไม่โผล่ใน 6 journey ล้วนเป็น utility/master-data/cross-cutting (US-PO-03 ค้นหา, US-STK-01/04/05/06, US-SUP/BOM master, US-DSH/PLT/TRC/LST cross-cutting) ถูกต้องตามหน้าที่</div>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="user-journeys.html">User Journeys</a><a href="walkthrough.html">8 Use Cases</a><a href="continuity.html">Cascade</a></div>
-<footer>RTM · 69 stories / 207 AC · Story↔mockup↔journey↔UC + 30+ exception + Journey cross-review 6/6 PASS · Cross-cutting · ESM = entity-status-map.md</footer>
+<footer>RTM · 70 stories / 210 AC · Story↔mockup↔journey↔UC + 35+ exception + Journey cross-review 6/6 PASS · + Stock Reservation r5 (C20) · Cross-cutting · ESM = entity-status-map.md</footer>
 </div></body></html>

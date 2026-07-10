@@ -31,11 +31,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Document Hub — ESSENCE Hub System</h1>
-<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · <b>ที่เดียวอ่านได้ทุกอย่าง</b> — Requirement (BA) · เอกสารหลักการ (PO) · สถาปัตยกรรม+API+DB+ADR (Tech-Lead) · Mockups · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · Requirement รวม <b>69 stories / 207 AC</b></p>
+<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · <b>ที่เดียวอ่านได้ทุกอย่าง</b> — Requirement (BA) · เอกสารหลักการ (PO) · สถาปัตยกรรม+API+DB+ADR (Tech-Lead) · Mockups · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · Requirement รวม <b>70 stories / 210 AC</b> (+ Stock Reservation r5)</p>
 
 <div class="srcnote">📄 <b>ทุกลิงก์เป็นหน้า HTML อ่านได้ (ไม่มี .md ดิบ)</b> · หน้าในหมวด ④ เอกสารหลักการ (PO) และ ⑤ ADR = <b>view สำหรับอ่าน</b> ที่ render จาก Markdown — <b>แหล่งแก้ไขจริงอยู่ที่</b> <code>docs/requirements/erp-v2-ui-first/*.md</code> และ <code>docs/adr/*.md</code> (working copy ของ PO/TL) · หน้า HTML sync ณ <b>2026-07-10</b> (ถ้าแก้ .md ต้อง regenerate view)</div>
 
-<div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริงต่อเนื่อง) → ลงรายละเอียด <b>Requirement ราย module</b> (②) → ต้องการเหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → เรื่อง API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤)</div>
+<div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริงต่อเนื่อง) → ลงรายละเอียด <b>Requirement ราย module</b> (②) → ต้องการเหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → เรื่อง API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤) · <b>ล่าสุด (r5):</b> Stock Reservation — ยืนยัน PO=จองวัตถุดิบ → เริ่มผลิต=ตัดจริง FIFO → cancel=คืน/dialog (ดู <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)</div>
 
 <div class="sec">① เริ่มที่นี่ <small>— เห็นภาพรวมทั้งระบบก่อน</small></div>
 <div class="tocgrid">
@@ -46,11 +46,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="sec">② Requirement ราย Module <small>— User Stories + AC (Given/When/Then, happy/edge/error) · เขียนโดย BA</small></div>
 <div class="tocgrid">
   <a class="mod" href="home.html"><div class="mt">Home / งานที่รอ</div><div class="md">US-HOME-01..03 · task inbox ตามสิทธิ์ · quick actions · onboarding</div></a>
-  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 แผนก (29 tile)</div><div class="md">US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM · สูตร/event-state/drill/permission</div></a>
-  <a class="mod" href="po.html"><div class="mt">PO — ใบสั่งซื้อ</div><div class="md">US-PO-01..07 · ยืนยัน/ยกเลิก+reopen/Hold/2 ราง/suggest+material-calc</div></a>
-  <a class="mod" href="production.html"><div class="mt">การผลิต — PRD/Batch</div><div class="md">US-PRD-01..06 · รอรับงาน→รับงาน→เริ่มผลิต→QC · negative stock</div></a>
+  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 แผนก (29 tile)</div><div class="md">US-DSH-01..04 + SALE/STK/PRD/QC/SHP/FIN/ADM · สูตร/event-state/drill/permission · ใกล้หมด=Available</div></a>
+  <a class="mod" href="po.html"><div class="mt">PO — ใบสั่งซื้อ</div><div class="md">US-PO-01..07 · ยืนยัน+จองวัตถุดิบ/ยกเลิก+reopen(คืน-dialog)/Hold(ปรับจอง)/2 ราง/suggest vs Available</div></a>
+  <a class="mod" href="production.html"><div class="mt">การผลิต — PRD/Batch</div><div class="md">US-PRD-01..06 · รอรับงาน→รับงาน→เริ่มผลิต(convert จอง→ตัดจริง FIFO)→QC · negative stock</div></a>
   <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน</div><div class="md">US-INV-01..04 · ออกตั้งแต่ Confirmed · VAT effective date · overdue</div></a>
-  <a class="mod" href="stock.html"><div class="mt">คลัง + Goods Receipt</div><div class="md">US-STK-01..05 · GR multi-line · negative stock · มูลค่าสต็อก</div></a>
+  <a class="mod" href="stock.html"><div class="mt">คลัง + Goods Receipt</div><div class="md">US-STK-01..06 · GR multi-line · 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้) · negative stock · มูลค่าสต็อก · ใครจอง</div></a>
   <a class="mod" href="customer.html"><div class="mt">ลูกค้า (6 สถานะ)</div><div class="md">US-CUS-01..04 · Follow-up · contact · reassign</div></a>
   <a class="mod" href="purchase-request.html"><div class="mt">คำขอสั่งซื้อ (PR)</div><div class="md">US-PR-01..03 · auto/สร้างตรง · partial→PR ใหม่</div></a>
   <a class="mod" href="supplier.html"><div class="mt">Supplier</div><div class="md">US-SUP-01..03 · active/inactive · price matrix · filter</div></a>
@@ -65,28 +65,28 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="sec">③ Cross-cutting <small>— ความต่อเนื่อง/มาตรฐานข้าม module</small></div>
 <div class="tocgrid">
-  <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification</div><div class="md">17 แถว cascade + noti matrix (epic P)</div></a>
+  <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification</div><div class="md">20 แถว cascade (+C20 reservation) + noti matrix (epic P)</div></a>
   <a class="mod" href="list-conventions.html"><div class="mt">List Page Conventions</div><div class="md">US-LST-01 · filter/sort/page-size/empty ต่อ 10 หน้า list</div></a>
   <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy</div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix</div></a>
   <a class="mod" href="glossary.html"><div class="mt">Glossary + Doc formats</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร</div></a>
-  <a class="mod" href="rtm.html"><div class="mt">Requirement Traceability Matrix</div><div class="md">Story↔mockup↔journey↔UC + 30-exception + journey cross-review 6/6</div></a>
+  <a class="mod" href="rtm.html"><div class="mt">Requirement Traceability Matrix</div><div class="md">Story↔mockup↔journey↔UC + 35-exception + journey cross-review 6/6</div></a>
 </div>
 
 <div class="sec">④ เอกสารหลักการ (PO) <small>— ที่มา/กติกา/เหตุผลของธุรกิจ (render จาก .md — ต้นฉบับ docs/requirements)</small></div>
 <div class="tocgrid">
-  <a class="mod po" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★</div><div class="md"><b>source of truth</b> สถานะ/entity/cascade/PRD/Batch/negative-stock (11 entity + 19 cascade)</div></a>
+  <a class="mod po" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★</div><div class="md"><b>source of truth</b> สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation (11 entity + 20 cascade)</div></a>
   <a class="mod po" href="docs/status-journeys.html"><div class="mt">Status Journeys</div><div class="md">state machine ทุกสาย + RUCDAA + notification/deep-link + dashboard filter</div></a>
   <a class="mod po" href="docs/deletion-policy.html"><div class="mt">Deletion Policy</div><div class="md">soft-delete ทุก entity (7 กติกา ปอนด์ล็อก) + matrix</div></a>
   <a class="mod po" href="docs/brief.html"><div class="mt">Product Brief</div><div class="md">Business Key Value + scope + Definition of Done + Gate 1 criteria</div></a>
   <a class="mod po" href="docs/mock-data-spec.html"><div class="mt">Mock Data Spec</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
   <a class="mod po" href="docs/po-reviews.html"><div class="mt">ผลตรวจ PO (3 in 1)</div><div class="md">Stage-2 Review (Gate 2) + Spec Depth Audit + Mockup Review r4</div></a>
 </div>
-<p class="sub">หมายเหตุ: "8 Use-Case Walkthrough" (mock-data-journeys) = หน้า <a href="walkthrough.html">walkthrough.html</a> ในหมวด ① (ไม่ทำซ้ำ)</p>
+<p class="sub">หมายเหตุ: "8 Use-Case Walkthrough" (mock-data-journeys) = หน้า <a href="walkthrough.html">walkthrough.html</a> ในหมวด ① (ไม่ทำซ้ำ) · Stock Reservation ต้นฉบับ = <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a></p>
 
 <div class="sec">⑤ สถาปัตยกรรม (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
 <div class="tocgrid">
   <a class="mod tl" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + <b>ลิงก์ API ทั้ง 15 module</b> (api-*.html)</div></a>
-  <a class="mod tl" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger, PRD, RUCDAA, VAT, soft-delete)</div></a>
+  <a class="mod tl" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
   <a class="mod tl" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗</div><div class="md">Active→Inactive · Overdue · Potential Delay · session 06:00 reset</div></a>
   <a class="mod tl" href="docs/adrs.html"><div class="mt">ADRs 000–009</div><div class="md">stack, stock-ledger/negative, framework, audit, action-endpoints, noti, storage, auth/RUCDAA, gapless, soft-delete</div></a>
 </div>
@@ -96,5 +96,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">28 หน้าจอ clickable (theme A teal) — ใช้เป็น spec ภาพของทุก module</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-10 · 6 หมวด — Journeys/Walkthrough · 16 module requirement (69 stories/207 AC) · 5 cross-cutting · 6 เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · <b>ทุกลิงก์ .html</b> · ต้นฉบับ PO/TL แก้ที่ docs/requirements + docs/adr (HTML sync 2026-07-10)</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-10 · 6 หมวด — Journeys/Walkthrough · 16 module requirement (70 stories/210 AC) · 5 cross-cutting · 6 เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · <b>ทุกลิงก์ .html</b> · ต้นฉบับ PO/TL แก้ที่ docs/requirements + docs/adr (HTML sync 2026-07-10)</footer>
 </div></body></html>

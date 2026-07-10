@@ -40,11 +40,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <h1>User Journeys — 6 สายชีวิตจริงของคนทำงาน</h1>
 <p class="sub">สะพานให้ปอนด์อ่านว่า requirement (stories/AC) ตรงกับงานจริงไหม · เล่าเป็นเรื่องต่อเนื่องตั้งแต่ต้นจนจบ ใช้ dataset เดิม (เดอร์มา แคร์ PO-181, บิวตี้ เอเชีย PO-176 ฯลฯ) · <b>source of truth = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> (ไม่มีการสร้างกติกาใหม่)</p>
-<div class="note"><b>อ่านยังไง:</b> แต่ละสายมี (1) <b>persona + เป้าหมาย</b> (2) <b>เส้นเดินหลัก</b> ทีละขั้น: ทำอะไร → หน้าไหน (ลิงก์ mockup) → ระบบตอบ → <span class="st st-status">สถานะเปลี่ยน</span> → <span class="st st-noti">ใครได้ noti</span> (3) <b>ทางแยกสำคัญ</b> (4) <b>จุดเชื่อม journey อื่น</b> (5) <b>ตารางอ้างอิง step ↔ story ID</b> ให้ BA cross-review</p>
+<div class="note"><b>อ่านยังไง:</b> แต่ละสายมี (1) <b>persona + เป้าหมาย</b> (2) <b>เส้นเดินหลัก</b> ทีละขั้น: ทำอะไร → หน้าไหน (ลิงก์ mockup) → ระบบตอบ → <span class="st st-status">สถานะเปลี่ยน</span> → <span class="st st-noti">ใครได้ noti</span> (3) <b>ทางแยกสำคัญ</b> (4) <b>จุดเชื่อม journey อื่น</b> (5) <b>ตารางอ้างอิง step ↔ story ID</b> ให้ BA cross-review · <b>r5:</b> เพิ่มการจอง (Reserve) ตอน Confirmed + ตัดจริง (Consume) ตอนเริ่มผลิต (ดู <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)</p>
 
 <div class="flowmap">
 <b>ภาพร้อย 6 สายเข้าด้วยกัน:</b><br>
-① <b>Customer</b> (ลูกค้า→ยืนยันออเดอร์) ─▶ ② <b>PO</b> (ยืนยัน→คิวผลิต) ─▶ ③ <b>การผลิต</b> (รับงาน→Batch→ส่งตรวจ) ─▶ ④ <b>QC</b> (ผ่าน/ตก) ─▶ ⑤ <b>จัดส่ง</b> (รอบ+DN→ส่งถึง) ─▶ ⑥ <b>Billing</b> (วางบิล→เก็บเงิน)<br>
+① <b>Customer</b> (ลูกค้า→ยืนยันออเดอร์) ─▶ ② <b>PO</b> (ยืนยัน→คิวผลิต+จองวัตถุดิบ) ─▶ ③ <b>การผลิต</b> (รับงาน→Batch+ตัดจริง→ส่งตรวจ) ─▶ ④ <b>QC</b> (ผ่าน/ตก) ─▶ ⑤ <b>จัดส่ง</b> (รอบ+DN→ส่งถึง) ─▶ ⑥ <b>Billing</b> (วางบิล→เก็บเงิน)<br>
 วนกลับ: QC ตก→③ · DN ปฏิเสธ→⑤/① · Hold→②/① · Overdue→①
 </div>
 
@@ -79,23 +79,23 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="persona"><b>Persona:</b> <b>อารดา</b> พนักงานขาย — รับออเดอร์เดอร์มา แคร์ สั่ง 2 สินค้า (โลชั่น + โฟม) · <b>เป้าหมาย:</b> เปิดออเดอร์ให้เร็ว ไม่ติดข้อจำกัดราคา และส่งงานเข้าสายผลิตครบถ้วน</div>
 <h3>เส้นเดินหลัก (happy path)</h3>
 <ol class="steps">
-<li>ที่ <a href="../mockups/po-create.html" target="_blank">po-create</a> เลือกลูกค้า "เดอร์มา แคร์" + เพิ่ม 2 บรรทัด (โลชั่น BOM, โฟม BOM) → ระบบ <b>suggest ราคาขาย default</b> (จาก BOM) + <b>เช็ควัตถุดิบพอไหม</b> (ΣBOM×จำนวน เทียบ on_hand) → แก้ราคาได้ (0 ได้)</li>
-<li>กด "บันทึกร่าง" → ระบบออกเลข <code>PO-202607-000181</code> <span class="st st-status">ร่าง (Draft)</span> · ราง billing <span class="st st-status">ยังไม่วางบิล</span></li>
-<li>กด "ยืนยัน PO" ที่ <a href="../mockups/po-detail.html" target="_blank">po-detail</a> → <span class="st st-status">ยืนยันแล้ว (Confirmed)</span> → <b>แต่ละ line เข้าคิวฝ่ายผลิต "รอรับงาน"</b> (ยังไม่เกิดเลข PRD) (C1) → <span class="st st-noti">noti ฝ่ายผลิต</span> · ลูกค้า Lead→Active (ถ้าใบแรก)</li>
+<li>ที่ <a href="../mockups/po-create.html" target="_blank">po-create</a> เลือกลูกค้า "เดอร์มา แคร์" + เพิ่ม 2 บรรทัด (โลชั่น BOM, โฟม BOM) → ระบบ <b>suggest ราคาขาย default</b> (จาก BOM) + <b>เช็ควัตถุดิบพอไหม</b> (ΣBOM×จำนวน เทียบ <b>Available = on_hand − Reserved</b>) → แก้ราคาได้ (0 ได้)</li>
+<li>กด "บันทึกร่าง" → ระบบออกเลข <code>PO-202607-000181</code> <span class="st st-status">ร่าง (Draft)</span> · ราง billing <span class="st st-status">ยังไม่วางบิล</span> · <b>ร่างยังไม่จอง</b>วัตถุดิบ</li>
+<li>กด "ยืนยัน PO" ที่ <a href="../mockups/po-detail.html" target="_blank">po-detail</a> → <span class="st st-status">ยืนยันแล้ว (Confirmed)</span> → <b>แต่ละ line เข้าคิวฝ่ายผลิต "รอรับงาน"</b> (ยังไม่เกิดเลข PRD) + <b>จองวัตถุดิบ = ΣBOM×qty ต่อ line (Reserved↑, Available↓, on_hand ไม่แตะ; จองเกิน=เตือนไม่บล็อก)</b> (C1/C20) → <span class="st st-noti">noti ฝ่ายผลิต (+Stock ถ้า Available ติดลบ)</span> · ลูกค้า Lead→Active (ถ้าใบแรก)</li>
 </ol>
 <h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>วัตถุดิบขาดตอนเปิด PO:</b> เตือน "วัตถุดิบอาจไม่พอ" <b>แต่ไม่บล็อก</b> → ระบบเสนอสร้าง <b>Purchase Request เฉพาะส่วนที่ขาด</b> (C15) → <span class="st st-noti">noti Stock + Production</span> (ไป Journey วัตถุดิบ) · PO เดินหน้าต่อได้</div>
-<div class="branch"><b>ต้องยกเลิก/แก้:</b> ยกเลิก PO ได้ทุกขั้น (comment บังคับ) → เปิดใหม่ <b>คงเลข PO เดิม</b> (gapless) (C19) · เคส Hold: Sale แก้ PO ได้ทุกช่อง (จำนวน/ราคา/วันส่ง) + trace ราย field แล้วส่งกลับผลิต</div>
+<div class="branch"><b>วัตถุดิบขาดตอนเปิด PO:</b> เตือน "วัตถุดิบอาจไม่พอ" (<b>เทียบ Available</b>) <b>แต่ไม่บล็อก</b> → ระบบเสนอสร้าง <b>Purchase Request เฉพาะส่วนที่ขาด (ต้องใช้ − Available)</b> (C15) → <span class="st st-noti">noti Stock + Production</span> (ไป Journey วัตถุดิบ) · PO เดินหน้าต่อได้</div>
+<div class="branch"><b>ต้องยกเลิก/แก้:</b> ยกเลิก PO ได้ทุกขั้น (comment บังคับ) → เปิดใหม่ <b>คงเลข PO เดิม</b> (gapless) (C19) · <b>ยกเลิกก่อนเริ่มผลิต = คืนจองอัตโนมัติ / หลังเริ่มผลิต = dialog เลือกคืน หรือไม่คืน (write-off) วัตถุดิบที่ตัดแล้ว + เหตุผลบังคับ</b> · เคส Hold: Sale แก้ PO ได้ทุกช่อง (จำนวน/ราคา/วันส่ง) + trace ราย field และ <b>ระบบปรับยอดจองตาม delta</b> แล้วส่งกลับผลิต</div>
 <h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ เริ่มจาก Journey ① (ลูกค้ายืนยันออเดอร์) · ▶ Confirmed = จุดเริ่ม Journey ③ การผลิต (คิวรอรับงาน) · ▶ วัตถุดิบขาด = แตกไป PR/GR (เส้นวัตถุดิบ) · ▶ ราง billing แยกไป Journey ⑥</div>
+<div class="xlink">◀ เริ่มจาก Journey ① (ลูกค้ายืนยันออเดอร์) · ▶ Confirmed = จุดเริ่ม Journey ③ การผลิต (คิวรอรับงาน + วัตถุดิบถูกจอง) · ▶ วัตถุดิบขาด = แตกไป PR/GR (เส้นวัตถุดิบ) · ▶ ราง billing แยกไป Journey ⑥</div>
 <h3>อ้างอิง step ↔ story</h3>
 <table><tr><th>step/ทางแยก</th><th>story</th></tr>
 <tr><td>สร้างร่าง + ราคา 0 ได้</td><td><a href="po.html">US-PO-01</a></td></tr>
-<tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs on_hand)</td><td><a href="po.html">US-PO-07</a></td></tr>
-<tr><td>ยืนยัน → คิว "รอรับงาน" + Lead→Active</td><td><a href="po.html">US-PO-02</a></td></tr>
-<tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด</td><td><a href="purchase-request.html">US-PR-01</a></td></tr>
-<tr><td>ยกเลิก + เปิดใหม่คงเลข</td><td><a href="po.html">US-PO-04</a></td></tr>
-<tr><td>แก้ PO เคส Hold + trace ราย field</td><td><a href="po.html">US-PO-05</a></td></tr></table>
+<tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs Available)</td><td><a href="po.html">US-PO-07</a></td></tr>
+<tr><td>ยืนยัน → คิว "รอรับงาน" + จองวัตถุดิบ + Lead→Active</td><td><a href="po.html">US-PO-02</a></td></tr>
+<tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด (vs Available)</td><td><a href="purchase-request.html">US-PR-01</a></td></tr>
+<tr><td>ยกเลิก + เปิดใหม่คงเลข (คืนจอง / dialog คืน-ไม่คืน)</td><td><a href="po.html">US-PO-04</a></td></tr>
+<tr><td>แก้ PO เคส Hold + trace ราย field + ปรับจอง delta</td><td><a href="po.html">US-PO-05</a></td></tr></table>
 </div>
 
 <!-- J3 -->
@@ -104,23 +104,23 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="persona"><b>Persona:</b> <b>วิชัย</b> หัวหน้าฝ่ายผลิต — รับงานจากคิว จัดลำดับ ผลิตจริง และส่งตรวจคุณภาพ · <b>เป้าหมาย:</b> ผลิตให้ทันกำหนดส่ง โดยสายผลิตไม่สะดุดแม้วัตถุดิบยังไม่เข้าระบบ</div>
 <h3>เส้นเดินหลัก (happy path)</h3>
 <ol class="steps">
-<li>ที่ <a href="../mockups/production.html" target="_blank">production</a> แท็บ "รอรับงาน" เห็น PO-181 มี 2 line (ยังไม่มีเลข PRD) → วิชัยกด <b>"รับงาน"</b> line1 (โลชั่น) → ระบบออกเลข <code>PRD-202607-000091</code> <span class="st st-status">รับงาน</span> (C2)</li>
-<li>กด <b>"เริ่มผลิต"</b> → ระบบ gen <code>B-PO-202607-000181-1-1</code> <span class="st st-status">กำลังผลิต</span> + <b>ตัด stock วัตถุดิบตาม BOM แบบ FIFO</b> → PO <span class="st st-status">กำลังผลิต</span> (C3)</li>
+<li>ที่ <a href="../mockups/production.html" target="_blank">production</a> แท็บ "รอรับงาน" เห็น PO-181 มี 2 line (ยังไม่มีเลข PRD, วัตถุดิบถูกจองไว้แล้ว) → วิชัยกด <b>"รับงาน"</b> line1 (โลชั่น) → ระบบออกเลข <code>PRD-202607-000091</code> <span class="st st-status">รับงาน</span> (ยังไม่ตัด stock — ยังจองอยู่) (C2)</li>
+<li>กด <b>"เริ่มผลิต"</b> → ระบบ gen <code>B-PO-202607-000181-1-1</code> <span class="st st-status">กำลังผลิต</span> + <b>convert จอง→ตัดจริง (Consume) เลือก Lot แบบ FIFO</b> (Reserved↓ + on_hand↓ ผูก Batch↔Lot ตาม GMP; Available ไม่ขยับ) → PO <span class="st st-status">กำลังผลิต</span> (C3)</li>
 <li>ผลิตเสร็จ กด <b>"ส่งตรวจ QC"</b> → Batch เดิมเปลี่ยนเป็น <span class="st st-status">รอ QC</span> (ไม่ gen ใหม่) → โผล่คิว QC (C4) → <span class="st st-noti">noti QC</span></li>
 <li>รอผล QC (Journey ④) → ถ้าผ่าน PRD line1 <span class="st st-status">พร้อมส่งมอบ</span> · เมื่อ <b>ทุก PRD ของ PO ผ่าน</b> → PO <span class="st st-status">พร้อมจัดส่ง</span> (C5)</li>
 </ol>
 <h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>วัตถุดิบไม่พอ (แอลกอฮอล์ PO-185):</b> กดรับงาน/เริ่มผลิตได้ <b>ไม่บล็อก</b> → เตือน "จะตัด stock ติดลบ ~30 หน่วย" → เริ่มผลิตตัด stock <b>จนติดลบ</b> (C16) → <a href="../mockups/stock.html" target="_blank">stock</a> โชว์เลขแดง + badge "ติดลบ (รอรับเข้า)" → พอทำ Goods Receipt ระบบ <b>บวกกลับ + ผูก Lot ย้อน FIFO</b> (คง GMP) + notice "ชดเชยยอดติดลบ" (C17)</div>
-<div class="branch"><b>QC ตีกลับ (line2 โฟม):</b> PRD line2 <span class="st st-status">Rework</span> + เห็น feedback จาก QC → กด <b>"ผลิตซ้ำ"</b> → gen <code>B-...-181-2-2</code> (run ถัดไป) → กลับคิว QC (C6/C7) · line1 เดินต่อไม่สะดุด</div>
+<div class="branch"><b>วัตถุดิบไม่พอ (แอลกอฮอล์ PO-185):</b> กดรับงาน/เริ่มผลิตได้ <b>ไม่บล็อก</b> → เตือน "จะตัด stock ติดลบ ~30 หน่วย" → เริ่มผลิต convert จอง→ตัดจริงตัด on_hand <b>จนติดลบ</b> (C16) → <a href="../mockups/stock.html" target="_blank">stock</a> โชว์เลขแดง + badge "ติดลบ (รอรับเข้า)" → พอทำ Goods Receipt ระบบ <b>บวกกลับ + ผูก Lot ย้อน FIFO</b> (คง GMP) + notice "ชดเชยยอดติดลบ" (C17)</div>
+<div class="branch"><b>QC ตีกลับ (line2 โฟม):</b> PRD line2 <span class="st st-status">Rework</span> + เห็น feedback จาก QC → กด <b>"ผลิตซ้ำ"</b> → gen <code>B-...-181-2-2</code> (run ถัดไป) + <b>ตัดวัตถุดิบ run เพิ่มจาก Available/on_hand FIFO (ไม่ได้จองล่วงหน้า, ติดลบได้)</b> → กลับคิว QC (C6/C7) · line1 เดินต่อไม่สะดุด</div>
 <div class="branch"><b>ติดปัญหา:</b> กด "พักงาน (Hold)" + เหตุผล (บังคับ) + raise Sale หรือ Stock (C8) → <span class="st st-noti">noti Sale/Stock</span></div>
 <h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ เริ่มจาก Journey ② (PO Confirmed) · ▶ ส่งตรวจ = ส่งเข้า Journey ④ QC · ◀ QC ตก = วนกลับมาที่นี่ (rework) · ▶ ทุก PRD ผ่าน = ส่งต่อ Journey ⑤ จัดส่ง · Hold เหตุลูกค้า = จุดชนวน Follow-up Journey ①</div>
+<div class="xlink">◀ เริ่มจาก Journey ② (PO Confirmed + วัตถุดิบถูกจอง) · ▶ ส่งตรวจ = ส่งเข้า Journey ④ QC · ◀ QC ตก = วนกลับมาที่นี่ (rework) · ▶ ทุก PRD ผ่าน = ส่งต่อ Journey ⑤ จัดส่ง · Hold เหตุลูกค้า = จุดชนวน Follow-up Journey ①</div>
 <h3>อ้างอิง step ↔ story</h3>
 <table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม)</td><td><a href="production.html">US-PRD-01</a></td></tr>
-<tr><td>เริ่มผลิต → gen Batch + ตัด stock ติดลบได้ + FIFO</td><td><a href="production.html">US-PRD-02</a> + <a href="stock.html">US-STK-03</a></td></tr>
+<tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม, ยังไม่ตัด stock)</td><td><a href="production.html">US-PRD-01</a></td></tr>
+<tr><td>เริ่มผลิต → gen Batch + convert จอง→ตัดจริง FIFO (ติดลบได้)</td><td><a href="production.html">US-PRD-02</a> + <a href="stock.html">US-STK-03</a></td></tr>
 <tr><td>ส่งตรวจ QC (Batch เดิมเปลี่ยนสถานะ)</td><td><a href="production.html">US-PRD-03</a></td></tr>
-<tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป</td><td><a href="production.html">US-PRD-04</a></td></tr>
+<tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป (ตัด Available run เพิ่ม)</td><td><a href="production.html">US-PRD-04</a></td></tr>
 <tr><td>Hold + raise Sale/Stock</td><td><a href="production.html">US-PRD-05</a></td></tr></table>
 </div>
 
@@ -199,9 +199,10 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <b>3. Rework loop ต่อเนื่อง:</b> J3↔J4 (ตก→Rework→ผลิตซ้ำ→run ถัดไป→ตรวจซ้ำเห็นประวัติ) — ไล่ว่า US-PRD-04 + US-QC-02 ครอบทุก step ของวงรอบ (badge/feedback/run history) ไม่ขาดตอน<br>
 <b>4. DN ปฏิเสธ → raise Sale → อาจ Follow-up:</b> J5→J1 ข้าม 3 module (US-SHP-02 → US-PO-05/US-CUS-03) — ยืนยัน chain นี้มี story รับช่วงครบ ไม่มีรูตรงกลาง<br>
 <b>5. Home task-inbox = ปลายทาง noti ทุกสาย:</b> ทุก <span class="st st-noti">noti</span> ในทั้ง 6 journey ต้องโผล่ใน Home ของ role ปลายทาง (US-HOME-01) และนับตรงกับ dashboard tile — BA ตรวจว่าเหตุการณ์ครบ<br>
-<b>6. ไม่มีกติกาใหม่:</b> ทุก step อ้าง entity-status-map cascade C1–C19 — ถ้า journey เล่าอะไรที่ story/AC ไม่มี = ต้องเพิ่ม AC (ไม่ใช่เพิ่มกติกา)
+<b>6. Stock Reservation (r5):</b> จอง (Confirmed, US-PO-02) → ตัดจริง (เริ่มผลิต, US-PRD-02) → คืน/dialog (cancel, US-PO-04) → ปรับ delta (Hold edit, US-PO-05) — BA ยืนยันทุก step ของ reservation lifecycle มี AC รองรับ + 3 ยอด (US-STK-03) + ใครจอง (US-STK-06) ครบ ไม่มีกติกาใหม่ (อ้าง <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)<br>
+<b>7. ไม่มีกติกาใหม่:</b> ทุก step อ้าง entity-status-map cascade C1–C20 — ถ้า journey เล่าอะไรที่ story/AC ไม่มี = ต้องเพิ่ม AC (ไม่ใช่เพิ่มกติกา)
 </div>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="walkthrough.html">8 Use Cases (dataset)</a><a href="continuity.html">Cascade + Noti</a><a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map</a></div>
-<footer>User Journeys 6 สาย (Customer→PO→ผลิต→QC→จัดส่ง→Billing) · narrative + step↔story · dataset เดิม · source = entity-status-map.md · Cross-cutting</footer>
+<footer>User Journeys 6 สาย (Customer→PO→ผลิต→QC→จัดส่ง→Billing) · narrative + step↔story · dataset เดิม · source = entity-status-map.md · + Stock Reservation (C20) · Cross-cutting</footer>
 </div></body></html>

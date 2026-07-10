@@ -2131,6 +2131,35 @@
           "summary": "DEPLOY ATTEMPT BLOCKED BY PERMISSION SYSTEM. Folded Pond's confirmed values into deploy.sh (project essence-hub-502015 + 2 allow emails). Verified project ACTIVE + billing enabled via read-only gcloud. The first state-changing command (gcloud services enable) was DENIED by the Claude Code auto-mode classifier as a Production Deploy — and per my rules an agent/coordinator message is never the user's consent, so I stopped instead of working around it. Nothing was created on GCP (no APIs enabled, no Artifact Registry, no Cloud Run, no IAP). Next step needs Pond's own authorization: either Pond runs deploy.sh (fully filled in), or grants a Bash permission rule for real gcloud. Feature-level status untouched.",
           "overridden_by": null,
           "updated_at": "2026-07-10T23:55:00+07:00"
+        },
+        {
+          "agent": "ba",
+          "phase": "reservation-stories",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "All par6 scope items mapped; stories 69/207 -> 70/210 (US-STK-06 new); all AC measurable, cite real mockup elements",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Cross-cutting synced: continuity C20 (+affected rows), user-journeys story-refs, rtm (+6 exception rows), index counts",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No invented rules — all cite stock-reservation.md; HTTP 200 verified by dispatcher x8",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/ (8 files)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Reservation stories complete: 70 stories/210 AC. Prior BA story-level work verified; cross-cutting finished. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T23:50:00+07:00"
         }
       ]
     }
