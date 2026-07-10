@@ -1,0 +1,177 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mock Data Spec · เอกสารหลักการ (PO) · ESSENCE Hub</title>
+<link rel="stylesheet" href="_doc.css"></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· เอกสารหลักการ (PO)</span><span class="crumb"><a href="../index.html">สารบัญ</a> › เอกสาร PO › Mock Data Spec</span></header>
+<div class="wrap">
+<div class="srcnote">📄 หน้านี้เป็น <b>view สำหรับอ่าน</b> (render จาก Markdown) — <b>แหล่งแก้ไขจริง</b>: <code>docs/requirements/erp-v2-ui-first/mock-data-spec.md</code> · sync ณ 2026-07-10</div>
+<div id="content" class="content">กำลังโหลดเอกสาร…</div>
+<div class="nav"><a href="../index.html">← สารบัญ Document Hub</a><a href="../walkthrough.html">8 Use-Case Walkthrough →</a><a href="entity-status-map.html">Entity Status Map</a></div>
+<footer>ESSENCE Hub System · Document Hub · view จาก mock-data-spec.md · ต้นฉบับแก้ที่ docs/requirements</footer>
+</div>
+<script type="text/markdown" data-target="#content">
+# Mock Data Spec — ESSENCE Hub System (dataset เดียว ร้อยเรื่องถึงกันทุก module)
+
+> **สถานะ: FINAL (2026-07-08)** — ประสานกับ mockups รอบ 4 (28 หน้า) แล้ว · ใช้เป็นชุดข้อมูลกลางให้ UX/UI ฝังเหมือนกันทุกหน้าในรอบ 4.5 (data embed) เพื่อให้ BA/QA เล่นแล้วเห็น "เรื่องเดียวกัน" ข้าม module
+
+slug: `erp-v2-ui-first` · เขียนโดย PO · ผูกกับ `status-journeys.md` (Batch `B-{PO}-{line}-{run}`, QC ราย line + rework loop, Shipment→DN, GR multi-line)
+
+## สรุปภาษาไทย
+Dataset ชุดเดียว: ลูกค้า→PO→BOM→Lot วัตถุดิบ→Batch→QC→รอบจัดส่ง/DN→invoice→noti→trace เชื่อมกันหมด ครอบ **8 use case การผลิต**. ตาราง §D บอก "หน้าจอไหนแสดงก้อนไหน" ให้ UX ฝังง่าย
+
+### รูปแบบเลขเอกสาร (gapless ต่อปี/เดือน — ตรงกับ mockups)
+| เอกสาร | รูปแบบ | ตัวอย่าง |
+|---|---|---|
+| PO | `PO-{YYYYMM}-{NNNNNN}` | PO-202607-000181 |
+| Batch | `B-{PO}-{line}-{run}` | B-PO-202607-000181-2-2 |
+| Delivery Note | `DN-{YYYYMMDD}-{NNNNN}` | DN-20260708-00119 |
+| Shipment (รอบ) | `SHP-{YYYYMMDD}-{NNNN}` | SHP-20260708-0044 |
+| Invoice | `INV-{YYYY}-{NNNNNN}` | INV-2026-000135 |
+| Purchase Request | `PR-{NNNNNN}` | PR-000031 |
+| Goods Receipt | `GR-{YYYYMMDD}-{NNN}` | GR-20260708-007 |
+| Lot | `{supplier prefix}{YYMM}` | L-GLY-2607 |
+| Customer/Supplier/RM/BOM | `CUS-/SUP-/RM-/BOM-` + running | CUS-000021 |
+
+---
+
+## A. Master entities
+
+### A1. Supplier (3 ราย, inactive 1)
+| รหัส | ชื่อ | Lot prefix | สถานะ | วัตถุดิบที่ผูก (ราคารับซื้อ/หน่วย) |
+|---|---|---|---|---|
+| SUP-01 | กลีเซอรีนไทย | `L-GLY-` | **Active** | กลีเซอรีน (45), น้ำหอมกุหลาบ (900) |
+| SUP-02 | เคมีภัณฑ์ ไทยเทค | `L-TT-` | **Active** | แอลกอฮอล์ (42), สารกันเสีย (185), ไทเทเนียมไดออกไซด์ (320), วิตามินซี (850), วิตามินอี (1,200) |
+| SUP-03 | อโรมา เฮ้าส์ | `L-ARM-` | **Inactive** | น้ำหอม (900), น้ำมันหอมระเหย (1,100) |
+
+### A2. วัตถุดิบ + Lot
+| วัตถุดิบ (รหัส, UOM) | เกณฑ์ใกล้หมด | คงเหลือ | Lot (จำนวน, QC ขาเข้า, supplier) |
+|---|---|---|---|
+| กลีเซอรีน (RM-005, กก.) | ยังไม่ตั้ง | 66 | L-GLY-2506 (60, ผ่าน, SUP-01) · **L-GLY-2607 (6, รอ QC, SUP-01 — GR-007)** |
+| วิตามินซี (RM-014, กก.) | 20% | 12 | L-TT-VTC-2605 (12, ผ่าน, SUP-02) |
+| ไทเทเนียมไดออกไซด์ (RM-020, กก.) | 5 กก. | 40 | L-TT-TIO-2604 (40, ผ่าน, SUP-02) |
+| วิตามินอี (RM-016, กก.) | 2 กก. | **0.2 (ใกล้หมด)** | — (PR-000030 acknowledged) |
+| แอลกอฮอล์ (RM-040, ลิตร) | 30 ล. | 200 | **L-TT-ALC-2607 (200, รอ QC, SUP-02 — GR-008)** |
+| สารกันเสีย (RM-050, กก.) | ยังไม่ตั้ง | 50 | **L-TT-PHE-2607 (50, รอ QC, SUP-02 — GR-008)** |
+| น้ำหอมกุหลาบ (RM-031, กก.) | ยังไม่ตั้ง | 23 | L-ARM-FRG-2606 (20, ผ่าน, SUP-03) · **L-GLY-2608 (3, รอ QC, SUP-01 — GR-007)** |
+| น้ำมันมะกอก (RM-060, กก.) | ยังไม่ตั้ง | 22 | L-OLV-2604 (22, ผ่าน) |
+
+### A3. BOM (4 สูตร)
+| รหัส | สินค้า (หน่วย) | ส่วนประกอบ (ปริมาณ/หน่วย) | ราคาทุน (ที่มา) | ราคาขาย |
+|---|---|---|---|---|
+| BOM-01 | เซรั่มวิตามินซี 15% (ขวด 20ml) | วิตามินซี 0.020, กลีเซอรีน 0.010 | 18.00 (max active, snapshot) | 220 |
+| BOM-02 | ครีมกันแดด SPF50 (ขวด 30ml) | ไทเทเนียมไดออกไซด์ 0.025, กลีเซอรีน 0.040, **น้ำหอมกุหลาบ 0.003** | **12.40 (override; ถ้าน้ำหอมมาจาก SUP-03 inactive → ต้อง override — ระบบเคยบล็อก)** | 150 |
+| BOM-03 | โลชั่นบำรุงผิว (ขวด) | กลีเซอรีน 0.040, น้ำมันมะกอก 0.020 | 11.60 (snapshot) | 180 |
+| BOM-04 | โฟมล้างหน้า (ขวด) | กลีเซอรีน 0.030, สารกันเสีย 0.002 | 9.80 (snapshot) | 176.67 |
+
+### A4. ลูกค้า (7 ราย — ครบ 6 สถานะ)
+| รหัส | ชื่อ | สถานะ | Sale | เลขผู้เสียภาษี / note |
+|---|---|---|---|---|
+| CUS-000009 | ร้านสวยใส คอสเมติก | **Lead (ผู้สนใจ)** | อารดา | ยังไม่เคยสั่ง — เจ้าของ PO Draft (UC1) |
+| CUS-000018 | บริษัท บิวตี้ เอเชีย จำกัด | **Active (ลูกค้าประจำ)** | สมชาย | 0105551000181 — UC3/6/7/8 |
+| CUS-000025 | ร้านกลอรี่ คอสเมติก | **Active** | สมหญิง | 0105552000225 — UC5/7/8 |
+| CUS-000021 | บริษัท เดอร์มา แคร์ จำกัด | **Follow-up (ต้องติดตาม)** | สมหญิง | 0107561000099 · comment "โทรยืนยันการแก้สูตร PO-202607-000188" — UC2 + UC4 |
+| CUS-000030 | บริษัท กลอสซี่ จำกัด | **Inactive (ห่างหาย)** | สมชาย | ไม่มี order เกิน 3 เดือน (auto) |
+| CUS-000002 | บริษัท เครดิตดำ จำกัด | **Blacklist** | สมชาย | comment "เช็คเด้ง 2 ครั้ง — ระงับเครดิต 05/07" |
+| CUS-000007 | ร้านปิดกิจการ | **Disabled** | อารดา | comment "ลูกค้าแจ้งปิดกิจการ 01/07" |
+
+### A5. Purchase Request + Goods Receipt (multi-line + partial)
+- **PR-000031** กลีเซอรีน 6 กก. (auto จาก PO-202607-000185 วัตถุดิบขาด, SUP-01) → **Fulfilled** (รับครบผ่าน GR-20260708-007)
+- **PR-000030** วิตามินอี 2 กก. → **Acknowledged** (ใกล้หมด, ยังไม่รับเข้า)
+- **PR-000028** แอลกอฮอล์ 250 ล. (Stock สร้างเอง) → **รับบางส่วน 200** ผ่าน GR-20260708-008 → ระบบ**เปิดกล่องยืนยัน "สร้าง PR ใหม่ 50 ล.?" (PR-000032) รอ user review** (ยังไม่สร้างจนกด)
+- **GR-20260708-007** (SUP-01 กลีเซอรีนไทย, ใบรับ GLY-DO-3391, 08/07 09:00) — **2 line**: (1) กลีเซอรีน 6 กก.→Lot **L-GLY-2607** อ้าง PR-000031 (ครบ→Fulfilled) · (2) น้ำหอมกุหลาบ 3 กก.→Lot **L-GLY-2608**
+- **GR-20260708-008** (SUP-02 ไทยเทค, ใบรับ TT-INV-8842, 08/07 10:30) — **2 line**: (1) แอลกอฮอล์ 200/250 ล.→Lot **L-TT-ALC-2607** อ้าง PR-000028 (partial→เสนอ PR-000032) · (2) สารกันเสีย 50 กก.→Lot **L-TT-PHE-2607** (ไม่อ้าง PR) → เข้า "รอ QC ขาเข้า"
+
+---
+
+## B. 8 Use Cases (การผลิต — ร้อยเรื่องถึงกัน)
+
+### UC1 — PO Draft
+- **PO-202607-000191** · สวยใส (Lead, CUS-000009) · Sale อารดา · สร้าง 09/07 · **ร่าง (Draft)** · line: เซรั่มวิตซี 15% (BOM-01)×100 · วัตถุดิบพอ → ไม่มี PR · ยังไม่มี Batch · ลูกค้ายัง Lead (จะ Active เมื่อยืนยันใบแรก)
+
+### UC2 — เคยเข้าผลิตแล้วถูก Hold → Follow-up
+- **PO-202607-000188** · เดอร์มา แคร์ (Follow-up, CUS-000021) · Sale สมหญิง · ยืนยัน 04/07 · **กำลังผลิต (line ติด Hold)**
+- line 1: เซรั่มวิตซี (BOM-01)×120 → Batch **B-PO-202607-000188-1-1** · **พักงาน (Hold)** — ลูกค้าขอแก้สูตร → raise Sale
+- cross: Hold → raise Sale สมหญิง → ตั้ง CUS-000021 = **Follow-up** + comment → tile "ต้องติดตาม" (Sale Dashboard) · noti → Sale (deep link po-detail), Customer detail
+
+### UC3 — QC ผ่านทั้งหมด → พร้อมจัดส่ง (feeds UC6)
+- **PO-202607-000176** · บิวตี้ เอเชีย (Active, CUS-000018) · Sale สมชาย · ยืนยัน 05/07 · **พร้อมจัดส่ง**
+- line 1: ครีมกันแดด SPF50 (BOM-02)×100 → Batch **B-PO-202607-000176-1-1** · QC **ผ่าน** 07/07 (อรุณี) · Lot: L-TT-TIO-2604, L-GLY-2506 · ทุก line ผ่าน → พร้อมจัดส่ง → คิวจัดส่ง
+
+### UC4 — QC ตกราย line (ค้าง rework) — ตรงกับ mockups PO-181
+- **PO-202607-000181** · เดอร์มา แคร์ (Follow-up, CUS-000021) · Sale สมหญิง · ยืนยัน 02/07 · **กำลังผลิต (line2 rework)** — ยังไม่พร้อมจัดส่ง (ผ่าน 0/2)
+- line 1: โลชั่นบำรุงผิว (BOM-03)×200 → Batch **B-PO-202607-000181-1-1** · **รอ QC** · Lot: L-GLY-2506, L-OLV-2604
+- line 2: โฟมล้างหน้า (BOM-04)×300 → run1 **B-PO-202607-000181-2-1** QC **ไม่ผ่าน** 08/07 (อรุณี) feedback "เนื้อโฟมเป็นก้อน ปั๊มไม่ออก" → **Rework** → run2 **B-PO-202607-000181-2-2** กำลังผลิต
+- แสดง: badge Rework ที่ line2 + feedback + Batch run ใหม่ · line1 เดินต่อ · noti → Production
+
+### UC5 — Rework ครบวง (run1 ไม่ผ่าน → run2 ผ่าน → พร้อมส่ง)
+- **PO-202607-000170** · กลอรี่ (Active, CUS-000025) · Sale สมหญิง · ยืนยัน 03/07 · **พร้อมจัดส่ง**
+- line 1: โลชั่นบำรุงผิว (BOM-03)×200
+  - run1 **B-PO-202607-000170-1-1** QC **ไม่ผ่าน** 05/07 feedback "ความหนืดต่ำกว่ามาตรฐาน"
+  - "ผลิตซ้ำ" → run2 **B-PO-202607-000170-1-2** ผลิต 06/07 → QC **ผ่าน** 07/07 → PO พร้อมจัดส่ง
+- แสดง 2 run + timeline; คิว QC เคยเห็น run2 + ประวัติ run1
+
+### UC6 — ส่งสำเร็จเดี่ยว (1 PO 1 รอบ)
+- ใช้ **PO-202607-000176** (UC3)
+- **SHP-20260708-0044** · คนขับ สมพงษ์ · เบอร์ 081-222-3344 · Route บางนา-ตราด · รถ **กระบะ** · 1 DN
+- **DN-20260708-00119** (=PO-176) → **ส่งถึงแล้ว** 08/07 13:30 (เซ็น) → PO-176 = Delivered → นับเครดิต
+- **INV-2026-000135** ออก 08/07 · เครดิต 30 วัน (ระดับลูกค้า) · VAT 7% (effective ณ 08/07) · รอชำระ · รอบ SHP-0044 = จบรอบ
+
+### UC7 — รอบรวมหลาย PO → สำเร็จหมด
+- **SHP-20260708-0045** · คนขับ ประเสริฐ · เบอร์ 089-555-1200 · Route สมุทรปราการ · รถ **10 ล้อ** · 2 DN
+  - **DN-20260708-00120** (=PO-202607-000172, บิวตี้ เอเชีย) → **ส่งถึงแล้ว** 14:00 → Delivered
+  - **DN-20260708-00121** (=PO-202607-000173, กลอรี่) → **ส่งถึงแล้ว** 15:10 → Delivered
+- รอบ = จบรอบ (ส่งครบ)
+
+### UC8 — รอบรวม → สำเร็จแค่ 1 (Partially Delivered)
+- **SHP-20260708-0046** · คนขับ ประเสริฐ · Route กรุงเทพชั้นใน · รถ **กระบะ** · 3 DN · **รอบ = ส่งบางส่วน**
+  - **DN-20260708-00122** (=PO-202607-000174, บิวตี้ เอเชีย) → **ส่งถึงแล้ว** 11:00 → Delivered
+  - **DN-20260708-00123** (=PO-202607-000175, กลอรี่) → **ถูกปฏิเสธ** 11:40 (สินค้าผิดสเปก) → PO-175 กลับ **พร้อมจัดส่ง** + **raise Sale สมหญิง**
+  - **DN-20260708-00124** (=PO-202607-000178, บิวตี้ เอเชีย) → **เลื่อนส่ง** 12:10 (+วันใหม่ **10/07**) → PO-178 = พร้อมจัดส่ง + **flag Postpone 10/07** ค้างคิว
+- noti: Rejected → Sale (deep link po-detail) · Postponed → Shipping (คิว)
+
+---
+
+## C. สรุปสถานะ PO (ให้ po-list)
+| PO | ลูกค้า | Sale | ผลิต/จัดส่ง | Billing | UC |
+|---|---|---|---|---|---|
+| PO-202607-000191 | สวยใส | อารดา | ร่าง | ยังไม่วางบิล | UC1 |
+| PO-202607-000188 | เดอร์มา แคร์ | สมหญิง | กำลังผลิต (Hold) | ยังไม่วางบิล | UC2 |
+| PO-202607-000181 | เดอร์มา แคร์ | สมหญิง | กำลังผลิต (line2 rework) | ยังไม่วางบิล | UC4 |
+| PO-202607-000176 | บิวตี้ เอเชีย | สมชาย | ส่งถึงแล้ว | รอชำระ (INV-135) | UC3→UC6 |
+| PO-202607-000170 | กลอรี่ | สมหญิง | พร้อมจัดส่ง (rework run2 ผ่าน) | ยังไม่วางบิล | UC5 |
+| PO-202607-000172 | บิวตี้ เอเชีย | สมชาย | ส่งถึงแล้ว | รอชำระ | UC7 |
+| PO-202607-000173 | กลอรี่ | สมหญิง | ส่งถึงแล้ว | รอชำระ | UC7 |
+| PO-202607-000174 | บิวตี้ เอเชีย | สมชาย | ส่งถึงแล้ว | ยังไม่วางบิล | UC8 |
+| PO-202607-000175 | กลอรี่ | สมหญิง | พร้อมจัดส่ง (ถูกปฏิเสธ กลับคิว) | ยังไม่วางบิล | UC8 |
+| PO-202607-000178 | บิวตี้ เอเชีย | สมชาย | พร้อมจัดส่ง (Postpone 10/07) | ยังไม่วางบิล | UC8 |
+| PO-202607-000185 | บิวตี้ เอเชีย | สมชาย | กำลังผลิต (เคยขาดวัตถุดิบ→PR-000031) | ยังไม่วางบิล | feeds PR/GR |
+
+---
+
+## D. ตาราง "หน้าจอไหนแสดงข้อมูลก้อนไหน" (ให้ UX ฝังรอบ 4.5)
+| หน้า | ข้อมูลที่ฝัง |
+|---|---|
+| home.html | user=สมชาย(Sale); งานรอ: PO-174/175/178 (UC8), PO-176 รอชำระ |
+| dashboard.html | นับจาก dataset: ลูกค้าประจำ 2, ห่างหาย 1, ต้องติดตาม 1 (เดอร์มา), PO เดือนนี้ 11, ค้างชำระ ตาม INV; คลัง: ใกล้หมด(วิตามินอี), lot รอ QC 3, PR ค้าง 2 (028/030); ผลิต: rework 1 (PO-181 line2), Hold 1 (PO-188); จัดส่ง: SHP-0044/45/46 · caption event/state |
+| customers.html / customer-detail.html | ลูกค้า A4 ทั้ง 7; detail = **เดอร์มา แคร์ (Follow-up + link PO-188 Hold)** |
+| customer-create.html / contact-create.html | ฟอร์มว่าง (create ≠ edit) |
+| po-list.html | ตาราง C ทั้งหมด |
+| po-create.html | **PO-202607-000191 Draft** (UC1) + เช็ควัตถุดิบพอ |
+| po-detail.html | **PO-202607-000181** (UC4: line1 รอ QC, line2 Rework B-…-181-2-2) — line/Batch overview + status-change card + 2 ราง + trace |
+| production.html | คิว: B-PO-202607-000181-1-1 (รอ QC), B-…-181-2-2 (**Rework** + run1 feedback), B-…-188-1-1 (Hold), B-…-170-1-2 (run2), B-…-185 (ยังไม่ gen batch) |
+| qc.html | ตรวจรับ lot: L-TT-ALC-2607, L-GLY-2607/2608, L-TT-PHE-2607 · ตรวจ batch: B-…-181-1-1 (รอ), B-…-181-2-2 (Rework+ประวัติ run1), GMP Lot chain |
+| bom.html / bom-create.html | BOM A3; ตัวอย่าง BOM-02 override + สร้างสูตรใหม่ (form ว่าง, block ถ้าไม่มี active supplier) |
+| supplier.html | SUP-01/02 Active, SUP-03 Inactive; price matrix; create/edit mode |
+| stock.html | วัตถุดิบ+Lot A2 |
+| goods-receipt.html | **GR-20260708-008 multi-line** (แอลกอฮอล์ 200/250 partial→dialog PR-000032, สารกันเสีย 50) + GR-007 |
+| purchase-request.html / pr-create.html | PR-031 (Fulfilled), PR-028 (partial→PR-032 dialog), PR-030 (Acknowledged); create form ว่าง |
+| shipping.html | คิว: PO-175(กลับคิว), PO-178(Postpone 10/07) + รอบ SHP-0044/45/46; สร้างรอบ 2 ทาง + คนขับ/รถ |
+| delivery-note.html | **SHP-20260708-0046** (UC8): DN-122 Delivered, DN-123 Rejected(raise Sale), DN-124 Postponed(10/07) · Partially |
+| invoices/invoice-detail/invoice-print | **INV-2026-000135** (PO-176, รอชำระ, เครดิต 30, VAT7%) |
+| trace.html | **B-PO-202607-000170** genealogy: Lot(L-GLY-2506,L-OLV-2604)→Batch run1(ไม่ผ่าน)+run2(ผ่าน)→line1→PO-170→กลอรี่→DN/INV + field-level audit (Follow-up CUS-000021) |
+| settings.html | roles/users; VAT 7% effective 01/01/2569; company profile |
+
+> **เช็คความสอดคล้อง (สำคัญ):** ข้อมูลก้อนเดียวกันต้องตรงกันทุกหน้า — **PO-202607-000181** (เดอร์มา, line2 rework) ตรงกันที่ po-list/po-detail/production/qc/trace · **เดอร์มา = Follow-up** ตรงกันที่ customers/customer-detail/dashboard tile · **SHP-0046 Partially** ตรงกันที่ shipping/delivery-note/po-detail(PO-175/178)
+> **งาน UX รอบ 4.5:** ฝัง dataset นี้แทน sample เดิมให้เหมือนกันทุกหน้า (ปัจจุบันแต่ละหน้ามี sample ของตัวเอง) — เลขเอกสาร/ชื่อ/สถานะต้องตรงกันข้าม module
+</script>
+<script src="_md.js"></script>
+</body></html>

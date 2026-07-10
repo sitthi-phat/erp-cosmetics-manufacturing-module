@@ -1,0 +1,37 @@
+/* Shared style for ESSENCE Hub Document Hub (PO/TL .md rendered as HTML views) */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.7}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 90px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+header.top .crumb a{color:#9DBAB7}
+.srcnote{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 14px;border-radius:8px;margin:16px 0;font-size:13px}
+.srcnote code{background:#fff;border:1px solid #F1D6A6}
+.toc{background:#EEF6F6;border:1px solid #BFE0DE;border-radius:10px;padding:14px 18px;margin:16px 0}
+.toc b{color:var(--primary)}.toc ul{margin:6px 0 0 18px}.toc li{margin:2px 0}
+.content h1{font-size:26px;margin:22px 0 8px;color:var(--sidebar)}
+.content h2{font-size:21px;margin:26px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--primary-bg);color:var(--primary)}
+.content h3{font-size:17px;margin:20px 0 6px;color:var(--sidebar)}
+.content h4{font-size:15px;margin:16px 0 4px;color:var(--text2)}
+.content h5,.content h6{font-size:14px;margin:12px 0 4px;color:var(--text2)}
+.content p{margin:10px 0}
+.content ul,.content ol{margin:8px 0 8px 26px}
+.content li{margin:3px 0}
+.content blockquote{border-left:4px solid var(--primary);background:#F7FBFB;padding:8px 14px;margin:12px 0;color:var(--text2);border-radius:0 8px 8px 0}
+.content table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;background:#fff;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--border2);padding:7px 10px;text-align:left;vertical-align:top}
+.content th{background:#F0F5F5;font-weight:600}
+.content tr:nth-child(even) td{background:#FAFBFC}
+.content code{background:#EEF1F4;padding:1px 6px;border-radius:4px;font-size:12.5px;font-family:"SFMono-Regular",Consolas,monospace}
+.content pre{background:#10322F;color:#CFE0DE;padding:14px 16px;border-radius:8px;overflow-x:auto;margin:12px 0}
+.content pre code{background:none;color:inherit;padding:0}
+.content hr{border:none;border-top:1px solid var(--border);margin:22px 0}
+.content strong{color:var(--sidebar)}
+.docsec{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:8px 22px 18px;margin:22px 0;box-shadow:0 1px 3px rgba(16,25,40,.05)}
+.docsec>h2:first-child,.docsec>.content>h1:first-child{margin-top:14px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0}
+.nav a{padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}

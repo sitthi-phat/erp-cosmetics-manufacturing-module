@@ -1789,6 +1789,83 @@
           "summary": "Journeys<->stories cross-review 6/6 PASS, 0 gaps, 0 orphans (69/207 unchanged). Evidence table in rtm. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T16:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "stock-reservation",
+          "status": "READY_FOR_BA",
+          "gate_checklist": [
+            {
+              "item": "Gap confirmed: no reserve step in current design; reservation lifecycle designed (3 balances, reserve at Confirm, release on cancel/edit-down)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Consume-point options analyzed (A เริ่มผลิต [recommended, keeps GMP+FIFO retro] / B พร้อมส่ง / C รับงาน) — Pond to pick",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "stock-reservation.md (authoritative) + entity-status-map folded (par1.6/2/3/4/5, cascade row 20 new)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "BA + TL change-lists produced; 5 Pond questions batched",
+              "pass": true,
+              "missing": "Pond answers (esp consume point)"
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/stock-reservation.md",
+            "docs/requirements/erp-v2-ui-first/entity-status-map.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "★ Reserve ตอน PO Confirmed แล้ว ตัดจริง (Consume) ตอนไหน?",
+              "options": [
+                "[แนะนำ] เริ่มผลิต (ราย Batch คง GMP)",
+                "พร้อมส่ง (หลัง QC)",
+                "รับงาน"
+              ],
+              "answer": null
+            },
+            {
+              "q": "เกณฑ์ใกล้หมด ใช้ยอดไหน?",
+              "options": [
+                "[แนะนำ] Available (on_hand-reserved)",
+                "on_hand"
+              ],
+              "answer": null
+            },
+            {
+              "q": "จองเกิน available ได้ไหม?",
+              "options": [
+                "[แนะนำ] ได้+เตือน ไม่บล็อก",
+                "บล็อก"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Rework ใช้วัตถุดิบเพิ่ม จัดการยังไง?",
+              "options": [
+                "[แนะนำ] ตัดจาก available เลย (ติดลบได้+เตือน)",
+                "auto-reserve ก่อน"
+              ],
+              "answer": null
+            },
+            {
+              "q": "มูลค่าสต็อกคิดจาก on_hand เท่านั้น (ไม่หัก reserved) ใช่ไหม?",
+              "options": [
+                "[แนะนำ] ใช่",
+                "หัก reserved"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "Stock reservation designed per Pond. stock-reservation.md authoritative + entity-status-map updated. BA/TL change-lists ready. 5 questions to Pond (consume point primary). Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T11:00:00+07:00"
         }
       ]
     }
