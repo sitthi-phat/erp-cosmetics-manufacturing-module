@@ -15,8 +15,10 @@ h3{font-size:16px;margin:18px 0 8px}p{margin:8px 0}.sub{color:var(--text2);font-
 .tocgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:14px 0}
 .tocgrid a.mod{display:block;border:1px solid var(--border2);border-radius:10px;padding:14px;background:#fff;color:inherit}
 .tocgrid a.mod:hover{border-color:var(--primary);box-shadow:0 3px 10px rgba(14,124,123,.12);text-decoration:none}
+.tocgrid a.mod.feature{border-color:var(--primary);background:linear-gradient(135deg,#F2FAFA,#fff)}
 .tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
 .done{background:#E6F5EC;color:#1E7A44;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600}
+.new{background:#E8F0FE;color:#204A9E;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600}
 .wip{background:#FBF0DE;color:#9A5B12;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff}
@@ -31,6 +33,8 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · เขียนโดย BA · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4 · เอกสารนี้ = requirement ที่ใช้พัฒนา · Tech-Lead เติม API/DB + Architecture (ลิงก์แล้ว) · <b>Depth-fix รอบ Gate 2</b>: ขยาย Dashboard 7 แผนก + Settings 5 หน้าจอ + Home + พฤติกรรมย่อย (search/noti/suggest/list filter)</p>
 
 <div class="note"><b>วิธีอ่าน:</b> แต่ละหน้า module มี (ก) ภาพรวม+use case (ข) ลิงก์ไป mockup จริง (ค) User Stories + Acceptance Criteria (Given/When/Then, ≥3 ต่อ story: happy/edge/error) (ง) Data rules/สถานะ entity (จ) <b>ลิงก์ไป API/DB ของ Tech-Lead (ต่อ module)</b> (ฉ) ความต่อเนื่องข้าม module · <b>Source of truth เรื่องสถานะ = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> · รวม <b>69 stories / 207 AC</b></p>
+
+<div class="note" style="background:#F2FAFA;border-color:#BFE0DE;color:#0B4E4C"><b>เริ่มอ่านที่นี่ (สำหรับปอนด์):</b> <a href="user-journeys.html"><b>User Journeys — 6 สาย</b></a> เล่าเรื่องคนทำงานจริง (ลูกค้า→PO→ผลิต→QC→จัดส่ง→เก็บเงิน) พร้อมชี้ว่า step ไหนตรงกับ story ไหน — ใช้ตรวจว่า requirement ตรงชีวิตจริงก่อนดู stories/AC รายหน้า</div>
 
 <h2>โครงสร้าง Story ID</h2>
 <p class="sub">รหัส Story = <code>US-&lt;MOD&gt;-NN</code> (เช่น <code>US-PO-01</code>, Dashboard รายแผนก = <code>US-DSH-SALE</code>) · รหัส AC = <code>&lt;StoryID&gt;-A/B/C</code> · Priority (<span class="pill">Must</span>/<span class="pill">Should</span>/<span class="pill">Could</span>) · ทุก AC ครอบ happy + edge + error</p>
@@ -57,6 +61,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <h2>หน้า Cross-cutting</h2>
 <div class="tocgrid">
+  <a class="mod feature" href="user-journeys.html"><div class="mt">★ User Journeys (6 สาย) <span class="new">ใหม่</span></div><div class="md">เรื่องคนทำงานจริง Customer→PO→ผลิต→QC→จัดส่ง→Billing · step↔story · ตรวจ requirement ↔ ชีวิตจริง</div></a>
   <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification <span class="done">พร้อม</span></div><div class="md">17 แถว + noti matrix (epic P)</div></a>
   <a class="mod" href="list-conventions.html"><div class="mt">List Page Conventions <span class="done">พร้อม</span></div><div class="md">US-LST-01 · filter/sort/page-size/empty ต่อ 10 หน้า list</div></a>
   <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy <span class="done">พร้อม</span></div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (ปอนด์ยืนยันครบ)</div></a>
@@ -85,5 +90,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td><a href="../architecture/index.html">architecture/</a> · <a href="../../../adr/">docs/adr/</a></td><td>Tech-Lead: API + DB schema + service/system diagram + 9 ADRs</td></tr>
 </table>
 
-<footer>ESSENCE Hub System · Functional Spec · Stage 2 (depth-fix) · BA · 2026-07-09 · 23 ไฟล์ (index + 16 module + 6 cross-cutting) · 69 stories / 207 AC · API/DB ลิงก์ครบทุก module · ทุกหน้า <span class="done">พร้อม</span> ให้ PO review</footer>
+<footer>ESSENCE Hub System · Functional Spec · Stage 2 (depth-fix) · BA + PO (user-journeys) · 2026-07-10 · 24 ไฟล์ (index + 16 module + 7 cross-cutting) · 69 stories / 207 AC + User Journeys 6 สาย · API/DB ลิงก์ครบทุก module · ทุกหน้า <span class="done">พร้อม</span> ให้ PO/ปอนด์ review</footer>
 </div></body></html>

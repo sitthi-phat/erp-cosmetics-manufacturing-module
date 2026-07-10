@@ -1719,6 +1719,41 @@
           "summary": "Answered Pond scheduled-jobs question: 7 jobs (session reset 06:00, customer inactivity, invoice overdue, potential delay, outbox dispatcher, ledger integrity, backup) + non-jobs clarified. Flags: BA to link from functional-spec index; J1 night-shift UX pending. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T20:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "user-journeys",
+          "status": "READY_FOR_BA",
+          "gate_checklist": [
+            {
+              "item": "user-journeys.html: 6 narrative journeys w/ persona, step-by-step (action-page-response-status-noti), branches, cross-links, step<->story table",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Anchored to existing dataset + cascade C1-C19 — no new rules; index updated w/ start-here card",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "6 strict cross-review checks defined for BA",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTTP render verified by dispatcher on :3000 (200)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/user-journeys.html",
+            "docs/design/erp-v2-ui-first/functional-spec/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "6 user journeys created per Pond request (bridge for reading stories). Handoff to BA for journeys<->stories cross-review with 6 strict checks. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T09:30:00+07:00"
         }
       ]
     }
