@@ -2194,6 +2194,106 @@
           "summary": "Stage 2 final PO review PASS — Gate 2 ready, no blockers. Final 15-min guide in po-stage2-review.md par6. Entry applied by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T13:00:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "oauth2-proxy-prep",
+          "status": "BLOCKED_NEED_INPUT",
+          "gate_checklist": [
+            {
+              "item": "Pivot documented (IAP -> oauth2-proxy): IAP direct-on-Cloud-Run needs a Google-managed OAuth client which is unavailable on an org-less project (Empty Google Account OAuth client / 502). Kept existing Cloud Run service + image (not torn down)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Dockerfile reworked to single container: stage-1 pulls official oauth2-proxy v7.7.1 binary; stage-2 nginx:1.27-alpine runs oauth2-proxy(:8080, Google, allow-list) in front of nginx(:8081 loopback) via start.sh",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "nginx.conf changed to listen 127.0.0.1:8081 (upstream behind proxy); paths/redirect/utf-8/status.json unchanged",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Added oauth2-proxy.cfg (provider=google, email_domains=[*], authenticated_emails_file, redirect_url=.../oauth2/callback, reverse_proxy, secure cookies), authenticated-emails.txt (josukekung@gmail.com, arunee.key@gmail.com), start.sh, oauth.env.example",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "deploy.sh rewritten: sources gitignored deploy/docs-site/oauth.env (rejects placeholders), gens fresh cookie secret, enables APIs (no iap), build via Cloud Build, gcloud run deploy --allow-unauthenticated --no-iap + secrets via --set-env-vars (^@^ delimiter); prints curl 302 verify + redirect-URI reminder",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Secrets stay out of git: oauth.env is .gitignored (git check-ignore confirms) + NOT tracked; client/cookie secrets only via Cloud Run env vars, never baked into image; allow-list (emails only) is committable",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Runbook gcp-docs-hosting.md updated: new section 0 (why pivot), oauth2-proxy architecture, Pond's 2 prep steps, new deploy/ops/troubleshooting/security sections",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No state-changing gcloud run this round (prep only); dispatcher will deploy after Pond fills oauth.env + adds redirect URI",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "deploy/docs-site/Dockerfile",
+            "deploy/docs-site/nginx.conf",
+            "deploy/docs-site/oauth2-proxy.cfg",
+            "deploy/docs-site/authenticated-emails.txt",
+            "deploy/docs-site/start.sh",
+            "deploy/docs-site/oauth.env.example",
+            "deploy/docs-site/deploy.sh",
+            "docs/infra/erp-v2-ui-first/gcp-docs-hosting.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "ก่อน dispatcher รัน deploy ปอนด์ทำ 2 ขั้นนี้แล้วยัง? (1) เติม client id/secret ใน deploy/docs-site/oauth.env (2) เพิ่ม redirect URI https://essence-docs-238060462485.asia-southeast1.run.app/oauth2/callback ใน OAuth client essence-docs-iap",
+              "options": [
+                "ทำครบทั้ง 2 ขั้นแล้ว -> dispatcher deploy ต่อได้",
+                "ยัง -> รอปอนด์ทำก่อน"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "OAUTH2-PROXY VARIANT PREPARED (prep only, no state-changing gcloud). Pivoted from IAP (unavailable on org-less project) to oauth2-proxy in a single container: official oauth2-proxy v7.7.1 on :8080 (Google login + per-email allow-list) fronting nginx on :8081. New/changed files: Dockerfile (multi-stage), nginx.conf (:8081), oauth2-proxy.cfg, authenticated-emails.txt (2 emails), start.sh, oauth.env.example, deploy.sh (--allow-unauthenticated --no-iap, secrets via env vars from gitignored oauth.env, fresh cookie secret each deploy). Runbook rewritten with section 0 (why pivot) + new steps. Secrets kept out of git (oauth.env gitignored + untracked; client/cookie secret only via Cloud Run env). Existing Cloud Run service/image left intact. Waiting on Pond's 2 steps (fill oauth.env + add redirect URI) before dispatcher runs deploy. Did NOT run git. Feature-level status untouched.",
+          "overridden_by": null,
+          "updated_at": "2026-07-11T00:20:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "gcp-docs-deployed",
+          "status": "DONE",
+          "gate_checklist": [
+            {
+              "item": "oauth2-proxy variant deployed to Cloud Run (essence-docs, asia-southeast1) via Cloud Build",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Auth verified: unauthenticated -> sign-in page (403/302), allowlist 2 emails, secrets via env (gitignored oauth.env), cookie secret generated per deploy",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Update path: edit authenticated-emails.txt or docs -> rerun deploy.sh",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "deploy/docs-site/ (Dockerfile, nginx.conf, oauth2-proxy.cfg, authenticated-emails.txt, start.sh, deploy.sh)",
+            "docs/infra/erp-v2-ui-first/gcp-docs-hosting.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Docs site LIVE at https://essence-docs-238060462485.asia-southeast1.run.app with Google login + 2-email allowlist (oauth2-proxy). Deployed by dispatcher after Pond filled credentials. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T14:30:00+07:00"
         }
       ]
     }
