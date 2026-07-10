@@ -1828,7 +1828,7 @@
                 "พร้อมส่ง (หลัง QC)",
                 "รับงาน"
               ],
-              "answer": null
+              "answer": "ตัดจริงตอน \"เริ่มผลิต\" (ราย Batch) — เพิ่มกติกา: ถ้า PO cancel หลังเริ่มผลิตแล้ว ให้มี dialog ถาม user ว่าจะคืนวัตถุดิบที่ตัดไปแล้วเข้า stock หรือไม่คืน (ปอนด์ตอบ 2026-07-10)"
             },
             {
               "q": "เกณฑ์ใกล้หมด ใช้ยอดไหน?",
@@ -1836,7 +1836,7 @@
                 "[แนะนำ] Available (on_hand-reserved)",
                 "on_hand"
               ],
-              "answer": null
+              "answer": "ใช้ยอด \"ใช้ได้ (Available)\" (ปอนด์ตอบ 2026-07-10)"
             },
             {
               "q": "จองเกิน available ได้ไหม?",
@@ -1844,7 +1844,7 @@
                 "[แนะนำ] ได้+เตือน ไม่บล็อก",
                 "บล็อก"
               ],
-              "answer": null
+              "answer": "ได้ + เตือน ไม่บล็อก (ปอนด์ตอบ 2026-07-10)"
             },
             {
               "q": "Rework ใช้วัตถุดิบเพิ่ม จัดการยังไง?",
@@ -1852,7 +1852,7 @@
                 "[แนะนำ] ตัดจาก available เลย (ติดลบได้+เตือน)",
                 "auto-reserve ก่อน"
               ],
-              "answer": null
+              "answer": "ตัดจาก available เลย ติดลบได้ + เตือน (ปอนด์ตอบ 2026-07-10)"
             },
             {
               "q": "มูลค่าสต็อกคิดจาก on_hand เท่านั้น (ไม่หัก reserved) ใช่ไหม?",
@@ -1860,7 +1860,7 @@
                 "[แนะนำ] ใช่",
                 "หัก reserved"
               ],
-              "answer": null
+              "answer": "คิดจากคงคลังจริง (on_hand) ไม่หักยอดจอง (ปอนด์ตอบ 2026-07-10)"
             }
           ],
           "summary": "Stock reservation designed per Pond. stock-reservation.md authoritative + entity-status-map updated. BA/TL change-lists ready. 5 questions to Pond (consume point primary). Entry appended by dispatcher.",
