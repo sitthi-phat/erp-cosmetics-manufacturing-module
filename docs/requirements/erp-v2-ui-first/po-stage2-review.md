@@ -1,10 +1,10 @@
 # PO Review — Stage 2 Package (Gate 2) · ESSENCE Hub System
 
-slug: `erp-v2-ui-first` · ตรวจโดย PO · 2026-07-09 · **รอบ 1 = PASS · รอบ 2 (depth-fix + tri-layer) = PASS + 1 จุดต้อง reconcile** · เปิด Gate 2
-ขอบเขตตรวจ: BA `functional-spec/` (24 ไฟล์ · 69 stories/207 AC) + TL `architecture/` (index + db-schema + 17 api) + `docs/adr/001–009`
+slug: `erp-v2-ui-first` · ตรวจโดย PO · 2026-07-10 · **รอบ 1 = PASS · รอบ 2 (depth) = PASS · รอบ 3 (Stock Reservation) = PASS · M1 ปิดแล้ว (per-lot 625)** → **พร้อมเปิด Gate 2 ให้ปอนด์ (ไม่มี blocker ค้าง)**
+ขอบเขตตรวจ: BA `functional-spec/` (24 ไฟล์ · 70 stories/210 AC) + TL `architecture/` (index + db-schema + 17 api + scheduled-jobs) + `docs/adr/001–009 (+ADR-001 addendum reservation)`
 
 ## สรุปภาษาไทย
-ตรวจงาน BA และ Tech-Lead ครบทั้งสองฝั่งโดยเปิดไฟล์จริง — **ทุก journey จบทุก case**: entity ทุกตัว/ทุกสถานะ + cascade C1–C19 + 8 use case + 30 exception มี story+AC และมีตาราง DB/endpoint รองรับครบ · AC เขียนแบบ Given/When/Then วัดผลได้ อ้าง element จริงใน mockup และตรงกับกติกาล่าสุดทุกข้อ (PRD กดรับงานเอง, stock ติดลบ+FIFO retro-link, deletion 7 กติกา, VAT ตามวันออกใบ, เครดิตระดับลูกค้า, เลข gapless, session 06:00) · ฝั่ง TL มี endpoint ต่อทุก transition + schema รองรับทุก AC + 9 ADR + coverage ครบ · **รอบ 2:** BA แก้ depth ครบ (Home, Dashboard 29 tiles, Settings 5 จอ, Platform, list-conventions) + TL delta 8 ไฟล์ — tri-layer (spec↔API↔DB) ตรงกันเกือบทั้งหมด · **เจอ 1 misalignment ต้อง reconcile: สูตรมูลค่าสต็อก (BA per-lot 625 vs TL/DB latest-lot 675)** — ต้องเลือกสูตรเดียวก่อน build
+ตรวจงาน BA และ Tech-Lead ครบทั้งสองฝั่งโดยเปิดไฟล์จริง 3 รอบ — **ทุก journey จบทุก case** (entity/สถานะ + cascade C1–C20 + 8 UC + 30 exception + 6 User Journeys) · AC วัดผลได้ อ้าง element จริง ตรงกติกาล่าสุดทุกข้อ · **รอบ 3 (Stock Reservation):** เพิ่มชั้นจอง/ตัดจริง/คืน ครบทั้ง 3 สาย (BA↔API↔DB↔mockup) และ **สะท้อนคำตอบปอนด์ครบ** (ตัดจริงตอนเริ่มผลิต, dialog คืน/ไม่คืนหลังผลิต, threshold=Available, จองเกิน=เตือน, rework ตัด available, มูลค่า per-lot 625) · **M1 (สูตรมูลค่า) ปิดแล้ว = per-lot 625** · **ไม่เหลือ blocker** (คงเหลือ confirm 1 จุด cosmetic = รอบ inactive {1,3,6,8})
 
 ---
 
@@ -22,91 +22,83 @@ slug: `erp-v2-ui-first` · ตรวจโดย PO · 2026-07-09 · **รอบ
 - **ไม่พบ AC คลุมเครือ/วัดไม่ได้** ในกลุ่มที่สุ่ม
 
 ### เกณฑ์ 3 — ฝั่ง Tech-Lead ✅
-- **API ครบทุก transition:** `api-production` = accept/start/submit-qc/rework/hold/resume (QC pass/fail อยู่ module QC ถูกต้อง) · index §7 coverage แสดง endpoint ต่อ cascade ครบ 1–19
-- **DB รองรับทุก AC:** `production_queue_item`(รอรับงาน ไม่มีเลข)→`production_order`(PRD)→`batch`(run_no) · `stock_movement` append-only (lot_id null ช่วงติดลบ + reason retro_alloc) + `batch_material_consumption` เติม lot ย้อน FIFO · `sequence`(gapless) · `audit_log`(field-level) · `outbox/notification/notification_ack`(Read-bit + ack ราย user) · `vat_config`(effective date) · soft-delete columns ทุก master · `shipment` 1:N `delivery_note`(po 1:1) · `invoice_version`
-- **NFR ครบ 9 ข้อ:** perf <2s เพดาน 3s, 50 users, >200 PO/วัน, audit 1 ปี+manual purge, Cloud SQL backup, UTC+พ.ศ., local+Google+session 06:00, gapless — map ไว้ใน §6
-- **จุด TL ขอ confirm:** (ก) noti 14 เหตุการณ์ deep link ปลายทางถูก — ตรวจแล้วตรง continuity matrix · (ข) dashboard tile ใช้ list endpoint เดียวกับ drill (api-dashboard) — วางไว้ใน design แล้ว · (ค) QC ขาเข้า fail → Return — db-schema §qc/§return เชื่อม `qc_record(target=lot)`→`return_doc` (auto-raise) รองรับ
+- **API ครบทุก transition:** `api-production` = accept/start/submit-qc/rework/hold/resume (QC pass/fail อยู่ module QC ถูกต้อง) · index §7 coverage แสดง endpoint ต่อ cascade ครบ
+- **DB รองรับทุก AC:** `production_queue_item`→`production_order`(PRD)→`batch`(run_no) · `stock_movement` append-only + `batch_material_consumption` FIFO retro · `sequence`(gapless) · `audit_log`(field) · `outbox/notification/notification_ack` · `vat_config` · soft-delete ทุก master · `shipment` 1:N `delivery_note` · `invoice_version`
+- **NFR ครบ 9 ข้อ** (§6) · **จุด TL ขอ confirm (ก/ข/ค): ตรวจแล้วรองรับ**
 
-### เกณฑ์ 4 — ลิงก์ (สุ่มคลิก) ✅
-เดิน index → module (po/production/stock) → mockup → api → db → กลับ — path ทั้งหมดถูก (`../architecture/api-*.html`, `../functional-spec/*.html`, `../../../requirements/…`, `../../../adr/…`) · ไม่พบเส้นตายในชุดที่สุ่ม
-
-### เกณฑ์ 5 — ไม่ประดิษฐ์กติกาใหม่ ✅ (มี 1 จุดควรยืนยัน — ดู §2)
-ทุกกติกาหลักอ้าง entity-status-map / deletion-policy / คำตอบปอนด์ที่บันทึกไว้ · ไม่มีกติกาที่ขัดกับที่ปอนด์ตอบ
+### เกณฑ์ 4 — ลิงก์ (สุ่มคลิก) ✅ · เกณฑ์ 5 — ไม่ประดิษฐ์กติกาใหม่ ✅
+ทุกกติกาอ้าง entity-status-map / deletion-policy / stock-reservation / คำตอบปอนด์ · path ไม่ตายในชุดที่สุ่ม
 
 ---
 
-## 2. ข้อ "ควรยืนยัน" ตอน review (ไม่บล็อก — polish/confirm)
-1. **รอบ Active→Inactive = ชุด {1, 3, 6, 8} เดือน (default 3):** BA (US-CUS-02) + TL (db-schema customer) กำหนดชุดค่านี้ — ปอนด์เคยยืนยันแค่ "default 3 เดือน ปรับได้" · **ควรเคาะ**ว่าจำกัดชุดนี้ หรือให้กรอกอิสระ (จุดเดียว แก้ได้ทันทีถ้าต่าง)
-2. **ตัวเลขสรุป stories/AC ไม่ตรงกัน:** index = ~47 stories/~141 AC, rtm = ~50/~150 — เป็นตัวเลขพาดหัว (coverage เท่ากัน) · ให้ BA sync ตัวเลขให้ตรง (cosmetic)
-3. **ลิงก์ anchor เล็กน้อย:** US-PRD-06 (Potential Delay) อ้าง `continuity.html#c16` (ซึ่งเป็น stock-ติดลบ) — ควรชี้แถว noti ของ Potential Delay โดยตรง (cosmetic)
-
-> ทั้ง 3 ข้อไม่กระทบความครบของ requirement — เป็นการ confirm ค่า 1 จุด + จัดหน้าตา 2 จุด · ไม่ต้องวนกลับก่อนเปิด Gate 2
+## 2. ข้อ "ควรยืนยัน" ตอน review (ไม่บล็อก)
+1. **รอบ Active→Inactive = ชุด {1, 3, 6, 8} เดือน (default 3):** BA (US-CUS-02) + TL (db-schema) กำหนดชุดนี้ — ปอนด์เคยยืนยันแค่ "default 3 ปรับได้" · ควรเคาะว่าจำกัดชุดนี้หรือกรอกอิสระ (แก้ทันทีถ้าต่าง)
+2. ตัวเลข story/AC พาดหัว sync ให้ตรง (cosmetic) · 3. anchor US-PRD-06 (cosmetic)
 
 ---
 
 ## 5. รอบ 2 — Depth-fix + Tri-layer Alignment (spec ↔ API ↔ DB)
 
-### 5.1 ผลตรวจ depth-fix (Pond Gate-2 feedback) — ผ่านทุก module ตาม Depth Standard §1 ของ po-spec-depth-audit
-| module | ก่อน | หลัง (ตรวจแล้ว) |
-|---|---|---|
-| **Dashboard** | 2 story | **US-DSH-01..04 (behavior) + 7 story รายแผนก (SALE/STK/PRD/QC/SHP/FIN/ADM)** ครบ 29 tile — ทุก tile มีตารางสูตรนับ/เงื่อนไข/ชนิด event-state/drill columns→ปลายทาง/สิทธิ์ Read + date-filter behavior + refresh คง view + multi-role ✅ |
-| **Home** | ไม่มี | **US-HOME-01..03** task-inbox ราย role (scope=Read) + quick actions + onboarding (Lot vs Batch) + empty/error · นับ source เดียวกับ dashboard/noti ✅ |
-| **Settings** | 2 story | **US-SET-01..05** ครบ 5 จอ (Role+Admin bit / User+Google+เปิดปิด+**bulk-reassign ก่อนลบ Sale** / VAT+ประวัติ / บริษัท / Audit-log screen) ✅ |
-| **Platform** | 3 story | **US-PLT-01..05** — session warning ก่อน 06:00 · noti routing Read-bit · **noti panel** (grouping/mark-all/badge "9+"/empty/ดูทั้งหมด) · **global search** · responsive+RBAC ✅ |
-| **PO** | 6 story | +**US-PO-07 suggest/material-calc** (ราคา default ต่อชนิด, ΣBOM×qty vs on_hand, shortBy, เตือนไม่บล็อก) ✅ |
-| **Stock** | 4 story | +**US-STK-05 มูลค่าสต็อก** ✅ (ดู 5.3 — สูตรต้อง reconcile) |
-| **cross-cutting** | — | +**list-conventions US-LST-01** (search/filter/sort/page-size/empty ต่อ 10 หน้า list) ✅ |
+### 5.1 depth-fix ผ่านทุก module ตาม Depth Standard
+Dashboard 2→**US-DSH-01..04 + 7 story รายแผนก (29 tile)** · Home **US-HOME-01..03** · Settings 2→**US-SET-01..05 (5 จอ)** · Platform **US-PLT-01..05** · PO +**US-PO-07** · Stock +**US-STK-05** · +**list-conventions US-LST-01** — ครบ ✅
 
-### 5.2 Tri-layer alignment (AC ใหม่ ↔ API ↔ DB) — สุ่มลึก
-| AC group | API (TL) | DB (TL) | ผล |
-|---|---|---|---|
-| Dashboard 29 tiles | `api-dashboard` — ต่อ tile มี tileKey + summary + list(drill) endpoint + drill columns→deepLink; date filter `?range=`; **สิทธิ์ = Read module (ไม่ใช่ role)** | per-tile source ครบใน db-schema | ✅ ตรงเป๊ะ (tileKey ↔ ตาราง BA) |
-| Home task-inbox | `/api/home` = aggregator ของ `/api/notifications` + `/api/dashboard/departments` (ไม่มี endpoint ใหม่) | reuse | ✅ ตรง Home spec "นับ source เดียว" |
-| Global search US-PLT-04 | `/api/search?q=` ครอบ customer/po/invoice/material/lot/batch/prd/supplier/bom/dn จัดกลุ่มตาม type + deepLink + **กรองตาม Read** + ซ่อน soft-deleted | index prefix/like บนเลขเอกสาร/ชื่อ | ✅ |
-| Settings 5 จอ + bulk-reassign | `DELETE /api/users/{id}` ต้องมี `reassignToUserId` → ย้ายลูกค้า/งานทั้งหมด **ทรานแซกชันเดียว + audit ต่อรายการ** + `reassignable-load` | user/role_permission/audit | ✅ ตรง deletion §2.2 |
-| US-PO-07 suggest | `POST /api/po/suggest` → ราคา default (BOM.sell_price / material.default_sell_price), ΣΒΟΜ×qty, required vs on_hand, shortBy, เตือนไม่บล็อก+PR | bom_line, stock_balance | ✅ |
-| US-STK-05 มูลค่าสต็อก | `GET /api/stock/value` (on_hand, latest lot buy_price, value) | **lot.buy_price + received_at + IDX (material_id, received_at desc)** เพิ่มแล้ว | ⚠ **สูตรไม่ตรง BA — ดู 5.3** |
-| list-conventions | `api-list-conventions` | — | ✅ |
-| session warning | `GET /api/auth/session` (expiresAt + nextForcedResetAt) | app_config.session_epoch | ✅ |
+### 5.2 Tri-layer (สุ่มลึก) ✅
+Dashboard 29 tiles↔api-dashboard (Read-scope) · Home↔/api/home aggregator · global search↔/api/search (Read-filtered) · Settings↔DELETE users+reassignToUserId(1 tx) · US-PO-07↔/api/po/suggest · session↔/api/auth/session — ตรงหมด
 
-### 5.3 ตัดสิน 2 จุดที่ TL ขอ confirm
-- **(ก) Admin เห็นทุกแผนก? → ยืนยันปิด (Read-bit ล้วน).** ทั้ง `dashboard US-DSH-04` และ `api-dashboard §perm` implement "ยึด Read ของ module ไม่เกี่ยว role" ตรงคำตอบปอนด์แล้ว · หมายเหตุ: `api-dashboard §admin` ยังมี note "[ยังต้องยืนยัน PO/ปอนด์]" ค้าง → **PO ยืนยันแล้ว = Read-bit ล้วน; ให้ TL ลบ flag นั้น** (โค้ด/ดีไซน์ถูกแล้ว ไม่ต้องแก้ logic)
-- **(ข) มูลค่าสต็อก — ⚠ MISALIGNMENT (M1) ต้อง reconcile:** สองชั้นตีความคำปอนด์ "ราคาซื้อล่าสุดของ Lot" ต่างกัน:
-  - **BA** (`US-STK-05` + `US-DSH-STK`): **per-lot** = Σ ทุก lot (lot.on_hand × buy_price ของ lot นั้น) · ตัวอย่าง glycerin (10@40)+(5@45) = **625**
-  - **TL/DB** (`db-schema lot`, `api-stock/value`, `api-dashboard stock_value`): **latest-lot** = total on_hand × buy_price ของ lot ที่รับล่าสุด · = 15×45 = **675**
-  - **PO ตัดสิน/แนะนำ:** ใช้ **per-lot (625)** — แม่นกว่า (แต่ละ lot ตามที่จ่ายจริง), ตรงกับโครง `stock_balance` ราย (material,lot) + `lot.buy_price`, รองรับ lot ติดลบตรงไปตรงมา, และยัง "ไม่ใช่เฉลี่ยถ่วงน้ำหนัก" ตามที่ปอนด์สั่ง · **ถ้าปอนด์ยืนยัน per-lot → TL แก้ wording db-schema/api-stock/api-dashboard เป็น "Σ per lot (lot.on_hand × lot.buy_price)"** (1 บรรทัดต่อไฟล์) · ถ้าปอนด์ต้องการ latest-lot จริง → BA แก้ตัวอย่าง 625→675 + Data rules · **ไม่ block Gate 2 (tile "Should") แต่ต้องเลือกก่อน Stage 3**
+### 5.3 ตัดสิน 2 จุด TL ขอ confirm
+- **(ก) Admin เห็นทุกแผนก → ปิด: Read-bit ล้วน** (dashboard US-DSH-04 + api-dashboard §perm ถูกแล้ว)
+- **(ข) มูลค่าสต็อก (M1) → ✅ ปิดแล้ว (2026-07-10): ปอนด์เลือก per-lot = 625** · BA (US-STK-05/US-DSH-STK) และ TL (api-stock/api-dashboard/db-schema) sync เป็น **Σ ต่อ lot (lot.on_hand × ราคาซื้อล่าสุดของ lot นั้น) · ไม่หัก Reserved** ตรงกันแล้ว — **ไม่มี misalignment เหลือ**
 
-### 5.4 HTTP :3000 (กติกาบังคับ) — PO ทำเองไม่ได้ในรอบนี้
-เครื่องมือ PO รอบนี้มีแค่ไฟล์ (Read/Write/Grep/Glob) **ไม่มี shell/browser** → ตรวจ content/alignment ครบด้วยการเปิดไฟล์จริงแล้ว (spec เป็น static self-contained HTML no-build) แต่ **curl/เปิด render จริงบน :3000 ต้องให้ agent ที่มี browser (ux-ui) หรือ dispatcher ยืนยันก่อนเชิญปอนด์** — flag ไว้เป็น pre-invite check (คาดว่าผ่านเพราะ no-build HTML แต่ควร render ยืนยัน)
+### 5.4 HTTP :3000 — PO ทำเองไม่ได้ (ไม่มี shell/browser)
+ตรวจ content/alignment ครบด้วยการเปิดไฟล์จริง · coordinator ยืนยันทุกไฟล์ **HTTP 200 แล้ว** · render จริงฝาก ux/dispatcher ยืนยันตอน pre-invite
 
 ---
 
-## 3. คู่มือ review Gate 2 สำหรับปอนด์ (~15 นาที · อัปเดตชี้ของใหม่)
+## 6. รอบ 3 — Stock Reservation (Lock/จอง) — PASS ✅
+ปอนด์ถามเรื่อง lock stock → PO ออกแบบ (`stock-reservation.md`) → BA/TL/UX ทำครบ 3 สาย · ตรวจ tri-layer + ยืนยันคำตอบปอนด์สะท้อนครบ:
 
-**เริ่มที่:** `functional-spec/index.html` (สารบัญ BA · เปิดผ่าน http://localhost:3000/…) + `architecture/index.html` (TL)
+| ประเด็น (คำตอบปอนด์) | BA (spec) | TL (API/DB) | ผล |
+|---|---|---|---|
+| **3 ยอด** คงคลัง/จองแล้ว/ใช้ได้ (Available=on_hand−Reserved) | US-STK-01/03 + data-rules | `reserved_balance` cache + `/api/stock/{id}/availability` | ✅ |
+| **จอง ตอน PO Confirmed** = ΣBOM×qty | US-PO-02 cascade | `POST /po/confirm` สร้าง reservation ต่อ line (1 tx) | ✅ |
+| **ตัดจริง ตอน "เริ่มผลิต"** (convert จอง→consume FIFO, Available ไม่ขยับ) | US-PRD-02 + US-STK-03 | `POST /production/start` reserved→consumed + production_consume FIFO (ติดลบ+retro) | ✅ |
+| **Cancel = คืน + dialog คืน/ไม่คืนหลังผลิต** | US-PO-04 + po-detail dialog | `POST /po/cancel {returnMaterials}` → line ยังไม่ผลิต RELEASE auto; ผลิตแล้ว true=**cancel_return**(+on_hand) / false=**write_off** | ✅ |
+| **Hold แก้ PO → ปรับจอง** (delta reserve/release) | US-PO-05 | `PATCH /po/{id}` recompute ΣBOM×qty → delta | ✅ |
+| **เกณฑ์ใกล้หมด = Available** | US-STK-01 + US-DSH-STK | api-dashboard threshold=available | ✅ |
+| **จองเกิน available = เตือนไม่บล็อก** (2 ชนิดติดลบแยก: จองเกิน vs กายภาพ) | US-STK-03 (on_hand 66/จอง 70/ใช้ได้ −4 badge "จองเกิน") | confirm/suggest warn-not-block | ✅ |
+| **Rework ตัด available** (ไม่ pre-reserve) | US-PRD-04 | `POST /production/rework` ตัด available (ติดลบ+เตือน) | ✅ |
+| **มูลค่าสต็อก = on_hand เท่านั้น ไม่หัก Reserved** (per-lot 625) | US-STK-05 | api-stock value | ✅ (M1 ปิด) |
+| **US-STK-06** ดูใครจอง (reservation view) | US-STK-06 | `GET /api/stock/{id}/reservations` | ✅ |
+| suggest เทียบ **available** | US-PO-07 | `/api/po/suggest` shortBy=required>available | ✅ |
+
+- **DB:** `reservation` table + `reserved_balance` cache (≥0) + `cancel_return`/`write_off` movement + scheduled-jobs dual-cache — ครบ ✅
+- **user-journeys (ไฟล์ PO — BA แก้จุดอ้าง story):** ตรวจแล้ว **การแก้ถูกต้อง ไม่บิดเนื้อเรื่อง** — J2 "ร่างยังไม่จอง"→Confirmed จอง, suggest vs Available, cancel dialog คืน/ไม่คืน, Hold ปรับจอง delta; J3 "convert จอง→ตัดจริง FIFO (Reserved↓/on_hand↓/Available ไม่ขยับ)", rework ตัด Available · **ยอมรับ ไม่ต้อง revert**
+- **ไม่ regress:** เกณฑ์รอบ 1–2 (journey/cascade/depth/link) ยังผ่านครบ · cascade เพิ่ม C20 (reservation) ทั้ง entity-status-map + continuity
+
+---
+
+## 3. คู่มือ review Gate 2 สำหรับปอนด์ (~15 นาที · ฉบับสุดท้าย)
+**เริ่มที่:** `functional-spec/index.html` → การ์ด **★ User Journeys** (เปิดผ่าน http://localhost:3000/…) · และ `architecture/index.html` (TL)
 
 | ลำดับ | เปิดหน้า | ดูอะไร (นาที) |
 |---|---|---|
-| 1 | functional-spec/**walkthrough** | เดิน 8 use case — เห็นภาพรวมทั้งระบบใน 1 หน้า (~3) |
-| 2 | functional-spec/**dashboard** ★ใหม่ | **7 แผนก × 29 tile** — กด US-DSH-STK/SALE ดูตารางสูตร+ชนิด event/state + date-filter behavior (ที่ปอนด์ทักว่าตื้น — แก้แล้ว) (~3) |
-| 3 | functional-spec/**home** ★ใหม่ | "งานที่รอคุณอยู่" task-inbox ตาม role + onboarding (~1.5) |
-| 4 | functional-spec/**platform** ★ใหม่ | global search + noti panel (grouping/mark-all/9+) + session warning (~1.5) |
-| 5 | functional-spec/**settings** ★ขยาย | 5 หน้าจอครบ (User + bulk-reassign, Audit-log screen) (~1) |
-| 6 | functional-spec/**production** + **stock** US-STK-03 | รอรับงาน→รับงาน+negative stock+FIFO retro (~2) |
-| 7 | architecture/**index** §1–2 diagram + §7 coverage · (ทางเลือก) **db-schema** §material | system/service diagram + stock ledger ติดลบ (~2) |
+| 1 | functional-spec/**user-journeys** ★ | เรื่องคนทำงานจริง 6 สาย (Customer→PO→ผลิต→QC→จัดส่ง→Billing) — ตรวจว่า requirement ตรงชีวิตจริง (~3) |
+| 2 | functional-spec/**stock** US-STK-03/05/06 ★reservation | **3 ยอด (คงคลัง/จองแล้ว/ใช้ได้)** + จองเกิน + มูลค่า per-lot 625 (~2) |
+| 3 | functional-spec/**po** US-PO-02/04 ★reservation | ยืนยัน=จอง / ยกเลิก=คืน + **dialog คืน/ไม่คืนหลังผลิต** (~1.5) |
+| 4 | functional-spec/**dashboard** ★ | 7 แผนก × 29 tile + date-filter (จุดที่ปอนด์ทักตื้น=แก้แล้ว) (~2) |
+| 5 | functional-spec/**home** + **platform** ★ | task-inbox ราย role · global search · noti panel · session warning (~2) |
+| 6 | functional-spec/**settings** | 5 จอ (User+bulk-reassign · audit-log) (~1) |
+| 7 | architecture/**index** §1–2 diagram + §7 · (ทางเลือก) **db-schema** §material+reservation | system/service diagram + stock ledger ติดลบ + reservation (~2) |
 
-**จุดตัดสินใจที่ควรยืนยันตอน review:**
-- ✅ requirement + NFR + depth ครบพอเริ่ม dev หรือยัง (Gate 2 = อนุมัติสิ่งนี้)
-- ❓ **สูตรมูลค่าสต็อก (M1):** per-lot 625 (PO แนะนำ) หรือ latest-lot 675 — เคาะ 1 คำ (§5.3ข)
-- ❓ รอบ Active→Inactive: ชุด {1,3,6,8} หรือกรอกอิสระ (§2 ข้อ 1)
-- ✅ ยืนยัน COGS/valuation อยู่นอก scope (BA/TL ตั้งตามคำตอบปอนด์)
+**จุดตัดสินใจตอน review (เหลือน้อย — ไม่มี blocker):**
+- ✅ requirement + NFR + depth + reservation ครบพอเริ่ม dev หรือยัง (Gate 2 = อนุมัติสิ่งนี้)
+- ✅ **M1 (มูลค่าสต็อก) ปิดแล้ว = per-lot 625** · **Reservation 5 คำถาม = ปอนด์ตอบครบแล้ว** (สะท้อนใน spec ครบ)
+- ❓ (cosmetic เดียว) รอบ Active→Inactive: ชุด {1,3,6,8} หรือกรอกอิสระ (§2 ข้อ 1) — แก้ 1 บรรทัดถ้าต่าง
 - ✅ ถ้าอนุมัติ → Stage 3 (Engineer ∥ QA ∥ BA); อยากปรับ UI → วน Stage 1 incremental
 
 ---
 
 ## 4. สถานะ handoff
-- **รอบ 1 = PASS · รอบ 2 (depth+tri-layer) = PASS** (depth-fix ครบ, spec↔API↔DB ตรง) → เปิด **Gate 2**
-- **ต้อง reconcile ก่อน Stage 3:** M1 สูตรมูลค่าสต็อก (per-lot vs latest-lot) — เคาะที่ review
-- **ให้ TL:** ลบ flag "[ยังต้องยืนยัน]" ใน api-dashboard §admin (PO ยืนยัน Read-bit ล้วนแล้ว) + แก้ wording สูตรมูลค่าสต็อกตามที่ปอนด์เคาะ
-- **ให้ dispatcher/ux-ui:** render check :3000 ก่อนเชิญปอนด์ (PO ไม่มี browser tool)
-- **cosmetic (§2):** BA sync ตัวเลข story/AC + anchor US-PRD-06
+- **รอบ 1/2/3 = PASS · M1 ปิด · Reservation aligned ทั้ง 3 สาย** → **เปิด Gate 2 (ไม่มี blocker ค้าง)**
+- **ให้ dispatcher/ux-ui:** render check :3000 ก่อนเชิญปอนด์ (PO ไม่มี browser tool — coordinator ยืนยัน HTTP 200 แล้ว)
+- **cosmetic (ทำเมื่อไรก็ได้):** BA sync ตัวเลข story/AC + anchor US-PRD-06 + (ถ้าปอนด์เคาะ) รอบ inactive set
