@@ -1,0 +1,170 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scheduled / Background Jobs · ESSENCE Hub System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D'0%200%2040%2040'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Crect%20width%3D'40'%20height%3D'40'%20rx%3D'10'%20fill%3D'%230E7C7B'%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="_style.css">
+<style>
+.job{border:1px solid #E4E7EB;border-radius:12px;margin:14px 0;overflow:hidden}
+.job>.jh{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#F4F9F9;border-bottom:1px solid #E4E7EB}
+.job>.jh .jn{font-weight:700;color:#10322F;font-size:15px}
+.job>.jh .freq{margin-left:auto;background:#0E7C7B;color:#fff;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600}
+.job .jb{padding:6px 16px 14px}
+.job table{margin:8px 0}
+.job th{width:170px;background:#FBFDFD;vertical-align:top}
+.cont{background:#0E7C7B}.daily{background:#2C7BE5}.night{background:#10322F}.infra{background:#7A4E12}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.k{display:inline-block;border-radius:6px;padding:2px 9px;font-size:11.5px;font-weight:600}
+.k.noti{background:#E8F0FE;color:#1F5EDB}.k.idem{background:#E6F5EC;color:#1E7A44}.k.st{background:#FBF0DE;color:#9A5B12}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand">⏰ ESSENCE Hub System — งานตั้งเวลา (Scheduled Jobs)</div>
+ <span class="tag">Stage 2 · Architecture · ตอบคำถามปอนด์</span>
+ <h1>งานที่ระบบทำเองอัตโนมัติเบื้องหลัง</h1>
+ <p>หน้านี้รวบรวม "งานที่ทำงานเองตามเวลา/เบื้องหลัง" ทั้งหมดของระบบ (ผู้ใช้ไม่ต้องกด) — อธิบายว่าแต่ละงานทำงานเมื่อไหร่ ทำอะไรทีละขั้น กระทบข้อมูลอะไร แจ้งเตือนใครไหม และ<b>ถ้าเครื่องปิด/งานพลาดจะกู้อย่างไร</b>. ท้ายหน้าแยกชัดว่าอะไร "ไม่ใช่งานตั้งเวลา" (เป็นการคำนวณตอนเปิดดู / เป็น event / เป็นฝั่งเบราว์เซอร์). ลิงก์กลับ <a href="index.html">Architecture</a>.</p>
+</div></div>
+<div class="layout">
+<nav class="toc">
+ <a href="index.html">← Architecture</a>
+ <a href="db-schema.html#xcut">DB: scheduled_job_run</a>
+ <h4>งานตั้งเวลา (7)</h4>
+ <a href="#j1">J1 · เตะออก 06:00</a>
+ <a href="#j2">J2 · ลูกค้าห่างหาย</a>
+ <a href="#j3">J3 · Invoice เกินกำหนด</a>
+ <a href="#j4">J4 · เสี่ยงล่าช้า</a>
+ <a href="#j5">J5 · ส่งแจ้งเตือน (outbox)</a>
+ <a href="#j6">J6 · ตรวจสต็อกตรง</a>
+ <a href="#j7">J7 · สำรองข้อมูล</a>
+ <h4>อื่น ๆ</h4>
+ <a href="#notjob">ไม่ใช่งานตั้งเวลา</a>
+ <a href="#track">การติดตาม/กู้คืน</a>
+</nav>
+<main>
+
+<section>
+ <h2><span class="dot" style="background:#10322F"></span>สรุปรวม — มีงานตั้งเวลา 7 งาน</h2>
+ <div class="why">ระบบมีงานเบื้องหลัง <b>7 งาน</b>: 1 งานทำถี่ต่อเนื่อง (ส่งแจ้งเตือน), 4 งานทำวันละครั้ง (เตะออก 06:00 / ลูกค้าห่างหาย / invoice เกินกำหนด / เสี่ยงล่าช้า), 1 งานกลางคืน (ตรวจสต็อกให้ตรง), 1 งานโครงสร้างพื้นฐาน (สำรองข้อมูล — DevOps ดูแล). <b>ทุกงานออกแบบให้ "ทำซ้ำได้ปลอดภัย (idempotent)"</b> — ถ้าเครื่องปิดแล้วพลาดรอบ พอเปิดมางานจะไล่เก็บงานที่ค้างให้เอง ไม่เกิดข้อมูลซ้ำ/เพี้ยน.</div>
+ <table><tr><th>งาน</th><th>ความถี่</th><th>ทำอะไรสั้น ๆ</th><th>แจ้งเตือน</th></tr>
+  <tr><td><a href="#j1">J1 เตะออก 06:00</a></td><td>ทุกวัน 06:00</td><td>บังคับทุกคน login ใหม่</td><td>—</td></tr>
+  <tr><td><a href="#j2">J2 ลูกค้าห่างหาย</a></td><td>ทุกวัน (เช้ามืด)</td><td>ลูกค้าไม่สั่งเกินรอบ → "ห่างหาย"</td><td>✅ Sale</td></tr>
+  <tr><td><a href="#j3">J3 Invoice เกินกำหนด</a></td><td>ทุกวัน (เช้ามืด)</td><td>เลยเครดิต+ยังไม่จ่าย → "เกินกำหนด"</td><td>✅ Finance+Sale</td></tr>
+  <tr><td><a href="#j4">J4 เสี่ยงล่าช้า</a></td><td>ทุกวัน (หรือทุกชั่วโมง)</td><td>งานผลิตใกล้ไม่ทันส่ง → badge เตือน</td><td>✅ Sale+Stock</td></tr>
+  <tr><td><a href="#j5">J5 ส่งแจ้งเตือน (outbox)</a></td><td>ต่อเนื่อง ~1 วินาที</td><td>ส่ง noti ที่ค้างในคิวไปหาผู้รับ</td><td>✅ (ตัวส่งเอง)</td></tr>
+  <tr><td><a href="#j6">J6 ตรวจสต็อกให้ตรง</a></td><td>ทุกคืน</td><td>เทียบยอดคงเหลือกับบัญชีเดินสะพัด</td><td>— (เตือน admin ถ้าเจอไม่ตรง)</td></tr>
+  <tr><td><a href="#j7">J7 สำรองข้อมูล</a></td><td>ทุกวัน</td><td>backup ฐานข้อมูล (DevOps/Cloud SQL)</td><td>—</td></tr>
+ </table>
+</section>
+
+<section id="j1">
+ <div class="job"><div class="jh"><span class="jn">J1 · บังคับ Login ใหม่ทุกเช้า (Session reset)</span><span class="freq daily">ทุกวัน 06:00</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>เวลา 06:00 ทุกวัน ระบบเลื่อนค่า <code>session_epoch</code> เป็นเวลาปัจจุบัน → token (บัตรผ่าน) ที่ออกก่อนหน้านี้ทั้งหมดใช้ไม่ได้ทันที → ทุกคนต้องล็อกอินใหม่. นอกจากนี้ session ยังหมดอายุเองใน 24 ชม.</td></tr>
+   <tr><th>กระทบอะไร</th><td>ไม่แก้ข้อมูลธุรกิจ — แค่ทำให้ session หมดอายุ (ความปลอดภัย)</td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>ตอนเปิดเครื่องมา ถ้าเลย 06:00 ของวันแล้วแต่ <code>session_epoch</code> ยังเป็นของเมื่อวาน → เลื่อนเป็น 06:00 ของวันนี้ทันที <span class="k idem">idempotent</span> (ตั้งค่าเป็น timestamp เดิมซ้ำได้ไม่มีผลข้างเคียง)</td></tr>
+   <tr><th>ผูก story/AC</th><td>ADR-007 · <a href="api-platform.html#session">api-platform › session</a> · มี "คำเตือนก่อนหมดอายุ" ให้ผู้ใช้เซฟงานก่อนถูกเตะออก</td></tr>
+  </table>
+  <div class="tagrow"><span class="k idem">idempotent</span><span class="k st">ต้องยืนยัน: กะกลางคืนโดนเตะ 06:00 ด้วย (flag ให้ BA/PO)</span></div>
+ </div></div>
+</section>
+
+<section id="j2">
+ <div class="job"><div class="jh"><span class="jn">J2 · ตั้งลูกค้า "ห่างหาย" อัตโนมัติ (Inactivity sweep)</span><span class="freq daily">ทุกวัน เช้ามืด</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>ไล่ดูลูกค้าสถานะ "ลูกค้าประจำ (Active)" ทุกราย → เช็ควันสั่งซื้อล่าสุด → ถ้าไม่มี order เกินรอบที่ตั้งไว้ต่อลูกค้า (<code>inactive_after_months</code> เลือกได้ {1, 3, 6, 8} เดือน, ค่าเริ่ม 3) → เปลี่ยนเป็น "ห่างหาย (Inactive)" + เขียนโน้ตอัตโนมัติ + แจ้ง Sale</td></tr>
+   <tr><th>กระทบ entity/สถานะ</th><td>customer: Active → Inactive (cascade C2) · แสดงใน Sale Dashboard tile "ห่างหาย" (ชนิด event)</td></tr>
+   <tr><th>แจ้งเตือน</th><td><span class="k noti">✅ แจ้ง Sale เจ้าของลูกค้า</span></td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>งานคำนวณจาก "วันสั่งล่าสุดเทียบวันนี้" → รอบถัดไปที่รันจะจับลูกค้าที่ครบเกณฑ์ทั้งหมดได้เอง <span class="k idem">idempotent</span> (ลูกค้าที่เป็น Inactive อยู่แล้วถูกข้าม) — พลาดรอบ = สถานะช้าไปวันเดียว ไม่เสียหาย</td></tr>
+   <tr><th>ผูก story/AC</th><td>entity-status-map §1.1 + cascade C2 · <a href="../functional-spec/customer.html">functional-spec/customer</a> · <a href="api-dashboard.html#sale">dashboard tile ห่างหาย</a></td></tr>
+  </table>
+  <div class="note">ตรงข้าม (Inactive → Active) <b>ไม่ใช่งานตั้งเวลา</b> — เกิดทันทีเป็น event เมื่อมี order ใหม่ (cascade). Follow-up → Inactive ตอนปิดติดตามโดยไม่มี order ก็ทำได้ทั้ง manual และ sweep นี้.</div>
+ </div></div>
+</section>
+
+<section id="j3">
+ <div class="job"><div class="jh"><span class="jn">J3 · ติดธง Invoice "เกินกำหนด" (Overdue sweep)</span><span class="freq daily">ทุกวัน เช้ามืด</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>ไล่ดูใบแจ้งหนี้ที่ยังไม่จ่าย → เงื่อนไข: <b>ส่งของแล้ว (PO=ส่งถึงแล้ว)</b> + เลยจำนวนวันเครดิตของลูกค้า (<code>credit_days</code>) + ยังไม่ชำระ → เปลี่ยนสถานะ billing เป็น "เกินกำหนด (Overdue)" + คำนวณจำนวนวันค้าง</td></tr>
+   <tr><th>กระทบ entity/สถานะ</th><td>invoice/PO billing → Overdue (cascade C11/C14) · โชว์ใน Finance Dashboard + Sale (จำนวนวันค้าง)</td></tr>
+   <tr><th>แจ้งเตือน</th><td><span class="k noti">✅ แจ้ง Finance + Sale</span></td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>คำนวณจากวันครบกำหนดเทียบวันนี้ → รอบถัดไปจับครบ <span class="k idem">idempotent</span> (ใบที่ Overdue แล้วข้าม; ถ้าจ่ายแล้วไม่ติดธง)</td></tr>
+   <tr><th>ผูก story/AC</th><td>entity-status-map §1.3 + C11/C14 · <a href="api-invoice.html#action">api-invoice</a> · <a href="api-dashboard.html#fin">dashboard tile เกินกำหนด</a></td></tr>
+  </table>
+ </div></div>
+</section>
+
+<section id="j4">
+ <div class="job"><div class="jh"><span class="jn">J4 · ประเมิน "เสี่ยงล่าช้า" (Potential Delay)</span><span class="freq daily">ทุกวัน (หรือทุกชั่วโมง)</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>ไล่ดูใบสั่งผลิต (PRD) ที่ยังไม่เสร็จ → ถ้าเวลาที่เหลือถึงวันต้องส่ง <b>น้อยกว่าเกณฑ์ (2 วันผลิต + 1 วันจัดส่ง)</b> → ติด overlay badge "เสี่ยงล่าช้า" · เมื่อไม่เข้าเกณฑ์แล้ว → ปลด badge</td></tr>
+   <tr><th>กระทบ entity/สถานะ</th><td>PRD: <code>potential_delay=true/false</code> (เป็น overlay ไม่ใช่สถานะแยก — cascade C7b) · Production Dashboard tile "เสี่ยงล่าช้า"</td></tr>
+   <tr><th>แจ้งเตือน</th><td><span class="k noti">✅ แจ้ง Sale + Stock</span></td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>เป็นการ "ประเมินใหม่จากสถานะปัจจุบัน" ทุกรอบ <span class="k idem">idempotent</span> — พลาดรอบ = badge อัปเดตช้า พอรันใหม่ก็ถูกต้อง</td></tr>
+   <tr><th>ผูก story/AC</th><td>entity-status-map §1.4 + C7b · <a href="../functional-spec/production.html">functional-spec/production</a> · <a href="api-dashboard.html#prod">dashboard tile เสี่ยงล่าช้า</a></td></tr>
+  </table>
+ </div></div>
+</section>
+
+<section id="j5">
+ <div class="job"><div class="jh"><span class="jn">J5 · ตัวส่งแจ้งเตือน (Notification Outbox Dispatcher)</span><span class="freq cont">ต่อเนื่อง ~1 วินาที</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>ทุกครั้งที่มีการเปลี่ยนสถานะข้าม module ระบบเขียน "event" ลงคิว <code>outbox</code> (ในทรานแซกชันเดียวกับการเปลี่ยนสถานะ กันหลุด). งานนี้วนอ่าน outbox แถวที่ยังไม่ส่ง ~ทุก 1 วินาที → สร้าง notification ให้ทุกคนที่มีสิทธิ์ Read ของ module ปลายทาง → mark ว่าส่งแล้ว</td></tr>
+   <tr><th>กระทบ entity</th><td>สร้าง <code>notification</code> (bell + deep link) — ไม่แก้ข้อมูลธุรกิจ</td></tr>
+   <tr><th>แจ้งเตือน</th><td><span class="k noti">✅ เป็นตัวสร้างแจ้งเตือนทั้งหมดของระบบ (14 เหตุการณ์)</span></td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td><b>จุดแข็งของดีไซน์นี้:</b> event ถูกเก็บถาวรใน outbox ตั้งแต่ตอนเปลี่ยนสถานะ → เครื่องปิดแล้ว event ไม่หาย → เปิดมา dispatcher ส่งต่อได้เลย <span class="k idem">idempotent</span> (mark "ส่งแล้ว" กันส่งซ้ำ)</td></tr>
+   <tr><th>ผูก story/AC</th><td>ADR-005 · <a href="api-notification.html">api-notification</a> (แผนที่ noti 14 เหตุการณ์)</td></tr>
+  </table>
+  <div class="note">เบราว์เซอร์ฝั่งผู้ใช้ดึง noti มาโชว์ที่ bell ~ทุก 15 วินาที — อันนั้นเป็นการ poll ฝั่งเบราว์เซอร์ ไม่ใช่งาน scheduler ของ server (ดู "ไม่ใช่งานตั้งเวลา").</div>
+ </div></div>
+</section>
+
+<section id="j6">
+ <div class="job"><div class="jh"><span class="jn">J6 · ตรวจสต็อกให้ตรง (Stock Ledger Integrity)</span><span class="freq night">ทุกคืน</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td>เทียบ "ยอดคงเหลือที่เก็บไว้ใช้แสดงเร็ว" (<code>stock_balance</code>) กับ "ผลรวมจริงจากบัญชีเดินสะพัด" (<code>Σ stock_movement</code>) ต่อวัตถุดิบ/lot → ถ้าไม่ตรง (ไม่ควรเกิด) → คำนวณใหม่จาก ledger + บันทึก log</td></tr>
+   <tr><th>กระทบ entity</th><td>แก้เฉพาะ cache <code>stock_balance</code> ให้ตรงกับความจริง (ledger เป็นความจริงเสมอ)</td></tr>
+   <tr><th>แจ้งเตือน</th><td>— (แจ้ง Admin เฉพาะกรณีเจอไม่ตรง)</td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>เป็นงานบำรุงรักษา — พลาดได้ไม่กระทบผู้ใช้ (ยอดคำนวณจาก ledger ได้เสมอ) <span class="k idem">idempotent</span></td></tr>
+   <tr><th>ผูก story/AC</th><td>ADR-001 (stock ledger) · รองรับ negative stock + retro-alloc</td></tr>
+  </table>
+ </div></div>
+</section>
+
+<section id="j7">
+ <div class="job"><div class="jh"><span class="jn">J7 · สำรองข้อมูล (Database Backup)</span><span class="freq infra">ทุกวัน · DevOps</span></div><div class="jb">
+  <table>
+   <tr><th>ทำอะไร (ทีละขั้น)</th><td><b>เฟส 2 (PC):</b> DevOps ตั้ง cron ทำ dump ฐานข้อมูล + โฟลเดอร์ไฟล์แนบ (<code>STORAGE_ROOT</code>) รายวัน · <b>เฟส 3 (GCP):</b> ใช้ backup อัตโนมัติของ Cloud SQL ทุกวัน (ปอนด์ยืนยัน NFR)</td></tr>
+   <tr><th>กระทบ entity</th><td>ไม่แก้ข้อมูล — คัดลอกเพื่อกู้คืน</td></tr>
+   <tr><th>ถ้าเครื่องปิด/พลาด</th><td>รอบถัดไป backup ใหม่ <span class="k idem">idempotent</span> · เป็นงานระดับ infra ไม่ผูกกับ business logic</td></tr>
+   <tr><th>ผูก story/AC</th><td>NFR backup (ปอนด์) · เป็นงานของ <b>DevOps</b> (Stage 4) — flag ให้ทีม DevOps</td></tr>
+  </table>
+ </div></div>
+</section>
+
+<section id="notjob">
+ <h2><span class="dot" style="background:#D64545"></span>สิ่งที่ดูเหมือน "อัตโนมัติ" แต่ <u>ไม่ใช่</u> งานตั้งเวลา</h2>
+ <div class="why">ปอนด์ถามให้ชัดว่าอะไร manual/ไม่ใช่ schedule — นี่คือรายการที่ทำงานคนละแบบ:</div>
+ <table><tr><th>สิ่งนี้</th><th>จริง ๆ ทำงานแบบไหน</th></tr>
+  <tr><td><b>Archive/ลบประวัติ trace</b></td><td><b>Manual โดย Super User เท่านั้น</b> — ไม่มี auto-purge (ปอนด์ NFR: เก็บ online 1 ปี แล้วคนกดเอง). ADR-003</td></tr>
+  <tr><td><b>Badge "ราคาทุน BOM ล้าสมัย"</b></td><td><b>คำนวณตอนเปิดดู (on-read)</b> — เทียบราคา snapshot กับราคา supplier active ปัจจุบัน ณ ตอนโหลดหน้า ไม่ใช่ job. ADR-001 §4 / db-schema #bom</td></tr>
+  <tr><td><b>รอบจัดส่ง (Shipment) ปิดเอง</b></td><td><b>Event cascade</b> — ปิดทันทีเมื่อ DN ใบสุดท้ายในรอบถึงสถานะสุดท้าย (ไม่ใช่ตั้งเวลา). C10c</td></tr>
+  <tr><td><b>ลูกค้า Inactive → Active</b></td><td><b>Event</b> — เกิดทันทีเมื่อมี order ใหม่ (ไม่ใช่ sweep)</td></tr>
+  <tr><td><b>ปิด PR "ของเข้าครบ"</b></td><td><b>Event</b> — เกิดตอนทำ Goods Receipt (ผูก lot) ไม่ใช่ตั้งเวลา. C4/C17</td></tr>
+  <tr><td><b>Dashboard refresh 15 วิ · bell ดึง noti 15 วิ</b></td><td><b>ฝั่งเบราว์เซอร์ (client polling)</b> — ไม่ใช่งาน server. ADR-005 / ADR-002</td></tr>
+  <tr><td><b>ออกเลขเอกสารห้ามข้าม</b></td><td><b>ตอนสร้างเอกสาร (in-transaction)</b> ไม่ใช่ job. ADR-008</td></tr>
+ </table>
+</section>
+
+<section id="track">
+ <h2><span class="dot" style="background:#2C7BE5"></span>การติดตาม + กู้คืน (scheduler tracking)</h2>
+ <div class="why">เพื่อให้ Admin เห็นว่างานเบื้องหลังรันครบไหม + ให้ระบบไล่เก็บงานค้างหลังเปิดเครื่อง มีตาราง <code>scheduled_job_run</code> เก็บผลการรันแต่ละครั้ง.</div>
+ <table><tr><th>field</th><th>อธิบาย</th></tr>
+  <tr><td><code>job_name</code></td><td>ชื่องาน (J1..J7)</td></tr>
+  <tr><td><code>scheduled_for</code></td><td>รอบที่ควรรัน (เช่น 2026-07-10 06:00)</td></tr>
+  <tr><td><code>started_at / finished_at</code></td><td>เริ่ม/จบจริง (UTC)</td></tr>
+  <tr><td><code>status</code></td><td>running / success / failed</td></tr>
+  <tr><td><code>affected_count</code></td><td>จำนวนรายการที่เปลี่ยน (เช่น ลูกค้ากี่รายเป็น Inactive)</td></tr>
+  <tr><td><code>error_text</code></td><td>ข้อความ error ถ้าพลาด</td></tr>
+ </table>
+ <div class="note"><b>กันรันซ้อน:</b> ก่อนเริ่มแต่ละงานจับ lock (แถว running) — ถ้ามีรอบเดิมค้างไม่รันซ้อน. <b>Catch-up:</b> ตอน service เริ่มทำงาน เช็คว่างานรายวันของ "วันนี้" รันหรือยัง (จาก <code>scheduled_job_run</code>) ถ้ายัง+เลยเวลาแล้ว → รันทันที. ทุกงาน idempotent จึงรันซ้ำ/ไล่เก็บได้ปลอดภัย. Admin ดูได้ที่ <code>GET /api/admin/scheduled-jobs</code> (สถานะ+เวลารันล่าสุด, สิทธิ์ Admin settings).</div>
+</section>
+
+<footer>ESSENCE Hub System · Scheduled / Background Jobs · Stage 2 · Tech-Lead · ตอบคำถามปอนด์ 2026-07-10</footer>
+</main></div></body></html>

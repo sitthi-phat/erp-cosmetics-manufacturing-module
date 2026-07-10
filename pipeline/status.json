@@ -1683,6 +1683,42 @@
           "summary": "Stage 2 review round 2 PASS. Depth-fix + tri-layer alignment verified. 1 reconcile point (stock-value formula M1, PO recommends per-lot). Gate 2 r2 open. Entry applied by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T18:30:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "scheduled-jobs",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "7 server jobs enumerated + scheduled-jobs.html (Thai, step-by-step, recovery/idempotent per job)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Non-jobs clarified (manual archive, on-read badge, event cascades, client polling, in-tx numbering)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "db: scheduled_job_run table (anti-overlap + catch-up) + /api/admin/scheduled-jobs; index par3b linked",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "244 cross-links 0 broken; touched files HTTP 200",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/architecture/scheduled-jobs.html",
+            "docs/design/erp-v2-ui-first/architecture/db-schema.html",
+            "docs/design/erp-v2-ui-first/architecture/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Answered Pond scheduled-jobs question: 7 jobs (session reset 06:00, customer inactivity, invoice overdue, potential delay, outbox dispatcher, ledger integrity, backup) + non-jobs clarified. Flags: BA to link from functional-spec index; J1 night-shift UX pending. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T20:00:00+07:00"
         }
       ]
     }

@@ -25,6 +25,7 @@
  <a href="#system">1. ระบบวางบนอะไร (System)</a>
  <a href="#service">2. บริการ/โมดูล (Service)</a>
  <a href="#flow">3. เส้นทางข้อมูล 1 คำสั่ง</a>
+ <a href="#jobs">3b. งานตั้งเวลา (scheduled)</a>
  <a href="#adr">4. การตัดสินใจ (ADR ทั้ง 9)</a>
  <a href="#api">5. API ราย module</a>
  <a href="#nfr">6. NFR ที่ปอนด์กำหนด</a>
@@ -153,6 +154,11 @@
  </table>
 </section>
 
+<section id="jobs">
+ <h2><span class="dot" style="background:#2C7BE5"></span>3b. งานตั้งเวลา / เบื้องหลัง (Scheduled &amp; Background Jobs)</h2>
+ <div class="why">ระบบมีงานที่ทำเองอัตโนมัติ <b>7 งาน</b> (เตะออก 06:00 · ลูกค้าห่างหาย · invoice เกินกำหนด · เสี่ยงล่าช้า · ตัวส่งแจ้งเตือน · ตรวจสต็อกตรง · สำรองข้อมูล) — ทุกงาน idempotent + มีตาราง <code>scheduled_job_run</code> ไว้ติดตาม/ไล่เก็บงานค้างหลังเปิดเครื่อง. รายละเอียดเต็ม step-by-step + การกู้คืน อยู่ที่หน้าแยก.</div>
+ <p><a href="scheduled-jobs.html" style="font-weight:600">→ เปิดดู: งานตั้งเวลาทั้งหมด (scheduled-jobs.html)</a> · แยกชัดว่าอะไร manual (archive trace) / on-read (badge ราคาทุนล้าสมัย) / event (ปิดรอบจัดส่ง) / client (refresh 15 วิ)</p>
+</section>
 <section id="adr">
  <h2><span class="dot" style="background:#10322F"></span>4. การตัดสินใจสำคัญ — ADR ทั้ง 9 (อธิบายไทย)</h2>
  <div class="why">แต่ละ ADR = การตัดสินใจ 1 เรื่อง มีเหตุผล + ทางเลือกที่ทิ้ง + ผลที่ตามมา. คลิกอ่านเต็มได้. เรียงตามความสำคัญ.</div>
