@@ -37,8 +37,7 @@ blacklist, status force-override, PO cancel/reopen, undelete) require the **Admi
 - A global `session_epoch` timestamp is stored server-side and **advanced to 06:00 every day**
   by a scheduler. A token is valid only if `iat >= session_epoch` **and** not past its 24h `exp`.
   This forces every user to re-login after 06:00 without tracking per-session rows.
-- (Night-shift note: this logs everyone out at 06:00 including an active night shift — flagged to
-  BA/PO as a UX confirmation; the mechanism honors Pond's rule as stated.)
+- (Night-shift: Pond confirmed there is NO night shift — the 06:00 force-logout stands as-is; no exception needed.)
 
 ### Authorization (RUCDAA)
 - Tables: `role`, `role_permission(role_id, module, r, u, c, d, approve, admin)`, `user(role_id,

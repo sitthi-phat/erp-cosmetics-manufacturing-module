@@ -48,10 +48,10 @@
  <div class="note">reservation ไม่แตะ physical ledger — RESERVE/RELEASE/CONSUME เป็น transition ของตาราง <code>reservation</code> (+cache <code>reserved_balance</code>). ตอนเริ่มผลิต: reserved→consumed <b>พร้อม</b> physical <code>production_consume</code> (−on_hand FIFO, ติดลบได้). ดู <a href="api-production.html#action">api-production › start</a>.</div>
 </section>
 <section id="value">
- <h2><span class="dot" style="background:#2C7BE5"></span>มูลค่าสต็อก (Stock value) — ปอนด์ยืนยัน: ราคาซื้อล่าสุดของ lot</h2>
- <div class="why"><b>COGS อยู่นอก scope</b> (ADR-001 §4). มูลค่าสต็อกใช้สูตร: ต่อวัตถุดิบ = <code>on_hand × buy_price ของ lot ล่าสุด</code> ของวัตถุดิบนั้น (lot ล่าสุด = <code>lot.received_at</code> มากสุด). รวมทั้งคลัง = Σ ทุกวัตถุดิบ. ยอดติดลบ → มูลค่าติดลบตามจริง (ไม่ clamp). ใช้เป็น tile "มูลค่าสต็อก" ใน <a href="api-dashboard.html#stock">dashboard</a>.</div>
- <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/value</span></div><div class="b">คืนมูลค่ารวม + breakdown ต่อวัตถุดิบ (on_hand, latest lot buy_price, value) เรียงมูลค่าสูงสุด. <span class="rt">Read stock</span></div></div>
- <div class="note">ต้องมี <code>lot.buy_price</code> (บันทึกตอน Goods Receipt line) + index <code>(material_id, received_at desc)</code> เพื่อหา "lot ล่าสุด" เร็ว — ดู <a href="db-schema.html#material">db-schema lot</a>.</div>
+ <h2><span class="dot" style="background:#2C7BE5"></span>มูลค่าสต็อก (Stock value) — ปอนด์ยืนยัน: per-lot</h2>
+ <div class="why"><b>COGS อยู่นอก scope</b> (ADR-001 §4). มูลค่าสต็อก = <b>per-lot</b>: <code>Σ ทุก lot (lot.on_hand × lot.buy_price)</code> — <b>ไม่ใช่ latest-lot</b> (ปอนด์เคาะ M1). ตัวอย่าง: lot A 5×100 + lot B 2.5×50 = <b>625</b> (latest-lot จะได้ 675 ที่ผิด). lot ที่ on_hand ติดลบ → หักด้วย buy_price ของ lot นั้นเอง (ไม่ clamp). ใช้เป็น tile "มูลค่าสต็อก" ใน <a href="api-dashboard.html#stock">dashboard</a>.</div>
+ <div class="ep"><div class="h"><span class="m get">GET</span><span class="path">/api/stock/value</span></div><div class="b">คืนมูลค่ารวม = <b>Σ ทุก lot (lot.on_hand × lot.buy_price)</b> + breakdown ต่อวัตถุดิบ (Σ ของ lot ในวัตถุดิบนั้น) เรียงมูลค่าสูงสุด. <span class="rt">Read stock</span></div></div>
+ <div class="note">คิดจาก <code>lot.on_hand</code> (ยอดคงเหลือราย lot) × <code>lot.buy_price</code> (บันทึกตอน Goods Receipt line) รวมทุก lot ของวัตถุดิบ — <b>per-lot ไม่ใช่ latest-lot</b>. ดู <a href="db-schema.html#material">db-schema lot</a>.</div>
 </section>
 <section id="master">
  <h2><span class="dot" style="background:#2C7BE5"></span>วัตถุดิบ (master)</h2>

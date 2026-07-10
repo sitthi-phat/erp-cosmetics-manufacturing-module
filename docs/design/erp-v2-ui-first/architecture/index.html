@@ -245,13 +245,13 @@
   <tr><td>Settings: user create/edit/link-google/<b>bulk-reassign ก่อนลบ Sale</b></td><td><a href="api-settings.html#user">api-settings.html</a></td></tr>
   <tr><td>Settings: Audit-log screen (filter/sort/pagination)</td><td>api-settings #audit + api-trace</td></tr>
   <tr><td>PO suggest/material-calc (US-PO-07): ΣBOM×qty vs on_hand + ราคา default ต่อชนิด</td><td><a href="api-po.html#write">api-po.html</a> /api/po/suggest</td></tr>
-  <tr><td>มูลค่าสต็อก = on_hand × ราคาซื้อล่าสุดของ lot (COGS นอก scope)</td><td><a href="api-stock.html#value">api-stock.html</a> /api/stock/value + <code>lot.buy_price</code></td></tr>
+  <tr><td>มูลค่าสต็อก = <b>per-lot</b> Σ(lot.on_hand × lot.buy_price) (COGS นอก scope; ปอนด์ M1)</td><td><a href="api-stock.html#value">api-stock.html</a> /api/stock/value (per-lot)</td></tr>
   <tr><td>List filter/sort/default/page-size/empty ต่อ 10 หน้า</td><td><a href="api-list-conventions.html">api-list-conventions.html</a></td></tr>
   <tr><td>Session pre-expiry warning ก่อน 06:00</td><td>api-platform /api/auth/session (expiresAt + nextForcedResetAt)</td></tr>
   <tr><td>Admin dashboard "เข้าใช้" (login count)</td><td><code>login_event</code> table (db-schema #xcut)</td></tr>
   <tr><td>inactive cycle {1,3,6,8}</td><td>customer.inactive_after_months∈{1,3,6,8} (db-schema #customer)</td></tr><tr><td><b>Reservation:</b> จองตอน Confirmed / ตัดจริงตอนเริ่มผลิต (FIFO)</td><td><code>reservation</code> table + /po/confirm + /production/start (ADR-001 addendum)</td></tr><tr><td>3 ยอด: on_hand / reserved / available</td><td><code>reserved_balance</code> + /api/stock/availability</td></tr><tr><td>Cancel หลังผลิต: คืน/ไม่คืนวัตถุดิบ</td><td>movement <code>cancel_return</code> / <code>write_off</code> + /po/cancel(returnMaterials)</td></tr><tr><td>ใกล้หมด=available · จองเกิน=เตือนไม่บล็อก · value=on_hand · rework ตัด available</td><td>dashboard low_stock(available), over-reserve warn, stock_value(on_hand), /production/rework</td></tr>
  </table>
- <div class="note"><b>ยังต้องยืนยันกับ BA/PO:</b> (1) Admin เห็นทุกแผนก (superset) หรือเฉพาะ Admin dashboard — ผมยึด "ตาม Read bit" ไปก่อน (2) มูลค่าสต็อก "lot ล่าสุด" = ต่อวัตถุดิบใช้ราคา lot ที่ received ล่าสุด (ยืนยันสูตรตรงกับ PO).</div>
+ <div class="note"><b>ยังต้องยืนยันกับ BA/PO:</b> (1) Admin เห็นทุกแผนก (superset) หรือเฉพาะ Admin dashboard — ผมยึด "ตาม Read bit" ไปก่อน (2) มูลค่าสต็อก = per-lot Σ(lot.on_hand × lot.buy_price) — ปอนด์เคาะแล้ว (M1).</div>
 </section>
 <footer>ESSENCE Hub System · Architecture Overview · Stage 2 · Tech-Lead · เอกสารนี้เป็น baseline ที่เสนอปอนด์ที่ Gate 2 — ทุกไดอะแกรมเปิดดูได้เองแบบ self-contained (inline SVG)</footer>
 </main></div></body></html>

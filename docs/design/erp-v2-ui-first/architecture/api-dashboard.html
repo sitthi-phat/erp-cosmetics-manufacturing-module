@@ -60,9 +60,9 @@
   <tr><td>low_stock</td><td>count(material ที่ <b>available ≤ low_stock_threshold</b> (available=on_hand−reserved; ปอนด์ Q2); <b>เฉพาะที่ตั้ง threshold</b> — null=ไม่นับ)</td><td class="st">state</td><td>วัตถุดิบ/ใช้ได้ → stock</td></tr>
   <tr><td>lot_await_qc</td><td>count(lot.qc_status=รอตรวจรับ)</td><td class="st">state</td><td>lot/วัตถุดิบ → qc</td></tr>
   <tr><td>pr_pending</td><td>count(PR.status ∈ {เปิดคำขอ, รับทราบ, รับบางส่วน})</td><td class="st">state</td><td>PR/สถานะ → purchase-request</td></tr>
-  <tr><td>stock_value</td><td><b>Σ(on_hand × ราคาซื้อล่าสุดของ lot)</b> — <b>ใช้ on_hand เท่านั้น ไม่หัก reserved</b> (ของยังอยู่ในคลัง; ปอนด์ Q5) · COGS นอก scope</td><td class="st">state</td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr>
+  <tr><td>stock_value</td><td><b>Σ ทุก lot (lot.on_hand × lot.buy_price)</b> — <b>per-lot ไม่ใช่ latest-lot</b> (ปอนด์ M1) · ใช้ on_hand ไม่หัก reserved (Q5) · COGS นอก scope</td><td class="st">state</td><td>วัตถุดิบมูลค่าสูงสุด → stock</td></tr>
  </table>
- <div class="note">มูลค่าสต็อก อ้าง <code>lot.buy_price</code> ของ lot ล่าสุดต่อวัตถุดิบ (ดู <a href="api-stock.html#value">api-stock › มูลค่าสต็อก</a> + <a href="db-schema.html#material">db-schema lot.buy_price</a>). ติดลบ → มูลค่าติดลบตามจริง (ไม่ clamp).</div>
+ <div class="note">มูลค่าสต็อก = per-lot: Σ ทุก lot (lot.on_hand × lot.buy_price) (ดู <a href="api-stock.html#value">api-stock › มูลค่าสต็อก</a> + <a href="db-schema.html#material">db-schema lot.buy_price</a>). ติดลบ → มูลค่าติดลบตามจริง (ไม่ clamp).</div>
 </section>
 <section id="prod">
  <h2><span class="dot" style="background:#E0912F"></span>Production — <code>dept=production</code> · Read production (4 tile)</h2>

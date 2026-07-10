@@ -61,7 +61,7 @@
    <tr><th>ถ้าเครื่องปิด/พลาด</th><td>ตอนเปิดเครื่องมา ถ้าเลย 06:00 ของวันแล้วแต่ <code>session_epoch</code> ยังเป็นของเมื่อวาน → เลื่อนเป็น 06:00 ของวันนี้ทันที <span class="k idem">idempotent</span> (ตั้งค่าเป็น timestamp เดิมซ้ำได้ไม่มีผลข้างเคียง)</td></tr>
    <tr><th>ผูก story/AC</th><td>ADR-007 · <a href="api-platform.html#session">api-platform › session</a> · มี "คำเตือนก่อนหมดอายุ" ให้ผู้ใช้เซฟงานก่อนถูกเตะออก</td></tr>
   </table>
-  <div class="tagrow"><span class="k idem">idempotent</span><span class="k st">ต้องยืนยัน: กะกลางคืนโดนเตะ 06:00 ด้วย (flag ให้ BA/PO)</span></div>
+  <div class="tagrow"><span class="k idem">idempotent</span><span class="k idem">ไม่มีกะกลางคืน — เตะออก 06:00 คงเดิม (ปอนด์เคาะ)</span></div>
  </div></div>
 </section>
 

@@ -39,11 +39,12 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h1>Module: การผลิต — PRD / Batch <span class="badge b-must">Tier 1</span></h1>
 <p class="sub">ใบสั่งผลิต (PRD) 1 ใบ/1 line · รุ่นผลิต (Batch) <code>B-{PO}-{line}-{run}</code> · <b>ฝ่ายผลิตกด "รับงาน" เอง</b> จึงเกิด PRD · เลข PRD <code>PRD-{YYYYMM}-{NNNNNN}</code></p>
 
-<div class="flow"><b>เส้นทางหลัก:</b> PO ยืนยัน → คิว <b>"รอรับงาน"</b> (ยังไม่มี PRD) →[Production กด "รับงาน"]→ <b>gen PRD</b> (รับงาน) →[กด "เริ่มผลิต"]→ <b>gen Batch run1</b> + <b>ตัด stock (ติดลบได้)</b> →[ส่งตรวจ QC]→ รอ QC →[QC ตัดสินที่หน้า QC]→ ผ่าน = PRD พร้อมส่งมอบ / ไม่ผ่าน = Rework (gen Batch run ถัดไป) · ทุก PRD ของ PO พร้อม → <b>PO พร้อมจัดส่ง</b></div>
+<div class="flow"><b>เส้นทางหลัก:</b> PO ยืนยัน → คิว <b>"รอรับงาน"</b> (ยังไม่มี PRD, <b>จองวัตถุดิบแล้ว</b>) →[Production กด "รับงาน"]→ <b>gen PRD</b> (รับงาน) →[กด "เริ่มผลิต"]→ <b>gen Batch run1</b> + <b>convert จอง→ตัดจริง FIFO (ติดลบได้)</b> →[ส่งตรวจ QC]→ รอ QC →[QC ตัดสินที่หน้า QC]→ ผ่าน = PRD พร้อมส่งมอบ / ไม่ผ่าน = Rework (gen Batch run ถัดไป) · ทุก PRD ของ PO พร้อม → <b>PO พร้อมจัดส่ง</b></div>
+<div class="note"><b>Stock Reservation (ปอนด์ล็อก):</b> วัตถุดิบถูก <b>จอง (Reserve)</b> ตั้งแต่ PO Confirmed (US-PO-02) — ตอน <b>"เริ่มผลิต"</b> ระบบ <b>convert จอง→ตัดจริง (Consume)</b> เลือก lot แบบ FIFO (คง GMP Batch↔Lot) · on_hand ลด (ติดลบได้+GR retro-link), Reserved ลด, <b>Available ไม่ขยับ</b> (เพราะหักตอนจองแล้ว) · ที่มา: <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a></div>
 <div class="warn"><b>สำคัญ:</b> หน้าผลิต <b>ไม่มีปุ่มตัดสิน QC</b> (ผ่าน/ไม่ผ่านตัดสินที่หน้า QC เท่านั้น) · "ส่งตรวจ QC" เปลี่ยนสถานะ Batch เดิม ไม่ได้ gen Batch ใหม่ · หน้าผลิตจบที่ "พร้อมส่งมอบ" ("ส่งถึงแล้ว" เป็นของฝ่ายจัดส่ง)</div>
 
 <h2>1. ภาพรวม + Use cases</h2>
-<p>ฝ่ายผลิตรับงานจากคิว, เริ่มผลิต (สร้าง Batch + ตัด stock), ส่งตรวจ QC, และจัดการ Hold/Rework · <b>วัตถุดิบขาดไม่บล็อก</b> — รับงาน/เริ่มผลิตได้แม้ stock ไม่พอ (ตัด stock ติดลบ, badge เตือน)</p>
+<p>ฝ่ายผลิตรับงานจากคิว, เริ่มผลิต (สร้าง Batch + convert จอง→ตัดจริง), ส่งตรวจ QC, และจัดการ Hold/Rework · <b>วัตถุดิบขาดไม่บล็อก</b> — รับงาน/เริ่มผลิตได้แม้ stock ไม่พอ (ตัด stock ติดลบ, badge เตือน)</p>
 <p class="sub">โผล่ใน: <a href="walkthrough.html#uc3">UC3 (QC ผ่าน PO-176)</a>, <a href="walkthrough.html#uc4">UC4 (rework PO-181)</a>, <a href="walkthrough.html#uc5">UC5 (rework ครบวง PO-170)</a>, <a href="walkthrough.html#uc2">UC2 (Hold PO-188)</a></p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
@@ -56,13 +57,13 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h3><span class="sid">US-PRD-01</span> — รับงานจากคิว (gen PRD) <span class="badge b-must">Must</span></h3>
 <p><b>As a</b> ฝ่ายผลิต, <b>I want</b> กด "รับงาน" ที่รายการคิว "รอรับงาน", <b>so that</b> ยืนยันรับงานเข้าสายผลิตและระบบออกเลขใบสั่งผลิต (PRD)</p>
 <div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> PO-202607-000181 ยืนยันแล้ว มี 2 line อยู่ในคิว "รอรับงาน" (ยังไม่มีเลข PRD)</span>
+<span class="gwt"><b>Given</b> PO-202607-000181 ยืนยันแล้ว มี 2 line อยู่ในคิว "รอรับงาน" (ยังไม่มีเลข PRD, วัตถุดิบถูกจองไว้แล้ว)</span>
 <span class="gwt"><b>When</b> ฝ่ายผลิตกด "รับงาน" ที่ line 1</span>
-<span class="gwt"><b>Then</b> ระบบ gen <code>PRD-202607-000091</code> สถานะ "รับงาน" (1 line = 1 PRD), แสดงในหน้า production + po-detail (คอลัมน์ PRD), มี trace "รับงานโดย &lt;user&gt;/เวลา" — ดู <a href="continuity.html#c2">Cascade C2</a></span></div>
+<span class="gwt"><b>Then</b> ระบบ gen <code>PRD-202607-000091</code> สถานะ "รับงาน" (1 line = 1 PRD), แสดงในหน้า production + po-detail (คอลัมน์ PRD), มี trace "รับงานโดย &lt;user&gt;/เวลา" — <b>ยังไม่ตัด stock จริง</b> (ยังจองอยู่) — ดู <a href="continuity.html#c2">Cascade C2</a></span></div>
 <div class="ac edge"><span class="tag">Edge — วัตถุดิบไม่พอ (ไม่บล็อก)</span>
-<span class="gwt"><b>Given</b> วัตถุดิบของ line นี้มียอดคงเหลือน้อยกว่าที่ BOM ต้องใช้</span>
+<span class="gwt"><b>Given</b> วัตถุดิบของ line นี้ Available ติดลบ (จองเกินของในคลัง)</span>
 <span class="gwt"><b>When</b> กด "รับงาน"</span>
-<span class="gwt"><b>Then</b> ระบบสร้าง PRD ได้ตามปกติ + แสดง badge/เตือน <b>"วัตถุดิบอาจไม่พร้อม"</b> (ไม่บล็อก) — ผลิตต่อได้</span></div>
+<span class="gwt"><b>Then</b> ระบบสร้าง PRD ได้ตามปกติ + แสดง badge/เตือน <b>"วัตถุดิบอาจไม่พร้อม"</b> (ไม่บล็อก) — ผลิตต่อได้ (จะตัด stock ติดลบตอนเริ่มผลิต)</span></div>
 <div class="ac err"><span class="tag">Error — ไม่มีสิทธิ์ / PO ถูกยกเลิก</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Update/Create ของ module ผลิต หรือ PO ถูกยกเลิกไปแล้ว</span>
 <span class="gwt"><b>When</b> พยายามรับงาน</span>
@@ -70,20 +71,20 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PRD-02</span> — เริ่มผลิต (gen Batch + ตัด stock ติดลบได้) <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> ฝ่ายผลิต, <b>I want</b> กด "เริ่มผลิต" ของ PRD, <b>so that</b> ระบบสร้าง Batch run และตัดวัตถุดิบตาม BOM (แบบ FIFO)</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> PRD-202607-000091 สถานะ "รับงาน" และวัตถุดิบพอ</span>
+<h3><span class="sid">US-PRD-02</span> — เริ่มผลิต (gen Batch + convert จอง→ตัดจริง FIFO) <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> ฝ่ายผลิต, <b>I want</b> กด "เริ่มผลิต" ของ PRD, <b>so that</b> ระบบสร้าง Batch run และแปลงการจองวัตถุดิบเป็นการตัดจริงตาม BOM (แบบ FIFO)</p>
+<div class="ac happy"><span class="tag">Happy — convert reserve → consume</span>
+<span class="gwt"><b>Given</b> PRD-202607-000091 สถานะ "รับงาน" (วัตถุดิบถูกจองไว้แล้วตอน Confirmed)</span>
 <span class="gwt"><b>When</b> กด "เริ่มผลิต"</span>
-<span class="gwt"><b>Then</b> gen <code>B-PO-202607-000181-1-1</code> (กำลังผลิต); ตัด stock วัตถุดิบตาม BOM โดยเลือก Lot <b>FIFO</b>; PRD = "กำลังผลิต"; PO = "กำลังผลิต" — ดู <a href="continuity.html#c3">Cascade C3</a></span></div>
-<div class="ac edge"><span class="tag">Edge — stock ติดลบ (negative stock)</span>
-<span class="gwt"><b>Given</b> ยอดคงเหลือวัตถุดิบไม่พอสำหรับ Batch นี้</span>
+<span class="gwt"><b>Then</b> gen <code>B-PO-202607-000181-1-1</code> (กำลังผลิต); <b>convert จอง→ตัดจริง</b> — เลือก Lot <b>FIFO</b>, <b>Reserved ลด + on_hand ลด</b> (ผูก Batch↔Lot ตาม GMP), <b>Available ไม่ขยับ</b> (หักตอนจองแล้ว); PRD/PO = "กำลังผลิต" — ดู <a href="continuity.html#c3">Cascade C3</a></span></div>
+<div class="ac edge"><span class="tag">Edge — stock ติดลบ (on_hand negative)</span>
+<span class="gwt"><b>Given</b> ยอด on_hand จริงของวัตถุดิบไม่พอสำหรับ Batch นี้ (เคยจองเกิน)</span>
 <span class="gwt"><b>When</b> กด "เริ่มผลิต"</span>
-<span class="gwt"><b>Then</b> ระบบ<b>ยอมให้ตัด stock จนติดลบ</b> (ไม่บล็อก) + เตือน "จะตัด stock ติดลบ X หน่วย"; บันทึก trace (Batch/วัตถุดิบ/จำนวนติดลบ/เวลา/ใคร); หน้า stock แสดงตัวเลขแดง + badge "ติดลบ (รอรับเข้า)" — ดู <a href="continuity.html#c16">Cascade C16</a> · <a href="stock.html">Stock</a></span></div>
+<span class="gwt"><b>Then</b> ระบบ<b>ยอมให้ตัด on_hand จนติดลบ</b> (ไม่บล็อก) + เตือน "จะตัด stock ติดลบ X หน่วย"; บันทึก trace (Batch/วัตถุดิบ/จำนวนติดลบ); หน้า stock แสดง on_hand แดง + badge "ติดลบ (รอรับเข้า)"; GR ภายหลังบวกกลับ + FIFO retro-link — ดู <a href="continuity.html#c16">C16</a> · <a href="stock.html">Stock</a></span></div>
 <div class="ac err"><span class="tag">Error — PRD ไม่อยู่สถานะรับงาน</span>
 <span class="gwt"><b>Given</b> PRD อยู่สถานะ Hold หรือ พร้อมส่งมอบแล้ว</span>
 <span class="gwt"><b>When</b> พยายามกด "เริ่มผลิต"</span>
-<span class="gwt"><b>Then</b> ปุ่มไม่ทำงาน / error "ไม่สามารถเริ่มผลิตในสถานะปัจจุบัน"; ไม่ gen Batch ซ้ำ</span></div>
+<span class="gwt"><b>Then</b> ปุ่มไม่ทำงาน / error "ไม่สามารถเริ่มผลิตในสถานะปัจจุบัน"; ไม่ gen Batch ซ้ำ / ไม่ตัด stock</span></div>
 </div>
 
 <div class="story">
@@ -104,16 +105,17 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PRD-04</span> — Rework เมื่อ QC ไม่ผ่าน <span class="badge b-must">Must</span></h3>
+<h3><span class="sid">US-PRD-04</span> — Rework เมื่อ QC ไม่ผ่าน (run เพิ่ม ตัดจาก Available) <span class="badge b-must">Must</span></h3>
 <p><b>As a</b> ฝ่ายผลิต, <b>I want</b> เห็น feedback และผลิตซ้ำเฉพาะ line ที่ QC ตีกลับ, <b>so that</b> แก้เฉพาะตัวที่เสียโดยไม่ผลิตซ้ำ line ที่ผ่าน/ยังไม่เสร็จ</p>
+<div class="note"><b>วัตถุดิบของ run เพิ่ม (ปอนด์ล็อก):</b> rework ไม่ได้วางแผนล่วงหน้า → <b>ไม่ pre-reserve</b> · เมื่อกด "ผลิตซ้ำ" (เริ่มผลิต run+1) = <b>ตัดจาก Available/on_hand ทันที</b> เหมือน consume ปกติ (FIFO, on_hand ติดลบได้ + เตือน)</div>
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> QC ตัดสิน B-…-181-2-1 (โฟม) "ไม่ผ่าน" + feedback "เนื้อโฟมเป็นก้อน"</span>
 <span class="gwt"><b>When</b> ฝ่ายผลิตเปิดหน้าผลิตแล้วกด "ผลิตซ้ำ"</span>
-<span class="gwt"><b>Then</b> line 2 badge "Rework" + แสดง feedback จาก QC; gen <code>B-…-181-2-2</code> (run ถัดไป, กำลังผลิต); line 1 เดินต่อปกติ — ดู <a href="continuity.html#c7">Cascade C7</a></span></div>
-<div class="ac edge"><span class="tag">Edge — reconcile PO ไม่พร้อม</span>
-<span class="gwt"><b>Given</b> line 1 รอ QC, line 2 กำลัง rework</span>
-<span class="gwt"><b>When</b> ดู po-detail</span>
-<span class="gwt"><b>Then</b> แสดง "ผ่าน 0/2" — PO <b>ยังไม่</b> พร้อมจัดส่งจนกว่าทุก line ผ่าน</span></div>
+<span class="gwt"><b>Then</b> line 2 badge "Rework" + แสดง feedback จาก QC; gen <code>B-…-181-2-2</code> (run ถัดไป, กำลังผลิต) + <b>ตัดวัตถุดิบของ run ใหม่จาก Available/on_hand FIFO</b> (ไม่ได้จองล่วงหน้า); line 1 เดินต่อปกติ — ดู <a href="continuity.html#c7">Cascade C7</a></span></div>
+<div class="ac edge"><span class="tag">Edge — วัตถุดิบ run เพิ่มไม่พอ (ติดลบได้) + reconcile</span>
+<span class="gwt"><b>Given</b> วัตถุดิบสำหรับ run+1 มี on_hand ไม่พอ; line 1 รอ QC, line 2 กำลัง rework</span>
+<span class="gwt"><b>When</b> กด "ผลิตซ้ำ" และดู po-detail</span>
+<span class="gwt"><b>Then</b> ตัด on_hand ติดลบได้ + เตือน (ไม่บล็อก); po-detail แสดง "ผ่าน 0/2" — PO <b>ยังไม่</b> พร้อมจัดส่งจนกว่าทุก line ผ่าน</span></div>
 <div class="ac err"><span class="tag">Error — ผลิตซ้ำโดยยังไม่มี feedback</span>
 <span class="gwt"><b>Given</b> Batch ยังไม่ถูก QC ตัดสินไม่ผ่าน</span>
 <span class="gwt"><b>When</b> พยายามกด "ผลิตซ้ำ"</span>
@@ -126,7 +128,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> PRD ของ PO-188 กำลังผลิตแต่ลูกค้าขอแก้สูตร</span>
 <span class="gwt"><b>When</b> กด "พักงาน (Hold)" + เลือก raise "แจ้ง Sale (ติดที่ลูกค้า)" + เหตุผล (บังคับ)</span>
-<span class="gwt"><b>Then</b> PRD = "Hold"; ยิง Notification → Sale (deep link po-detail); Sale แก้ไข PO ได้ (ดู <a href="po.html">US-PO-05</a>) — ดู <a href="continuity.html#c8">Cascade C8</a></span></div>
+<span class="gwt"><b>Then</b> PRD = "Hold"; ยิง Notification → Sale (deep link po-detail); Sale แก้ไข PO ได้ (ดู <a href="po.html">US-PO-05</a> — แก้จำนวน=ปรับจอง) — ดู <a href="continuity.html#c8">Cascade C8</a></span></div>
 <div class="ac edge"><span class="tag">Edge — Hold ติดวัตถุดิบ</span>
 <span class="gwt"><b>Given</b> ติดปัญหาวัตถุดิบ</span>
 <span class="gwt"><b>When</b> เลือก raise "แจ้ง Stock"</span>
@@ -143,7 +145,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> งานที่เวลาคงเหลือน้อยกว่าเกณฑ์ (2 วันผลิต + 1 วันส่ง)</span>
 <span class="gwt"><b>When</b> เปิดหน้าผลิต</span>
-<span class="gwt"><b>Then</b> รายการนั้นมี badge overlay "เสี่ยงล่าช้า" (ไม่ใช่สถานะแยก) + ยิง Notification → Sale/Stock (<a href="continuity.html#c16">ref</a>)</span></div>
+<span class="gwt"><b>Then</b> รายการนั้นมี badge overlay "เสี่ยงล่าช้า" (ไม่ใช่สถานะแยก) + ยิง Notification → Sale/Stock</span></div>
 <div class="ac edge"><span class="tag">Edge — เรียง/ค้น</span>
 <span class="gwt"><b>Given</b> มีหลายงานในคิว</span>
 <span class="gwt"><b>When</b> เรียงตาม "วันจัดส่ง" หรือค้นด้วยเลข PO/ชื่อลูกค้า</span>
@@ -156,24 +158,25 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <h2>4. Data rules / สถานะ Entity</h2>
 <table>
-<tr><th>Entity</th><th>สถานะ/กติกา (entity-status-map §1.4/§1.5/§1.6)</th></tr>
+<tr><th>Entity</th><th>สถานะ/กติกา (entity-status-map §1.4/§1.5/§1.6 + stock-reservation)</th></tr>
 <tr><td>PRD</td><td>รอรับงาน*(pre) → รับงาน → กำลังผลิต → รอ QC → พร้อมส่งมอบ / Rework / Hold · <code>PRD-{YYYYMM}-{NNNNNN}</code> · 1 line=1 PRD</td></tr>
 <tr><td>Batch</td><td>กำลังผลิต → รอ QC → QC ผ่าน/ไม่ผ่าน · <code>B-{PO}-{line}-{run}</code> · gen ตอน "เริ่มผลิต" · +run เมื่อ rework</td></tr>
 <tr><td>ความสัมพันธ์</td><td>1 PO : N PRD (N=line) : M Batch (M≥N, +1/rework)</td></tr>
-<tr><td>Negative stock</td><td>ตัด stock ติดลบได้ตอนผลิต · trace ทุกครั้ง · GR บวกกลับ (ดู Stock)</td></tr>
+<tr><td>Reservation → Consume</td><td>จอง (Confirmed) → เริ่มผลิต = convert เป็น consume (FIFO lot): Reserved↓ + on_hand↓ (ติดลบได้), Available ไม่ขยับ · rework run เพิ่ม = ตัดจาก available ตอนผลิตซ้ำ (ไม่ pre-reserve)</td></tr>
+<tr><td>Negative stock</td><td>ตัด on_hand ติดลบได้ตอนผลิต · trace ทุกครั้ง · GR บวกกลับ + FIFO retro (ดู Stock)</td></tr>
 <tr><td>บังคับ comment</td><td>Hold, (QC ไม่ผ่านที่หน้า QC)</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-production.html" target="_blank">api-production.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: gen PRD ตอนรับงาน (gapless), gen Batch run, ตัด stock atomic (ยอมติดลบ) + concurrency, cascade PRD→PO, FIFO lot allocation</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-production.html" target="_blank">api-production.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: gen PRD ตอนรับงาน (gapless), gen Batch run, <b>convert reserve→consume ตอนเริ่มผลิต</b> (settle reservation + ตัด on_hand FIFO, atomic, ยอมติดลบ), cascade PRD→PO, rework consume จาก available (ไม่ pre-reserve)</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">
-<li>PO Confirmed → คิวรอรับงาน (<a href="continuity.html#c1">C1</a>) · รับงาน gen PRD (<a href="continuity.html#c2">C2</a>) · เริ่มผลิต gen Batch+ตัด stock (<a href="continuity.html#c3">C3</a>)</li>
+<li>PO Confirmed → คิวรอรับงาน + จองวัตถุดิบ (<a href="continuity.html#c1">C1</a>) · รับงาน gen PRD (<a href="continuity.html#c2">C2</a>) · เริ่มผลิต gen Batch + convert จอง→ตัดจริง (<a href="continuity.html#c3">C3</a>)</li>
 <li>ส่งตรวจ (<a href="continuity.html#c4">C4</a>) · QC ผ่าน→PO พร้อมจัดส่ง (<a href="continuity.html#c5">C5</a>) · ไม่ผ่าน→Rework (<a href="continuity.html#c6">C6/C7</a>)</li>
 <li>Hold→raise Sale/Stock (<a href="continuity.html#c8">C8</a>) · ตัด stock ติดลบ (<a href="continuity.html#c16">C16</a>)</li>
 </ul>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="qc.html">QC →</a><a href="po.html">PO</a><a href="stock.html">Stock</a></div>
-<footer>US-PRD-01..06 · 18 AC (happy/edge/error) · Module การผลิต</footer>
+<footer>US-PRD-01..06 · 18 AC (happy/edge/error) · Module การผลิต · + Reservation consume ตอนเริ่มผลิต</footer>
 </div></body></html>

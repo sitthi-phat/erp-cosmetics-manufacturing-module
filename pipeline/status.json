@@ -1982,6 +1982,35 @@
           "summary": "Stock Reservation visuals per stock-reservation.md §5 (incremental, data/element only). (1) stock.html: 3 balances per material — คงคลัง(on_hand) / จองแล้ว(reserved) / ใช้ได้(available); ใกล้หมด now keyed to ใช้ได้; two negative types distinguished — available<0 = badge 'จองเกิน (รอรับเข้า)' (yellow, of ยังอยู่แต่ถูกจองเกิน, e.g. ไทเทเนียม 40/55/-15) vs on_hand<0 = badge 'ติดลบ (รอรับเข้า)' (red physical, แอลกอฮอล์ -30) + explainer. (2) po-create.html: suggest/material-check compares required vs ใช้ได้ (available) not on_hand; over-reserve shows 'ใช้ได้ -15' + badge จองเกิน + warning 'ยืนยันได้ (ไม่บล็อก): ระบบจะจองเกิน ใช้ได้จะติดลบ' + confirm cascade reserves + notifies Stock. (3) po-detail.html: 'ยกเลิก PO' now opens a dialog — pre-production lines auto-release reservation (stated); already-started lines get a 2-choice radio 'คืนวัตถุดิบเข้า stock' vs 'ไม่คืน (write-off)' + mandatory reason. (4) dashboard 'ใกล้หมด' tile caption = ตามยอดใช้ได้ (2, incl จองเกิน). (5) Added a 'จองเกินคลัง … แจ้ง Stock' notification to all 25 shell pages (badge 5→6). Playwright: 0 JS errors, cancel modal + 2 radios verified, noti badge=6. Feature-level status unchanged (WAITING_HUMAN_GATE).",
           "overridden_by": null,
           "updated_at": "2026-07-10T16:30:00+07:00"
+        },
+        {
+          "agent": "tech-lead",
+          "phase": "per-lot-fix",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Stock value -> per-lot across db-schema/api-stock/api-dashboard/index par7b (675->625 example + negative-lot note); no stale latest-lot",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Night-shift flag closed (scheduled-jobs J1 + ADR-007); 06:00 stands",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "250 links 0 broken; HTTP 200 all touched",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/architecture/ (5 files) + docs/adr/007"
+          ],
+          "questions_for_pond": [],
+          "summary": "Per-lot stock value + night-shift closure applied. M1 resolved. Entry appended by dispatcher.",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T22:30:00+07:00"
         }
       ]
     }
