@@ -38,14 +38,16 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h1>Module: PO — ใบสั่งซื้อ (Purchase Order) <span class="badge b-must">Tier 1</span></h1>
 <p class="sub">ราง Fulfilment: ร่าง→ยืนยันแล้ว→กำลังผลิต→พร้อมจัดส่ง→กำลังจัดส่ง→ส่งถึงแล้ว (+ยกเลิก/เปิดใหม่) · ราง Billing แยก (ดู <a href="invoice.html">Invoice</a>) · เลข <code>PO-{YYYYMM}-{NNNNNN}</code></p>
 
+<div class="note"><b>Stock Reservation (ปอนด์ล็อก 2026-07-10):</b> ยืนยัน PO = <b>จองวัตถุดิบ (Reserve) = ΣBOM×qty ต่อ line</b> (Available = on_hand − Reserved ลดลง; ยังไม่ตัด on_hand จริง) → <b>ตัดจริง (Consume) ตอน "เริ่มผลิต" ราย Batch</b> (convert จอง→ตัด FIFO — ดู <a href="production.html">US-PRD-02</a>) · Cancel <b>ก่อน</b>เริ่มผลิต = คืนจองอัตโนมัติ · Cancel <b>หลัง</b>เริ่มผลิต = <b>dialog ถามคืน/ไม่คืนวัตถุดิบที่ตัดไปแล้ว</b> · ที่มา: <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a></div>
+
 <h2>1. ภาพรวม + Use cases</h2>
-<p>หน้าเปิดใบสั่งซื้อของฝ่ายขาย ขายได้ทั้ง <b>สินค้า BOM และวัตถุดิบตรง</b> · ราคา default จากราคาขาย BOM แต่แก้ได้เสมอ (ราคา 0 ได้) · วัตถุดิบขาด = <b>เตือน ไม่บล็อก</b> + auto Purchase Request · ยืนยันแล้วแต่ละ line เข้าคิวฝ่ายผลิต "รอรับงาน" (ยังไม่เกิด PRD)</p>
+<p>หน้าเปิดใบสั่งซื้อของฝ่ายขาย ขายได้ทั้ง <b>สินค้า BOM และวัตถุดิบตรง</b> · ราคา default จากราคาขาย BOM แต่แก้ได้เสมอ (ราคา 0 ได้) · วัตถุดิบขาด (Available ไม่พอ) = <b>เตือน ไม่บล็อก</b> + auto Purchase Request · ยืนยันแล้วแต่ละ line เข้าคิวฝ่ายผลิต "รอรับงาน" (ยังไม่เกิด PRD) <b>พร้อมจองวัตถุดิบ</b></p>
 <p class="sub">โผล่ใน use case: <a href="walkthrough.html#uc1">UC1 (Draft PO-191)</a>, <a href="walkthrough.html#uc2">UC2 (Hold PO-188)</a>, <a href="walkthrough.html#uc4">UC4 (rework PO-181)</a>, UC5/6/8</p>
 
 <h2>2. หน้าจอ (mockup จริง)</h2>
-<div class="mock"><div class="thumb">🧾</div><div><b>po-create.html</b> — ฟอร์มเปิด PO หน้าเดียว (suggest, เช็ควัตถุดิบ, ราคาแก้ได้/0)<br><a href="../mockups/po-create.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">🧾</div><div><b>po-create.html</b> — ฟอร์มเปิด PO หน้าเดียว (suggest, เช็ควัตถุดิบเทียบ available, ราคาแก้ได้/0)<br><a href="../mockups/po-create.html" target="_blank">เปิด mockup ↗</a></div></div>
 <div class="mock"><div class="thumb">📋</div><div><b>po-list.html</b> — รายการ PO + search 3 แบบวันที่ + pagination + 2 ราง<br><a href="../mockups/po-list.html" target="_blank">เปิด mockup ↗</a></div></div>
-<div class="mock"><div class="thumb">🔎</div><div><b>po-detail.html</b> — รายละเอียด + ราย line (PRD/Batch/QC) + การ์ดเปลี่ยนสถานะ + trace<br><a href="../mockups/po-detail.html" target="_blank">เปิด mockup ↗</a></div></div>
+<div class="mock"><div class="thumb">🔎</div><div><b>po-detail.html</b> — รายละเอียด + ราย line (PRD/Batch/QC) + การ์ดเปลี่ยนสถานะ + dialog ยกเลิก + trace<br><a href="../mockups/po-detail.html" target="_blank">เปิด mockup ↗</a></div></div>
 
 <h2>3. User Stories + Acceptance Criteria</h2>
 
@@ -55,9 +57,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="ac happy"><span class="tag">Happy</span>
 <span class="gwt"><b>Given</b> Sale อยู่หน้า po-create เลือกลูกค้า "ร้านสวยใส" และเพิ่มบรรทัด "เซรั่มวิตซี 15% (BOM-01) × 100"</span>
 <span class="gwt"><b>When</b> กด "บันทึกร่าง"</span>
-<span class="gwt"><b>Then</b> ระบบสร้าง <code>PO-202607-000191</code> สถานะ = "ร่าง (Draft)", ราง billing = "ยังไม่วางบิล", ราคา/หน่วย default = ราคาขาย BOM (220), มี trace "สร้างโดย อารดา + เวลา"</span></div>
+<span class="gwt"><b>Then</b> ระบบสร้าง <code>PO-202607-000191</code> สถานะ = "ร่าง (Draft)", ราง billing = "ยังไม่วางบิล", ราคา/หน่วย default = ราคาขาย BOM (220), มี trace "สร้างโดย อารดา + เวลา" — <b>ร่างยังไม่จอง</b>วัตถุดิบ (จองตอนยืนยัน)</span></div>
 <div class="ac edge"><span class="tag">Edge — ราคา 0 / วัตถุดิบขาด</span>
-<span class="gwt"><b>Given</b> Sale แก้ราคา/หน่วยของบรรทัดเป็น <b>0</b> และเพิ่มสินค้าที่ BOM ต้องใช้วัตถุดิบเกินยอดคงเหลือ</span>
+<span class="gwt"><b>Given</b> Sale แก้ราคา/หน่วยของบรรทัดเป็น <b>0</b> และเพิ่มสินค้าที่ BOM ต้องใช้วัตถุดิบเกิน Available</span>
 <span class="gwt"><b>When</b> กดบันทึกร่าง/ยืนยัน</span>
 <span class="gwt"><b>Then</b> ระบบ <b>ยอมรับราคา 0</b> (ไม่บล็อก) และแสดง <b>warning "วัตถุดิบอาจไม่พอ" แบบไม่บล็อก</b> พร้อมเสนอสร้าง Purchase Request เฉพาะส่วนที่ขาด — PO เดินหน้าได้ปกติ</span></div>
 <div class="ac err"><span class="tag">Error — ไม่มีลูกค้า/ไม่มีบรรทัด</span>
@@ -67,20 +69,20 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PO-02</span> — ยืนยัน PO → เข้าคิวผลิต <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Sale, <b>I want</b> ยืนยันใบสั่งซื้อ, <b>so that</b> งานแต่ละบรรทัดถูกส่งเข้าคิวฝ่ายผลิตและลูกค้าใหม่ถูกยกระดับเป็นลูกค้าประจำ</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> PO-202607-000191 สถานะ "ร่าง" ของลูกค้าที่ยังเป็น "ผู้สนใจ (Lead)"</span>
+<h3><span class="sid">US-PO-02</span> — ยืนยัน PO → เข้าคิวผลิต + จองวัตถุดิบ <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale, <b>I want</b> ยืนยันใบสั่งซื้อและให้ระบบจองวัตถุดิบให้อัตโนมัติ, <b>so that</b> งานถูกส่งเข้าคิวผลิต วัตถุดิบถูกกันไว้ (ไม่โดนออเดอร์อื่นแย่ง) และลูกค้าใหม่ถูกยกระดับเป็นลูกค้าประจำ</p>
+<div class="ac happy"><span class="tag">Happy — Confirmed + reservation</span>
+<span class="gwt"><b>Given</b> PO-202607-000191 สถานะ "ร่าง" ของลูกค้า "ผู้สนใจ (Lead)"; BOM-01 ใช้ วิตซี 0.02, กลีเซอรีน 0.01 ต่อหน่วย × 100</span>
 <span class="gwt"><b>When</b> Sale กด "ยืนยัน PO"</span>
-<span class="gwt"><b>Then</b> PO = "ยืนยันแล้ว (Confirmed)"; แต่ละ line สร้าง "รายการคิวรอรับงาน" สถานะ <b>"รอรับงาน"</b> (ยัง<b>ไม่</b>ออกเลข PRD); ลูกค้า Lead→Active (auto ใบแรก); ยิง Notification → ฝ่ายผลิต (deep link คิวผลิต) — ดู <a href="continuity.html#c1">Cascade C1</a></span></div>
-<div class="ac edge"><span class="tag">Edge — ลูกค้า Follow-up/Inactive</span>
-<span class="gwt"><b>Given</b> ลูกค้าเป็น "ต้องติดตาม" หรือ "ห่างหาย"</span>
-<span class="gwt"><b>When</b> ยืนยัน PO ที่มี order ใหม่</span>
-<span class="gwt"><b>Then</b> อนุญาตยืนยัน และลูกค้ากลับเป็น "ลูกค้าประจำ (Active)" อัตโนมัติเมื่อมี order ใหม่ (ดู <a href="customer.html">Customer</a>)</span></div>
+<span class="gwt"><b>Then</b> PO = "ยืนยันแล้ว (Confirmed)"; แต่ละ line เข้าคิว <b>"รอรับงาน"</b> (ยัง<b>ไม่</b>ออกเลข PRD); <b>สร้าง reservation ต่อ line = ΣBOM×qty</b> (วิตซี 2, กลีเซอรีน 1) → <b>Reserved เพิ่ม / Available ลด</b> (on_hand ไม่เปลี่ยน); ลูกค้า Lead→Active (auto ใบแรก); ยิง Notification → ฝ่ายผลิต — ดู <a href="continuity.html#c1">Cascade C1</a></span></div>
+<div class="ac edge"><span class="tag">Edge — จองเกิน Available (ไม่บล็อก) / ลูกค้า Follow-up-Inactive</span>
+<span class="gwt"><b>Given</b> วัตถุดิบของ line มี Available น้อยกว่าที่ต้องจอง (เช่นเหลือ 1 ต้องจอง 2) หรือลูกค้าเป็น "ต้องติดตาม"/"ห่างหาย"</span>
+<span class="gwt"><b>When</b> ยืนยัน PO</span>
+<span class="gwt"><b>Then</b> <b>อนุญาตจอง</b> จน Available ติดลบ + เตือน "จองเกินของในคลัง X หน่วย (รอรับเข้า)" (ไม่บล็อก, สอดคล้อง warning-not-block); ลูกค้ากลับเป็น "ลูกค้าประจำ (Active)" อัตโนมัติเมื่อมี order ใหม่</span></div>
 <div class="ac err"><span class="tag">Error — ลูกค้า Blacklist/Disabled</span>
 <span class="gwt"><b>Given</b> ลูกค้าเป็น "บัญชีดำ (Blacklist)" หรือ "ปิดใช้งาน (Disabled)"</span>
 <span class="gwt"><b>When</b> Sale พยายามยืนยัน PO</span>
-<span class="gwt"><b>Then</b> ระบบเตือน/บล็อกการยืนยัน (ลูกค้าหายจาก dropdown สร้างใหม่ตาม deletion/blacklist policy) และแสดงเหตุผลจาก comment ที่บันทึกไว้</span></div>
+<span class="gwt"><b>Then</b> ระบบเตือน/บล็อกการยืนยัน (ไม่สร้าง reservation) และแสดงเหตุผลจาก comment ที่บันทึกไว้</span></div>
 </div>
 
 <div class="story">
@@ -101,37 +103,37 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PO-04</span> — ยกเลิก PO + เปิดใหม่ (คงเลขเดิม) <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Sale/Admin, <b>I want</b> ยกเลิก PO ได้ทุกขั้น และเปิดใหม่กลับเป็นร่างโดยคงเลขเดิม, <b>so that</b> จัดการงานเปลี่ยนแปลง/พลาดได้โดยเลขเอกสารไม่กระโดด (gapless สรรพากร)</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> PO อยู่สถานะใดก็ได้ (Draft ถึง In Delivery)</span>
+<h3><span class="sid">US-PO-04</span> — ยกเลิก PO + เปิดใหม่ (คืนจอง / dialog คืนวัตถุดิบที่ตัดแล้ว) <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale/Admin, <b>I want</b> ยกเลิก PO ได้ทุกขั้น โดยระบบจัดการวัตถุดิบที่จอง/ตัดไปแล้วให้ถูกต้อง และเปิดใหม่คงเลขเดิม, <b>so that</b> ยกเลิกได้โดย stock ไม่เพี้ยนและเลขเอกสารไม่กระโดด (gapless)</p>
+<div class="ac happy"><span class="tag">Happy — cancel ก่อนเริ่มผลิต = คืนจองอัตโนมัติ</span>
+<span class="gwt"><b>Given</b> PO ที่ยืนยันแล้วแต่ <b>ยังไม่มี line ใดเริ่มผลิต</b> (มีแต่ reservation ยังไม่ consume)</span>
 <span class="gwt"><b>When</b> กด "ยกเลิก PO" + กรอกเหตุผล (บังคับ)</span>
-<span class="gwt"><b>Then</b> PO = "ยกเลิก (Cancelled)"; คิว/PRD/Batch ที่เกิดแล้วถูกยกเลิกตาม (มี trace); บันทึก lifecycle event — ดู <a href="continuity.html#c19">Cascade C19</a></span></div>
-<div class="ac edge"><span class="tag">Edge — เปิดใหม่</span>
-<span class="gwt"><b>Given</b> PO สถานะ "ยกเลิก"</span>
-<span class="gwt"><b>When</b> กด "เปิดใหม่ (Cancelled→Draft)"</span>
-<span class="gwt"><b>Then</b> PO กลับเป็น "ร่าง" <b>คงเลข PO เดิมทุกตัวอักษร</b>, trace บันทึก cancelled→reopened (เลขไม่เปลี่ยน)</span></div>
+<span class="gwt"><b>Then</b> PO = "ยกเลิก (Cancelled)"; <b>release reservation ที่ยังไม่ consume ทั้งหมดอัตโนมัติ</b> (Reserved↓, Available↑, on_hand ไม่แตะ); คิว/PRD ที่เกิดถูกยกเลิกตาม + trace (C19); "เปิดใหม่ (Cancelled→Draft)" คงเลข PO เดิม และ re-confirm = จองใหม่</span></div>
+<div class="ac edge"><span class="tag">Edge — cancel หลังเริ่มผลิต = dialog คืน/ไม่คืน (ปอนด์ล็อก)</span>
+<span class="gwt"><b>Given</b> PO ที่มีบาง line เริ่มผลิตแล้ว (Batch ตัด on_hand จริงไปแล้ว)</span>
+<span class="gwt"><b>When</b> กด "ยกเลิก PO"</span>
+<span class="gwt"><b>Then</b> ระบบเปิด <b>dialog "คืนวัตถุดิบที่ตัดไปแล้วเข้า stock หรือไม่?"</b> + เหตุผลบังคับ → เลือก <b>"คืน"</b> = สร้าง stock movement บวก on_hand กลับ (ตาม lot ที่ตัด) + trace; เลือก <b>"ไม่คืน"</b> = on_hand คงถูกตัด (ของถูกใช้/เสียไปแล้ว) + trace เหตุผล · <b>reservation ที่ยังไม่ consume = release อัตโนมัติทั้งสองทาง</b></span></div>
 <div class="ac err"><span class="tag">Error — ไม่ใส่เหตุผล / ไม่มีสิทธิ์</span>
-<span class="gwt"><b>Given</b> ผู้ใช้กดยกเลิกแต่เว้นช่องเหตุผลว่าง หรือไม่มีสิทธิ์ D/Admin ของ module PO</span>
+<span class="gwt"><b>Given</b> ผู้ใช้กดยกเลิก/ปิด dialog โดยเว้นเหตุผล หรือไม่มีสิทธิ์ D/Admin ของ module PO</span>
 <span class="gwt"><b>When</b> ยืนยัน</span>
-<span class="gwt"><b>Then</b> ระบบไม่ดำเนินการ แสดง error "ต้องระบุเหตุผล" หรือ "ไม่มีสิทธิ์ยกเลิก/เปิดใหม่"</span></div>
+<span class="gwt"><b>Then</b> ระบบไม่ดำเนินการ (ไม่แตะ reservation/stock) แสดง error "ต้องระบุเหตุผล" หรือ "ไม่มีสิทธิ์ยกเลิก/เปิดใหม่"</span></div>
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PO-05</span> — แก้ไข PO (เคส Hold) <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Sale, <b>I want</b> แก้ไข PO ได้ทุกช่อง (จำนวน/สินค้า/ราคา/วันส่ง) เมื่องานผลิตถูก Hold เพราะติดที่ลูกค้า, <b>so that</b> แก้ตามที่ลูกค้าต้องการแล้วส่งกลับผลิตต่อได้ พร้อมร่องรอยตรวจสอบ</p>
-<div class="ac happy"><span class="tag">Happy</span>
-<span class="gwt"><b>Given</b> PO-202607-000188 มี PRD ถูก Hold (raise มาที่ Sale)</span>
-<span class="gwt"><b>When</b> Sale เปิด po-detail แก้จำนวน/ราคา/วันส่ง แล้วบันทึก</span>
-<span class="gwt"><b>Then</b> ทุกช่องที่แก้มี <b>trace ราย field</b> (ใคร/จากค่าไหน→เป็นค่าไหน/เมื่อไหร่); PRD กลับสู่สายผลิตต่อได้ (ดู <a href="production.html">Production</a> Hold→ต่อ)</span></div>
+<h3><span class="sid">US-PO-05</span> — แก้ไข PO (เคส Hold) + ปรับจองตาม delta <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale, <b>I want</b> แก้ไข PO ได้ทุกช่อง (จำนวน/สินค้า/ราคา/วันส่ง) เมื่องานถูก Hold และให้ระบบปรับยอดจองตามที่แก้, <b>so that</b> แก้ตามลูกค้าแล้ววัตถุดิบที่กันไว้ตรงกับความต้องการใหม่ พร้อมร่องรอยตรวจสอบ</p>
+<div class="ac happy"><span class="tag">Happy — แก้จำนวน → ปรับ reservation delta</span>
+<span class="gwt"><b>Given</b> PO-202607-000188 มี PRD ถูก Hold; line เดิมจองวิตซีไว้ 2.4 (120 หน่วย)</span>
+<span class="gwt"><b>When</b> Sale แก้จำนวนจาก 120 → 150 แล้วบันทึก</span>
+<span class="gwt"><b>Then</b> ระบบ <b>recompute ΣBOM×qty ใหม่</b> → reserve <b>เพิ่ม delta</b> (วิตซี +0.6); ถ้าแก้ลดจำนวน = <b>release ส่วนเกิน</b>; ทุกช่องที่แก้มี <b>trace ราย field</b> (ใคร/จาก→เป็น/เมื่อไหร่); PRD กลับสู่สายผลิตต่อได้</span></div>
 <div class="ac edge"><span class="tag">Edge — ตั้งลูกค้า Follow-up</span>
 <span class="gwt"><b>Given</b> Hold เหตุ "รอลูกค้ายืนยันสูตร"</span>
 <span class="gwt"><b>When</b> Sale ตั้งลูกค้าเป็น "ต้องติดตาม" + comment</span>
-<span class="gwt"><b>Then</b> ลูกค้า → Follow-up, โผล่ tile "ต้องติดตาม" ใน Sale Dashboard (ดู <a href="continuity.html#c8">Cascade C8</a>)</span></div>
+<span class="gwt"><b>Then</b> ลูกค้า → Follow-up, โผล่ tile "ต้องติดตาม" ใน Sale Dashboard (ดู <a href="continuity.html#c8">Cascade C8</a>); การปรับจองเป็นอิสระจากการตั้ง Follow-up</span></div>
 <div class="ac err"><span class="tag">Error — แก้โดยไม่มีสิทธิ์ Update</span>
 <span class="gwt"><b>Given</b> ผู้ใช้ไม่มีสิทธิ์ Update ของ module PO</span>
 <span class="gwt"><b>When</b> พยายามแก้ค่าใน po-detail</span>
-<span class="gwt"><b>Then</b> ช่องแก้ไขถูก disable/ปุ่มบันทึกซ่อน + ข้อความ "อ่านอย่างเดียว — ไม่มีสิทธิ์แก้ไข"</span></div>
+<span class="gwt"><b>Then</b> ช่องแก้ไขถูก disable/ปุ่มบันทึกซ่อน + ข้อความ "อ่านอย่างเดียว — ไม่มีสิทธิ์แก้ไข" (ไม่แตะ reservation)</span></div>
 </div>
 
 <div class="story">
@@ -152,47 +154,48 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <div class="story">
-<h3><span class="sid">US-PO-07</span> — Suggest + เช็ควัตถุดิบพอ + ราคา default ตอนสร้าง <span class="badge b-must">Must</span></h3>
-<p><b>As a</b> Sale, <b>I want</b> ระบบ suggest สินค้าและคำนวณว่าวัตถุดิบพอไหมพร้อมเติมราคา default ให้อัตโนมัติ, <b>so that</b> เปิด PO ได้เร็วและเห็นความเสี่ยงวัตถุดิบก่อนยืนยัน</p>
-<div class="note"><b>สูตรเช็ควัตถุดิบพอ (ราย component):</b> ต้องใช้ = Σ ต่อ line (BOM component qty ต่อ 1 หน่วย × จำนวนสั่ง) · <b>เทียบ</b> ยอด available (on_hand ที่ QC ผ่าน) · ถ้ารวมทุก line แล้ว ต้องใช้ > available → "ไม่พอ" ส่วนที่ขาด = ต้องใช้ − available · <b>ราคา default:</b> line ชนิด BOM = ราคาขายของ BOM · line ชนิดวัตถุดิบตรง = default_sell_price ของวัตถุดิบ · ทุกกรณีแก้ได้ (0 ได้)</div>
+<h3><span class="sid">US-PO-07</span> — Suggest + เช็ควัตถุดิบ (เทียบ Available) + ราคา default ตอนสร้าง <span class="badge b-must">Must</span></h3>
+<p><b>As a</b> Sale, <b>I want</b> ระบบ suggest สินค้าและคำนวณว่าวัตถุดิบ "ใช้ได้ (Available)" พอไหมพร้อมเติมราคา default ให้อัตโนมัติ, <b>so that</b> เปิด PO ได้เร็วและเห็นความเสี่ยงวัตถุดิบตามยอดที่ยังไม่ถูกจองก่อนยืนยัน</p>
+<div class="note"><b>สูตรเช็ควัตถุดิบพอ (ราย component):</b> ต้องใช้ = Σ ต่อ line (BOM component qty × จำนวนสั่ง) · <b>เทียบกับ Available = on_hand − Reserved</b> (ไม่ใช่ on_hand ล้วน) · ถ้า ต้องใช้ > Available → "ไม่พอ" ส่วนที่ขาด = ต้องใช้ − Available · <b>ราคา default:</b> line BOM = ราคาขายของ BOM · line วัตถุดิบตรง = default_sell_price ของวัตถุดิบ · แก้ได้ (0 ได้)</div>
 <div class="ac happy"><span class="tag">Happy — suggest + auto price</span>
 <span class="gwt"><b>Given</b> Sale พิมพ์ค้นในช่องสินค้า po-create</span>
 <span class="gwt"><b>When</b> เลือก "เซรั่มวิตซี 15% (BOM-01)" จาก dropdown แบบค้นได้ และใส่จำนวน 100</span>
-<span class="gwt"><b>Then</b> บรรทัดเติม ราคา/หน่วย default = ราคาขาย BOM-01 (220) อัตโนมัติ; ถ้าเลือกวัตถุดิบตรงจะเติม default_sell_price ของวัตถุดิบแทน</span></div>
-<div class="ac edge"><span class="tag">Edge — เช็ควัตถุดิบพอ (BOM×qty เทียบ on_hand)</span>
-<span class="gwt"><b>Given</b> BOM-01 ใช้ วิตซี 0.15 กก./หน่วย, on_hand วิตซี (QC ผ่าน) = 10 กก. และสั่ง 100 หน่วย</span>
+<span class="gwt"><b>Then</b> บรรทัดเติม ราคา/หน่วย default = ราคาขาย BOM-01 (220) อัตโนมัติ; ถ้าเลือกวัตถุดิบตรงจะเติม default_sell_price แทน</span></div>
+<div class="ac edge"><span class="tag">Edge — เช็ค Available (on_hand − Reserved)</span>
+<span class="gwt"><b>Given</b> BOM-01 ใช้ วิตซี 0.15 กก./หน่วย; on_hand วิตซี = 12 กก. แต่ถูกจองไปแล้ว 5 กก. → <b>Available = 7</b> และสั่ง 100 หน่วย</span>
 <span class="gwt"><b>When</b> ระบบคำนวณตอนเพิ่มบรรทัด</span>
-<span class="gwt"><b>Then</b> ต้องใช้ = 0.15×100 = 15 กก. > 10 → แสดง <b>warning (ไม่บล็อก)</b> "วิตซีอาจไม่พอ: ต้องใช้ 15 มี 10 ขาด 5 กก." + เสนอสร้าง PR เฉพาะส่วนที่ขาด 5 กก. (ดู <a href="continuity.html#c15">C15</a>)</span></div>
-<div class="ac err"><span class="tag">Error — จำนวน ≤ 0 / ไม่มีสูตร BOM ราคา</span>
+<span class="gwt"><b>Then</b> ต้องใช้ = 0.15×100 = 15 > <b>Available 7</b> → แสดง <b>warning (ไม่บล็อก)</b> "วิตซีอาจไม่พอ: ต้องใช้ 15 · ใช้ได้ 7 · ขาด 8 กก." + เสนอสร้าง PR เฉพาะส่วนที่ขาด (ดู <a href="continuity.html#c15">C15</a>)</span></div>
+<div class="ac err"><span class="tag">Error — จำนวน ≤ 0 / BOM ไม่มีต้นทุน</span>
 <span class="gwt"><b>Given</b> ใส่จำนวนเป็น 0/ติดลบ หรือเลือก BOM ที่ยัง block เพราะไม่มี supplier active (ดู <a href="bom.html">BOM</a>)</span>
 <span class="gwt"><b>When</b> เพิ่มบรรทัด/บันทึก</span>
-<span class="gwt"><b>Then</b> error "จำนวนต้องมากกว่า 0" ที่บรรทัดนั้น; กรณี BOM ยังไม่มีต้นทุน (block) แจ้ง "สูตรนี้ยังคิดราคาทุนไม่ได้ ให้แก้ที่ BOM ก่อน"</span></div>
+<span class="gwt"><b>Then</b> error "จำนวนต้องมากกว่า 0" ที่บรรทัดนั้น; กรณี BOM ยังไม่มีต้นทุน แจ้ง "สูตรนี้ยังคิดราคาทุนไม่ได้ ให้แก้ที่ BOM ก่อน"</span></div>
 </div>
 
 <h2>4. Data rules / สถานะ Entity</h2>
 <table>
-<tr><th>รายการ</th><th>กติกา (อ้าง entity-status-map.md §1.2/§1.3)</th></tr>
+<tr><th>รายการ</th><th>กติกา (อ้าง entity-status-map.md §1.2/§1.3 + stock-reservation.md)</th></tr>
 <tr><td>เลข PO</td><td><code>PO-{YYYYMM}-{NNNNNN}</code> gapless ต่อเดือน · reopen คงเลขเดิม</td></tr>
 <tr><td>สถานะ Fulfilment</td><td>ร่าง → ยืนยันแล้ว → กำลังผลิต → พร้อมจัดส่ง → กำลังจัดส่ง → ส่งถึงแล้ว · ยกเลิก↔ร่าง</td></tr>
 <tr><td>สถานะ Billing</td><td>ยังไม่วางบิล → วางบิลแล้ว → ชำระแล้ว / เกินกำหนด (ดู Invoice)</td></tr>
 <tr><td>บรรทัดสินค้า</td><td>BOM หรือวัตถุดิบตรง · จำนวน &gt; 0 · ราคา/หน่วย ≥ 0 (0 ได้) · 1 line = 1 PRD (เมื่อรับงาน)</td></tr>
 <tr><td>ราคา default</td><td>line BOM = ราคาขาย BOM · line วัตถุดิบตรง = default_sell_price · แก้ได้เสมอ</td></tr>
-<tr><td>เช็ควัตถุดิบ</td><td>ต้องใช้ = Σ(BOM component qty × จำนวน) เทียบ on_hand (QC ผ่าน) · ขาด = warning ไม่บล็อก + เสนอ PR ส่วนที่ขาด</td></tr>
-<tr><td>บังคับ comment</td><td>ยกเลิก, force override, แก้ไขเคส Hold (trace ราย field)</td></tr>
+<tr><td><b>Reservation</b></td><td>ยืนยัน PO → จอง = ΣBOM×qty ต่อ line (Reserved↑, Available↓, on_hand ไม่แตะ) · เช็คตอน suggest เทียบ Available · จองเกิน=เตือนไม่บล็อก · Hold edit=ปรับ delta · consume ตอนเริ่มผลิต (US-PRD-02)</td></tr>
+<tr><td><b>Cancel</b></td><td>ก่อนเริ่มผลิต=release จองอัตโนมัติ · หลังเริ่มผลิต=<b>dialog คืน/ไม่คืนวัตถุดิบที่ตัดแล้ว</b> + เหตุผลบังคับ; reservation ที่ยังไม่ consume=release เสมอ</td></tr>
+<tr><td>บังคับ comment</td><td>ยกเลิก (+ตัวเลือก dialog), force override, แก้ไขเคส Hold (trace ราย field)</td></tr>
 <tr><td>สิทธิ์ (RUCDAA)</td><td>สร้าง=C · แก้=U · ยกเลิก/เปิดใหม่=D · force override=Admin (ดู <a href="rbac-deletion.html">RUCDAA</a>)</td></tr>
 </table>
 
 <h2>5. API / Database (Tech-Lead)</h2>
-<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-po.html" target="_blank">api-po.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: reopen คงเลข + audit chain, price 0, 2-track status, per-field trace ตอน Hold-edit, gapless numbering, material-availability check (BOM explosion × qty vs on-hand), default price by item type</div>
+<div class="note"><b>API / DB (Tech-Lead):</b> <a href="../architecture/api-po.html" target="_blank">api-po.html ↗</a> · <a href="../architecture/db-schema.html" target="_blank">db-schema.html ↗</a> — รองรับ: reopen คงเลข + audit chain, price 0, 2-track status, per-field trace ตอน Hold-edit, gapless numbering, material-availability check (Available=on_hand−Reserved), default price by item type · <b>reservation:</b> confirm=สร้าง reservation ในทรานแซกชันเดียวกับ queue_item · cancel ก่อนเริ่มผลิต=release · cancel หลังเริ่มผลิต=dialog return/not-return (2 ledger outcomes) · Hold-edit=ปรับ reservation delta · ADR-001 (+ชั้น reservation/available)</div>
 
 <h2>6. ความต่อเนื่องข้าม module</h2>
 <ul class="sub">
-<li>ยืนยัน PO → คิวผลิต "รอรับงาน" + Lead→Active (<a href="continuity.html#c1">C1</a>)</li>
-<li>วัตถุดิบขาด → เตือน + PR (<a href="continuity.html#c15">C15</a>) · ผลิตตัด stock ติดลบ (<a href="continuity.html#c16">C16</a>)</li>
+<li>ยืนยัน PO → คิวผลิต "รอรับงาน" + <b>จองวัตถุดิบ</b> + Lead→Active (<a href="continuity.html#c1">C1</a>)</li>
+<li>วัตถุดิบขาด (Available) → เตือน + PR (<a href="continuity.html#c15">C15</a>) · เริ่มผลิต=convert จอง→ตัดจริง FIFO ติดลบได้ (<a href="continuity.html#c3">C3</a>/<a href="continuity.html#c16">C16</a>)</li>
 <li>ทุก PRD ผ่าน QC → PO พร้อมจัดส่ง (<a href="continuity.html#c5">C5</a>) → DN Delivered → PO ส่งถึงแล้ว (<a href="continuity.html#c10">C10</a>)</li>
-<li>ยกเลิก→เปิดใหม่ (<a href="continuity.html#c19">C19</a>)</li>
+<li>ยกเลิก→คืนจอง/dialog คืนวัตถุดิบ→เปิดใหม่ (<a href="continuity.html#c19">C19</a>)</li>
 </ul>
 
-<div class="nav"><a href="index.html">← สารบัญ</a><a href="production.html">การผลิต →</a><a href="invoice.html">Invoice</a><a href="customer.html">ลูกค้า</a></div>
-<footer>US-PO-01..07 · 21 AC (7 happy / 7 edge / 7 error) · Module PO</footer>
+<div class="nav"><a href="index.html">← สารบัญ</a><a href="production.html">การผลิต →</a><a href="invoice.html">Invoice</a><a href="customer.html">ลูกค้า</a><a href="stock.html">Stock</a></div>
+<footer>US-PO-01..07 · 21 AC (7 happy / 7 edge / 7 error) · Module PO · + Stock Reservation (จอง→ตัด/คืน)</footer>
 </div></body></html>

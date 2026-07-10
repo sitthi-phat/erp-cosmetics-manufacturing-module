@@ -1935,6 +1935,53 @@
           "summary": "Reservation layer implemented in schema/API per Pond 5 answers incl cancel-after-start return/write-off branch. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T21:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "reservation-visuals",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "stock.html: each material shows 3 balances คงคลัง (on_hand) / จองแล้ว (reserved) / ใช้ได้ (available=on_hand−reserved); ใกล้หมด threshold tied to ใช้ได้; distinguishes available<0 'จองเกิน (รอรับเข้า)' (yellow, e.g. ไทเทเนียม 40/55/-15) vs on_hand<0 'ติดลบ (รอรับเข้า)' (red, แอลกอฮอล์ -30) + explainer alert",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "po-create.html: material check compares required vs ใช้ได้ (available, not on_hand); over-reserve row 'ใช้ 2.5 / ใช้ได้ -15' badge จองเกิน + warning 'ยืนยันได้ (ไม่บล็อก): ระบบจะจองเกิน ใช้ได้จะติดลบ + ส่ง PR' + confirm cascade 'จองวัตถุดิบ (ล็อกยอดใช้ได้) + แจ้ง Stock เมื่อจองเกิน'",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "po-detail.html: 'ยกเลิก PO' now opens a modal dialog — line ยังไม่เริ่มผลิต = คืนของที่จองอัตโนมัติ (release reservation, stated); line ที่เริ่มผลิตแล้ว = 2-choice radio 'คืนวัตถุดิบเข้า stock' / 'ไม่คืน (write-off)' + mandatory reason textarea + trace/reopen note",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "dashboard.html: Stock 'ใกล้หมด' tile caption = 'ยอดใช้ได้ (คงคลัง−จอง) ≤ เกณฑ์ · รวมจองเกิน'; value 1→2 (adds ไทเทเนียม จองเกิน); drill list shows both ใกล้หมด + จองเกิน items",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "noti sync: added 'จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 (PO-185) · แจ้ง Stock' to all 25 shell pages, badge 5→6",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Data/element + local dialog only (no theme/design-system change); Playwright spot-check: 0 JS errors, cancel modal opens with 2 radio options, noti badge=6; Feature-level status untouched (WAITING_HUMAN_GATE)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Stock Reservation visuals per stock-reservation.md §5 (incremental, data/element only). (1) stock.html: 3 balances per material — คงคลัง(on_hand) / จองแล้ว(reserved) / ใช้ได้(available); ใกล้หมด now keyed to ใช้ได้; two negative types distinguished — available<0 = badge 'จองเกิน (รอรับเข้า)' (yellow, of ยังอยู่แต่ถูกจองเกิน, e.g. ไทเทเนียม 40/55/-15) vs on_hand<0 = badge 'ติดลบ (รอรับเข้า)' (red physical, แอลกอฮอล์ -30) + explainer. (2) po-create.html: suggest/material-check compares required vs ใช้ได้ (available) not on_hand; over-reserve shows 'ใช้ได้ -15' + badge จองเกิน + warning 'ยืนยันได้ (ไม่บล็อก): ระบบจะจองเกิน ใช้ได้จะติดลบ' + confirm cascade reserves + notifies Stock. (3) po-detail.html: 'ยกเลิก PO' now opens a dialog — pre-production lines auto-release reservation (stated); already-started lines get a 2-choice radio 'คืนวัตถุดิบเข้า stock' vs 'ไม่คืน (write-off)' + mandatory reason. (4) dashboard 'ใกล้หมด' tile caption = ตามยอดใช้ได้ (2, incl จองเกิน). (5) Added a 'จองเกินคลัง … แจ้ง Stock' notification to all 25 shell pages (badge 5→6). Playwright: 0 JS errors, cancel modal + 2 radios verified, noti badge=6. Feature-level status unchanged (WAITING_HUMAN_GATE).",
+          "overridden_by": null,
+          "updated_at": "2026-07-10T16:30:00+07:00"
         }
       ]
     }
