@@ -55,6 +55,20 @@ fi
 # Fresh cookie secret every deploy (32 bytes, url-safe base64).
 COOKIE_SECRET="$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=')"
 
+# Email allow-list: authenticated-emails.txt (in repo) is the source of truth.
+# Fold it into a comma-separated ALLOWED_EMAILS env var so the list is VISIBLE
+# in the Cloud Run console (Revisions -> Variables & Secrets). start.sh expands
+# it back into the file oauth2-proxy reads.
+EMAILS_FILE="deploy/docs-site/authenticated-emails.txt"
+: "${EMAILS_FILE:?}"
+if [[ ! -s "${EMAILS_FILE}" ]]; then
+  echo "ERROR: ${EMAILS_FILE} is missing or empty — no one would be allowed in." >&2
+  exit 1
+fi
+# strip blank lines/whitespace, join with commas
+ALLOWED_EMAILS="$(grep -v '^[[:space:]]*$' "${EMAILS_FILE}" | tr -d '[:blank:]' | paste -sd ',' -)"
+echo "==> Allow-list (${EMAILS_FILE}): ${ALLOWED_EMAILS}"
+
 # --- 1) Enable required APIs -------------------------------------------------
 echo "==> 1) Enable required APIs"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
@@ -86,10 +100,11 @@ gcloud run deploy "${SERVICE}" \
   --no-iap \
   --cpu=1 --memory=256Mi \
   --min-instances=0 --max-instances=2 \
-  --set-env-vars="^@^OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}@OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}@OAUTH2_PROXY_COOKIE_SECRET=${COOKIE_SECRET}"
+  --set-env-vars="^@^OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}@OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}@OAUTH2_PROXY_COOKIE_SECRET=${COOKIE_SECRET}@ALLOWED_EMAILS=${ALLOWED_EMAILS}"
 
 echo "==> DONE. Service URL: ${SERVICE_URL}"
 echo "    Verify:  curl -sI ${SERVICE_URL}/   -> expect 302 to accounts.google.com (oauth2-proxy working)"
 echo "    Reminder: the OAuth client MUST list this redirect URI:"
 echo "              ${SERVICE_URL}/oauth2/callback"
-echo "    Allow-list = deploy/docs-site/authenticated-emails.txt (add/remove email -> rerun this script)."
+echo "    Allow-list (ALLOWED_EMAILS env var) is visible in Cloud Run console -> Revisions -> Variables & Secrets."
+echo "    Edit it 2 ways: (a) console env var = instant new revision (no rebuild), or (b) edit ${EMAILS_FILE} + rerun this script."

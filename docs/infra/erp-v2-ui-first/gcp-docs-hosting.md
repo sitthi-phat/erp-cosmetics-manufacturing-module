@@ -148,18 +148,25 @@ bash deploy/docs-site/deploy.sh
 ```
 build image ใหม่ (รวม `status.json` snapshot ล่าสุด) + redeploy revision ใหม่
 
-### เพิ่ม/ถอนอีเมลที่เข้าถึงได้
-แก้ไฟล์ `deploy/docs-site/authenticated-emails.txt` (1 อีเมล/บรรทัด) แล้ว redeploy:
+### ดูรายชื่อที่เข้าถึงได้ตอนนี้ (ใน GCP console)
+allow-list ถูกส่งเป็น env var `ALLOWED_EMAILS` (comma-separated) — **มองเห็นในคอนโซล**:
+**Cloud Run → essence-docs → แท็บ Revisions → Variables & Secrets → `ALLOWED_EMAILS`**
+(หรือดูใน repo: `cat deploy/docs-site/authenticated-emails.txt`)
+
+### เพิ่ม/ถอนอีเมล — เลือก 1 ใน 2 ทาง
+**ทาง A (เร็ว ไม่ rebuild) — แก้ env var ใน console:**
+Cloud Run → essence-docs → **Edit & Deploy New Revision** → Variables & Secrets → แก้ `ALLOWED_EMAILS`
+(comma-separated เช่น `a@gmail.com,b@gmail.com`) → Deploy → ได้ revision ใหม่ทันที ไม่ต้อง build image ใหม่
+> เพื่อกันหลุด ควรอัปเดต `deploy/docs-site/authenticated-emails.txt` ใน repo ให้ตรงกันด้วย (source of truth)
+
+**ทาง B (ตามมาตรฐาน repo) — แก้ไฟล์ + redeploy:**
 ```bash
-# ...แก้ไฟล์...
+# แก้ deploy/docs-site/authenticated-emails.txt (1 อีเมล/บรรทัด)
 bash deploy/docs-site/deploy.sh
 ```
-(allow-list ฝังใน image — เปลี่ยนแล้วต้อง build+deploy ใหม่ จึงจะมีผล)
+สคริปต์อ่านไฟล์ → ส่งเป็น `ALLOWED_EMAILS` ให้ revision ใหม่อัตโนมัติ
 
-### ดูรายชื่อที่เข้าถึงได้ตอนนี้
-```bash
-cat deploy/docs-site/authenticated-emails.txt
-```
+> กลไก: `start.sh` ในคอนเทนเนอร์อ่าน `ALLOWED_EMAILS` (ถ้ามี) มาเขียนทับ `authenticated-emails.txt` ตอนบูต — ถ้า env ว่างจะ fallback ใช้ไฟล์ที่ bake มาใน image
 
 ### ปิด/ลบชั่วคราว (หยุดค่าใช้จ่าย)
 ```bash
