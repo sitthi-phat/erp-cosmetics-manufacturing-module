@@ -100,7 +100,7 @@ gcloud run deploy "${SERVICE}" \
   --no-iap \
   --cpu=1 --memory=256Mi \
   --min-instances=0 --max-instances=2 \
-  --set-env-vars="^@^OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}@OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}@OAUTH2_PROXY_COOKIE_SECRET=${COOKIE_SECRET}@ALLOWED_EMAILS=${ALLOWED_EMAILS}"
+  --set-env-vars="^~^OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}~OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}~OAUTH2_PROXY_COOKIE_SECRET=${COOKIE_SECRET}~ALLOWED_EMAILS=${ALLOWED_EMAILS}"
 
 echo "==> DONE. Service URL: ${SERVICE_URL}"
 echo "    Verify:  curl -sI ${SERVICE_URL}/   -> expect 302 to accounts.google.com (oauth2-proxy working)"
