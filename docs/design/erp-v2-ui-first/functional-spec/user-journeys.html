@@ -1,208 +1,657 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>User Journeys (6 สาย) · Functional Spec · ESSENCE Hub</title><style>
+<title>User Journeys (6 สาย · ผังภาพ) · Functional Spec · ESSENCE Hub</title><style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5}
-body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--radius-sm:6px}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55}
 a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 80px}
-header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 90px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
 header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
-h1{font-size:25px;margin:14px 0 6px}h2{font-size:20px;margin:12px 0 8px}
-p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+h1{font-size:25px;margin:14px 0 4px}
+p{margin:7px 0}.sub{color:var(--text2);font-size:13px}
 .pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
-.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:12px 0;font-size:13px}
-.jcard{background:var(--card);border:1px solid var(--border2);border-left:5px solid var(--primary);border-radius:12px;padding:18px 20px;margin:20px 0;box-shadow:0 1px 3px rgba(16,25,40,.05)}
-.jcard h2{color:var(--primary);border-bottom:2px solid var(--primary-bg);padding-bottom:6px}
-.persona{background:#FAFCFC;border:1px dashed var(--border);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13.5px}
+
+/* ---- real app status badges (identical to mockups) ---- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:var(--radius-sm);font-size:11.5px;font-weight:600;border:1px solid;white-space:nowrap;line-height:1.5}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.b-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}
+.b-processing{color:#1F5EDB;background:#E8F0FE;border-color:#BBD1F8}
+.b-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}
+.b-warning{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
+.b-error{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+.ent{font-size:9px;font-weight:800;letter-spacing:.4px;background:rgba(0,0,0,.07);color:inherit;padding:0 4px;border-radius:4px;line-height:1.5}
+
+/* ---- legend ---- */
+.legend{background:#fff;border:1px solid var(--border2);border-radius:12px;padding:16px 18px;margin:14px 0;display:grid;grid-template-columns:1.15fr 1fr 1.1fr;gap:18px}
+.legend h4{font-size:12.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;font-weight:700}
+.legend .lg-row{display:flex;flex-wrap:wrap;gap:7px}
+.anat{border-left:1px solid var(--border2);padding-left:18px}
+.mini-step{background:#fff;border:1px solid var(--border2);border-radius:10px;padding:9px 10px;box-shadow:0 1px 3px rgba(16,25,40,.06);max-width:230px}
+.mini-step .cap{font-size:10.5px;color:var(--text3);margin-top:5px}
+
+/* ---- actor pill ---- */
+.actor{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 8px 2px 6px;border-radius:6px;border:1px solid var(--border2);background:#FAFCFC;border-left-width:3px;white-space:nowrap;color:#2C3742}
+.a-sale{border-left-color:#0E7C7B}.a-prod{border-left-color:#3B5BDB}.a-qc{border-left-color:#7048E8}
+.a-ship{border-left-color:#E8590C}.a-fin{border-left-color:#C2255C}.a-sys{border-left-color:#868E96}.a-stock{border-left-color:#1098AD}
+
+/* ---- doc / noti chips ---- */
+.doc{display:inline-flex;align-items:center;gap:4px;font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font-size:10.5px;background:#EEF6F6;border:1px solid #BFE0DE;color:#0B6360;padding:2px 7px;border-radius:6px;font-weight:600;word-break:break-all}
+.noti{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:#9A5B12;background:#FBF0DE;border:1px solid #F1D6A6;padding:1px 7px;border-radius:6px;white-space:nowrap}
+.mk{font-size:10.5px;color:var(--primary);display:inline-flex;align-items:center;gap:3px}
+
+/* ---- journey card ---- */
+.jcard{background:var(--card);border:1px solid var(--border2);border-left:5px solid var(--primary);border-radius:14px;padding:16px 20px 20px;margin:22px 0;box-shadow:0 1px 3px rgba(16,25,40,.05)}
+.jhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--primary-bg);padding-bottom:9px;margin-bottom:6px}
+.jhead h2{color:var(--primary);font-size:20px}
+.jhead .lead-actor{margin-left:auto}
+.persona{background:#FAFCFC;border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:9px 0 4px;font-size:12.5px;color:var(--text2)}
 .persona b{color:var(--sidebar)}
-h3{font-size:15px;margin:16px 0 6px;color:var(--sidebar)}
-ol.steps{margin:6px 0 6px 4px;list-style:none;counter-reset:s}
-ol.steps li{position:relative;padding:8px 0 8px 34px;border-bottom:1px dashed var(--border2)}
-ol.steps li:last-child{border-bottom:none}
-ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
-.st{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:5px;margin:0 2px}
-.st-status{background:#E6F5EC;color:#1E7A44;border:1px solid #B7E0C6}
-.st-noti{background:#FBF0DE;color:#9A5B12;border:1px solid #F1D6A6}
-.branch{background:#FFF6E5;border:1px solid #F1D6A6;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:13px}
-.branch b{color:#7A4A0F}
-.xlink{background:#EEF6F6;border:1px solid #BFE0DE;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:13px}
-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px;background:#fff}
+.phase{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 2px;display:flex;align-items:center;gap:7px}
+.phase::before{content:"";width:14px;height:2px;background:var(--primary);display:inline-block;border-radius:2px}
+
+/* ---- FLOW rail ---- */
+.flow{display:flex;flex-wrap:wrap;gap:30px 36px;align-items:stretch;margin:8px 0 4px;padding:2px 0}
+.step{position:relative;flex:1 1 214px;min-width:200px;max-width:256px;background:#fff;border:1px solid var(--border2);border-radius:12px;padding:11px 12px 12px;box-shadow:0 1px 3px rgba(16,25,40,.06);display:flex;flex-direction:column;gap:7px}
+.step .top{display:flex;align-items:center;gap:8px}
+.snum{width:22px;height:22px;flex:none;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
+.step .act{font-size:13px;font-weight:600;color:var(--text);line-height:1.45}
+.step .act small{display:block;font-weight:400;color:var(--text2);font-size:11.5px;margin-top:2px}
+.row-chips{display:flex;flex-wrap:wrap;gap:5px}
+.step .foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto;padding-top:4px}
+.step:not(:last-child)::after{content:"\203A";position:absolute;right:-28px;top:50%;transform:translateY(-50%);font-size:30px;font-weight:700;color:var(--primary);opacity:.75;line-height:1}
+
+/* ---- branch forks ---- */
+.forks{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 2px}
+.fork{flex:1 1 320px;border:1px solid #F1D6A6;background:#FFFBF3;border-radius:11px;padding:12px 14px}
+.fork.pass{border-color:#B7E0C6;background:#F3FBF6}
+.fork.fail{border-color:#F2C2C2;background:#FEF5F5}
+.fork.info{border-color:#BBD1F8;background:#F3F7FE}
+.fork .fh{font-weight:700;font-size:13px;color:#7A4A0F;display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.fork.pass .fh{color:#1E6B3D}.fork.fail .fh{color:#8F2020}.fork.info .fh{color:#204A9E}
+.fork .cond{font-size:11px;font-weight:600;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.08);padding:1px 7px;border-radius:20px}
+.miniflow{display:flex;flex-direction:column;gap:22px}
+.miniflow .step{max-width:none;flex:none}
+.miniflow .step:not(:last-child)::after{content:"\2304";right:auto;left:24px;top:auto;bottom:-19px;transform:none;font-size:20px}
+
+/* ---- cross links + tables ---- */
+.xlink{background:#EEF6F6;border:1px solid #BFE0DE;border-radius:9px;padding:10px 13px;margin:12px 0 4px;font-size:12.5px}
+.xlink b{color:#0B6360}
+details{margin:10px 0}
+details>summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--text2);padding:7px 11px;background:#F5F7F8;border:1px solid var(--border2);border-radius:8px;list-style:none;user-select:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"\25B8 ";color:var(--primary)}
+details[open]>summary::before{content:"\25BE "}
+table{width:100%;border-collapse:collapse;margin:9px 0;font-size:12px;background:#fff}
 th,td{border:1px solid var(--border2);padding:6px 9px;text-align:left;vertical-align:top}th{background:#F0F5F5;font-weight:600}
-.flowmap{background:#10322F;color:#CFE0DE;border-radius:10px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:2}
-.flowmap b{color:#7FD9D2}
-.nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
-code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:ui-monospace,Consolas,monospace}
+
+/* ---- overview map ---- */
+.jmap{background:var(--sidebar);color:#CFE0DE;border-radius:12px;padding:16px 18px;margin:14px 0}
+.jmap .mrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.jmap a.node{display:inline-flex;align-items:center;gap:6px;background:#17423E;border:1px solid #2C5C56;color:#EAF6F4;padding:7px 12px;border-radius:9px;font-weight:600;font-size:13px}
+.jmap a.node:hover{background:#1E5751;text-decoration:none}
+.jmap .arw{color:#7FD9D2;font-size:19px;font-weight:700}
+.jmap .loop{margin-top:11px;font-size:12.5px;color:#9DBAB7;line-height:1.9}
+.jmap .loop b{color:#7FD9D2}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 13px;border-radius:8px;margin:12px 0;font-size:12.5px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.nav a{padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+
+@media(max-width:900px){.legend{grid-template-columns:1fr}.anat{border-left:none;border-top:1px solid var(--border2);padding-left:0;padding-top:14px}}
+@media(max-width:760px){
+ .flow{flex-direction:column;gap:30px}
+ .step{max-width:none}
+ .step:not(:last-child)::after{content:"\2304";right:auto;left:24px;top:auto;bottom:-25px;transform:none;font-size:23px}
+}
 </style></head><body>
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Functional Spec</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">สารบัญ</a> › User Journeys</span></header>
 <div class="wrap">
 
-<h1>User Journeys — 6 สายชีวิตจริงของคนทำงาน</h1>
-<p class="sub">สะพานให้ปอนด์อ่านว่า requirement (stories/AC) ตรงกับงานจริงไหม · เล่าเป็นเรื่องต่อเนื่องตั้งแต่ต้นจนจบ ใช้ dataset เดิม (เดอร์มา แคร์ PO-181, บิวตี้ เอเชีย PO-176 ฯลฯ) · <b>source of truth = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> (ไม่มีการสร้างกติกาใหม่)</p>
-<div class="note"><b>อ่านยังไง:</b> แต่ละสายมี (1) <b>persona + เป้าหมาย</b> (2) <b>เส้นเดินหลัก</b> ทีละขั้น: ทำอะไร → หน้าไหน (ลิงก์ mockup) → ระบบตอบ → <span class="st st-status">สถานะเปลี่ยน</span> → <span class="st st-noti">ใครได้ noti</span> (3) <b>ทางแยกสำคัญ</b> (4) <b>จุดเชื่อม journey อื่น</b> (5) <b>ตารางอ้างอิง step ↔ story ID</b> ให้ BA cross-review · <b>r5:</b> เพิ่มการจอง (Reserve) ตอน Confirmed + ตัดจริง (Consume) ตอนเริ่มผลิต (ดู <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)</p>
+<h1>User Journeys — 6 สายชีวิตจริงของคนทำงาน <span class="pill">ผังภาพ</span></h1>
+<p class="sub">อ่านเป็น "ผังเดินงาน" ทีละการ์ด — ดูปราดเดียวรู้ว่า <b>ใครทำ · ทำอะไร · ได้เอกสารอะไร · สถานะเปลี่ยนเป็นอะไร</b> (สีสถานะตรงกับในระบบจริง) · ใช้ข้อมูลชุดเดิม (เดอร์มา แคร์ PO-181, บิวตี้ เอเชีย PO-176 ฯลฯ) · <b>ความจริงหลัก = <a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map.md</a></b> (ไม่มีกติกาใหม่)</p>
 
-<div class="flowmap">
-<b>ภาพร้อย 6 สายเข้าด้วยกัน:</b><br>
-① <b>Customer</b> (ลูกค้า→ยืนยันออเดอร์) ─▶ ② <b>PO</b> (ยืนยัน→คิวผลิต+จองวัตถุดิบ) ─▶ ③ <b>การผลิต</b> (รับงาน→Batch+ตัดจริง→ส่งตรวจ) ─▶ ④ <b>QC</b> (ผ่าน/ตก) ─▶ ⑤ <b>จัดส่ง</b> (รอบ+DN→ส่งถึง) ─▶ ⑥ <b>Billing</b> (วางบิล→เก็บเงิน)<br>
-วนกลับ: QC ตก→③ · DN ปฏิเสธ→⑤/① · Hold→②/① · Overdue→①
+<!-- LEGEND -->
+<div class="legend">
+ <div>
+  <h4>ใครทำ (Actor)</h4>
+  <div class="lg-row">
+   <span class="actor a-sale">👤 Sale</span>
+   <span class="actor a-prod">🏭 ฝ่ายผลิต</span>
+   <span class="actor a-qc">🔬 QC</span>
+   <span class="actor a-ship">🚚 จัดส่ง</span>
+   <span class="actor a-fin">💰 การเงิน</span>
+   <span class="actor a-stock">📦 คลัง/จัดซื้อ</span>
+   <span class="actor a-sys">⚙️ ระบบ (อัตโนมัติ)</span>
+  </div>
+ </div>
+ <div>
+  <h4>สีสถานะ (ตรงกับระบบจริง)</h4>
+  <div class="lg-row">
+   <span class="badge b-neutral">เริ่มต้น / รอ</span>
+   <span class="badge b-processing">กำลังดำเนินการ</span>
+   <span class="badge b-warning">ต้องระวัง / ค้าง</span>
+   <span class="badge b-success">สำเร็จ</span>
+   <span class="badge b-error">มีปัญหา / ตีกลับ</span>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px">📄 = เอกสาร/ผลลัพธ์ที่ระบบออกให้ · 🔔 = แจ้งเตือนวิ่งไปหาใคร</p>
+ </div>
+ <div class="anat">
+  <h4>การ์ด 1 ขั้น อ่านยังไง</h4>
+  <div class="mini-step">
+   <div class="top"><span class="snum">1</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+   <div class="act" style="margin:6px 0 5px">กด "เริ่มผลิต"</div>
+   <div class="row-chips"><span class="doc">📄 B-…-181-1-1</span></div>
+   <div class="row-chips" style="margin-top:5px"><span class="badge b-processing"><span class="ent">Batch</span> กำลังผลิต</span></div>
+  </div>
+  <div class="cap">บน = ใครทำ · กลาง = ทำอะไร · 📄 = ได้เอกสาร · ล่าง = สถานะหลังทำ</div>
+ </div>
 </div>
 
-<!-- J1 -->
+<!-- OVERVIEW MAP -->
+<div class="jmap">
+ <div style="font-weight:700;color:#7FD9D2;margin-bottom:10px">ภาพรวม 6 สาย ต่อกันเป็นเส้นเดียว (กดที่ป้ายเพื่อกระโดดไปสายนั้น)</div>
+ <div class="mrow">
+  <a class="node" href="#j1">① 👤 ลูกค้า</a><span class="arw">›</span>
+  <a class="node" href="#j2">② 👤 PO / ขาย</a><span class="arw">›</span>
+  <a class="node" href="#j3">③ 🏭 การผลิต</a><span class="arw">›</span>
+  <a class="node" href="#j4">④ 🔬 QC</a><span class="arw">›</span>
+  <a class="node" href="#j5">⑤ 🚚 จัดส่ง</a><span class="arw">›</span>
+  <a class="node" href="#j6">⑥ 💰 Billing</a>
+ </div>
+ <div class="loop">
+  <b>วนกลับ:</b> QC ตก → กลับ ③ ผลิตซ้ำ · DN ปฏิเสธ → กลับ ⑤ + สะกิด ① · Hold → สะกิด ②/① · Overdue → สะกิด ① ให้ Sale ตาม<br>
+  <b>เส้นวัตถุดิบ (ขนาน):</b> วัตถุดิบขาด → 📦 PR → 📦 รับเข้า (GR) → 🔬 ตรวจรับ Lot → พร้อมใช้ผลิต (ป้อนเข้า ③)
+ </div>
+</div>
+
+<div class="note"><b>อ่านง่ายที่สุด:</b> ไล่การ์ดจากซ้ายไปขวาตามลูกศร <b>›</b> · เจอกล่องสีเหลือง/เขียว/แดง = <b>ทางแยก</b> (เกิดได้เมื่อ…) · ราย <b>step ↔ story ID</b> สำหรับ BA ซ่อนอยู่ใน "▸ อ้างอิง step ↔ story" ท้ายแต่ละสาย</div>
+
+<!-- ================= J1 CUSTOMER ================= -->
 <div class="jcard" id="j1">
-<h2>① Journey: Customer — ลูกค้า &amp; งานขาย</h2>
-<div class="persona"><b>Persona:</b> <b>สมชาย</b> พนักงานขาย/CS — รับลูกค้าใหม่ทางโทรศัพท์ ดูแลลูกค้าประจำ และติดตามงานที่ค้างที่ลูกค้า · <b>เป้าหมาย:</b> เปลี่ยนผู้สนใจให้เป็นลูกค้าประจำ และไม่ปล่อยลูกค้าที่ต้องติดตามให้หลุด</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ลูกค้าใหม่ "ร้านสวยใส" โทรมา → สมชายสร้างลูกค้าที่ <a href="../mockups/customer-create.html" target="_blank">customer-create</a> (ชื่อ + เลขผู้เสียภาษี 13 หลัก + ที่อยู่) → ระบบสร้าง <code>CUS-xxxxxx</code> <span class="st st-status">ผู้สนใจ (Lead)</span></li>
-<li>เพิ่มผู้ติดต่อหลายคนที่ <a href="../mockups/contact-create.html" target="_blank">contact-create</a> + ตั้งผู้ติดต่อหลัก (ไม่จำกัดจำนวน)</li>
-<li>สมชายเปิด PO ใบแรกให้ (ไป Journey ② PO) → เมื่อ <b>ยืนยัน PO ใบแรก</b> ระบบเลื่อนลูกค้า <span class="st st-status">Lead → ลูกค้าประจำ (Active)</span> อัตโนมัติ (C1) → เห็นใน dashboard tile "ลูกค้าประจำ"</li>
-<li>ดูแลต่อ: ลูกค้ามี order สม่ำเสมอ = คงสถานะ Active · <a href="../mockups/customer-detail.html" target="_blank">customer-detail</a> เห็น timeline + ประวัติ PO</li>
-</ol>
-<h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>งานลูกค้าติด Hold (จาก Journey ③):</b> เดอร์มา แคร์ ขอแก้สูตร PO-188 → ฝ่ายผลิต Hold + raise Sale → สมชายตั้งลูกค้า <span class="st st-status">ต้องติดตาม (Follow-up)</span> + <b>comment บังคับ</b> "โทรยืนยันแก้สูตร PO-188" (C8) → โผล่ tile "ต้องติดตาม" ใน Sale dashboard + Home task-inbox → จบเรื่อง/มี order ใหม่ = กลับ Active</div>
-<div class="branch"><b>ลูกค้าเงียบหาย:</b> ไม่มี order เกินรอบ (default 3 เดือน) → scheduler เลื่อนเป็น <span class="st st-status">ห่างหาย (Inactive)</span> อัตโนมัติ · <b>ความเสี่ยง:</b> เช็คเด้ง 2 ครั้ง → Sale Manager (สมหญิง) ตั้ง <span class="st st-status">บัญชีดำ (Blacklist)</span> + comment → ลูกค้าหายจาก dropdown เปิด PO ใหม่ · ปลด Blacklist = Admin เท่านั้น · reassign ผู้ดูแล = Sale Manager/Admin (2 dashboard + trace)</div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">▶ <b>ยืนยัน PO ใบแรก</b> = จุดเริ่ม Journey ② (และทำ Lead→Active) · ◀ <b>Follow-up</b> ถูกจุดชนวนจาก Journey ③ (Hold) และ ⑤ (DN ปฏิเสธ→raise Sale) และ ⑥ (Overdue→Sale ตาม)</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>สร้างลูกค้า + contact + เลขภาษี</td><td><a href="customer.html">US-CUS-01</a></td></tr>
-<tr><td>Lead→Active (ยืนยันใบแรก) / Active↔Inactive (scheduler)</td><td><a href="customer.html">US-CUS-02</a> + <a href="po.html">US-PO-02</a></td></tr>
-<tr><td>ตั้ง Follow-up + comment บังคับ</td><td><a href="customer.html">US-CUS-03</a></td></tr>
-<tr><td>Blacklist/Disabled + reassign + ปลด=Admin</td><td><a href="customer.html">US-CUS-04</a></td></tr>
-<tr><td>งานลูกค้าค้างโผล่หน้าแรก</td><td><a href="home.html">US-HOME-01</a></td></tr></table>
+ <div class="jhead"><h2>① Customer — ลูกค้า &amp; งานขาย</h2><span class="actor a-sale lead-actor">👤 สมชาย (Sale/CS)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> เปลี่ยน "ผู้สนใจ" ให้เป็น "ลูกค้าประจำ" และไม่ปล่อยลูกค้าที่ต้องติดตามให้หลุด</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">สร้างลูกค้าใหม่ "ร้านสวยใส"<small>ชื่อ + เลขภาษี 13 หลัก + ที่อยู่</small></div>
+   <div class="row-chips"><span class="doc">📄 CUS-xxxxxx</span></div>
+   <div class="row-chips"><span class="badge b-neutral"><span class="ent">ลูกค้า</span> ผู้สนใจ (Lead)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/customer-create.html" target="_blank">customer-create ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">เพิ่มผู้ติดต่อหลายคน + ตั้งผู้ติดต่อหลัก<small>ไม่จำกัดจำนวน</small></div>
+   <div class="row-chips"><span class="doc">📄 ผู้ติดต่อ</span></div>
+   <div class="row-chips"><span class="badge b-neutral"><span class="ent">ลูกค้า</span> ผู้สนใจ (Lead)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/contact-create.html" target="_blank">contact-create ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+   <div class="act">เมื่อ <b>ยืนยัน PO ใบแรก</b> (จากสาย ②) เลื่อนขั้นลูกค้าอัตโนมัติ<small>C1 · auto</small></div>
+   <div class="row-chips"><span class="doc">📄 PO ใบแรก</span></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">ลูกค้า</span> ลูกค้าประจำ (Active)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/customer-detail.html" target="_blank">customer-detail ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">4</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">ดูแลต่อ — มี order สม่ำเสมอ = คงลูกค้าประจำ<small>timeline + ประวัติ PO</small></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">ลูกค้า</span> ลูกค้าประจำ (Active)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/customer-detail.html" target="_blank">customer-detail ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ</div>
+ <div class="forks">
+  <div class="fork">
+   <div class="fh">⑃ งานลูกค้าติด Hold <span class="cond">มาจากสาย ③ การผลิต</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+     <div class="act">Hold งาน + raise Sale<small>เดอร์มา แคร์ ขอแก้สูตร PO-188</small></div>
+     <div class="row-chips"><span class="noti">🔔 → Sale</span></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">b</span><span class="actor a-sale">👤 Sale</span></div>
+     <div class="act">ตั้งลูกค้า "ต้องติดตาม" + <b>comment บังคับ</b><small>"โทรยืนยันแก้สูตร PO-188" (C8) · โผล่ tile "ต้องติดตาม"</small></div>
+     <div class="row-chips"><span class="badge b-processing"><span class="ent">ลูกค้า</span> ต้องติดตาม (Follow-up)</span></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">c</span><span class="actor a-sale">👤 Sale</span></div>
+     <div class="act">จบเรื่อง / มี order ใหม่ = กลับเป็นลูกค้าประจำ</div>
+     <div class="row-chips"><span class="badge b-success"><span class="ent">ลูกค้า</span> ลูกค้าประจำ (Active)</span></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ ลูกค้าเงียบหาย / มีความเสี่ยง <span class="cond">scheduler + manual</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+     <div class="act">ไม่มี order เกินรอบ (default 3 เดือน) → เลื่อนอัตโนมัติ<small>C2</small></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">ลูกค้า</span> ห่างหาย (Inactive)</span></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">b</span><span class="actor a-sale">👤 Sale Mgr</span></div>
+     <div class="act">เช็คเด้ง 2 ครั้ง → ตั้งบัญชีดำ + comment<small>หายจาก dropdown เปิด PO · ปลด = Admin เท่านั้น · reassign = Sale Mgr/Admin</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">ลูกค้า</span> บัญชีดำ (Blacklist)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/customers.html" target="_blank">customers ↗</a></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">▶ <b>ยืนยัน PO ใบแรก</b> = จุดเริ่มสาย ② (และทำ Lead→Active) · ◀ <b>Follow-up</b> ถูกจุดชนวนจากสาย ③ (Hold), ⑤ (DN ปฏิเสธ → raise Sale), ⑥ (Overdue → Sale ตาม)</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>สร้างลูกค้า + contact + เลขภาษี</td><td><a href="customer.html">US-CUS-01</a></td></tr>
+ <tr><td>Lead→Active (ยืนยันใบแรก) / Active↔Inactive (scheduler)</td><td><a href="customer.html">US-CUS-02</a> + <a href="po.html">US-PO-02</a></td></tr>
+ <tr><td>ตั้ง Follow-up + comment บังคับ</td><td><a href="customer.html">US-CUS-03</a></td></tr>
+ <tr><td>Blacklist/Disabled + reassign + ปลด=Admin</td><td><a href="customer.html">US-CUS-04</a></td></tr>
+ <tr><td>งานลูกค้าค้างโผล่หน้าแรก</td><td><a href="home.html">US-HOME-01</a></td></tr></table>
+ </details>
 </div>
 
-<!-- J2 -->
+<!-- ================= J2 PO ================= -->
 <div class="jcard" id="j2">
-<h2>② Journey: PO — ใบสั่งซื้อ</h2>
-<div class="persona"><b>Persona:</b> <b>อารดา</b> พนักงานขาย — รับออเดอร์เดอร์มา แคร์ สั่ง 2 สินค้า (โลชั่น + โฟม) · <b>เป้าหมาย:</b> เปิดออเดอร์ให้เร็ว ไม่ติดข้อจำกัดราคา และส่งงานเข้าสายผลิตครบถ้วน</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ที่ <a href="../mockups/po-create.html" target="_blank">po-create</a> เลือกลูกค้า "เดอร์มา แคร์" + เพิ่ม 2 บรรทัด (โลชั่น BOM, โฟม BOM) → ระบบ <b>suggest ราคาขาย default</b> (จาก BOM) + <b>เช็ควัตถุดิบพอไหม</b> (ΣBOM×จำนวน เทียบ <b>Available = on_hand − Reserved</b>) → แก้ราคาได้ (0 ได้)</li>
-<li>กด "บันทึกร่าง" → ระบบออกเลข <code>PO-202607-000181</code> <span class="st st-status">ร่าง (Draft)</span> · ราง billing <span class="st st-status">ยังไม่วางบิล</span> · <b>ร่างยังไม่จอง</b>วัตถุดิบ</li>
-<li>กด "ยืนยัน PO" ที่ <a href="../mockups/po-detail.html" target="_blank">po-detail</a> → <span class="st st-status">ยืนยันแล้ว (Confirmed)</span> → <b>แต่ละ line เข้าคิวฝ่ายผลิต "รอรับงาน"</b> (ยังไม่เกิดเลข PRD) + <b>จองวัตถุดิบ = ΣBOM×qty ต่อ line (Reserved↑, Available↓, on_hand ไม่แตะ; จองเกิน=เตือนไม่บล็อก)</b> (C1/C20) → <span class="st st-noti">noti ฝ่ายผลิต (+Stock ถ้า Available ติดลบ)</span> · ลูกค้า Lead→Active (ถ้าใบแรก)</li>
-</ol>
-<h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>วัตถุดิบขาดตอนเปิด PO:</b> เตือน "วัตถุดิบอาจไม่พอ" (<b>เทียบ Available</b>) <b>แต่ไม่บล็อก</b> → ระบบเสนอสร้าง <b>Purchase Request เฉพาะส่วนที่ขาด (ต้องใช้ − Available)</b> (C15) → <span class="st st-noti">noti Stock + Production</span> (ไป Journey วัตถุดิบ) · PO เดินหน้าต่อได้</div>
-<div class="branch"><b>ต้องยกเลิก/แก้:</b> ยกเลิก PO ได้ทุกขั้น (comment บังคับ) → เปิดใหม่ <b>คงเลข PO เดิม</b> (gapless) (C19) · <b>ยกเลิกก่อนเริ่มผลิต = คืนจองอัตโนมัติ / หลังเริ่มผลิต = dialog เลือกคืน หรือไม่คืน (write-off) วัตถุดิบที่ตัดแล้ว + เหตุผลบังคับ</b> · เคส Hold: Sale แก้ PO ได้ทุกช่อง (จำนวน/ราคา/วันส่ง) + trace ราย field และ <b>ระบบปรับยอดจองตาม delta</b> แล้วส่งกลับผลิต</div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ เริ่มจาก Journey ① (ลูกค้ายืนยันออเดอร์) · ▶ Confirmed = จุดเริ่ม Journey ③ การผลิต (คิวรอรับงาน + วัตถุดิบถูกจอง) · ▶ วัตถุดิบขาด = แตกไป PR/GR (เส้นวัตถุดิบ) · ▶ ราง billing แยกไป Journey ⑥</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>สร้างร่าง + ราคา 0 ได้</td><td><a href="po.html">US-PO-01</a></td></tr>
-<tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs Available)</td><td><a href="po.html">US-PO-07</a></td></tr>
-<tr><td>ยืนยัน → คิว "รอรับงาน" + จองวัตถุดิบ + Lead→Active</td><td><a href="po.html">US-PO-02</a></td></tr>
-<tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด (vs Available)</td><td><a href="purchase-request.html">US-PR-01</a></td></tr>
-<tr><td>ยกเลิก + เปิดใหม่คงเลข (คืนจอง / dialog คืน-ไม่คืน)</td><td><a href="po.html">US-PO-04</a></td></tr>
-<tr><td>แก้ PO เคส Hold + trace ราย field + ปรับจอง delta</td><td><a href="po.html">US-PO-05</a></td></tr></table>
+ <div class="jhead"><h2>② PO — ใบสั่งซื้อ / งานขาย</h2><span class="actor a-sale lead-actor">👤 อารดา (Sale)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> เปิดออเดอร์ให้เร็ว ไม่ติดข้อจำกัดราคา และส่งงานเข้าสายผลิตครบถ้วน · <b>เคส:</b> เดอร์มา แคร์ สั่ง 2 สินค้า (โลชั่น + โฟม)</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">เลือกลูกค้า + เพิ่ม 2 บรรทัด (โลชั่น/โฟม BOM)<small>ระบบ suggest ราคาขาย + เช็ควัตถุดิบพอไหม (ΣBOM×จำนวน เทียบ Available = คงคลัง − จองแล้ว) · แก้ราคาได้ (0 ได้)</small></div>
+   <div class="foot"><a class="mk" href="../mockups/po-create.html" target="_blank">po-create ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">กด "บันทึกร่าง"<small>ร่างยัง <b>ไม่จอง</b> วัตถุดิบ</small></div>
+   <div class="row-chips"><span class="doc">📄 PO-202607-000181</span></div>
+   <div class="row-chips"><span class="badge b-neutral"><span class="ent">PO</span> ร่าง (Draft)</span><span class="badge b-neutral"><span class="ent">บิล</span> ยังไม่วางบิล</span></div>
+   <div class="foot"><a class="mk" href="../mockups/po-detail.html" target="_blank">po-detail ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-sale">👤 Sale</span></div>
+   <div class="act">กด "ยืนยัน PO"<small>แต่ละ line เข้าคิวผลิต "รอรับงาน" (ยังไม่มีเลข PRD) + <b>จองวัตถุดิบ</b> ΣBOM×qty (Reserved↑, Available↓) · C1/C20</small></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">PO</span> ยืนยันแล้ว (Confirmed)</span><span class="badge b-neutral"><span class="ent">คิวผลิต</span> รอรับงาน</span></div>
+   <div class="row-chips"><span class="noti">🔔 → ฝ่ายผลิต (+คลัง ถ้า Available ติดลบ)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/po-detail.html" target="_blank">po-detail ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ</div>
+ <div class="forks">
+  <div class="fork info">
+   <div class="fh">⑃ วัตถุดิบขาดตอนเปิด PO <span class="cond">เตือน · ไม่บล็อก</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+     <div class="act">เตือน "วัตถุดิบอาจไม่พอ" (เทียบ Available) แล้วเสนอสร้าง PR เฉพาะส่วนที่ขาด (ต้องใช้ − Available)<small>C15 · PO เดินหน้าต่อได้</small></div>
+     <div class="row-chips"><span class="doc">📄 PR-xxxxxx</span></div>
+     <div class="row-chips"><span class="badge b-neutral"><span class="ent">PR</span> เปิดคำขอ (Open)</span><span class="noti">🔔 → คลัง + ผลิต</span></div>
+     <div class="foot"><a class="mk" href="../mockups/purchase-request.html" target="_blank">purchase-request ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ ต้องยกเลิก / แก้ PO <span class="cond">comment บังคับ · คงเลขเดิม (gapless)</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-sale">👤 Sale</span></div>
+     <div class="act">ยกเลิก PO ได้ทุกขั้น + เหตุผลบังคับ</div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">PO</span> ยกเลิก (Cancelled)</span></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">b</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+     <div class="act"><b>ยกเลิกก่อนเริ่มผลิต</b> = คืนจองอัตโนมัติ · <b>หลังเริ่มผลิต</b> = dialog เลือก "คืน" หรือ "ไม่คืน (write-off)" วัตถุดิบที่ตัดแล้ว + เหตุผลบังคับ<small>C19</small></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">c</span><span class="actor a-sale">👤 Sale</span></div>
+     <div class="act">เปิดใหม่ = คงเลข PO เดิม · (เคส Hold: แก้ได้ทุกช่อง + trace ราย field, ระบบปรับยอดจองตาม delta แล้วส่งกลับผลิต)</div>
+     <div class="row-chips"><span class="badge b-neutral"><span class="ent">PO</span> ร่าง (Draft)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/po-detail.html" target="_blank">po-detail ↗</a></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">◀ เริ่มจากสาย ① (ลูกค้ายืนยันออเดอร์) · ▶ Confirmed = จุดเริ่มสาย ③ การผลิต (คิวรอรับงาน + วัตถุดิบถูกจอง) · ▶ วัตถุดิบขาด = แตกไป PR/GR (เส้นวัตถุดิบ) · ▶ ราง billing แยกไปสาย ⑥</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>สร้างร่าง + ราคา 0 ได้</td><td><a href="po.html">US-PO-01</a></td></tr>
+ <tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs Available)</td><td><a href="po.html">US-PO-07</a></td></tr>
+ <tr><td>ยืนยัน → คิว "รอรับงาน" + จองวัตถุดิบ + Lead→Active</td><td><a href="po.html">US-PO-02</a></td></tr>
+ <tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด (vs Available)</td><td><a href="purchase-request.html">US-PR-01</a></td></tr>
+ <tr><td>ยกเลิก + เปิดใหม่คงเลข (คืนจอง / dialog คืน-ไม่คืน)</td><td><a href="po.html">US-PO-04</a></td></tr>
+ <tr><td>แก้ PO เคส Hold + trace ราย field + ปรับจอง delta</td><td><a href="po.html">US-PO-05</a></td></tr></table>
+ </details>
 </div>
 
-<!-- J3 -->
+<!-- ================= J3 PRODUCTION ================= -->
 <div class="jcard" id="j3">
-<h2>③ Journey: การผลิต — PRD &amp; Batch</h2>
-<div class="persona"><b>Persona:</b> <b>วิชัย</b> หัวหน้าฝ่ายผลิต — รับงานจากคิว จัดลำดับ ผลิตจริง และส่งตรวจคุณภาพ · <b>เป้าหมาย:</b> ผลิตให้ทันกำหนดส่ง โดยสายผลิตไม่สะดุดแม้วัตถุดิบยังไม่เข้าระบบ</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ที่ <a href="../mockups/production.html" target="_blank">production</a> แท็บ "รอรับงาน" เห็น PO-181 มี 2 line (ยังไม่มีเลข PRD, วัตถุดิบถูกจองไว้แล้ว) → วิชัยกด <b>"รับงาน"</b> line1 (โลชั่น) → ระบบออกเลข <code>PRD-202607-000091</code> <span class="st st-status">รับงาน</span> (ยังไม่ตัด stock — ยังจองอยู่) (C2)</li>
-<li>กด <b>"เริ่มผลิต"</b> → ระบบ gen <code>B-PO-202607-000181-1-1</code> <span class="st st-status">กำลังผลิต</span> + <b>convert จอง→ตัดจริง (Consume) เลือก Lot แบบ FIFO</b> (Reserved↓ + on_hand↓ ผูก Batch↔Lot ตาม GMP; Available ไม่ขยับ) → PO <span class="st st-status">กำลังผลิต</span> (C3)</li>
-<li>ผลิตเสร็จ กด <b>"ส่งตรวจ QC"</b> → Batch เดิมเปลี่ยนเป็น <span class="st st-status">รอ QC</span> (ไม่ gen ใหม่) → โผล่คิว QC (C4) → <span class="st st-noti">noti QC</span></li>
-<li>รอผล QC (Journey ④) → ถ้าผ่าน PRD line1 <span class="st st-status">พร้อมส่งมอบ</span> · เมื่อ <b>ทุก PRD ของ PO ผ่าน</b> → PO <span class="st st-status">พร้อมจัดส่ง</span> (C5)</li>
-</ol>
-<h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>วัตถุดิบไม่พอ (แอลกอฮอล์ PO-185):</b> กดรับงาน/เริ่มผลิตได้ <b>ไม่บล็อก</b> → เตือน "จะตัด stock ติดลบ ~30 หน่วย" → เริ่มผลิต convert จอง→ตัดจริงตัด on_hand <b>จนติดลบ</b> (C16) → <a href="../mockups/stock.html" target="_blank">stock</a> โชว์เลขแดง + badge "ติดลบ (รอรับเข้า)" → พอทำ Goods Receipt ระบบ <b>บวกกลับ + ผูก Lot ย้อน FIFO</b> (คง GMP) + notice "ชดเชยยอดติดลบ" (C17)</div>
-<div class="branch"><b>QC ตีกลับ (line2 โฟม):</b> PRD line2 <span class="st st-status">Rework</span> + เห็น feedback จาก QC → กด <b>"ผลิตซ้ำ"</b> → gen <code>B-...-181-2-2</code> (run ถัดไป) + <b>ตัดวัตถุดิบ run เพิ่มจาก Available/on_hand FIFO (ไม่ได้จองล่วงหน้า, ติดลบได้)</b> → กลับคิว QC (C6/C7) · line1 เดินต่อไม่สะดุด</div>
-<div class="branch"><b>ติดปัญหา:</b> กด "พักงาน (Hold)" + เหตุผล (บังคับ) + raise Sale หรือ Stock (C8) → <span class="st st-noti">noti Sale/Stock</span></div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ เริ่มจาก Journey ② (PO Confirmed + วัตถุดิบถูกจอง) · ▶ ส่งตรวจ = ส่งเข้า Journey ④ QC · ◀ QC ตก = วนกลับมาที่นี่ (rework) · ▶ ทุก PRD ผ่าน = ส่งต่อ Journey ⑤ จัดส่ง · Hold เหตุลูกค้า = จุดชนวน Follow-up Journey ①</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม, ยังไม่ตัด stock)</td><td><a href="production.html">US-PRD-01</a></td></tr>
-<tr><td>เริ่มผลิต → gen Batch + convert จอง→ตัดจริง FIFO (ติดลบได้)</td><td><a href="production.html">US-PRD-02</a> + <a href="stock.html">US-STK-03</a></td></tr>
-<tr><td>ส่งตรวจ QC (Batch เดิมเปลี่ยนสถานะ)</td><td><a href="production.html">US-PRD-03</a></td></tr>
-<tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป (ตัด Available run เพิ่ม)</td><td><a href="production.html">US-PRD-04</a></td></tr>
-<tr><td>Hold + raise Sale/Stock</td><td><a href="production.html">US-PRD-05</a></td></tr></table>
+ <div class="jhead"><h2>③ การผลิต — PRD &amp; Batch</h2><span class="actor a-prod lead-actor">🏭 วิชัย (หัวหน้าฝ่ายผลิต)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> ผลิตทันกำหนดส่ง โดยสายผลิตไม่สะดุดแม้วัตถุดิบยังไม่เข้าระบบ · <b>เคส:</b> PO-181 มี 2 line (โลชั่น + โฟม)</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+   <div class="act">แท็บ "รอรับงาน" → กด "รับงาน" line1 (โลชั่น)<small>วัตถุดิบถูกจองไว้แล้ว · ยังไม่ตัด stock · C2</small></div>
+   <div class="row-chips"><span class="doc">📄 PRD-202607-000091</span></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">PRD</span> รับงาน (Received)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+   <div class="act">กด "เริ่มผลิต"<small>convert จอง→<b>ตัดจริง</b> (Consume) เลือก Lot FIFO · Reserved↓ on_hand↓ · ผูก Batch↔Lot (GMP) · C3</small></div>
+   <div class="row-chips"><span class="doc">📄 B-PO-202607-000181-1-1</span></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">Batch</span> กำลังผลิต</span><span class="badge b-processing"><span class="ent">PO</span> กำลังผลิต</span></div>
+   <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+   <div class="act">ผลิตเสร็จ กด "ส่งตรวจ QC"<small>Batch เดิมเปลี่ยนสถานะ (ไม่ gen ใหม่) → โผล่คิว QC · C4</small></div>
+   <div class="row-chips"><span class="badge b-warning"><span class="ent">Batch</span> รอ QC</span><span class="badge b-warning"><span class="ent">PRD</span> รอ QC</span></div>
+   <div class="row-chips"><span class="noti">🔔 → QC</span></div>
+   <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">4</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+   <div class="act">QC ผ่าน (สาย ④) → PRD line1 พร้อมส่งมอบ · เมื่อ <b>ทุก PRD ของ PO ผ่าน</b> → PO พร้อมจัดส่ง<small>C5</small></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">PRD</span> พร้อมส่งมอบ</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span></div>
+   <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ</div>
+ <div class="forks">
+  <div class="fork fail">
+   <div class="fh">⑃ QC ตีกลับ (line2 โฟม) → ผลิตซ้ำ <span class="cond">line1 เดินต่อไม่สะดุด</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-qc">🔬 QC</span></div>
+     <div class="act">ตีกลับเฉพาะ line2 + feedback<small>เห็น feedback ติดกับ line ที่หน้าผลิต</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">PRD line2</span> Rework</span><span class="noti">🔔 → ฝ่ายผลิต</span></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">b</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+     <div class="act">กด "ผลิตซ้ำ" → gen Batch run ถัดไป<small>ตัดวัตถุดิบ run เพิ่มจาก Available/on_hand FIFO (ไม่จองล่วงหน้า, ติดลบได้) → กลับคิว QC · C6/C7</small></div>
+     <div class="row-chips"><span class="doc">📄 B-…-181-2-2</span></div>
+     <div class="row-chips"><span class="badge b-processing"><span class="ent">Batch</span> กำลังผลิต (run 2)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ วัตถุดิบไม่พอ → ตัด stock ติดลบ <span class="cond">แอลกอฮอล์ PO-185 · ไม่บล็อก</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+     <div class="act">เริ่มผลิตได้เลย → เตือน "จะตัด stock ติดลบ ~30 หน่วย" แล้วตัด on_hand จนติดลบ<small>C16</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">คลัง</span> ติดลบ (รอรับเข้า)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/stock.html" target="_blank">stock ↗</a></div>
+    </div>
+    <div class="step">
+     <div class="top"><span class="snum">b</span><span class="actor a-stock">📦 คลัง</span></div>
+     <div class="act">ทำ Goods Receipt → บวกกลับ + ผูก Lot ย้อน FIFO + notice "ชดเชยยอดติดลบ"<small>genealogy ครบ (GMP) · C17</small></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">Lot</span> รอตรวจรับ</span></div>
+     <div class="foot"><a class="mk" href="../mockups/goods-receipt.html" target="_blank">goods-receipt ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ ติดปัญหา → พักงาน (Hold) <span class="cond">เหตุผลบังคับ</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
+     <div class="act">กด "พักงาน (Hold)" + เหตุผลบังคับ + raise Sale หรือ Stock<small>C8</small></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">PRD</span> พักงาน (Hold)</span><span class="noti">🔔 → Sale / คลัง</span></div>
+     <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">◀ เริ่มจากสาย ② (PO Confirmed + วัตถุดิบถูกจอง) · ▶ ส่งตรวจ = ส่งเข้าสาย ④ QC · ◀ QC ตก = วนกลับมาที่นี่ (rework) · ▶ ทุก PRD ผ่าน = ส่งต่อสาย ⑤ · Hold เหตุลูกค้า = จุดชนวน Follow-up สาย ①</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม, ยังไม่ตัด stock)</td><td><a href="production.html">US-PRD-01</a></td></tr>
+ <tr><td>เริ่มผลิต → gen Batch + convert จอง→ตัดจริง FIFO (ติดลบได้)</td><td><a href="production.html">US-PRD-02</a> + <a href="stock.html">US-STK-03</a></td></tr>
+ <tr><td>ส่งตรวจ QC (Batch เดิมเปลี่ยนสถานะ)</td><td><a href="production.html">US-PRD-03</a></td></tr>
+ <tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป (ตัด Available run เพิ่ม)</td><td><a href="production.html">US-PRD-04</a></td></tr>
+ <tr><td>Hold + raise Sale/Stock</td><td><a href="production.html">US-PRD-05</a></td></tr></table>
+ </details>
 </div>
 
-<!-- J4 -->
+<!-- ================= J4 QC ================= -->
 <div class="jcard" id="j4">
-<h2>④ Journey: QC — ตรวจคุณภาพ</h2>
-<div class="persona"><b>Persona:</b> <b>อรุณี</b> เจ้าหน้าที่ QC — ตัดสินคุณภาพ Batch ที่ผลิตเสร็จ และตรวจรับวัตถุดิบ Lot ขาเข้า · <b>เป้าหมาย:</b> ปล่อยเฉพาะของที่ผ่านมาตรฐาน + ให้ฝ่ายผลิตรู้ชัดว่าต้องแก้อะไร (GMP)</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ที่ <a href="../mockups/qc.html" target="_blank">qc</a> แท็บ "ตรวจ Batch" เห็น <code>B-PO-202607-000181-1-1</code> (โลชั่น) รอ QC → ดู GMP chain (Lot→Batch→PO) → กด <b>"✓ ผ่าน"</b> → Batch <span class="st st-status">QC ผ่าน</span> → PRD line1 <span class="st st-status">พร้อมส่งมอบ</span></li>
-<li>Batch <code>B-...-181-2-1</code> (โฟม) ตรวจเจอปัญหา → กด <b>"✕ ไม่ผ่าน"</b> + <b>feedback บังคับ</b> "เนื้อโฟมเป็นก้อน ปั๊มไม่ออก" → Batch <span class="st st-status">ไม่ผ่าน</span> · PRD line2 <span class="st st-status">Rework</span> (C6) → <span class="st st-noti">noti ฝ่ายผลิต</span> (deep link ไป line ที่ต้องแก้)</li>
-<li>เมื่อทุก line ของ PO ผ่าน → PO <span class="st st-status">พร้อมจัดส่ง</span> (C5) → <span class="st st-noti">noti ฝ่ายจัดส่ง</span></li>
-</ol>
-<h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>ตรวจซ้ำหลัง rework:</b> run2 (<code>B-...-181-2-2</code>) โผล่คิว QC เป็นรายการใหม่ + <b>เห็นประวัติ run1 ไม่ผ่าน + feedback เดิม</b> → ตรวจแล้วผ่าน (เช่น PO-170 run1 fail→run2 pass)</div>
-<div class="branch"><b>Lot วัตถุดิบขาเข้าไม่ผ่าน:</b> แท็บ "ตรวจรับ Lot" → ตัดสิน "ไม่ผ่าน" → Lot <span class="st st-status">ระงับ</span> → เปิดใบคืนของ supplier (C18 → Journey Return)</div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ รับงานจาก Journey ③ (ส่งตรวจ) · ▶ ผ่าน = ส่ง PO เข้า Journey ⑤ · ◀▶ ไม่ผ่าน = ตีกลับ Journey ③ (rework loop) · ▶ Lot ตก = Journey Return (คืน supplier)</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>ตรวจ Batch ผ่าน → PRD/PO cascade</td><td><a href="qc.html">US-QC-01</a></td></tr>
-<tr><td>ไม่ผ่าน + feedback บังคับ + ประวัติ run</td><td><a href="qc.html">US-QC-02</a></td></tr>
-<tr><td>ตรวจรับ Lot ขาเข้า ผ่าน/ไม่ผ่าน→คืน</td><td><a href="qc.html">US-QC-03</a> + <a href="return.html">US-RET-01</a></td></tr></table>
+ <div class="jhead"><h2>④ QC — ตรวจคุณภาพ</h2><span class="actor a-qc lead-actor">🔬 อรุณี (เจ้าหน้าที่ QC)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> ปล่อยเฉพาะของที่ผ่านมาตรฐาน + บอกฝ่ายผลิตชัดว่าต้องแก้อะไร (GMP) · <b>เคส:</b> PO-181 line1 โลชั่น / line2 โฟม</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-qc">🔬 QC</span></div>
+   <div class="act">ตรวจ Batch โลชั่น → กด "✓ ผ่าน"<small>ดู GMP chain (Lot→Batch→PO) ก่อนตัดสิน</small></div>
+   <div class="row-chips"><span class="doc">📄 B-…-181-1-1</span></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">Batch</span> QC ผ่าน</span><span class="badge b-processing"><span class="ent">PRD line1</span> พร้อมส่งมอบ</span></div>
+   <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-qc">🔬 QC</span></div>
+   <div class="act">ตรวจ Batch โฟม เจอปัญหา → "✕ ไม่ผ่าน" + <b>feedback บังคับ</b><small>"เนื้อโฟมเป็นก้อน ปั๊มไม่ออก" · C6</small></div>
+   <div class="row-chips"><span class="doc">📄 B-…-181-2-1</span></div>
+   <div class="row-chips"><span class="badge b-error"><span class="ent">Batch</span> QC ไม่ผ่าน</span><span class="badge b-error"><span class="ent">PRD line2</span> Rework</span></div>
+   <div class="row-chips"><span class="noti">🔔 → ฝ่ายผลิต (deep link ไป line ที่ต้องแก้)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+   <div class="act">เมื่อ <b>ทุก line ของ PO ผ่าน</b> → PO พร้อมจัดส่ง<small>C5</small></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span><span class="noti">🔔 → ฝ่ายจัดส่ง</span></div>
+   <div class="foot"><a class="mk" href="../mockups/po-detail.html" target="_blank">po-detail ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ</div>
+ <div class="forks">
+  <div class="fork pass">
+   <div class="fh">⑃ ตรวจซ้ำหลัง rework <span class="cond">เช่น PO-170 run1 fail → run2 pass</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-qc">🔬 QC</span></div>
+     <div class="act">run2 โผล่คิว QC เป็นรายการใหม่ + <b>เห็นประวัติ run1 ไม่ผ่าน + feedback เดิม</b> → ตรวจแล้วผ่าน</div>
+     <div class="row-chips"><span class="doc">📄 B-…-170-1-2</span></div>
+     <div class="row-chips"><span class="badge b-success"><span class="ent">Batch</span> QC ผ่าน</span></div>
+     <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork fail">
+   <div class="fh">⑃ Lot วัตถุดิบขาเข้าไม่ผ่าน <span class="cond">แท็บ "ตรวจรับ Lot"</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-qc">🔬 QC</span></div>
+     <div class="act">ตัดสิน "ไม่ผ่าน" → เปิดใบคืนของ supplier<small>C18 → Journey Return</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">Lot</span> ระงับ</span></div>
+     <div class="foot"><a class="mk" href="../mockups/return.html" target="_blank">return ↗</a></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">◀ รับงานจากสาย ③ (ส่งตรวจ) · ▶ ผ่าน = ส่ง PO เข้าสาย ⑤ · ◀▶ ไม่ผ่าน = ตีกลับสาย ③ (rework loop) · ▶ Lot ตก = Journey Return (คืน supplier)</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>ตรวจ Batch ผ่าน → PRD/PO cascade</td><td><a href="qc.html">US-QC-01</a></td></tr>
+ <tr><td>ไม่ผ่าน + feedback บังคับ + ประวัติ run</td><td><a href="qc.html">US-QC-02</a></td></tr>
+ <tr><td>ตรวจรับ Lot ขาเข้า ผ่าน/ไม่ผ่าน→คืน</td><td><a href="qc.html">US-QC-03</a> + <a href="return.html">US-RET-01</a></td></tr></table>
+ </details>
 </div>
 
-<!-- J5 -->
+<!-- ================= J5 SHIPPING ================= -->
 <div class="jcard" id="j5">
-<h2>⑤ Journey: จัดส่ง — Shipment &amp; DN</h2>
-<div class="persona"><b>Persona:</b> <b>ก้อง</b> ฝ่ายจัดส่ง — จัดรอบรถ เลือก PO ที่พร้อม และอัปเดตผลการส่งราย DN · <b>เป้าหมาย:</b> ส่งของครบถูกใบ ลูกค้าเซ็นรับ และปิดรอบให้ตรงความจริง</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ที่ <a href="../mockups/shipping.html" target="_blank">shipping</a> เห็นคิว PO "พร้อมจัดส่ง" → สร้างรอบ <code>SHP-20260708-0044</code> เลือก PO-176 (บิวตี้ เอเชีย) + กรอกคนขับ/เบอร์/route/รถกระบะ → ระบบ gen <code>DN-20260708-00119</code> (1 DN = 1 PO) → PO <span class="st st-status">กำลังจัดส่ง</span> (C9)</li>
-<li>ที่ <a href="../mockups/delivery-note.html" target="_blank">delivery-note</a> พิมพ์ DN ทีละใบ → ลูกค้ารับ + เซ็น → กด <b>"ส่งถึงแล้ว"</b> → DN <span class="st st-status">ส่งถึงแล้ว</span> · PO <span class="st st-status">ส่งถึงแล้ว</span> + <b>เริ่มนับเครดิต/overdue</b> (C10) → <span class="st st-noti">noti Finance + Sale</span></li>
-<li>รอบจบเมื่อ DN ทุกใบถึงสถานะสุดท้าย → Shipment <span class="st st-status">จบรอบ</span></li>
-</ol>
-<h3>ทางแยกสำคัญ (รอบรวมหลาย PO — SHP-0046)</h3>
-<div class="branch"><b>ลูกค้าปฏิเสธ:</b> DN-00123 (PO-175) → กด "ถูกปฏิเสธ" → PO <span class="st st-status">พร้อมจัดส่ง</span> (กลับคิว) + <b>raise Sale</b> (C11) → <span class="st st-noti">noti Sale</span> (ไป Journey ①) → รอสร้าง DN รอบใหม่</div>
-<div class="branch"><b>ลูกค้าขอเลื่อน:</b> DN-00124 (PO-178) → "เลื่อนส่ง" + วันที่ 10/07 → PO <span class="st st-status">พร้อมจัดส่ง</span> + flag "กันจัดส่ง Postpone 10/07" ค้างคิว (C12) → รอบรวม = <span class="st st-status">ส่งบางส่วน (Partially)</span> + breakdown 3 DN</div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ รับ PO จาก Journey ④ (พร้อมจัดส่ง) · ▶ ส่งถึง = จุดเริ่มนับเครดิต Journey ⑥ · ▶ ปฏิเสธ = raise Sale Journey ① (อาจตั้ง Follow-up)</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>สร้างรอบ + DN ราย PO + ข้อมูลรถ</td><td><a href="shipping.html">US-SHP-01</a></td></tr>
-<tr><td>Delivered / Rejected / Postponed</td><td><a href="shipping.html">US-SHP-02</a></td></tr>
-<tr><td>reconcile รอบ (จบรอบ/Partially) + print</td><td><a href="shipping.html">US-SHP-03</a></td></tr></table>
+ <div class="jhead"><h2>⑤ จัดส่ง — Shipment &amp; DN</h2><span class="actor a-ship lead-actor">🚚 ก้อง (ฝ่ายจัดส่ง)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> ส่งของครบถูกใบ ลูกค้าเซ็นรับ และปิดรอบให้ตรงความจริง · <b>โครงสร้าง:</b> Shipment (รอบ) → DN (1 ใบ = 1 PO)</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
+   <div class="act">สร้างรอบ เลือก PO-176 + คนขับ/เบอร์/route/รถกระบะ<small>ระบบ gen DN (1 DN = 1 PO) · C9</small></div>
+   <div class="row-chips"><span class="doc">📄 SHP-20260708-0044</span><span class="doc">📄 DN-20260708-00119</span></div>
+   <div class="row-chips"><span class="badge b-processing"><span class="ent">PO</span> กำลังจัดส่ง</span><span class="badge b-processing"><span class="ent">Shipment</span> กำลังนำส่ง</span></div>
+   <div class="foot"><a class="mk" href="../mockups/shipping.html" target="_blank">shipping ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
+   <div class="act">พิมพ์ DN → ลูกค้ารับ+เซ็น → กด "ส่งถึงแล้ว"<small>เริ่มนับเครดิต/overdue · C10</small></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">DN</span> ส่งถึงแล้ว</span><span class="badge b-success"><span class="ent">PO</span> ส่งถึงแล้ว</span></div>
+   <div class="row-chips"><span class="noti">🔔 → การเงิน + Sale</span></div>
+   <div class="foot"><a class="mk" href="../mockups/delivery-note.html" target="_blank">delivery-note ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+   <div class="act">DN ทุกใบถึงสถานะสุดท้าย → ปิดรอบอัตโนมัติ</div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">Shipment</span> จบรอบ (Closed)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/shipping.html" target="_blank">shipping ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ (รอบรวมหลาย PO — SHP-0046)</div>
+ <div class="forks">
+  <div class="fork fail">
+   <div class="fh">⑃ ลูกค้าปฏิเสธ <span class="cond">DN-00123 (PO-175)</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
+     <div class="act">กด "ถูกปฏิเสธ" + raise Sale → PO กลับคิว รอสร้าง DN รอบใหม่<small>C11</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">DN</span> ถูกปฏิเสธ</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง (กลับคิว)</span></div>
+     <div class="row-chips"><span class="noti">🔔 → Sale (→ สาย ①)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/delivery-note.html" target="_blank">delivery-note ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ ลูกค้าขอเลื่อน <span class="cond">DN-00124 (PO-178) → 10/07</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
+     <div class="act">กด "เลื่อนส่ง" + วันที่ → PO ค้างคิว + flag "Postpone 10/07"<small>รอบรวม = ส่งบางส่วน + breakdown 3 DN · C12</small></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">DN</span> เลื่อนส่ง 10/07</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">Shipment</span> ส่งบางส่วน (Partially)</span></div>
+     <div class="foot"><a class="mk" href="../mockups/delivery-note.html" target="_blank">delivery-note ↗</a></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">◀ รับ PO จากสาย ④ (พร้อมจัดส่ง) · ▶ ส่งถึง = จุดเริ่มนับเครดิตสาย ⑥ · ▶ ปฏิเสธ = raise Sale สาย ① (อาจตั้ง Follow-up)</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>สร้างรอบ + DN ราย PO + ข้อมูลรถ</td><td><a href="shipping.html">US-SHP-01</a></td></tr>
+ <tr><td>Delivered / Rejected / Postponed</td><td><a href="shipping.html">US-SHP-02</a></td></tr>
+ <tr><td>reconcile รอบ (จบรอบ/Partially) + print</td><td><a href="shipping.html">US-SHP-03</a></td></tr></table>
+ </details>
 </div>
 
-<!-- J6 -->
+<!-- ================= J6 BILLING ================= -->
 <div class="jcard" id="j6">
-<h2>⑥ Journey: Billing — วางบิล &amp; เก็บเงิน</h2>
-<div class="persona"><b>Persona:</b> <b>นภา</b> ฝ่ายการเงิน — ออกใบแจ้งหนี้/ใบกำกับภาษี และติดตามหนี้ค้าง · <b>เป้าหมาย:</b> วางบิลถูกต้องตามสรรพากร และเก็บเงินตรงกำหนดเครดิต</div>
-<h3>เส้นเดินหลัก (happy path)</h3>
-<ol class="steps">
-<li>ที่ <a href="../mockups/invoices.html" target="_blank">invoices</a> เห็น PO-176 <span class="st st-status">ส่งถึงแล้ว</span> → กด "ออกใบแจ้งหนี้" → ระบบ gen <code>INV-2026-000135</code> <span class="st st-status">รอชำระ</span> · ราง billing ของ PO <span class="st st-status">วางบิลแล้ว</span> (C13) · เครดิต 30 วัน (จากระดับลูกค้า)</li>
-<li>ที่ <a href="../mockups/invoice-print.html" target="_blank">invoice-print</a> พิมพ์ใบกำกับภาษีไทย: ผู้ออก + เลขผู้เสียภาษี 13 หลัก, <b>VAT 7% ตาม effective date ณ วันออกใบ</b> (01/01/2569), ตัวหนังสือไทย, ลายเซ็น 2 ช่อง</li>
-<li>ลูกค้าจ่ายครบ → บันทึกรับชำระ → <span class="st st-status">ชำระแล้ว (Paid)</span></li>
-</ol>
-<h3>ทางแยกสำคัญ</h3>
-<div class="branch"><b>ออกบิลล่วงหน้า:</b> ออกใบได้ตั้งแต่ PO <span class="st st-status">ยืนยันแล้ว</span> แต่ใบต้องโชว์ stage จริงของ PO เสมอ</div>
-<div class="branch"><b>เลยกำหนด:</b> ส่งของแล้ว + เลยเครดิต (ระดับลูกค้า) + ยังไม่จ่าย → scheduler เลื่อนเป็น <span class="st st-status">เกินกำหนด (Overdue)</span> + จำนวนวันค้าง (C14) → <span class="st st-noti">noti Finance + Sale</span> (Sale ไปตาม = Journey ①)</div>
-<div class="branch"><b>ต้องแก้/ยกเลิกใบ:</b> ใช้ <b>versioning</b> (เก็บประวัติ) และ <b>"ยกเลิก (void)" ไม่ลบ</b> — เลขคงอยู่ (gapless)</div>
-<h3>จุดเชื่อม journey อื่น</h3>
-<div class="xlink">◀ เริ่มนับเครดิตจาก Journey ⑤ (DN Delivered) · ▶ Overdue = ส่ง Sale ตาม Journey ① · อัตรา VAT ตั้งที่ Settings (US-SET-03)</div>
-<h3>อ้างอิง step ↔ story</h3>
-<table><tr><th>step/ทางแยก</th><th>story</th></tr>
-<tr><td>ออกใบตั้งแต่ Confirmed + โชว์ stage จริง</td><td><a href="invoice.html">US-INV-01</a></td></tr>
-<tr><td>ใบกำกับภาษีไทย + VAT ตาม invoice date</td><td><a href="invoice.html">US-INV-02</a> + <a href="settings.html">US-SET-03</a></td></tr>
-<tr><td>Overdue + ติดตามหนี้</td><td><a href="invoice.html">US-INV-03</a></td></tr>
-<tr><td>versioning + void (ไม่ลบ/gapless)</td><td><a href="invoice.html">US-INV-04</a></td></tr></table>
+ <div class="jhead"><h2>⑥ Billing — วางบิล &amp; เก็บเงิน</h2><span class="actor a-fin lead-actor">💰 นภา (ฝ่ายการเงิน)</span></div>
+ <div class="persona"><b>เป้าหมาย:</b> วางบิลถูกต้องตามสรรพากร และเก็บเงินตรงกำหนดเครดิต · <b>เคส:</b> PO-176 (ส่งถึงแล้ว)</div>
+
+ <div class="phase">เส้นหลัก (happy path)</div>
+ <div class="flow">
+  <div class="step">
+   <div class="top"><span class="snum">1</span><span class="actor a-fin">💰 การเงิน</span></div>
+   <div class="act">PO ส่งถึงแล้ว → กด "ออกใบแจ้งหนี้"<small>เครดิต 30 วัน (จากระดับลูกค้า) · C13</small></div>
+   <div class="row-chips"><span class="doc">📄 INV-2026-000135</span></div>
+   <div class="row-chips"><span class="badge b-warning"><span class="ent">Invoice</span> รอชำระ</span><span class="badge b-warning"><span class="ent">บิล</span> วางบิลแล้ว</span></div>
+   <div class="foot"><a class="mk" href="../mockups/invoices.html" target="_blank">invoices ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">2</span><span class="actor a-fin">💰 การเงิน</span></div>
+   <div class="act">พิมพ์ใบกำกับภาษีไทย<small>เลขภาษี 13 หลัก · VAT 7% ตาม effective date ณ วันออกใบ (01/01/2569) · ตัวหนังสือไทย · ลายเซ็น 2 ช่อง</small></div>
+   <div class="row-chips"><span class="doc">📄 ใบกำกับภาษี</span></div>
+   <div class="row-chips"><span class="badge b-warning"><span class="ent">Invoice</span> รอชำระ</span></div>
+   <div class="foot"><a class="mk" href="../mockups/invoice-print.html" target="_blank">invoice-print ↗</a></div>
+  </div>
+  <div class="step">
+   <div class="top"><span class="snum">3</span><span class="actor a-fin">💰 การเงิน</span></div>
+   <div class="act">ลูกค้าจ่ายครบ → บันทึกรับชำระ</div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">Invoice</span> ชำระแล้ว (Paid)</span></div>
+   <div class="foot"><a class="mk" href="../mockups/invoice-detail.html" target="_blank">invoice-detail ↗</a></div>
+  </div>
+ </div>
+
+ <div class="phase">ทางแยกสำคัญ</div>
+ <div class="forks">
+  <div class="fork info">
+   <div class="fh">⑃ ออกบิลล่วงหน้า <span class="cond">ตั้งแต่ PO = ยืนยันแล้ว</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-fin">💰 การเงิน</span></div>
+     <div class="act">ออกใบได้ตั้งแต่ PO ยืนยันแล้ว แต่ใบต้องโชว์ stage จริงของ PO เสมอ</div>
+     <div class="row-chips"><span class="badge b-processing"><span class="ent">PO</span> ยืนยันแล้ว</span></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork fail">
+   <div class="fh">⑃ เลยกำหนด (Overdue) <span class="cond">scheduler</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-sys">⚙️ ระบบ</span></div>
+     <div class="act">ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย → เลื่อนอัตโนมัติ + จำนวนวันค้าง<small>C14 · Sale ไปตาม = สาย ①</small></div>
+     <div class="row-chips"><span class="badge b-error"><span class="ent">Invoice</span> เกินกำหนด (Overdue)</span></div>
+     <div class="row-chips"><span class="noti">🔔 → การเงิน + Sale</span></div>
+     <div class="foot"><a class="mk" href="../mockups/invoices.html" target="_blank">invoices ↗</a></div>
+    </div>
+   </div>
+  </div>
+  <div class="fork">
+   <div class="fh">⑃ ต้องแก้ / ยกเลิกใบ <span class="cond">ไม่ลบ · gapless</span></div>
+   <div class="miniflow">
+    <div class="step">
+     <div class="top"><span class="snum">a</span><span class="actor a-fin">💰 การเงิน</span></div>
+     <div class="act">ใช้ versioning (เก็บประวัติ) และ "ยกเลิก (void)" ไม่ลบ — เลขคงอยู่</div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="xlink">◀ เริ่มนับเครดิตจากสาย ⑤ (DN ส่งถึงแล้ว) · ▶ Overdue = ส่ง Sale ตามสาย ① · อัตรา VAT ตั้งที่ Settings (US-SET-03)</div>
+
+ <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
+ <table><tr><th>step / ทางแยก</th><th>story</th></tr>
+ <tr><td>ออกใบตั้งแต่ Confirmed + โชว์ stage จริง</td><td><a href="invoice.html">US-INV-01</a></td></tr>
+ <tr><td>ใบกำกับภาษีไทย + VAT ตาม invoice date</td><td><a href="invoice.html">US-INV-02</a> + <a href="settings.html">US-SET-03</a></td></tr>
+ <tr><td>Overdue + ติดตามหนี้</td><td><a href="invoice.html">US-INV-03</a></td></tr>
+ <tr><td>versioning + void (ไม่ลบ/gapless)</td><td><a href="invoice.html">US-INV-04</a></td></tr></table>
+ </details>
 </div>
 
-<h2>จุดที่อยากให้ BA ตรวจเข้ม (cross-review journeys ↔ stories)</h2>
+<!-- BA cross-review appendix -->
+<details style="margin-top:24px">
+<summary>จุดที่อยากให้ BA ตรวจเข้ม (cross-review journeys ↔ stories)</summary>
 <div class="note">
-<b>1. เจ้าของ auto-transition ข้าม module:</b> "ยืนยัน PO ใบแรก → Lead→Active" (J1 step3/J2 step3) — เป็นของ US-PO-02 หรือ US-CUS-02? อย่าให้ตกหล่นหรือซ้ำ 2 เจ้า · เช่นเดียวกับ "ทุก PRD ผ่าน → PO พร้อมจัดส่ง" (J3/J4) = cascade ที่ US-QC-01 ทำ — ยืนยัน PO module ไม่ได้ประกาศ transition นี้ซ้ำ<br>
-<b>2. Negative stock มี 2 จังหวะเตือน:</b> J3 เตือนทั้งตอน "รับงาน" (US-PRD-01 edge) และตอน "เริ่มผลิต" (US-PRD-02 edge) — BA ยืนยันว่ามี AC ครบทั้ง 2 จุด ไม่ใช่จุดเดียว<br>
-<b>3. Rework loop ต่อเนื่อง:</b> J3↔J4 (ตก→Rework→ผลิตซ้ำ→run ถัดไป→ตรวจซ้ำเห็นประวัติ) — ไล่ว่า US-PRD-04 + US-QC-02 ครอบทุก step ของวงรอบ (badge/feedback/run history) ไม่ขาดตอน<br>
-<b>4. DN ปฏิเสธ → raise Sale → อาจ Follow-up:</b> J5→J1 ข้าม 3 module (US-SHP-02 → US-PO-05/US-CUS-03) — ยืนยัน chain นี้มี story รับช่วงครบ ไม่มีรูตรงกลาง<br>
-<b>5. Home task-inbox = ปลายทาง noti ทุกสาย:</b> ทุก <span class="st st-noti">noti</span> ในทั้ง 6 journey ต้องโผล่ใน Home ของ role ปลายทาง (US-HOME-01) และนับตรงกับ dashboard tile — BA ตรวจว่าเหตุการณ์ครบ<br>
+<b>1. เจ้าของ auto-transition ข้าม module:</b> "ยืนยัน PO ใบแรก → Lead→Active" (①/②) — เป็นของ US-PO-02 หรือ US-CUS-02? อย่าให้ตกหล่นหรือซ้ำ 2 เจ้า · เช่นเดียวกับ "ทุก PRD ผ่าน → PO พร้อมจัดส่ง" (③/④) = cascade ที่ US-QC-01 ทำ — ยืนยัน PO module ไม่ได้ประกาศ transition นี้ซ้ำ<br>
+<b>2. Negative stock มี 2 จังหวะเตือน:</b> ③ เตือนทั้งตอน "รับงาน" (US-PRD-01 edge) และตอน "เริ่มผลิต" (US-PRD-02 edge) — BA ยืนยันว่ามี AC ครบทั้ง 2 จุด ไม่ใช่จุดเดียว<br>
+<b>3. Rework loop ต่อเนื่อง:</b> ③↔④ (ตก→Rework→ผลิตซ้ำ→run ถัดไป→ตรวจซ้ำเห็นประวัติ) — ไล่ว่า US-PRD-04 + US-QC-02 ครอบทุก step ของวงรอบ (badge/feedback/run history) ไม่ขาดตอน<br>
+<b>4. DN ปฏิเสธ → raise Sale → อาจ Follow-up:</b> ⑤→① ข้าม 3 module (US-SHP-02 → US-PO-05/US-CUS-03) — ยืนยัน chain นี้มี story รับช่วงครบ ไม่มีรูตรงกลาง<br>
+<b>5. Home task-inbox = ปลายทาง noti ทุกสาย:</b> ทุก 🔔 ในทั้ง 6 สาย ต้องโผล่ใน Home ของ role ปลายทาง (US-HOME-01) และนับตรงกับ dashboard tile — BA ตรวจว่าเหตุการณ์ครบ<br>
 <b>6. Stock Reservation (r5):</b> จอง (Confirmed, US-PO-02) → ตัดจริง (เริ่มผลิต, US-PRD-02) → คืน/dialog (cancel, US-PO-04) → ปรับ delta (Hold edit, US-PO-05) — BA ยืนยันทุก step ของ reservation lifecycle มี AC รองรับ + 3 ยอด (US-STK-03) + ใครจอง (US-STK-06) ครบ ไม่มีกติกาใหม่ (อ้าง <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)<br>
 <b>7. ไม่มีกติกาใหม่:</b> ทุก step อ้าง entity-status-map cascade C1–C20 — ถ้า journey เล่าอะไรที่ story/AC ไม่มี = ต้องเพิ่ม AC (ไม่ใช่เพิ่มกติกา)
 </div>
+</details>
 
 <div class="nav"><a href="index.html">← สารบัญ</a><a href="walkthrough.html">8 Use Cases (dataset)</a><a href="continuity.html">Cascade + Noti</a><a href="../../../requirements/erp-v2-ui-first/entity-status-map.md">entity-status-map</a></div>
-<footer>User Journeys 6 สาย (Customer→PO→ผลิต→QC→จัดส่ง→Billing) · narrative + step↔story · dataset เดิม · source = entity-status-map.md · + Stock Reservation (C20) · Cross-cutting</footer>
+<footer>User Journeys 6 สาย (ผังภาพ) · Customer→PO→ผลิต→QC→จัดส่ง→Billing · แต่ละขั้น: ใครทำ · ทำอะไร · ได้เอกสาร · สถานะเปลี่ยน (สีตรงระบบจริง) · dataset เดิม · source = entity-status-map.md (C1–C20 + Stock Reservation r5) · เนื้อหาเดิมครบ เปลี่ยนเฉพาะการนำเสนอ</footer>
 </div></body></html>
