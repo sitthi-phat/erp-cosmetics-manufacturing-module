@@ -264,7 +264,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
  <div class="flow">
   <div class="step">
    <div class="top"><span class="snum">1</span><span class="actor a-sale">👤 Sale</span></div>
-   <div class="act">เลือกลูกค้า + เพิ่ม 2 บรรทัด (โลชั่น/โฟม BOM)<small>ระบบ suggest ราคาขาย + เช็ควัตถุดิบพอไหม (ΣBOM×จำนวน เทียบ Available = คงคลัง − จองแล้ว) · แก้ราคาได้ (0 ได้)</small></div>
+   <div class="act">เลือกลูกค้า + เพิ่ม 2 บรรทัด (โลชั่น/โฟม BOM)<small>ระบบ suggest ราคาขาย + เช็คให้ว่าวัตถุดิบพอไหม (นับเฉพาะของที่ยังใช้ได้จริง หลังหักที่จองไว้) · แก้ราคาได้ (0 ได้)</small></div>
    <div class="foot"><a class="mk" href="../mockups/po-create.html" target="_blank">po-create ↗</a></div>
   </div>
   <div class="step">
@@ -306,8 +306,8 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
      <div class="row-chips"><span class="badge b-error"><span class="ent">PO</span> ยกเลิก (Cancelled)</span></div>
     </div>
     <div class="step">
-     <div class="top"><span class="snum">b</span><span class="actor a-sys">⚙️ ระบบ</span></div>
-     <div class="act"><b>ยกเลิกก่อนเริ่มผลิต</b> = คืนจองอัตโนมัติ · <b>หลังเริ่มผลิต</b> = dialog เลือก "คืน" หรือ "ไม่คืน (write-off)" วัตถุดิบที่ตัดแล้ว + เหตุผลบังคับ<small>C19</small></div>
+     <div class="top"><span class="snum">b</span><span class="actor a-sys">⚙️ ระบบ</span><span class="actor a-sale">👤 Sale</span></div>
+     <div class="act"><b>ก่อนเริ่มผลิต</b> → ⚙️ ระบบ <b>คืนจองอัตโนมัติ</b><br><b>หลังเริ่มผลิต</b> → 👤 Sale เลือก "คืน" หรือ "ไม่คืน (write-off)" วัตถุดิบที่ตัดแล้ว + เหตุผลบังคับ<small>C19 · ท่อนบน = ระบบทำเอง · ท่อนล่าง = คนต้องตัดสินใจ</small></div>
     </div>
     <div class="step">
      <div class="top"><span class="snum">c</span><span class="actor a-sale">👤 Sale</span></div>
@@ -348,7 +348,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
   </div>
   <div class="step">
    <div class="top"><span class="snum">2</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
-   <div class="act">กด "เริ่มผลิต"<small>convert จอง→<b>ตัดจริง</b> (Consume) เลือก Lot FIFO · Reserved↓ on_hand↓ · ผูก Batch↔Lot (GMP) · C3</small></div>
+   <div class="act">กด "เริ่มผลิต"<small>ระบบตัดวัตถุดิบที่จองไว้มาใช้จริง (เลือกล็อตเก่าก่อน) · ผูกล็อตกับรุ่นผลิตไว้ตาม GMP · C3</small></div>
    <div class="row-chips"><span class="doc">📄 B-PO-202607-000181-1-1</span></div>
    <div class="row-chips"><span class="badge b-processing"><span class="ent">Batch</span> กำลังผลิต</span><span class="badge b-processing"><span class="ent">PO</span> กำลังผลิต</span></div>
    <div class="foot"><a class="mk" href="../mockups/production.html" target="_blank">production ↗</a></div>
@@ -376,7 +376,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
     <div class="step">
      <div class="top"><span class="snum">a</span><span class="actor a-qc">🔬 QC</span></div>
      <div class="act">ตีกลับเฉพาะ line2 + feedback<small>เห็น feedback ติดกับ line ที่หน้าผลิต</small></div>
-     <div class="row-chips"><span class="badge b-error"><span class="ent">PRD line2</span> Rework</span><span class="noti">🔔 → ฝ่ายผลิต</span></div>
+     <div class="row-chips"><span class="badge b-processing"><span class="ent">PRD line2</span> กำลังผลิต · Rework</span><span class="noti">🔔 → ฝ่ายผลิต</span></div>
     </div>
     <div class="step">
      <div class="top"><span class="snum">b</span><span class="actor a-prod">🏭 ฝ่ายผลิต</span></div>
@@ -447,7 +447,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
    <div class="top"><span class="snum">2</span><span class="actor a-qc">🔬 QC</span></div>
    <div class="act">ตรวจ Batch โฟม เจอปัญหา → "✕ ไม่ผ่าน" + <b>feedback บังคับ</b><small>"เนื้อโฟมเป็นก้อน ปั๊มไม่ออก" · C6</small></div>
    <div class="row-chips"><span class="doc">📄 B-…-181-2-1</span></div>
-   <div class="row-chips"><span class="badge b-error"><span class="ent">Batch</span> QC ไม่ผ่าน</span><span class="badge b-error"><span class="ent">PRD line2</span> Rework</span></div>
+   <div class="row-chips"><span class="badge b-error"><span class="ent">Batch</span> QC ไม่ผ่าน</span><span class="badge b-processing"><span class="ent">PRD line2</span> กำลังผลิต · Rework</span></div>
    <div class="row-chips"><span class="noti">🔔 → ฝ่ายผลิต (deep link ไป line ที่ต้องแก้)</span></div>
    <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
   </div>
@@ -546,7 +546,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
      <div class="top"><span class="snum">a</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
      <div class="act">กด "เลื่อนส่ง" + วันที่ → PO ค้างคิว + flag "Postpone 10/07"<small>รอบรวม = ส่งบางส่วน + breakdown 3 DN · C12</small></div>
      <div class="row-chips"><span class="badge b-warning"><span class="ent">DN</span> เลื่อนส่ง 10/07</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span></div>
-     <div class="row-chips"><span class="badge b-warning"><span class="ent">Shipment</span> ส่งบางส่วน (Partially)</span></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">สรุปรอบ</span> ส่งบางส่วน · รอบยังไม่ปิด</span></div>
      <div class="foot"><a class="mk" href="../mockups/delivery-note.html" target="_blank">delivery-note ↗</a></div>
     </div>
    </div>
