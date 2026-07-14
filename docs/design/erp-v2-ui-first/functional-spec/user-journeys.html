@@ -230,7 +230,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
    <div class="miniflow">
     <div class="step">
      <div class="top"><span class="snum">a</span><span class="actor a-sys">⚙️ ระบบ</span></div>
-     <div class="act">ไม่มี order เกินรอบ (default 3 เดือน) → เลื่อนอัตโนมัติ<small>C2</small></div>
+     <div class="act">ไม่มี order เกินรอบ (default 3 เดือน) → เลื่อนอัตโนมัติ<small>auto scheduler · entity-map §1.1</small></div>
      <div class="row-chips"><span class="badge b-warning"><span class="ent">ลูกค้า</span> ห่างหาย (Inactive)</span></div>
     </div>
     <div class="step">
@@ -292,7 +292,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
      <div class="top"><span class="snum">a</span><span class="actor a-sys">⚙️ ระบบ</span></div>
      <div class="act">เตือน "วัตถุดิบอาจไม่พอ" (เทียบ Available) แล้วเสนอสร้าง PR เฉพาะส่วนที่ขาด (ต้องใช้ − Available)<small>C15 · PO เดินหน้าต่อได้</small></div>
      <div class="row-chips"><span class="doc">📄 PR-xxxxxx</span></div>
-     <div class="row-chips"><span class="badge b-neutral"><span class="ent">PR</span> เปิดคำขอ (Open)</span><span class="noti">🔔 → คลัง + ผลิต</span></div>
+     <div class="row-chips"><span class="badge b-warning"><span class="ent">PR</span> เปิดคำขอ (Open)</span><span class="noti">🔔 → คลัง + ผลิต</span></div>
      <div class="foot"><a class="mk" href="../mockups/purchase-request.html" target="_blank">purchase-request ↗</a></div>
     </div>
    </div>
@@ -363,7 +363,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
   <div class="step">
    <div class="top"><span class="snum">4</span><span class="actor a-sys">⚙️ ระบบ</span></div>
    <div class="act">QC ผ่าน (สาย ④) → PRD line1 พร้อมส่งมอบ · เมื่อ <b>ทุก PRD ของ PO ผ่าน</b> → PO พร้อมจัดส่ง<small>C5</small></div>
-   <div class="row-chips"><span class="badge b-processing"><span class="ent">PRD</span> พร้อมส่งมอบ</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">PRD</span> พร้อมส่งมอบ</span><span class="badge b-processing"><span class="ent">PO</span> พร้อมจัดส่ง</span></div>
    <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
   </div>
  </div>
@@ -440,7 +440,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
    <div class="top"><span class="snum">1</span><span class="actor a-qc">🔬 QC</span></div>
    <div class="act">ตรวจ Batch โลชั่น → กด "✓ ผ่าน"<small>ดู GMP chain (Lot→Batch→PO) ก่อนตัดสิน</small></div>
    <div class="row-chips"><span class="doc">📄 B-…-181-1-1</span></div>
-   <div class="row-chips"><span class="badge b-success"><span class="ent">Batch</span> QC ผ่าน</span><span class="badge b-processing"><span class="ent">PRD line1</span> พร้อมส่งมอบ</span></div>
+   <div class="row-chips"><span class="badge b-success"><span class="ent">Batch</span> QC ผ่าน</span><span class="badge b-success"><span class="ent">PRD line1</span> พร้อมส่งมอบ</span></div>
    <div class="foot"><a class="mk" href="../mockups/qc.html" target="_blank">qc ↗</a></div>
   </div>
   <div class="step">
@@ -505,7 +505,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
  <div class="flow">
   <div class="step">
    <div class="top"><span class="snum">1</span><span class="actor a-ship">🚚 จัดส่ง</span></div>
-   <div class="act">สร้างรอบ เลือก PO-176 + คนขับ/เบอร์/route/รถกระบะ<small>ระบบ gen DN (1 DN = 1 PO) · C9</small></div>
+   <div class="act">สร้างรอบ เลือก PO-176 + คนขับ/เบอร์/route/รถกระบะ<small>ระบบ gen DN (1 DN = 1 PO) · รอบ: รับเข้ารอบ → กำลังนำส่ง · C9</small></div>
    <div class="row-chips"><span class="doc">📄 SHP-20260708-0044</span><span class="doc">📄 DN-20260708-00119</span></div>
    <div class="row-chips"><span class="badge b-processing"><span class="ent">PO</span> กำลังจัดส่ง</span><span class="badge b-processing"><span class="ent">Shipment</span> กำลังนำส่ง</span></div>
    <div class="foot"><a class="mk" href="../mockups/shipping.html" target="_blank">shipping ↗</a></div>
