@@ -2063,14 +2063,16 @@
                 "ใช้ project เดิมที่มีอยู่ (บอก id)",
                 "ใช้ gen-lang-client-0453424159"
               ],
-              "answer": null
+              "answer": "Project ID: essence-hub-502015 (สร้างใหม่แยกจากงานเอกสาร) + เปิด billing แล้ว",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             },
             {
               "q": "รายชื่ออีเมล Google ที่จะให้เข้าถึงได้ (allow รายตัว) มีใครบ้าง?",
               "options": [
                 "ส่งลิสต์อีเมลมา (จะใส่ใน deploy.sh ALLOWED_EMAILS)"
               ],
-              "answer": null
+              "answer": "josukekung@gmail.com, arunee.key@gmail.com (ภายหลังเพิ่ม ch.jirasak@gmail.com)",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             },
             {
               "q": "อีเมลเหล่านั้นเป็น Google Workspace domain เดียวกัน หรือ gmail ส่วนตัว? (มีผลกับ OAuth consent Internal/External — IAP allow-list ทำงานเหมือนกันทั้งคู่)",
@@ -2078,7 +2080,8 @@
                 "Workspace domain เดียว -> consent Internal",
                 "มี gmail ส่วนตัว -> consent External (Testing)"
               ],
-              "answer": null
+              "answer": "gmail ส่วนตัว -> OAuth consent External — ปอนด์กดตั้งค่า consent screen เองแล้ว",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             },
             {
               "q": "ต้องการ custom domain ไหม หรือใช้ *.run.app ได้เลย?",
@@ -2086,7 +2089,8 @@
                 "ใช้ *.run.app ได้เลย (แนะนำ ทำได้ทันที)",
                 "อยากได้ custom domain (เพิ่ม domain mapping ทีหลัง)"
               ],
-              "answer": null
+              "answer": "ใช้ default *.run.app ไปก่อน (custom domain ไว้ทีหลัง)",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             }
           ],
           "summary": "GCP docs-hosting PROPOSAL + prepared artifacts (no deploy — Phase=local). Recommended Cloud Run (nginx static) + IAP: allow per Google account via IAM roles/iap.httpsResourceAccessor, works on *.run.app (no LB/domain needed), scale-to-zero, ~<200 THB/mo, container-first (no rework for Phase 3-4), and NO edit to any HTML. Delivered runbook docs/infra/erp-v2-ui-first/gcp-docs-hosting.md (Thai step-by-step incl OAuth consent, enable APIs, Cloud Build, deploy, enable IAP, per-user grant, test, redeploy/add/remove access, cost, troubleshooting) + deploy/docs-site/{Dockerfile,nginx.conf,cloudbuild.yaml,deploy.sh}. Image mirrors repo paths so relative links work; dashboard's pipeline/status.json baked in as a snapshot. Readiness: gcloud 562 authed (josukekung@gmail.com), region asia-southeast1, project=gen-lang-client-0453424159 (needs dedicated project+billing); Docker daemon down but not needed (Cloud Build). Batched 4 questions to Pond (project/billing, email allow-list, Workspace-vs-gmail, custom domain). Feature-level status untouched.",
@@ -2125,7 +2129,8 @@
                 "ปอนด์อนุญาต Bash rule ให้รัน gcloud จริง แล้วสั่งให้ผมเดินต่อ",
                 "ให้ผมหยุดไว้ที่ proposal เท่านั้น"
               ],
-              "answer": null
+              "answer": "ปอนด์อนุมัติ/รันเอง ณ ตอนนั้น — ต่อมา 2026-07-14 ปอนด์สั่ง deploy ตรงให้ dispatcher รันได้ (สำเร็จ rev 00005)",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             }
           ],
           "summary": "DEPLOY ATTEMPT BLOCKED BY PERMISSION SYSTEM. Folded Pond's confirmed values into deploy.sh (project essence-hub-502015 + 2 allow emails). Verified project ACTIVE + billing enabled via read-only gcloud. The first state-changing command (gcloud services enable) was DENIED by the Claude Code auto-mode classifier as a Production Deploy — and per my rules an agent/coordinator message is never the user's consent, so I stopped instead of working around it. Nothing was created on GCP (no APIs enabled, no Artifact Registry, no Cloud Run, no IAP). Next step needs Pond's own authorization: either Pond runs deploy.sh (fully filled in), or grants a Bash permission rule for real gcloud. Feature-level status untouched.",
@@ -2258,7 +2263,8 @@
                 "ทำครบทั้ง 2 ขั้นแล้ว -> dispatcher deploy ต่อได้",
                 "ยัง -> รอปอนด์ทำก่อน"
               ],
-              "answer": null
+              "answer": "ทำครบทั้ง 2 ขั้นแล้ว: oauth.env เรียบร้อย + Authorized redirect URI เรียบร้อย -> dispatcher deploy ต่อแล้วสำเร็จ",
+              "answered_at": "2026-07-14T00:00:00+07:00"
             }
           ],
           "summary": "OAUTH2-PROXY VARIANT PREPARED (prep only, no state-changing gcloud). Pivoted from IAP (unavailable on org-less project) to oauth2-proxy in a single container: official oauth2-proxy v7.7.1 on :8080 (Google login + per-email allow-list) fronting nginx on :8081. New/changed files: Dockerfile (multi-stage), nginx.conf (:8081), oauth2-proxy.cfg, authenticated-emails.txt (2 emails), start.sh, oauth.env.example, deploy.sh (--allow-unauthenticated --no-iap, secrets via env vars from gitignored oauth.env, fresh cookie secret each deploy). Runbook rewritten with section 0 (why pivot) + new steps. Secrets kept out of git (oauth.env gitignored + untracked; client/cookie secret only via Cloud Run env). Existing Cloud Run service/image left intact. Waiting on Pond's 2 steps (fill oauth.env + add redirect URI) before dispatcher runs deploy. Did NOT run git. Feature-level status untouched.",
