@@ -1,0 +1,240 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ขั้นตอนการทำงานของระบบ ESSENCE Hub (ERP) · Poster</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --primary:#0E7C7B;--primary-d:#0B6360;--sidebar:#10322F;--bg:#EDF4F3;--card:#fff;
+ --ink:#1F2933;--ink2:#52606D;--ink3:#7B8794;--border:#E1E7E7;
+ --neutral:#52606D;--processing:#1F5EDB;--success:#1E7A44;--warning:#9A5B12;--error:#B02A2A;
+ --sale:#0E7C7B;--stock:#1098AD;--prod:#3B5BDB;--qc:#7048E8;--ship:#E8590C;--fin:#C2255C;--admin:#868E96;
+}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;
+ background-image:radial-gradient(circle at 12% 8%,rgba(14,124,123,.06),transparent 40%),radial-gradient(circle at 88% 92%,rgba(16,50,47,.05),transparent 42%)}
+.poster{max-width:900px;margin:0 auto;padding:34px 24px 22px}
+.act{max-width:900px;margin:0 auto;padding:8px 24px 30px}
+
+/* ---- header ---- */
+.ptitle{font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-.3px;color:var(--sidebar)}
+.ptitle .accent{color:var(--primary)}
+.psub{font-size:15px;color:var(--ink2);margin-top:8px;max-width:640px}
+.author{display:inline-flex;align-items:center;gap:9px;background:var(--sidebar);color:#fff;border-radius:30px;padding:6px 16px 6px 7px;font-weight:600;font-size:13px;margin-top:16px}
+.author .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.pills{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 4px}
+.pill{border-radius:30px;padding:6px 15px;font-weight:700;font-size:13px;border:1.5px solid var(--primary);color:var(--primary-d);background:#fff}
+.pill.alt{background:var(--primary);color:#fff}
+.pill.ghost{background:#DBEBEA;border-color:#BFE0DE;color:var(--primary-d)}
+
+/* ---- act divider ---- */
+.actband{max-width:900px;margin:14px auto 0;padding:0 24px}
+.actband .b{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.actband .b .n{font-size:13px;font-weight:800;letter-spacing:1px;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px}
+.actband .b h2{font-size:19px;font-weight:700}
+.actband .b small{margin-left:auto;color:#BfE0DC;font-size:12.5px}
+
+/* ---- legend of doc chips ---- */
+.legendbar{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin:14px auto 0;max-width:852px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.legendbar b{font-size:12.5px;color:var(--ink2)}
+
+/* ---- spine + cards ---- */
+.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px 20px 16px;box-shadow:0 3px 12px rgba(16,25,40,.06);position:relative}
+.card .num{position:absolute;top:-15px;left:22px;min-width:46px;height:34px;padding:0 10px;border-radius:10px;color:#fff;font-weight:800;font-size:16px;display:grid;place-items:center;box-shadow:0 4px 9px rgba(14,124,123,.32)}
+.card .corner{position:absolute;top:15px;right:16px;font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.card h3{font-size:20px;margin:9px 0 4px;color:var(--sidebar);display:flex;align-items:center;gap:9px}
+.card h3 .ic{font-size:23px}
+.card .who{font-size:12px;font-weight:700;color:var(--ink3)}
+.card p.d{color:var(--ink2);font-size:13.5px;margin:6px 0 11px;line-height:1.55}
+.card p.d b{color:var(--ink)}
+.toolrow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.toolrow .lb{font-size:11px;font-weight:700;color:var(--ink3);margin-right:2px}
+.doc{display:inline-flex;align-items:center;gap:5px;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;font-weight:700;background:#EEF6F6;border:1px solid #BFE0DE;color:#0B6360;border-radius:7px;padding:3px 9px}
+.stat{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:7px;padding:3px 9px;border:1px solid}
+.stat::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}
+.s-processing{color:#1F5EDB;background:#E8F0FE;border-color:#BBD1F8}
+.s-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}
+.s-warning{color:#9A5B12;background:#FBF0DE;border-color:#F1D6A6}
+.s-error{color:#B02A2A;background:#FCEAEA;border-color:#F2C2C2}
+
+/* accent per role */
+.n-sale{background:var(--sale)}.n-stock{background:var(--stock)}.n-prod{background:var(--prod)}
+.n-qc{background:var(--qc)}.n-ship{background:var(--ship)}.n-fin{background:var(--fin)}.n-admin{background:var(--admin)}
+.c-auto{color:var(--primary-d);background:#E6F4F3;border:1px solid #BFE0DE}
+.card.hl-prod{border-left:4px solid var(--prod)}.card.hl-sale{border-left:4px solid var(--sale)}
+.card.hl-qc{border-left:4px solid var(--qc)}.card.hl-ship{border-left:4px solid var(--ship)}.card.hl-fin{border-left:4px solid var(--fin)}
+
+/* ---- connector ---- */
+.conn{display:flex;flex-direction:column;align-items:center;padding:6px 0;position:relative}
+.conn .dot{width:9px;height:9px;border-radius:50%;background:var(--primary)}
+.conn .line{width:2px;height:22px;background:var(--primary)}
+.conn .arw{color:var(--primary);font-size:17px;line-height:.6;margin-top:2px}
+.conn .flow{margin:4px 0;display:inline-flex;align-items:center;gap:6px;background:#DBEBEA;border:1px solid #BFE0DE;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;color:var(--primary-d)}
+
+/* ---- decision diamond + branch ---- */
+.decision{display:flex;flex-direction:column;align-items:center;margin:8px 0}
+.diamond{width:120px;height:120px;transform:rotate(45deg);background:#FFF7E6;border:2px solid var(--warning);border-radius:16px;display:grid;place-items:center;box-shadow:0 3px 10px rgba(154,91,18,.14)}
+.diamond .dt{transform:rotate(-45deg);text-align:center;font-weight:800;font-size:13.5px;color:var(--warning);width:104px}
+.branchrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;width:100%}
+.branch{flex:1 1 300px;border-radius:14px;padding:12px 15px;border:1.5px solid;display:flex;align-items:flex-start;gap:10px}
+.branch.yes{background:#F3FBF6;border-color:#B7E0C6}
+.branch.no{background:#FEF5F5;border-color:#F2C2C2}
+.branch .tag{font-weight:800;font-size:13px;white-space:nowrap;border-radius:8px;padding:3px 9px}
+.branch.yes .tag{color:#1E7A44;background:#E6F5EC}
+.branch.no .tag{color:#B02A2A;background:#FCEAEA}
+.branch .bt{font-size:12.5px;color:var(--ink2);line-height:1.5}
+.branch .bt b{color:var(--ink)}
+
+/* ---- side rail ---- */
+.rail{background:#F0F7F7;border:1.5px dashed var(--primary);border-radius:16px;padding:15px 18px;margin:16px 0}
+.rail .rh{font-weight:800;color:var(--primary-d);font-size:14px;margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rail .rh small{font-weight:600;color:var(--ink2);font-size:12px}
+.railgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.railcard{background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px 15px;position:relative}
+.railcard .rn{position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;color:#fff;border-radius:7px;padding:2px 8px}
+.railcard h4{font-size:15px;color:var(--sidebar);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.railcard p{font-size:12px;color:var(--ink2);line-height:1.5;margin-bottom:8px}
+
+/* ---- footer bar ---- */
+.footbar{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;border-radius:18px;padding:20px 24px;margin:22px auto 0;max-width:852px}
+.footbar h3{font-size:18px;margin-bottom:7px;display:flex;align-items:center;gap:9px}
+.footbar p{font-size:13px;color:#D3E6E4;line-height:1.65}
+.footbar .fchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.footbar .fc{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600}
+.pfoot{max-width:900px;margin:16px auto 0;padding:0 24px;color:var(--ink3);font-size:11.5px}
+@media(max-width:620px){.ptitle{font-size:32px}}
+</style></head><body>
+
+<div class="poster">
+ <div class="ptitle">ขั้นตอนการทำงานของระบบ<br><span class="accent">ESSENCE Hub</span> (ERP)</div>
+ <p class="psub">แผนที่การทำงานของทุกแผนก ตั้งแต่รับออเดอร์ลูกค้า จนถึงเก็บเงินครบ — เห็นชัดว่าใครทำอะไร และส่งงาน (เอกสาร) ต่อให้ใคร</p>
+ <div class="author"><span class="logo">E</span>ESSENCE Hub System · สำหรับผู้ใช้งานทุกบทบาท</div>
+ <div class="pills">
+  <span class="pill alt">7 บทบาทผู้ใช้</span>
+  <span class="pill">ครบวงจร: ขาย → ผลิต → ตรวจ → ส่ง → เก็บเงิน</span>
+  <span class="pill ghost">ทุกเอกสารเชื่อมกันอัตโนมัติ</span>
+ </div>
+</div>
+
+<div class="legendbar">
+ <b>เอกสารที่ไหลระหว่างแผนก:</b>
+ <span class="doc">📄 PO ใบสั่งซื้อ</span>
+ <span class="doc">📦 Lot วัตถุดิบ</span>
+ <span class="doc">🧾 PRD ใบสั่งผลิต</span>
+ <span class="doc">🏷️ Batch รุ่นผลิต</span>
+ <span class="doc">🚚 Shipment/DN</span>
+ <span class="doc">💵 Invoice</span>
+</div>
+
+<!-- ============ ACT 1 ============ -->
+<div class="actband"><div class="b"><span class="n">ตอนที่ 1</span><h2>ขาย → จัดหาวัตถุดิบ → ผลิต → ตรวจคุณภาพ</h2><small>ฝั่งต้นน้ำ</small></div></div>
+<div class="act">
+
+ <!-- 01 Sale -->
+ <div class="card hl-sale">
+  <span class="num n-sale">01</span>
+  <span class="corner c-auto">เริ่มต้นวงจร</span>
+  <h3><span class="ic">👤</span> พนักงานขาย (Sale)</h3>
+  <div class="who">ผู้ทำ: Sale / CS</div>
+  <p class="d">สร้างลูกค้าใหม่ + เปิด <b>ใบสั่งซื้อ (PO)</b> ตามที่ลูกค้าสั่ง → กด <b>"ยืนยัน PO"</b> = ระบบ<b>จองวัตถุดิบ</b>ให้อัตโนมัติ แล้วส่งงานเข้าคิวฝ่ายผลิต · ยืนยันใบแรก = ลูกค้ากลายเป็น "ลูกค้าประจำ"</p>
+  <div class="toolrow"><span class="lb">ออกเอกสาร</span><span class="doc">📄 PO-202607-000181</span><span class="doc">👥 CUS-000009</span><span class="stat s-processing">ยืนยันแล้ว (Confirmed)</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">ส่งต่อ 📄 PO-202607-000181 + จองวัตถุดิบ →</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- material side rail -->
+ <div class="rail">
+  <div class="rh">📦 เส้นวัตถุดิบ (ทำงานคู่ขนาน) <small>— ถ้าของในคลังไม่พอ ระบบไม่หยุดการผลิต แต่เปิดคำขอซื้อให้</small></div>
+  <div class="decision" style="margin-top:0;margin-bottom:10px">
+   <div class="diamond"><div class="dt">วัตถุดิบพอไหม?</div></div>
+  </div>
+  <div class="branchrow" style="margin-bottom:12px">
+   <div class="branch yes"><span class="tag">✓ พอ</span><div class="bt">ผลิตได้เลย ระบบตัดจากของที่จองไว้</div></div>
+   <div class="branch no"><span class="tag">✕ ไม่พอ</span><div class="bt">ระบบเสนอเปิด <b>คำขอซื้อ (PR)</b> เฉพาะส่วนที่ขาด — ผลิตเดินหน้าต่อได้ (ตัด stock ติดลบชั่วคราว)</div></div>
+  </div>
+  <div class="railgrid">
+   <div class="railcard"><span class="rn n-stock">02</span><h4>📦 คลัง / จัดซื้อ</h4><p>เปิดคำขอซื้อ → รับของเข้า (Goods Receipt) → ระบบออก <b>Lot</b> ให้ + บวก stock ที่เคยติดลบกลับคืน (ผูกล็อตย้อนหลังตาม GMP)</p><div class="toolrow"><span class="doc">📝 PR-000031</span><span class="doc">📥 GR-20260708-008</span><span class="doc">📦 Lot L-GLY-2506</span></div></div>
+  </div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 03 Production -->
+ <div class="card hl-prod">
+  <span class="num n-prod">03</span>
+  <span class="corner c-auto">1 สินค้า = 1 ใบผลิต</span>
+  <h3><span class="ic">🏭</span> ฝ่ายผลิต</h3>
+  <div class="who">ผู้ทำ: หัวหน้าฝ่ายผลิต</div>
+  <p class="d">กด <b>"รับงาน"</b> = ระบบออกเลข <b>ใบสั่งผลิต (PRD)</b> · กด <b>"เริ่มผลิต"</b> = ตัดวัตถุดิบที่จองไว้มาใช้จริง (เลือกล็อตเก่าก่อน) และออกเลข <b>รุ่นผลิต (Batch)</b> · ผลิตเสร็จกด <b>"ส่งตรวจ QC"</b></p>
+  <div class="toolrow"><span class="lb">ออกเอกสาร</span><span class="doc">🧾 PRD-202607-000091</span><span class="doc">🏷️ Batch B-…-181-1-1</span><span class="stat s-processing">กำลังผลิต</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">ส่งต่อ 🏷️ Batch เข้าตรวจ →</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 04 QC -->
+ <div class="card hl-qc">
+  <span class="num n-qc">04</span>
+  <span class="corner c-auto">ตัดสินรายรุ่น</span>
+  <h3><span class="ic">🔬</span> ฝ่ายควบคุมคุณภาพ (QC)</h3>
+  <div class="who">ผู้ทำ: เจ้าหน้าที่ QC</div>
+  <p class="d">ตรวจ <b>Batch</b> ทีละรุ่น (ดูสายผลิต Lot→Batch→PO ตาม GMP) แล้วตัดสิน <b>ผ่าน</b> หรือ <b>ไม่ผ่าน</b> (ถ้าไม่ผ่านต้องระบุเหตุผล)</p>
+  <div class="toolrow"><span class="stat s-success">Batch: QC ผ่าน</span><span class="stat s-error">Batch: QC ไม่ผ่าน</span></div>
+ </div>
+
+ <div class="decision">
+  <div class="conn"><div class="dot"></div><div class="line"></div></div>
+  <div class="diamond"><div class="dt">ผ่าน QC ทุกสินค้าในใบ?</div></div>
+ </div>
+ <div class="branchrow">
+  <div class="branch yes"><span class="tag">✓ ผ่านครบ</span><div class="bt">สินค้าทุกบรรทัดของ PO ผ่าน → <b>PO เปลี่ยนเป็น "พร้อมจัดส่ง"</b> ส่งต่อฝ่ายจัดส่ง (ไปตอนที่ 2)</div></div>
+  <div class="branch no"><span class="tag">✕ ไม่ผ่าน</span><div class="bt">ตีกลับ<b>เฉพาะสินค้าตัวที่เสีย</b> → ฝ่ายผลิตกด "ผลิตซ้ำ" (ออก Batch รุ่นใหม่ …-2-2) แล้วส่งตรวจอีกครั้ง · สินค้าตัวอื่นเดินหน้าต่อไม่สะดุด</div></div>
+ </div>
+
+</div>
+
+<!-- ============ ACT 2 ============ -->
+<div class="actband"><div class="b"><span class="n">ตอนที่ 2</span><h2>จัดส่ง → วางบิล → รับชำระ</h2><small>ฝั่งปลายน้ำ</small></div></div>
+<div class="act">
+
+ <!-- 05 Shipping -->
+ <div class="card hl-ship">
+  <span class="num n-ship">05</span>
+  <span class="corner c-auto">1 ใบส่งของ = 1 PO</span>
+  <h3><span class="ic">🚚</span> ฝ่ายจัดส่ง</h3>
+  <div class="who">ผู้ทำ: ฝ่ายจัดส่ง</div>
+  <p class="d">สร้าง <b>รอบจัดส่ง (Shipment)</b> รวมหลาย PO + ระบุคนขับ/รถ → ระบบออก <b>ใบส่งของ (DN)</b> ต่อ PO → ลูกค้าเซ็นรับ กด <b>"ส่งถึงแล้ว"</b> = เริ่มนับเครดิต</p>
+  <div class="toolrow"><span class="lb">ออกเอกสาร</span><span class="doc">🚚 SHP-20260708-0044</span><span class="doc">📋 DN-20260708-00119</span><span class="stat s-success">ส่งถึงแล้ว</span></div>
+  <div class="toolrow" style="margin-top:8px"><span class="lb">ทางแยก</span><span class="stat s-error">ลูกค้าปฏิเสธ → กลับคิว + แจ้ง Sale</span><span class="stat s-warning">ขอเลื่อนส่ง → ค้างคิว รอบใหม่</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">ส่งต่อ 📋 DN + "ส่งถึงแล้ว" →</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 06 Finance -->
+ <div class="card hl-fin">
+  <span class="num n-fin">06</span>
+  <span class="corner c-auto">ปิดวงจร</span>
+  <h3><span class="ic">💰</span> ฝ่ายการเงิน</h3>
+  <div class="who">ผู้ทำ: การเงิน</div>
+  <p class="d">ออก <b>ใบแจ้งหนี้ / ใบกำกับภาษี (Invoice)</b> (VAT 7% ตามวันออกใบ, ตัวหนังสือไทย, ลายเซ็น 2 ช่อง) → ลูกค้าจ่ายครบ = บันทึกรับชำระ → <b>ชำระแล้ว</b> · ถ้าเลยเครดิตยังไม่จ่าย ระบบขึ้น "เกินกำหนด" ให้ Sale ตาม</p>
+  <div class="toolrow"><span class="lb">ออกเอกสาร</span><span class="doc">💵 INV-2026-000135</span><span class="stat s-warning">รอชำระ</span><span class="stat s-success">ชำระแล้ว (Paid)</span><span class="stat s-error">เกินกำหนด (Overdue)</span></div>
+ </div>
+
+ <!-- admin rail -->
+ <div class="rail">
+  <div class="rh">⚙️ ผู้ดูแลระบบ + งานอัตโนมัติ (ทำงานเบื้องหลังให้ทุกแผนก)</div>
+  <div class="railgrid">
+   <div class="railcard"><span class="rn n-admin">07</span><h4>⚙️ Admin / ระบบ</h4><p>ดูแลผู้ใช้และสิทธิ์การเข้าถึง (6 ระดับต่อแผนก) + ตั้งค่าบริษัท/VAT</p><div class="toolrow"><span class="doc">👤 Users</span><span class="doc">🔐 สิทธิ์ RUCDAA</span></div></div>
+   <div class="railcard"><h4>🔔 แจ้งเตือน &amp; ติดตาม</h4><p>ระบบทำเอง: ลูกค้าห่างหาย · ใบแจ้งหนี้เกินกำหนด · งานผลิตเสี่ยงล่าช้า → เด้งแจ้งผู้เกี่ยวข้อง</p><div class="toolrow"><span class="stat s-warning">อัตโนมัติ</span></div></div>
+  </div>
+ </div>
+
+</div>
+
+<div class="footbar">
+ <h3>🔗 ทุกขั้นตอนเชื่อมกันเป็นเส้นเดียว</h3>
+ <p>ทุกการเปลี่ยนสถานะ<b>เก็บประวัติ (ใคร/เมื่อไหร่/ทำไม)</b> ครบทุกจุด · เอกสารทุกใบมีเลขต่อเนื่องตามสรรพากร (ห้ามข้าม) · เมื่อแผนกหนึ่งทำงานเสร็จ ระบบ<b>ส่งงานต่อ + แจ้งเตือน</b>แผนกถัดไปเอง — พนักงานไม่ต้องเดินเอกสารหรือโทรตามกันเอง</p>
+ <div class="fchips">
+  <span class="fc">👤 ลูกค้า → 📄 PO → 📦 จองของ → 🧾 ผลิต → 🔬 QC → 🚚 ส่ง → 💵 เก็บเงิน → ✅ Paid</span>
+ </div>
+</div>
+
+<p class="pfoot">ESSENCE Hub System · โปสเตอร์ขั้นตอนการทำงาน (สำหรับผู้ใช้งาน) · เนื้อหาอ้างอิง User Journeys 6 สาย + entity-status-map + mock-data-journeys · เลขเอกสารเป็นตัวอย่างจากชุดข้อมูลจริง (PO-181)</p>
+
+</body></html>

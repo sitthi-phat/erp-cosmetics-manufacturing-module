@@ -1,0 +1,236 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESSENCE Hub System Architecture · Poster</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --primary:#0E7C7B;--primary-d:#0B6360;--sidebar:#10322F;--bg:#EDF4F3;--card:#fff;
+ --ink:#1F2933;--ink2:#52606D;--ink3:#7B8794;--border:#E1E7E7;
+ --blue:#1F5EDB;--green:#1E7A44;--amber:#9A5B12;--red:#B02A2A;--cyan:#1098AD;--violet:#7048E8;
+}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Segoe UI","Sarabun",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;
+ background-image:radial-gradient(circle at 12% 8%,rgba(14,124,123,.06),transparent 40%),radial-gradient(circle at 88% 92%,rgba(31,94,219,.05),transparent 42%)}
+.poster{max-width:900px;margin:0 auto;padding:34px 24px 60px}
+
+/* header */
+.ptitle{font-size:44px;line-height:1.08;font-weight:800;letter-spacing:-.5px;color:var(--sidebar)}
+.ptitle .accent{color:var(--primary)}
+.psub{font-size:15px;color:var(--ink2);margin-top:8px;max-width:680px}
+.author{display:inline-flex;align-items:center;gap:9px;background:var(--sidebar);color:#fff;border-radius:30px;padding:6px 16px 6px 7px;font-weight:600;font-size:13px;margin-top:16px}
+.author .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.pills{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 6px}
+.pill{border-radius:30px;padding:6px 15px;font-weight:700;font-size:13px;border:1.5px solid var(--primary);color:var(--primary-d);background:#fff}
+.pill.alt{background:var(--primary);color:#fff}
+.pill.ghost{background:#DBEBEA;border-color:#BFE0DE;color:var(--primary-d)}
+
+/* card / layer */
+.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px 20px 16px;box-shadow:0 3px 12px rgba(16,25,40,.06);position:relative}
+.card .num{position:absolute;top:-15px;left:22px;min-width:46px;height:34px;padding:0 10px;border-radius:10px;color:#fff;font-weight:800;font-size:16px;display:grid;place-items:center;box-shadow:0 4px 9px rgba(14,124,123,.30);background:var(--primary)}
+.card .corner{position:absolute;top:15px;right:16px;font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;color:var(--primary-d);background:#E6F4F3;border:1px solid #BFE0DE;white-space:nowrap}
+.card h3{font-size:20px;margin:9px 0 3px;color:var(--sidebar);display:flex;align-items:center;gap:9px}
+.card h3 .ic{font-size:22px}
+.card .th{font-size:12px;color:var(--ink3);font-weight:600}
+.card p.d{color:var(--ink2);font-size:13.5px;margin:6px 0 11px;line-height:1.55}
+.card p.d b{color:var(--ink)}
+.toolrow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.toolrow .lb{font-size:11px;font-weight:700;color:var(--ink3);margin-right:2px}
+.tech{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;background:#F5F8F8;border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--ink)}
+.tech.k{background:#EEF6F6;border-color:#BFE0DE;color:var(--primary-d);font-family:ui-monospace,Consolas,monospace;font-size:11.5px;font-weight:700}
+.tech.b{background:#E8F0FE;border-color:#BBD1F8;color:var(--blue)}
+.adr{font-size:10.5px;font-weight:800;color:#fff;background:var(--sidebar);border-radius:6px;padding:2px 7px}
+
+/* mid-card layer with dark theme (backbone) */
+.card.dark{background:linear-gradient(135deg,#10322F,#0E7C7B);border:none;color:#fff}
+.card.dark h3{color:#fff}.card.dark .th{color:#BfE0DC}.card.dark p.d{color:#D3E6E4}.card.dark p.d b{color:#fff}
+.card.dark .corner{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#EAF6F4}
+.card.dark .tech{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#fff}
+.card.dark .tech.k{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff}
+
+/* connector */
+.conn{display:flex;flex-direction:column;align-items:center;padding:6px 0}
+.conn .dot{width:9px;height:9px;border-radius:50%;background:var(--primary)}
+.conn .line{width:2px;height:20px;background:var(--primary)}
+.conn .arw{color:var(--primary);font-size:17px;line-height:.6;margin-top:2px}
+.conn .flow{margin:4px 0;display:inline-flex;align-items:center;gap:6px;background:#DBEBEA;border:1px solid #BFE0DE;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;color:var(--primary-d);font-family:ui-monospace,Consolas,monospace}
+
+/* backbone services inner grid */
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px;margin-top:4px}
+.svc span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:5px 8px;font-size:11.5px;font-weight:600;text-align:center}
+.xcut{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.xcut span{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:3px 9px;font-size:11px;font-weight:700}
+
+/* side rail */
+.rail{background:#F0F7F7;border:1.5px dashed var(--primary);border-radius:16px;padding:15px 18px;margin:16px 0}
+.rail .rh{font-weight:800;color:var(--primary-d);font-size:14px;margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rail .rh small{font-weight:600;color:var(--ink2);font-size:12px}
+.railgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.railcard{background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px 15px}
+.railcard h4{font-size:14.5px;color:var(--sidebar);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.railcard p{font-size:12px;color:var(--ink2);line-height:1.5;margin-bottom:8px}
+.railcard .adr{font-size:10px}
+
+/* decision diamond */
+.decision{display:flex;flex-direction:column;align-items:center;margin:8px 0}
+.diamond{width:132px;height:132px;transform:rotate(45deg);background:#EAF2FF;border:2px solid var(--blue);border-radius:16px;display:grid;place-items:center;box-shadow:0 3px 10px rgba(31,94,219,.14)}
+.diamond .dt{transform:rotate(-45deg);text-align:center;font-weight:800;font-size:13px;color:var(--blue);width:116px}
+.branchrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;width:100%}
+.branch{flex:1 1 300px;border-radius:14px;padding:12px 15px;border:1.5px solid;display:flex;align-items:flex-start;gap:10px}
+.branch.p2{background:#F5F9F9;border-color:#BFE0DE}
+.branch.p3{background:#EAF2FF;border-color:#BBD1F8}
+.branch .tag{font-weight:800;font-size:12.5px;white-space:nowrap;border-radius:8px;padding:3px 9px}
+.branch.p2 .tag{color:var(--primary-d);background:#E6F4F3}
+.branch.p3 .tag{color:var(--blue);background:#E8F0FE}
+.branch .bt{font-size:12.5px;color:var(--ink2);line-height:1.5}
+.branch .bt b{color:var(--ink)}
+
+/* footer */
+.footbar{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;border-radius:18px;padding:20px 24px;margin-top:24px}
+.footbar h3{font-size:18px;margin-bottom:7px;display:flex;align-items:center;gap:9px}
+.footbar p{font-size:13px;color:#D3E6E4;line-height:1.65}
+.footbar .fchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.footbar .fc{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:700}
+.pfoot{margin-top:16px;color:var(--ink3);font-size:11.5px}
+@media(max-width:620px){.ptitle{font-size:33px}}
+</style></head><body>
+
+<div class="poster">
+ <div class="ptitle"><span class="accent">ESSENCE Hub</span> System<br>Architecture</div>
+ <p class="psub">Frontend-to-backend connection chain — every layer, in order. From the browser down to MySQL, with security, business services, ORM, background jobs, and cloud deployment. Built as one codebase that runs on a factory PC (Phase 2) and lifts to Google Cloud (Phase 3) by config only.</p>
+ <div class="author"><span class="logo">E</span>ESSENCE Hub System · Tech-Lead · ADR-000 stack</div>
+ <div class="pills">
+  <span class="pill alt">React + NestJS + MySQL</span>
+  <span class="pill">Prisma ORM · one transaction per transition</span>
+  <span class="pill ghost">Cloud Run / Cloud SQL / GCS ready</span>
+ </div>
+</div>
+
+<div class="poster" style="padding-top:0">
+
+ <!-- 01 User -->
+ <div class="card">
+  <span class="num">01</span><span class="corner">Client</span>
+  <h3><span class="ic">🧑‍🏭</span> User / Browser</h3>
+  <div class="th">Presentation entry point</div>
+  <p class="d">Factory staff on desktop &amp; tablet. No native app — runs in a modern browser.</p>
+  <div class="toolrow"><span class="tech">🖥️ Desktop 1440</span><span class="tech">📱 Tablet 768</span><span class="tech">Thai-first UI</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 02 React -->
+ <div class="card">
+  <span class="num">02</span><span class="corner">Frontend SPA</span>
+  <h3><span class="ic">⚛️</span> React Single-Page App</h3>
+  <div class="th">Vite build · TypeScript</div>
+  <p class="d">Ant Design component library behind a wrapper layer, Clean Clinical teal theme. Renders humanized Thai status labels — never raw enums.</p>
+  <div class="toolrow"><span class="tech b">React</span><span class="tech b">Vite</span><span class="tech b">Ant Design</span><span class="tech b">TypeScript</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">HTTPS · REST + response envelope</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 03 Gateway -->
+ <div class="card">
+  <span class="num">03</span><span class="corner">Edge</span>
+  <h3><span class="ic">🔀</span> API Gateway / Reverse Proxy</h3>
+  <div class="th">HTTPS termination · single entry</div>
+  <p class="d">Phase 2: local reverse proxy on the factory PC. Phase 3: Cloud Run request front-door. Routes every call into the backend.</p>
+  <div class="toolrow"><span class="tech">HTTPS/TLS</span><span class="tech">REST /api/*</span><span class="tech">standard envelope + pagination</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 04 Auth -->
+ <div class="card">
+  <span class="num">04</span><span class="corner">Security</span>
+  <h3><span class="ic">🔐</span> Authentication &amp; RBAC</h3>
+  <div class="th">Runs before every request <span class="adr">ADR-007</span></div>
+  <p class="d">Login via <b>local username/password</b> or <b>Google OAuth</b>. Session 24h + forced re-login daily at 06:00. <b>RUCDAA</b> = 6 permission bits per module (Read/Update/Create/Delete/Approve/Admin); Read bit also gates notifications.</p>
+  <div class="toolrow"><span class="tech">Local login</span><span class="tech b">Google OAuth</span><span class="tech">Session 24h · 06:00 reset</span><span class="tech">RbacGuard · RUCDAA</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">authorized request →</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 05 Backend backbone -->
+ <div class="card dark">
+  <span class="num" style="background:#0B6360">05</span><span class="corner">Backend</span>
+  <h3><span class="ic">🧩</span> NestJS Backend Services</h3>
+  <div class="th">Node.js 20 · NestJS · TypeScript <span class="adr" style="background:rgba(255,255,255,.2)">ADR-002</span></div>
+  <p class="d">Domain services organized by department. Each business action is a dedicated endpoint that owns the state machine, permission check, mandatory comment and cross-module cascade — server-authoritative.</p>
+  <div class="svc">
+   <span>Customer</span><span>PO (2 tracks)</span><span>Production · PRD/Batch</span><span>QC</span>
+   <span>Stock · ledger</span><span>PR + GR</span><span>Shipping · DN</span><span>Invoice</span>
+   <span>BOM</span><span>Supplier</span><span>Return</span><span>Settings · Trace</span>
+  </div>
+  <div style="font-size:11.5px;color:#BfE0DC;font-weight:700;margin:12px 0 5px">Cross-cutting middleware — applied to every service automatically:</div>
+  <div class="xcut">
+   <span>RbacGuard</span><span>AuditInterceptor · field-level (ADR-003)</span><span>ResponseEnvelope</span>
+   <span>OutboxService (ADR-005)</span><span>SequenceService · gapless (ADR-008)</span><span>StorageService (ADR-006)</span><span>SoftDeleteRepo (ADR-009)</span>
+  </div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="flow">every transition = 1 DB transaction</div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 06 Prisma -->
+ <div class="card">
+  <span class="num">06</span><span class="corner">Data access</span>
+  <h3><span class="ic">🔗</span> Prisma ORM</h3>
+  <div class="th">Typed data layer · $transaction</div>
+  <p class="d">One atomic transaction per business action — <b>status change + field audit + outbox event + stock ledger</b> all commit together or roll back together. No partial/inconsistent state.</p>
+  <div class="toolrow"><span class="tech b">Prisma</span><span class="tech">$transaction (all-or-nothing)</span></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 07 MySQL -->
+ <div class="card">
+  <span class="num">07</span><span class="corner">Database</span>
+  <h3><span class="ic">🗄️</span> MySQL 8 (InnoDB)</h3>
+  <div class="th">System of record · Cloud SQL in Phase 3</div>
+  <p class="d">Holds the append-only <b>stock ledger</b> (negative stock allowed, FIFO retro-link), <b>field-level audit log</b> (1-year online), <b>gapless sequence counters</b>, reservations, and all business tables. Daily backup.</p>
+  <div class="toolrow"><span class="tech b">MySQL 8 / InnoDB</span><span class="tech k">stock ledger</span><span class="tech k">audit_log</span><span class="tech k">sequence</span><span class="tech k">reservation</span></div>
+ </div>
+
+ <!-- side rail: run alongside -->
+ <div class="rail">
+  <div class="rh">⚙️ Runs alongside the backend <small>— platform capabilities wired into every layer</small></div>
+  <div class="railgrid">
+   <div class="railcard"><h4>💾 Storage Abstraction <span class="adr">ADR-006</span></h4><p>Single StorageService for attachments/archives. Local disk (Phase 2) → Google Cloud Storage (Phase 3) by config — business code unchanged.</p></div>
+   <div class="railcard"><h4>⏰ Scheduled Jobs J1–J7</h4><p>Session reset 06:00 · inactivity sweep · invoice overdue · potential-delay · <b>outbox dispatcher</b> · nightly stock/ledger integrity · DB backup. All idempotent, tracked in <code>scheduled_job_run</code>.</p></div>
+   <div class="railcard"><h4>🔔 Notification Outbox <span class="adr">ADR-005</span></h4><p>Events written in the same transaction as the status change (never lost). Dispatcher fans out to everyone with the Read bit; deep-link + per-user acknowledge.</p></div>
+  </div>
+ </div>
+
+ <!-- deployment decision -->
+ <div class="decision">
+  <div class="conn"><div class="dot"></div><div class="line"></div></div>
+  <div class="diamond"><div class="dt">Deployment environment?</div></div>
+ </div>
+ <div class="branchrow">
+  <div class="branch p2"><span class="tag">Phase 2</span><div class="bt"><b>Factory PC</b> (Dev/Test). Node process + local MySQL + local disk + local scheduler. Same code.</div></div>
+  <div class="branch p3"><span class="tag">Phase 3</span><div class="bt"><b>Google Cloud (Production):</b> Cloud Run (API) → Cloud SQL (MySQL, daily backup) → Cloud Storage (GCS). Switch by config, no rewrite.</div></div>
+ </div>
+
+ <div class="conn"><div class="dot"></div><div class="line"></div><div class="arw">▼</div></div>
+
+ <!-- 08 GCP -->
+ <div class="card">
+  <span class="num">08</span><span class="corner">Deployment · GCP</span>
+  <h3><span class="ic">☁️</span> Google Cloud Platform</h3>
+  <div class="th">Phase 3 target · lift-and-shift by config</div>
+  <p class="d">The identical backend image runs on <b>Cloud Run</b>, talking to <b>Cloud SQL (MySQL)</b> with automatic daily backups, and <b>Cloud Storage (GCS)</b> for files.</p>
+  <div class="toolrow"><span class="tech b">Cloud Run</span><span class="tech b">Cloud SQL (MySQL)</span><span class="tech b">Cloud Storage (GCS)</span><span class="tech">daily backup</span></div>
+ </div>
+
+</div>
+
+<div class="poster" style="padding-top:0">
+ <div class="footbar">
+  <h3>🧭 One codebase, environment by config</h3>
+  <p>Business logic never depends on where it runs. From <b>factory PC (Phase 2)</b> to <b>Google Cloud (Phase 3)</b>, only environment configuration changes — the storage driver, database endpoint and OAuth credentials swap out; services, ORM and schema stay identical (ADR-006). Every layer above is present and required; none is optional.</p>
+  <div class="fchips">
+   <span class="fc">Browser → React → HTTPS → Gateway → Auth/RBAC → NestJS → Prisma → MySQL</span>
+   <span class="fc">+ Storage · Scheduled Jobs · Notification Outbox</span>
+  </div>
+ </div>
+ <p class="pfoot">ESSENCE Hub System · Architecture poster (for the customer IT team) · Source of truth: architecture/index.html (system + service diagrams), db-schema.html, scheduled-jobs.html, ADR-000..009. Service decomposition shown at service level (not module counts) per Tech-Lead's diagram.</p>
+</div>
+
+</body></html>
