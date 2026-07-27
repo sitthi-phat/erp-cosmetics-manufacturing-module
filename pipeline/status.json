@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ba + tech-lead + ux-ui",
-      "status": "WAITING_HUMAN_GATE",
+      "current_agent": "po",
+      "status": "BLOCKED_NEED_INPUT",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -2300,6 +2300,150 @@
           "summary": "Docs site LIVE at https://essence-docs-238060462485.asia-southeast1.run.app with Google login + 2-email allowlist (oauth2-proxy). Deployed by dispatcher after Pond filled credentials. Entry appended by dispatcher.",
           "overridden_by": null,
           "updated_at": "2026-07-10T14:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "scope-oem-ownbrand-supply-planning",
+          "status": "BLOCKED_NEED_INPUT",
+          "gate_checklist": [
+            {
+              "item": "Read locked sources + aligned delta without contradiction",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Wrote structured UX/UI requirement (two order journeys, Supply Planning full spec formulas verified vs screenshot, BOM extra-cost + snapshot COGS flag, FG-stock delta)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "UX/UI new-vs-modified screen checklist with acceptance notes",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Enough info for UX/UI to build WITHOUT guessing",
+              "pass": false,
+              "missing": "12 business-fact questions unresolved per Pond no-guess rule"
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "Sales Order (Own Brand) เอกสาร+เลขใหม่ หรือใช้ระบบ PO เดิม? + UI แยกหน้าหรือหน้าเดียวสลับ Order Type?",
+              "options": [
+                "เลขใหม่ SO-{YYYYMM}-{NNNNNN} แยก (PO เสนอ)",
+                "ระบบ PO เดิม + ธง Own Brand",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Lifecycle ของ Own-Brand Sales Order?",
+              "options": [
+                "ขายจากสต็อก: ยืนยัน->จอง FG->พร้อมส่ง->ส่ง (ข้ามผลิต)",
+                "สั่งผลิตเก็บสต็อก แยกจากการขาย (ไม่ผูกลูกค้า)",
+                "ทั้งสองในใบเดียว",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "OEM line ที่เป็นวัตถุดิบตรง (ขาย RM ไม่ใช่ BOM) พฤติกรรม?",
+              "options": [
+                "จอง RM->ส่งเลย ไม่มี PRD",
+                "ต้องมีขั้นผลิต/แปรรูป",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "แหล่งข้อมูล FG On Hand / In Production ในการ์ด Supply Planning?",
+              "options": [
+                "FG On Hand read-only จาก stock; In Production นับจาก Batch ของ FG นั้น",
+                "FG On Hand แก้ในการ์ดได้ (override)",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "เกณฑ์ป้าย Low/OK/Overstock + Overstock threshold + สีโซน?",
+              "options": [
+                "Low=cover<Target, OK=Target..2xTarget, Overstock>2xTarget",
+                "Overstock ใช้ค่าคงที่วัน (ระบุ)",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Suggested production trigger?",
+              "options": [
+                "เมื่อ Available<Target -> ผลิตเติมถึง Target ปัดขึ้น batch (PO เสนอ)",
+                "เฉพาะเมื่อ Available<Reorder point",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "แปลง Sales Rate /week /month เป็น per-day + runs-out date ปฏิทินหรือวันทำการ?",
+              "options": [
+                "สัปดาห์/7 เดือน/30 ปฏิทิน",
+                "หารด้วยวันทำการ",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "ปุ่ม 'สั่งผลิต' ใน Supply Planning ทำอะไร?",
+              "options": [
+                "สร้างใบสั่งผลิตเก็บสต็อก (PRD ไม่ผูกลูกค้า)",
+                "แค่คำแนะนำ ไม่สร้างงาน",
+                "สร้าง Sales Order เติมสต็อก"
+              ],
+              "answer": null
+            },
+            {
+              "q": "BOM ต้นทุนเพิ่ม: หมวด (ตายตัว vs เพิ่มเอง) + ต่อหน่วยหรือต่อ batch?",
+              "options": [
+                "ค่าแรง/โสหุ้ย/บรรจุภัณฑ์/อื่นๆ ตายตัว ต่อหน่วย",
+                "ให้ผู้ใช้เพิ่มหมวดเองได้",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "snapshot ต้นทุนตอนขาย = แตะ COGS (เดิม out-of-scope) — เก็บ snapshot เฉยๆ หรือเปิด COGS/margin?",
+              "options": [
+                "เก็บ snapshot ไว้ ยังไม่ทำรายงาน COGS/กำไร",
+                "เปิด COGS/margin เข้าเฟสนี้",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "รหัส FG (FG-xxx) กับ BOM สัมพันธ์อย่างไร + วิธีออกรหัส?",
+              "options": [
+                "1 BOM = 1 FG อัตโนมัติ",
+                "FG master แยก ผูก BOM ทีหลัง",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "OEM ผลิตเสร็จเข้าคลัง FG ไหม + FG เข้าคลังตอนไหน (over-production) + Loss ลด reserved ด้วยไหม + FG reservation เหมือน RM ไหม?",
+              "options": [
+                "OEM ส่งตรงไม่แตะ FG; FG เข้าคลัง auto ตอน QC ผ่าน; loss แตะเฉพาะ on_hand; FG จองตอนยืนยัน-ตัดตอนพร้อมส่ง",
+                "OEM เข้าคลัง FG ด้วย + มีขั้น FG receipt ให้คลังยืนยัน",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "New scope from Pond 2026-07-24 customer meeting reviewed vs locked Gate-2 spec; wrote DELTA requirement scope-oem-ownbrand-supply-planning.md for UX/UI (two order journeys OEM-PO vs Own-Brand Sales Order, full Supply Planning module spec with formulas verified vs screenshot, BOM extra-cost snapshot with COGS-scope flag, FG-as-inventory stock delta, new-vs-modified screen checklist). Batched 12 open business-fact questions per no-guess rule. BLOCKED_NEED_INPUT.",
+          "overridden_by": null,
+          "updated_at": "2026-07-27T00:00:00+07:00"
         }
       ]
     }
