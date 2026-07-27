@@ -2445,6 +2445,88 @@
           "overridden_by": null,
           "updated_at": "2026-07-27T00:00:00+07:00",
           "answered_at": "2026-07-28T00:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "scope-oem-ownbrand-supply-planning-r2",
+          "status": "BLOCKED_NEED_INPUT",
+          "gate_checklist": [
+            {
+              "item": "Baked all 12 Pond answers into Decided Rules D1-D12",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Added Section A journey-completeness, B RBAC, C tracing, D loss, E As-Is->To-Be + Stage-1 work-list",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Kept DELTA form, cross-ref locked docs, Thai summary",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Zero open questions",
+              "pass": false,
+              "missing": "5 new questions NQ1-NQ5"
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "OEM ผลิตเกินจำนวนสั่ง — ส่วนเกินเข้า FG/BOM stock ตอนไหน + ใครยืนยัน?",
+              "options": [
+                "auto ตอน Batch QC ผ่าน + แจ้งคลังยืนยันทีหลัง",
+                "มีขั้น FG receipt: ฝ่ายผลิตกรอกจำนวนจริง -> คลังยืนยันส่วนเกิน",
+                "ส่วนเกินเข้า pending -> คลัง approve",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "role 'Sale HQ' ที่เปิด OEM PO + ใครเปิด Own-Brand SO?",
+              "options": [
+                "Sale HQ = role ใหม่แยก; SO = Sale ปกติ",
+                "Sale HQ = Sale เดิม (ไม่มี role ใหม่)",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "สิทธิ์ 2 module ใหม่ (SO, Supply Planning) + ปุ่มสั่งผลิต + แก้ต้นทุน BOM?",
+              "options": [
+                "role Planner ใหม่ถือ Supply Planning/สั่งผลิต; BOM cost สิทธิ์เดิม",
+                "ไม่มี role ใหม่: Supply Planning/สั่งผลิต=Production, SO=Sale, BOM เดิม",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "กติกา loss: 4a comment/approve/threshold; 4b ของไม่ครบ -> ผลิตซ้ำอัตโนมัติหรือคนตัดสิน?",
+              "options": [
+                "4a comment บังคับ ไม่ approve | 4b คนตัดสินเอง",
+                "4a comment + เกิน threshold ต้อง approve | 4b trigger ผลิตซ้ำอัตโนมัติ",
+                "4a approve ทุกครั้ง | 4b อื่น ๆ",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            },
+            {
+              "q": "FG stock ติดตามราย Batch (FIFO, Batch = lot ของ FG, GMP recall) ใช่ไหม?",
+              "options": [
+                "ใช่ - FG แตกราย Batch ตัด FIFO (PO เสนอ)",
+                "ไม่ - FG นับรวมก้อนเดียว",
+                "อื่น ๆ"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "r2: folded 12 answers into Decided Rules D1-D12; added Sections A-E. Journey coverable, 1 gap = OEM surplus capture (NQ1). RBAC: BOM-cost fits; SO+Supply Planning+Sale HQ+surplus rights unmapped (NQ2/3). Tracing extended to produce-to-stock/surplus/snapshot, FG-per-Batch raised (NQ5). Loss adjusts on_hand only, reason/approval/shortfall undecided (NQ4). As-Is->To-Be per-screen+per-flow + Stage-1 work-list done. 5 new questions -> BLOCKED_NEED_INPUT.",
+          "overridden_by": null,
+          "updated_at": "2026-07-28T00:00:00+07:00"
         }
       ]
     }
