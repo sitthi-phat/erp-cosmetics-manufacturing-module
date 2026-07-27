@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -2646,9 +2646,53 @@
           "summary": "Stage-1 delta done: 7 new + 10 modified mockups for OEM/Own-Brand/Supply-Planning/Quotation scope. Quotation x3 (QT number, Convert-to-PO only when Agreed, versioning), Supply Planning (3 tiles + FG cards, coverage bar, Low/OK/Overstock, formulas verified), SO x3 (D2 two sub-cases), FG stock per-Batch FIFO tab. Modified: po-create(QT origin/RM-direct), po-list(QT link), stock(RM+FG tabs, loss reason, ledger), production(actual qty + surplus@ready-to-ship + loss), bom(user cost cats + snapshot), delivery-note(SO ref), invoice(SO+snapshot), trace(QT head+FG per-Batch+ledger), settings(RBAC 3 new modules), gallery+hub Delta section. Design system matched, offline, screenshots in ux-audit. Presentation-only choices noted (FG-150 added as OK example), zero business gaps. -> PO end-to-end review + scenario mock-data.",
           "overridden_by": null,
           "updated_at": "2026-07-29T02:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "e2e-review-and-scenarios",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "ทุก journey OEM/Own-Brand/Supply-Planning/Warehouse ปิดจบ ไม่มี orphan/dead-status (เชิงกฎ)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "completeness matrix + scenario walkthrough S1-S5 + B1-B4 (ledger before->after)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ไม่มี business-gap (D1-D18 ล็อกครบ)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "visual/mockup gaps รวบเป็น punch-list ส่ง UX/UI (U1/U2/U6 must)",
+              "pass": false,
+              "missing": "6 visual gaps to fix before Gate-1"
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/po-e2e-review-oem-ownbrand.md",
+            "docs/requirements/erp-v2-ui-first/scenario-walkthrough.md",
+            "docs/design/erp-v2-ui-first/functional-spec/scenario-walkthrough.html"
+          ],
+          "questions_for_pond": [],
+          "punch_list_for_ux_ui": [
+            "U1 [must] qc.html: batch produce-to-stock ไม่ผูกลูกค้า + QC ผ่าน->FG เข้าคลังราย Batch",
+            "U2 [must] stock.html แท็บ RM: ledger movement (reason+source) + ฟอร์ม loss/adjust RM (return -qty)",
+            "U6 [must] stock.html แท็บ FG: OEM surplus เป็น FG Batch ของตัวเอง ผูก OEM Batch/PRD/PO + ผูก FG ให้ตรงสินค้า",
+            "U3 [should] trace.html: Own-Brand SO / produce-to-stock genealogy (FG Batch->Lot)",
+            "U4 [should] PRD-202607-000104 ถูกใช้ 2 ที่มา - แยก/รวมเป็นที่มาเดียว",
+            "U5 [optional] RM-direct (D3) วิ่งผ่านผลิต/QC"
+          ],
+          "summary": "end-to-end review: flow ครบทุกสาย ไม่มี business-gap (D1-D18). scenario walkthrough S1-S5 + B1-B4 + ledger before->after. visual gap 6 จุด (U1/U2/U6 must, U3/U4 should, U5 opt) -> UX/UI แก้ก่อน Gate-1.",
+          "overridden_by": null,
+          "updated_at": "2026-07-28T22:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T02:05:00+07:00"
+  "generated_at": "2026-07-29T02:40:00+07:00"
 }

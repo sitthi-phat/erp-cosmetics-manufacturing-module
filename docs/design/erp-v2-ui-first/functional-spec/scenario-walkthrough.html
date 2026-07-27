@@ -1,0 +1,128 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenario Walkthrough · ESSENCE Hub System</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;--radius:8px}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1060px;margin:0 auto;padding:24px 20px 80px}
+header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
+header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
+h1{font-size:26px;margin:18px 0 6px}
+.sec{margin:26px 0 6px;padding:8px 12px;border-radius:8px;background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;font-size:17px;font-weight:600}
+.sec small{font-weight:400;color:#BfeCe8;font-size:12px}
+p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
+.card{background:#fff;border:1px solid var(--border2);border-radius:10px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(16,25,40,.05)}
+.card h3{font-size:16px;color:var(--primary);margin-bottom:2px}
+.card .who{font-size:12px;color:var(--text3);margin-bottom:10px}
+ol.steps{margin:8px 0 8px 20px}ol.steps li{margin:4px 0}
+code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border2)}
+th{background:#FAFBFC;color:var(--text2);font-size:12px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.add{color:#1E7A44;font-weight:600}.rem{color:#B02A2A;font-weight:600}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.warn{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
+.gap{display:inline-block;background:#FCEAEA;color:#B02A2A;border:1px solid #F2C2C2;border-radius:6px;padding:0 6px;font-size:11px;font-weight:600}
+.final{font-size:13px;color:var(--text2);border-top:1px dashed var(--border);padding-top:8px;margin-top:8px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+</style></head><body>
+<header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Scenario Walkthrough</span><span class="crumb"><a href="index.html" style="color:#9DBAB7">← Document Hub</a></span></header>
+<div class="wrap">
+
+<h1>Scenario Walkthrough — เดินเรื่องจริงด้วย Mock Data</h1>
+<p class="sub">OEM + Own-Brand + Supply Planning + FG Stock (D1–D18) · สำหรับปอนด์อ่านเป็น "เรื่องเล่าการใช้งานจริง" · ต้นฉบับ: <a href="../../../requirements/erp-v2-ui-first/scenario-walkthrough.md"><code>scenario-walkthrough.md</code></a> · คู่กับ completeness review: <a href="../../../requirements/erp-v2-ui-first/po-e2e-review-oem-ownbrand.md"><code>po-e2e-review-oem-ownbrand.md</code></a></p>
+<div class="note"><b>flow ครบทุกสาย ไม่มี business-gap</b> — กฎ D1–D18 ล็อกครบ. จุด <span class="gap">Ux</span> = หน้าจอ mockup ยังโชว์เคสไม่ครบ (ส่งกลับ UX/UI แก้ก่อน Gate-1) · ไม่มีคำถามถึงปอนด์.</div>
+<p class="sub">ป้าย ledger: <code>RESERVE</code> −ใช้ได้ · <code>CONSUME</code> −คงคลัง(เริ่มผลิต) · <code>GR</code> +คงคลัง · <code>FG-in</code> +FG(QC produce-to-stock) · <code>surplus</code> +FG(ผลิตเกิน OEM) · <code>loss</code> −(เหตุผลบังคับ) · <code>return</code> −(คืน supplier)</p>
+
+<div class="sec">S1 · OEM full chain — เสนอราคา → ผลิตเกิน → surplus เข้าสต็อก → ส่ง → เก็บเงิน</div>
+<div class="card">
+ <h3>QT-202607-000010 (กลอรี่) → PO-202607-000193 → surplus → INV-140</h3>
+ <div class="who">ผู้ทำ: Sale OEM (สมหญิง) · คลัง · ผลิต (วิชัย) · QC (อรุณี) · จัดส่ง · Finance</div>
+ <ol class="steps">
+  <li>เสนอราคา v1 → ต่อรอง → <b>v2</b> (เวอร์ชันใหม่, D18-4) → ลูกค้า <b>ตกลง</b> · <a href="../mockups/quotation-detail.html" target="_blank">quotation-detail</a></li>
+  <li>กด <b>Convert to PO</b> → <b>PO-202607-000193</b> (ยกยอด line/qty/ราคา + ลิงก์ QT↔PO) · ครีมกันแดด ×100 · เซรั่ม ×30 = 22,470</li>
+  <li>ยืนยัน PO → <b>จองวัตถุดิบ</b> (ΣBOM×qty) · TiO2 ไม่พอ → <b>PR-000033</b> (ไม่บล็อก) · <a href="../mockups/po-create.html" target="_blank">po-create</a></li>
+  <li>รับ TiO2 (<a href="../mockups/goods-receipt.html" target="_blank">GR</a>) → QC ขาเข้าผ่าน → รับงาน → <b>PRD-202607-000110</b> → เริ่มผลิต → <b>B-PO-202607-000193-1-1</b> · <a href="../mockups/production.html" target="_blank">production</a></li>
+  <li>QC <b>ผ่าน</b> · ฝ่ายผลิตกรอก <b>จำนวนผลิตจริง 120</b> (สั่ง 100) → surplus <b>20</b></li>
+  <li>กด <b>"พร้อมส่ง"</b> → ส่งลูกค้า 100 · <b>surplus 20 → FG stock อัตโนมัติ + remark</b> (ไม่ approve, D13) <span class="gap">U6</span></li>
+  <li>DN-20260728-00130 (อ้าง PO) → ส่งถึง → <b>INV-2026-000140</b> → รับชำระ = <b>Paid</b></li>
+ </ol>
+ <table><thead><tr><th>ตอนไหน</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>source</th><th class="num">on_hand</th></tr></thead>
+ <tbody><tr><td>กด "พร้อมส่ง"</td><td class="add">surplus (+)</td><td class="num add">+20</td><td>สต็อกเพิ่มจากการผลิตเกิน</td><td>B-PO-…193-1-1 · PRD-110 · PO-193</td><td class="num">0 → 20</td></tr></tbody></table>
+ <div class="final"><b>สถานะสุดท้าย:</b> PO-193 ส่งถึงแล้ว/ชำระแล้ว · Batch QC ผ่าน · FG-202 (ครีมกันแดด, auto D11) on_hand 20 · INV-140 Paid · <b>surplus จับตอน "พร้อมส่ง" ไม่ใช่ตอน QC ผ่าน</b>.</div>
+</div>
+
+<div class="sec">S2 · รับวัตถุดิบ (GR) + คืนวัตถุดิบ (RM Return)</div>
+<div class="card">
+ <h3>GR-008 (แอลกอฮอล์ ชดเชยติดลบ) + RT-0007 (คืนน้ำหอม)</h3>
+ <div class="who">ผู้ทำ: คลัง · QC</div>
+ <table><thead><tr><th>เวลา</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>source</th><th class="num">on_hand</th></tr></thead>
+ <tbody>
+  <tr><td>08/07 10:30</td><td class="add">GR (+)</td><td class="num add">+200</td><td>รับเข้า (ชดเชยติดลบ -30 ก่อน · retro-link FIFO)</td><td>Lot L-TT-ALC-2607 · PR-028</td><td class="num">-30 → 170</td></tr>
+  <tr><td>08/07 15:00</td><td class="rem">return (−)</td><td class="num rem">−5</td><td>กลิ่นผิดเพี้ยน (บังคับ)</td><td>Lot L-ARM-FRG-2606 · อโรมา</td><td class="num">23 → 18</td></tr>
+ </tbody></table>
+ <div class="warn"><span class="gap">U2</span> movement <code>return −5</code> ควรโผล่ใน <b>ledger ของแท็บ RM</b> ใน <a href="../mockups/stock.html" target="_blank">stock</a> ด้วย — ตอนนี้แท็บ RM ยังไม่มี ledger view (เห็น −qty ผ่าน <a href="../mockups/return.html" target="_blank">return</a>/<a href="../mockups/trace.html" target="_blank">trace</a> เท่านั้น).</div>
+ <div class="final"><b>สถานะสุดท้าย:</b> แอลกอฮอล์ 170 (รอ QC) · น้ำหอม 18 · RT-0007 คืนแล้ว · ทุก movement มี reason+source (D15).</div>
+</div>
+
+<div class="sec">S3 · จังหวะ Over-production (เพิ่ม) vs Loss (ลด) — "ตอนไหนยอดขยับ"</div>
+<div class="card">
+ <h3>ADD ตอน "พร้อมส่ง" vs REMOVE (loss) ทันทีที่บันทึก</h3>
+ <table><thead><tr><th>event</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th class="num">before→after</th></tr></thead>
+ <tbody>
+  <tr><td>A · กด "พร้อมส่ง" (ไม่ใช่ QC ผ่าน)</td><td class="add">surplus (+)</td><td class="num add">+20</td><td>ผลิตเกิน OEM</td><td class="num">0 → 20</td></tr>
+  <tr><td>B · loss ระหว่างผลิต (ฝ่ายผลิต)</td><td class="rem">loss (−)</td><td class="num rem">−5</td><td>เนื้อครีมแยกชั้น (บังคับ)</td><td class="num">ตัดทันที</td></tr>
+  <tr><td>C · loss ในคลัง (warehouse)</td><td class="rem">loss (−)</td><td class="num rem">−12</td><td>ขวดแตกระหว่างจัดเก็บ</td><td class="num">712 → 700</td></tr>
+ </tbody></table>
+ <div class="final"><b>สรุป:</b> เพิ่ม = <code>FG-in</code>(QC ผ่าน) / <code>surplus</code>(พร้อมส่ง) เท่านั้น · ลด = CONSUME/loss/return · loss เหตุผลบังคับ ไม่อนุมัติ ตัด on_hand · loss <b>ไม่ auto re-produce</b> (กด "ผลิตซ้ำ" เอง).</div>
+</div>
+
+<div class="sec">S4 · Own-Brand produce-to-stock → ขายทีหลัง (FIFO trace ย้อน Batch/Lot)</div>
+<div class="card">
+ <h3>Supply Planning FG-101 Low → PRD-104 (customerless) → FG เข้าคลัง → ขายผ่าน SO</h3>
+ <div class="who">ผู้ทำ: วางแผนผลิต · ผลิต · QC · Sale Own-Brand</div>
+ <ol class="steps">
+  <li>FG-101 <b>Low</b> (cover 14.3&lt;30) → กด <b>"สั่งผลิต 1,500"</b> (ceil ทวีคูณ Batch 500, D6) → <b>PRD-202607-000104</b> ไม่ผูกลูกค้า · <a href="../mockups/supply-planning.html" target="_blank">supply-planning</a></li>
+  <li>เริ่มผลิต → <b>B-PRD-202607-000104-1</b> → QC ตรวจแบตช์ (ไม่มี PO/ลูกค้า) <span class="gap">U1</span> → ผ่าน</li>
+  <li>QC ผ่าน → <b>FG เข้าคลังราย Batch</b> (D12)</li>
+  <li>เดือนถัดมา SO ขายจากสต็อก → ตัด <b>FIFO ราย Batch</b> → trace ย้อน Batch→Lot <span class="gap">U3</span></li>
+ </ol>
+ <table><thead><tr><th>เวลา</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>source</th><th class="num">on_hand</th></tr></thead>
+ <tbody>
+  <tr><td>QC ผ่าน</td><td class="add">FG-in (+)</td><td class="num add">+1,500</td><td>QC ผ่าน (produce-to-stock)</td><td>PRD-104 · B-PRD-…104-1</td><td class="num">1,200 → 2,700</td></tr>
+  <tr><td>ยืนยัน SO</td><td>reserve</td><td class="num">−50 (ใช้ได้)</td><td>จอง SO</td><td>SO-2026xx</td><td class="num">res +50</td></tr>
+  <tr><td>พร้อมจัดส่ง</td><td class="rem">CONSUME (−)</td><td class="num rem">−50</td><td>ตัด FIFO batch เก่าสุด</td><td>DN · SO</td><td class="num">2,700 → 2,650</td></tr>
+ </tbody></table>
+ <div class="final"><b>สถานะสุดท้าย:</b> PRD-104 เข้าคลัง · FG-101 มีของขาย · genealogy FG→Batch→Lot ครบ (GMP recall).</div>
+</div>
+
+<div class="sec">S5 · Own-Brand sell-from-stock (SO มีลูกค้า)</div>
+<div class="card">
+ <h3>SO-202607-000030 (ร้านสวยใส) — จอง FG → ตัด FIFO → DN/Invoice อ้าง SO</h3>
+ <div class="who">ผู้ทำ: Sale Own-Brand (อารดา) · จัดส่ง · Finance</div>
+ <ol class="steps">
+  <li>สร้าง SO โหมด (ก) <b>เลือกลูกค้า</b> + FG-101×50 + FG-150×25 (ไม่มี Quotation) · <a href="../mockups/so-create.html" target="_blank">so-create</a></li>
+  <li>ยืนยัน → <b>จอง FG ราย Batch</b> · <a href="../mockups/so-detail.html" target="_blank">so-detail</a></li>
+  <li>พร้อมจัดส่ง → <b>ตัด FG FIFO</b> → DN-125 <b>อ้าง SO</b> (<a href="../mockups/delivery-note.html" target="_blank">delivery-note</a>) → <b>Invoice อ้าง SO</b> + cost snapshot → ชำระ</li>
+ </ol>
+ <table><thead><tr><th>เวลา</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>source</th></tr></thead>
+ <tbody>
+  <tr><td>ยืนยัน SO</td><td>reserve</td><td class="num">−50 (FG-101) · −25 (FG-150)</td><td>จอง SO-030</td><td>SO-202607-000030</td></tr>
+  <tr><td>พร้อมจัดส่ง</td><td class="rem">CONSUME (−)</td><td class="num rem">−50 (B-…101-1) · −25 (B-…150-1)</td><td>ตัด FIFO ราย Batch</td><td>DN-125 · SO-030</td></tr>
+ </tbody></table>
+ <div class="final"><b>สถานะสุดท้าย:</b> SO-030 ส่งถึงแล้ว/ชำระ · genealogy SO→Batch→Lot ครบ.</div>
+</div>
+
+<div class="sec">กิ่ง (Branches) — ให้แน่ใจว่า flow ครบจริง</div>
+<div class="card">
+ <p><b>B1 · QC fail → Rework:</b> PO-181 line#2 โฟม run1 <b>B-…181-2-1 ไม่ผ่าน</b> (feedback บังคับ) → Rework → "ผลิตซ้ำ" → <b>run2 B-…181-2-2</b> → กลับคิว QC · line#1 เดินต่อ · PO พร้อมส่งเมื่อ 2 batch ผ่าน. (<a href="../mockups/qc.html" target="_blank">qc</a> / <a href="../mockups/production.html" target="_blank">production</a>)</p>
+ <p><b>B2 · Cancel ก่อน/หลังผลิต:</b> ก่อนเริ่มผลิต = <b>release จอง (คืน Available)</b> · หลัง consume แล้ว = <b>ส่วนที่ตัดจริงไม่คืน</b> คืนเฉพาะที่ยังจอง. (<a href="../mockups/so-detail.html" target="_blank">so-detail</a> "ยกเลิก SO คืนจอง")</p>
+ <p><b>B3 · Partial DN:</b> SHP-0046 — DN-122 ส่งถึง · DN-123 <b>ปฏิเสธ</b>→raise Sale · DN-124 <b>เลื่อน 10/07</b>→ค้างคิว · DN-125 (SO Own-Brand) ส่งถึง · หัวรอบ "ส่งบางส่วน" = ป้าย reconcile. (<a href="../mockups/delivery-note.html" target="_blank">delivery-note</a>)</p>
+ <p><b>B4 · Quotation Rejected / เวอร์ชันใหม่:</b> QT-000006 <b>ปฏิเสธ</b> (จบสาย, ไม่เกิด PO) · QT-000010 แก้ v1→v2 <b>เวอร์ชันใหม่</b> (immutable, เก็บประวัติ). (<a href="../mockups/quotation-list.html" target="_blank">quotation-list</a>)</p>
+</div>
+
+<footer>ESSENCE Hub System · Scenario Walkthrough (PO, Stage 1 delta review) · 2026-07-28 · flow ครบ ไม่มี business-gap · visual gaps U1–U6 → UX/UI (ดู po-e2e-review-oem-ownbrand.md)</footer>
+</div></body></html>
