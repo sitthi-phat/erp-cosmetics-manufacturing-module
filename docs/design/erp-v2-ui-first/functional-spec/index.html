@@ -37,6 +37,17 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริงต่อเนื่อง) → ลงรายละเอียด <b>Requirement ราย module</b> (②) → ต้องการเหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → เรื่อง API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤) · <b>ล่าสุด (r5):</b> Stock Reservation — ยืนยัน PO=จองวัตถุดิบ → เริ่มผลิต=ตัดจริง FIFO → cancel=คืน/dialog (ดู <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)</div>
 
+<div class="sec">🆕 สโคปใหม่ (Delta) — OEM Quotation · Own-Brand SO · Supply Planning · FG Stock <small>— D1–D18 · Stage 1 รอบใหม่</small></div>
+<div class="srcnote">📄 ที่มา/กติกา (source of truth): <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><code>scope-oem-ownbrand-supply-planning.md</code></a> — ล็อกครบ D1–D18 (ZERO open questions) · Mockups delta อยู่ในหมวดบนสุดของ <a href="../mockups/index.html" target="_blank">Gallery</a> · <b>🟢 หน้าใหม่ · 🔵 หน้าแก้</b></div>
+<div class="tocgrid">
+  <a class="mod" href="../mockups/quotation-list.html" target="_blank"><div class="mt">Quotation (OEM) 🟢</div><div class="md">quotation-list/create/detail · Draft/Sent/Agreed/Rejected · Convert to PO (D18)</div></a>
+  <a class="mod" href="../mockups/so-list.html" target="_blank"><div class="mt">Sales Order (Own-Brand) 🟢</div><div class="md">so-list/create/detail · ขายจากสต็อก/ผลิตเก็บสต็อก (D1/D2) · ไม่มี Quotation</div></a>
+  <a class="mod" href="../mockups/supply-planning.html" target="_blank"><div class="mt">Supply Planning 🟢</div><div class="md">Demand &amp; Production Cover · 3 tiles + การ์ด FG + สูตร D4–D8 + สั่งผลิต</div></a>
+  <a class="mod" href="../mockups/stock.html" target="_blank"><div class="mt">FG Stock (แท็บใน สต็อก) 🔵</div><div class="md">FG ราย Batch/FIFO (D16) · surplus/loss + ledger reason/source (D15)</div></a>
+  <a class="mod" href="../mockups/production.html" target="_blank"><div class="mt">ผลิต — surplus/actual qty 🔵</div><div class="md">actual produced qty + surplus→FG ตอนพร้อมส่ง (D13) · PRD ไม่ผูกลูกค้า</div></a>
+  <a class="mod" href="../mockups/bom-create.html" target="_blank"><div class="mt">BOM ต้นทุนหลายหมวด 🔵</div><div class="md">หมวดต้นทุน per-unit (D9) + ต้นทุนรวม snapshot (D10)</div></a>
+</div>
+
 <div class="sec">① เริ่มที่นี่ <small>— เห็นภาพรวมทั้งระบบก่อน</small></div>
 <div class="tocgrid">
   <a class="mod start" href="user-journeys.html"><div class="mt">User Journeys — 6 สาย</div><div class="md">Customer→PO→ผลิต→QC→จัดส่ง→Billing · narrative + step↔story (BA cross-reviewed 6/6 PASS)</div></a>
