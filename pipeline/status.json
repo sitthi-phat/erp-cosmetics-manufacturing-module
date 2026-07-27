@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -2572,9 +2572,43 @@
           "summary": "r3: baked final 5 answers into D13-D17, zero open questions for base scope. D13 OEM surplus captured at 'Ready to Ship' (production enters actual qty; surplus->FG stock per-Batch auto; warehouse notified by ledger remark, no approval, NOT at QC pass). D14/D17 generic RBAC + Capability->Module->Permission catalog (+SO +Supply Planning). D15 loss mandatory reason, editable production+warehouse, on_hand only, no approval; all movements = ledger types with reason+source ref; no auto-reproduce. D16 FG per-Batch FIFO. Journey complete. Stage-1 work-list: NEW supply-planning/so-create/so-detail/so-list/FG-stock; MODIFIED stock/production/bom/delivery-note/invoice-detail/trace/po-create/settings/Hub; UNTOUCHED po-list/customers/supplier/pr/gr/shipping. NOTE: dispatcher holding UX/UI handoff to add Quotation addendum (r4) first per Pond.",
           "overridden_by": null,
           "updated_at": "2026-07-28T12:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "scope-oem-ownbrand-supply-planning-r4-quotation",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "Locked OEM Quotation as D18 (QT-{YYYYMM}-{NNNNNN}; convert-to-PO new PO + QT<->PO link; OEM-only; skippable; Draft/Sent/Agreed/Rejected; edit=new version; no expiry)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Updated OEM journey, As-Is->To-Be, tracing head-of-chain, RBAC catalog (Quotation module), doc-numbering",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Own-Brand SO explicitly has NO quotation",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Final Stage-1 UX/UI work-list complete incl quotation screens; zero open questions",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "r4: baked OEM Quotation into D18 (final scope round). OEM journey now starts with OPTIONAL Quotation QT-{YYYYMM}-{NNNNNN} (Draft/Sent/Agreed/Rejected; edit=new version; no expiry); 'Agreed' enables Convert-to-PO -> new PO number carrying line/qty/price + QT<->PO link. OEM-only (Own-Brand SO has none), skippable (direct PO still allowed w/ QT origin ref). Updated OEM journey, tracing (QT head of chain), RBAC (3 new modules Quotation/SO/Supply Planning), doc-numbering, full As-Is->To-Be + Stage-1 work-list. No multi-currency (noted). All rules D1-D18 locked, zero open questions -> READY_FOR_UX_UI. Final work-list: NEW quotation-create/list/detail(+Convert), supply-planning, so-create, so-detail/list, FG-stock; MODIFIED stock, production, bom, po-create, po-list, delivery-note, invoice-detail, trace, settings, Hub; UNTOUCHED customers/supplier/pr/gr/shipping. Supersedes r3.",
+          "overridden_by": null,
+          "updated_at": "2026-07-28T18:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-28T12:30:00+07:00"
+  "generated_at": "2026-07-28T18:05:00+07:00"
 }
