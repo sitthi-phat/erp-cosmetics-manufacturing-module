@@ -2338,7 +2338,7 @@
                 "ระบบ PO เดิม + ธง Own Brand",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "SO-{YYYYMM}-{NNNNNN} เลขใหม่แยก + UI แยกหน้าจาก PO"
             },
             {
               "q": "Lifecycle ของ Own-Brand Sales Order?",
@@ -2348,7 +2348,7 @@
                 "ทั้งสองในใบเดียว",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "ขายจากสต็อก=ต้องเลือกลูกค้า; สั่งผลิตเก็บสต็อก=ไม่เลือกลูกค้า"
             },
             {
               "q": "OEM line ที่เป็นวัตถุดิบตรง (ขาย RM ไม่ใช่ BOM) พฤติกรรม?",
@@ -2357,7 +2357,7 @@
                 "ต้องมีขั้นผลิต/แปรรูป",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "ต้องผ่านขั้นผลิต (PO เปลี่ยนสถานะตาม flow ผลิต) แต่อาจไม่มีการแปรรูปจริง"
             },
             {
               "q": "แหล่งข้อมูล FG On Hand / In Production ในการ์ด Supply Planning?",
@@ -2366,7 +2366,7 @@
                 "FG On Hand แก้ในการ์ดได้ (override)",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "FG On Hand read-only จาก stock; In Production นับจาก Batch ของ FG นั้น"
             },
             {
               "q": "เกณฑ์ป้าย Low/OK/Overstock + Overstock threshold + สีโซน?",
@@ -2375,7 +2375,7 @@
                 "Overstock ใช้ค่าคงที่วัน (ระบุ)",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "Low=cover<Target, OK=Target..2xTarget, Overstock>2xTarget"
             },
             {
               "q": "Suggested production trigger?",
@@ -2384,7 +2384,7 @@
                 "เฉพาะเมื่อ Available<Reorder point",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "เมื่อ available<Target -> ผลิตเติมถึง Target ปัดขึ้นตาม Batch"
             },
             {
               "q": "แปลง Sales Rate /week /month เป็น per-day + runs-out date ปฏิทินหรือวันทำการ?",
@@ -2393,7 +2393,7 @@
                 "หารด้วยวันทำการ",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "สัปดาห์/7 เดือน/30 นับวันปฏิทิน"
             },
             {
               "q": "ปุ่ม 'สั่งผลิต' ใน Supply Planning ทำอะไร?",
@@ -2402,7 +2402,7 @@
                 "แค่คำแนะนำ ไม่สร้างงาน",
                 "สร้าง Sales Order เติมสต็อก"
               ],
-              "answer": null
+              "answer": "สร้างใบสั่งผลิตเก็บสต็อก (PRD ไม่ผูกลูกค้า)"
             },
             {
               "q": "BOM ต้นทุนเพิ่ม: หมวด (ตายตัว vs เพิ่มเอง) + ต่อหน่วยหรือต่อ batch?",
@@ -2411,7 +2411,7 @@
                 "ให้ผู้ใช้เพิ่มหมวดเองได้",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "ผู้ใช้เพิ่มหมวดต้นทุนเองได้ + คิดต่อหน่วย"
             },
             {
               "q": "snapshot ต้นทุนตอนขาย = แตะ COGS (เดิม out-of-scope) — เก็บ snapshot เฉยๆ หรือเปิด COGS/margin?",
@@ -2420,7 +2420,7 @@
                 "เปิด COGS/margin เข้าเฟสนี้",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "เก็บ snapshot ไว้ก่อน ยังไม่ทำรายงาน COGS/กำไร; ใช้ค่าตอนขายเพื่อรู้ต้นทุน+COGS/กำไรของรายการที่ขาย"
             },
             {
               "q": "รหัส FG (FG-xxx) กับ BOM สัมพันธ์อย่างไร + วิธีออกรหัส?",
@@ -2429,7 +2429,7 @@
                 "FG master แยก ผูก BOM ทีหลัง",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "1 BOM = 1 FG อัตโนมัติ"
             },
             {
               "q": "OEM ผลิตเสร็จเข้าคลัง FG ไหม + FG เข้าคลังตอนไหน (over-production) + Loss ลด reserved ด้วยไหม + FG reservation เหมือน RM ไหม?",
@@ -2438,12 +2438,13 @@
                 "OEM เข้าคลัง FG ด้วย + มีขั้น FG receipt ให้คลังยืนยัน",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "ข้อ ก + NEW: OEM ผลิตเกินเพื่อ test/backup -> surplus แปลงเป็น FG/BOM stock available"
             }
           ],
           "summary": "New scope from Pond 2026-07-24 customer meeting reviewed vs locked Gate-2 spec; wrote DELTA requirement scope-oem-ownbrand-supply-planning.md for UX/UI (two order journeys OEM-PO vs Own-Brand Sales Order, full Supply Planning module spec with formulas verified vs screenshot, BOM extra-cost snapshot with COGS-scope flag, FG-as-inventory stock delta, new-vs-modified screen checklist). Batched 12 open business-fact questions per no-guess rule. BLOCKED_NEED_INPUT.",
           "overridden_by": null,
-          "updated_at": "2026-07-27T00:00:00+07:00"
+          "updated_at": "2026-07-27T00:00:00+07:00",
+          "answered_at": "2026-07-28T00:00:00+07:00"
         }
       ]
     }
