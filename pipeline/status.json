@@ -2484,7 +2484,7 @@
                 "ส่วนเกินเข้า pending -> คลัง approve",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "auto ตอน Ready to Ship: ฝ่ายผลิตกรอกจำนวนผลิตจริง; ตอนเปลี่ยนสถานะ Ready to Ship -> ตามสั่งส่งลูกค้า, ส่วนเกินเข้า FG stock + remark แจ้งคลังว่าได้จากส่วนเกินการผลิต (ไม่ต้อง approve)"
             },
             {
               "q": "role 'Sale HQ' ที่เปิด OEM PO + ใครเปิด Own-Brand SO?",
@@ -2493,7 +2493,7 @@
                 "Sale HQ = Sale เดิม (ไม่มี role ใหม่)",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "RBAC generic: ไม่ hardcode Sale HQ; ใครมีสิทธิ์สร้าง PO ก็สร้างได้ (AR/Sale), Own-Brand SO ใครมีสิทธิ์ก็เปิดได้ (คลัง/อื่น); 2 order type แยก module, บังคับสิทธิ์ที่ระดับ module"
             },
             {
               "q": "สิทธิ์ 2 module ใหม่ (SO, Supply Planning) + ปุ่มสั่งผลิต + แก้ต้นทุน BOM?",
@@ -2502,7 +2502,7 @@
                 "ไม่มี role ใหม่: Supply Planning/สั่งผลิต=Production, SO=Sale, BOM เดิม",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "RBAC generic: role สร้างได้อิสระ ถือสิทธิ์เหมือน/แยกก็ได้; สำคัญคือ capability ต่อ module (สร้าง PO/SO, Supply Planning, สั่งผลิต, แก้ต้นทุน BOM, adjust stock) แต่ละอันให้สิทธิ์แยกได้"
             },
             {
               "q": "กติกา loss: 4a comment/approve/threshold; 4b ของไม่ครบ -> ผลิตซ้ำอัตโนมัติหรือคนตัดสิน?",
@@ -2512,7 +2512,7 @@
                 "4a approve ทุกครั้ง | 4b อื่น ๆ",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "loss ตอนผลิต: เหตุผลบังคับ, แก้ได้ทั้ง production process + คลัง, มีผลต่อ stock โดยตรง (on_hand), ไม่ต้อง approve; ต้อง track & trace ได้ว่า stock เพิ่ม/ลดเพราะอะไร (ledger reason+source)"
             },
             {
               "q": "FG stock ติดตามราย Batch (FIFO, Batch = lot ของ FG, GMP recall) ใช่ไหม?",
@@ -2521,12 +2521,13 @@
                 "ไม่ - FG นับรวมก้อนเดียว",
                 "อื่น ๆ"
               ],
-              "answer": null
+              "answer": "ใช่ - FG แตกราย Batch (Batch = lot ของ FG) ตัด FIFO เพื่อ recall GMP"
             }
           ],
           "summary": "r2: folded 12 answers into Decided Rules D1-D12; added Sections A-E. Journey coverable, 1 gap = OEM surplus capture (NQ1). RBAC: BOM-cost fits; SO+Supply Planning+Sale HQ+surplus rights unmapped (NQ2/3). Tracing extended to produce-to-stock/surplus/snapshot, FG-per-Batch raised (NQ5). Loss adjusts on_hand only, reason/approval/shortfall undecided (NQ4). As-Is->To-Be per-screen+per-flow + Stage-1 work-list done. 5 new questions -> BLOCKED_NEED_INPUT.",
           "overridden_by": null,
-          "updated_at": "2026-07-28T00:00:00+07:00"
+          "updated_at": "2026-07-28T00:00:00+07:00",
+          "answered_at": "2026-07-28T00:00:00+07:00"
         }
       ]
     }
