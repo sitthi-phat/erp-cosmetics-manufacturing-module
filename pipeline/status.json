@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
+      "current_agent": "po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -2606,9 +2606,49 @@
           "summary": "r4: baked OEM Quotation into D18 (final scope round). OEM journey now starts with OPTIONAL Quotation QT-{YYYYMM}-{NNNNNN} (Draft/Sent/Agreed/Rejected; edit=new version; no expiry); 'Agreed' enables Convert-to-PO -> new PO number carrying line/qty/price + QT<->PO link. OEM-only (Own-Brand SO has none), skippable (direct PO still allowed w/ QT origin ref). Updated OEM journey, tracing (QT head of chain), RBAC (3 new modules Quotation/SO/Supply Planning), doc-numbering, full As-Is->To-Be + Stage-1 work-list. No multi-currency (noted). All rules D1-D18 locked, zero open questions -> READY_FOR_UX_UI. Final work-list: NEW quotation-create/list/detail(+Convert), supply-planning, so-create, so-detail/list, FG-stock; MODIFIED stock, production, bom, po-create, po-list, delivery-note, invoice-detail, trace, settings, Hub; UNTOUCHED customers/supplier/pr/gr/shipping. Supersedes r3.",
           "overridden_by": null,
           "updated_at": "2026-07-28T18:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "stage1-delta-mockups",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "7 new mockups (quotation create/list/detail, supply-planning, so create/list/detail, FG stock as tab)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "10 modified mockups (po-create/po-list/stock/production/bom x2/delivery-note/invoice-detail/trace/settings/gallery+hub)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Design system matched byte-for-byte; offline no-CDN; screenshots produced",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Supply Planning formulas verified (FG-101->1500, FG-204->0); no business-fact gaps",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/quotation-create.html",
+            "docs/design/erp-v2-ui-first/mockups/quotation-list.html",
+            "docs/design/erp-v2-ui-first/mockups/quotation-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/supply-planning.html",
+            "docs/design/erp-v2-ui-first/mockups/so-create.html",
+            "docs/design/erp-v2-ui-first/mockups/so-list.html",
+            "docs/design/erp-v2-ui-first/mockups/so-detail.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Stage-1 delta done: 7 new + 10 modified mockups for OEM/Own-Brand/Supply-Planning/Quotation scope. Quotation x3 (QT number, Convert-to-PO only when Agreed, versioning), Supply Planning (3 tiles + FG cards, coverage bar, Low/OK/Overstock, formulas verified), SO x3 (D2 two sub-cases), FG stock per-Batch FIFO tab. Modified: po-create(QT origin/RM-direct), po-list(QT link), stock(RM+FG tabs, loss reason, ledger), production(actual qty + surplus@ready-to-ship + loss), bom(user cost cats + snapshot), delivery-note(SO ref), invoice(SO+snapshot), trace(QT head+FG per-Batch+ledger), settings(RBAC 3 new modules), gallery+hub Delta section. Design system matched, offline, screenshots in ux-audit. Presentation-only choices noted (FG-150 added as OK example), zero business gaps. -> PO end-to-end review + scenario mock-data.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T02:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-28T18:05:00+07:00"
+  "generated_at": "2026-07-29T02:05:00+07:00"
 }
