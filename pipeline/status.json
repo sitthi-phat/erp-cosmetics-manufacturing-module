@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "current_agent": "ux-ui + po",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval."
+          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval. | 2026-07-29 OVERNIGHT: OEM/Own-Brand/Supply-Planning/Quotation scope added (spec D1-D18 in scope-oem-ownbrand-supply-planning.md). UX/UI drew 7 new + 12 modified mockups (Stage-1 delta); PO e2e review PASS (flow complete, no business gap) + scenario-walkthrough.md/.html (S1-S5,B1-B4 with stock ledger). AWAITING Pond: Gate-1 delta review (look of new/modified screens) + re-approve expanded requirements (Gate 2) before Stage 3."
         },
         "gate3_app_review": {
           "approved": false,
@@ -2690,9 +2690,41 @@
           "summary": "end-to-end review: flow ครบทุกสาย ไม่มี business-gap (D1-D18). scenario walkthrough S1-S5 + B1-B4 + ledger before->after. visual gap 6 จุด (U1/U2/U6 must, U3/U4 should, U5 opt) -> UX/UI แก้ก่อน Gate-1.",
           "overridden_by": null,
           "updated_at": "2026-07-28T22:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "stage1-delta-punchlist-fixes",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "U1/U2/U6 must-fixes done + U3/U4 should + U5 optional; consistent w/ scenario numbers",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Verified over HTTP: all pages 200, fixed content present (surplus->FG-202, RM ledger+return, produce-to-stock QC batch, PRD dedup)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Design system untouched, offline/no-CDN, screenshots refreshed",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/qc.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/trace.html",
+            "docs/design/erp-v2-ui-first/mockups/so-list.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Overnight complete. UX/UI fixed all 6 PO punch-list items (U1 qc produce-to-stock batch+FG-in, U2 RM ledger+loss/return form, U6 OEM surplus bound to correct FG-202 own Batch, U3 trace Own-Brand genealogy, U4 PRD-104/106 dedup, U5 RM-direct example), all consistent with scenario walkthrough S1-S5. Dispatcher HTTP-verified. AWAITING POND: Gate-1 delta review of new+modified mockups (17 screens) + scenario walkthrough + scope spec D1-D18; then Gate 2 for expanded requirements before Stage 2.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T03:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T02:40:00+07:00"
+  "generated_at": "2026-07-29T03:05:00+07:00"
 }
