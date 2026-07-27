@@ -2528,6 +2528,50 @@
           "overridden_by": null,
           "updated_at": "2026-07-28T00:00:00+07:00",
           "answered_at": "2026-07-28T00:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "scope-oem-ownbrand-supply-planning-r3",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "Locked Pond's 5 answers as Decided Rules D13-D17",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Revised As-Is->To-Be for NQ1 (actual-qty + Ready-to-Ship surplus) and NQ5 (FG per-Batch/FIFO)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Added RBAC Capability->Module->Permission catalog (generic, +SO +Supply Planning modules)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Tracing + loss reflect stock-ledger reason+source per movement (append-only)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Journey completeness = all flows have a home; Stage-1 work-list executable without guessing",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Zero open questions (base scope)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "r3: baked final 5 answers into D13-D17, zero open questions for base scope. D13 OEM surplus captured at 'Ready to Ship' (production enters actual qty; surplus->FG stock per-Batch auto; warehouse notified by ledger remark, no approval, NOT at QC pass). D14/D17 generic RBAC + Capability->Module->Permission catalog (+SO +Supply Planning). D15 loss mandatory reason, editable production+warehouse, on_hand only, no approval; all movements = ledger types with reason+source ref; no auto-reproduce. D16 FG per-Batch FIFO. Journey complete. Stage-1 work-list: NEW supply-planning/so-create/so-detail/so-list/FG-stock; MODIFIED stock/production/bom/delivery-note/invoice-detail/trace/po-create/settings/Hub; UNTOUCHED po-list/customers/supplier/pr/gr/shipping. NOTE: dispatcher holding UX/UI handoff to add Quotation addendum (r4) first per Pond.",
+          "overridden_by": null,
+          "updated_at": "2026-07-28T12:00:00+07:00"
         }
       ]
     }
