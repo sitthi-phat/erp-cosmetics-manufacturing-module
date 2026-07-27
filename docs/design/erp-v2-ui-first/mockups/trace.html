@@ -167,19 +167,35 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  </div>
  <div class="card"><div class="card-h"><h3>สายโซ่ OEM — QT เป็นหัวสาย (D18)</h3><span class="tiny">QT→PO→PRD/Batch→FG(surplus)/Lot→DN→Invoice</span></div><div class="card-b">
    <div class="flow" style="gap:2px">
-    <div class="s done"><span class="n">✓</span><a href="quotation-detail.html">QT-000008</a></div><div class="line"></div>
-    <div class="s done"><span class="n">✓</span><a href="po-detail.html">PO-181</a></div><div class="line"></div>
-    <div class="s done"><span class="n">✓</span>PRD-091</div><div class="line"></div>
-    <div class="s done"><span class="n">✓</span>Batch B-…181-1-1</div><div class="line"></div>
-    <div class="s cur"><span class="n">FG</span>surplus→FG stock</div><div class="line"></div>
-    <div class="s"><span class="n">DN</span>DN</div><div class="line"></div>
-    <div class="s"><span class="n">฿</span>Invoice</div>
+    <div class="s done"><span class="n">✓</span><a href="quotation-detail.html">QT-000010</a></div><div class="line"></div>
+    <div class="s done"><span class="n">✓</span><a href="po-detail.html">PO-193</a></div><div class="line"></div>
+    <div class="s done"><span class="n">✓</span>PRD-110</div><div class="line"></div>
+    <div class="s done"><span class="n">✓</span>Batch B-…193-1-1</div><div class="line"></div>
+    <div class="s cur"><span class="n">FG</span>surplus 20→FG-202</div><div class="line"></div>
+    <div class="s"><span class="n">DN</span>DN-130</div><div class="line"></div>
+    <div class="s"><span class="n">฿</span>INV-140</div>
    </div>
    <div class="alert alert-info" style="margin-top:14px;font-size:13px"><span class="ai">🔗</span><div><b>OEM หัวสาย = ใบเสนอราคา (QT)</b> ยกยอด line/qty/price → PO · <b>Own-Brand หัวสาย = SO</b> (SO↔FG Batch↔Lot↔DN) · <b>FG แตกราย Batch (D16)</b> · surplus/loss มี ledger reason+source (D15) · cost snapshot ที่ line (D10)</div></div>
  </div></div>
+ <div class="card"><div class="card-h"><h3>Own-Brand genealogy — produce-to-stock &amp; sell-from-stock (S4/S5)</h3><span class="tiny">SO ↔ FG Batch ↔ Lot · ไม่มีลูกค้าตอนผลิต</span></div><div class="card-b">
+  <div class="tblwrap"><div style="display:flex;gap:0;min-width:680px">
+   <div style="flex:1"><div class="tiny" style="text-transform:uppercase;margin-bottom:8px">ต้นทาง · ล็อตวัตถุดิบ (FIFO)</div>
+     <div class="card" style="margin-bottom:8px;box-shadow:none"><div class="card-b" style="padding:10px 12px;font-size:13px"><span class="pill">Lot</span> L-VC-2606 · วิตามินซี · เคมีสยาม</div></div>
+     <div class="card" style="box-shadow:none"><div class="card-b" style="padding:10px 12px;font-size:13px"><span class="pill">Lot</span> L-GLY-2506 · กลีเซอรีน</div></div></div>
+   <div style="display:grid;place-items:center;padding:0 12px;color:var(--text3);font-size:22px">→</div>
+   <div style="flex:1"><div class="tiny" style="text-transform:uppercase;margin-bottom:8px">produce-to-stock (ไม่มีลูกค้า)</div>
+     <div class="card" style="box-shadow:none;border-color:var(--primary)"><div class="card-b" style="padding:12px;font-size:13px"><span class="pill">Batch</span> <b>B-PRD-202607-000104-1</b><div class="tiny" style="margin-top:6px">เอสเซนส์ ไบรท์ เซรั่ม (FG-101) · จาก <a href="supply-planning.html">Supply Planning</a> "สั่งผลิต" · QC ผ่าน → FG-in +1,500</div></div></div>
+     <div class="tiny" style="margin-top:8px;color:var(--text2)">genealogy Batch→Lot ครบ <b>แม้ตอนผลิตยังไม่มีลูกค้า</b> (GMP recall)</div></div>
+   <div style="display:grid;place-items:center;padding:0 12px;color:var(--text3);font-size:22px">→</div>
+   <div style="flex:1"><div class="tiny" style="text-transform:uppercase;margin-bottom:8px">ขายภายหลัง (SO · FIFO)</div>
+     <div class="card" style="box-shadow:none;margin-bottom:8px"><div class="card-b" style="padding:10px 12px;font-size:13px"><a href="so-detail.html">SO-202607-000030</a> · ร้านสวยใส · ตัด B-…101-1 (เก่าสุด) FIFO</div></div>
+     <div class="card" style="box-shadow:none"><div class="card-b" style="padding:10px 12px;font-size:13px"><a href="delivery-note.html">DN-…00125</a> → <a href="invoice-detail.html">Invoice อ้าง SO</a></div></div></div>
+  </div></div>
+  <div class="alert alert-info" style="margin-top:14px;font-size:13px"><span class="ai">🧴</span><div>Own-Brand หัวสาย = <b>SO</b> · produce-to-stock ผลิตก่อนมีลูกค้า → FG เข้าคลังราย Batch → ขายผ่าน SO ตัด <b>FIFO ราย Batch</b> · trace ย้อน <b>SO → FG Batch → Lot</b> ได้ครบ (§8.2 · S4/S5)</div></div>
+ </div></div>
  <div class="card"><div class="card-h"><h3>Stock ledger — เหตุผล + แหล่งที่มา ทุก movement (D15)</h3><span class="tiny">append-only</span></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl" style="min-width:640px"><thead><tr><th>เวลา</th><th>รายการ</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>source ref</th></tr></thead><tbody>
-   <tr><td class="tnum">12/07 16:20</td><td>FG-101 · B-…185-1</td><td><span class="badge b-success" style="height:20px">surplus (+)</span></td><td class="num tnum">+50</td><td>สต็อกเพิ่มจากการผลิตเกิน</td><td class="tiny">Batch/PRD/<a href="po-detail.html">PO-185</a></td></tr>
-   <tr><td class="tnum">12/07 09:00</td><td>FG-101 · B-…101-2</td><td><span class="badge b-processing" style="height:20px">FG-in (+)</span></td><td class="num tnum">+500</td><td>QC ผ่าน (produce-to-stock)</td><td class="tiny">PRD-101 (ไม่ผูกลูกค้า)</td></tr>
+   <tr><td class="tnum">28/07 15:40</td><td>FG-202 · B-PO-…193-1-1</td><td><span class="badge b-success" style="height:20px">surplus (+)</span></td><td class="num tnum">+20</td><td>สต็อกเพิ่มจากการผลิตเกิน (ผลิต 120 / สั่ง 100)</td><td class="tiny">Batch/PRD-110/<a href="po-detail.html">PO-193</a> (ครีมกันแดด)</td></tr>
+   <tr><td class="tnum">12/07 09:00</td><td>FG-101 · B-…101-2</td><td><span class="badge b-processing" style="height:20px">FG-in (+)</span></td><td class="num tnum">+500</td><td>QC ผ่าน (produce-to-stock)</td><td class="tiny">PRD produce-to-stock (ไม่ผูกลูกค้า)</td></tr>
    <tr style="background:#FFF7F7"><td class="tnum">11/07 14:30</td><td>FG-101 · B-…101-1</td><td><span class="badge b-error" style="height:20px">loss (−)</span></td><td class="num tnum" style="color:var(--error)">−12</td><td>ขวดแตกระหว่างจัดเก็บ</td><td class="tiny">warehouse</td></tr>
    <tr><td class="tnum">10/07 11:10</td><td>FG-101 · reserve</td><td><span class="badge b-neutral" style="height:20px">reserve</span></td><td class="num tnum">−50</td><td>จอง SO</td><td class="tiny"><a href="so-detail.html">SO-030</a></td></tr>
   </tbody></table></div></div></div>
