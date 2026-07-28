@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval. | 2026-07-29 OVERNIGHT: OEM/Own-Brand/Supply-Planning/Quotation scope added (spec D1-D18 in scope-oem-ownbrand-supply-planning.md). UX/UI drew 7 new + 12 modified mockups (Stage-1 delta); PO e2e review PASS (flow complete, no business gap) + scenario-walkthrough.md/.html (S1-S5,B1-B4 with stock ledger). AWAITING Pond: Gate-1 delta review (look of new/modified screens) + re-approve expanded requirements (Gate 2) before Stage 3."
+          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval. | 2026-07-29 OVERNIGHT: OEM/Own-Brand/Supply-Planning/Quotation scope added (spec D1-D18 in scope-oem-ownbrand-supply-planning.md). UX/UI drew 7 new + 12 modified mockups (Stage-1 delta); PO e2e review PASS (flow complete, no business gap) + scenario-walkthrough.md/.html (S1-S5,B1-B4 with stock ledger). AWAITING Pond: Gate-1 delta review (look of new/modified screens) + re-approve expanded requirements (Gate 2) before Stage 3. | 2026-07-29 PO restructured ALL requirements into a per-module canonical package (docs/design/erp-v2-ui-first/functional-spec/modules/index.html) with OEM/OwnBrand flows, permission-per-action matrix, Supply-Planning formula summary; folded Pond's module additions; D8->v2, credit default 60. AWAITING Pond review of this requirement package; after approval -> UX/UI mockup deltas -> Gate 1."
         },
         "gate3_app_review": {
           "approved": false,
@@ -2722,9 +2722,60 @@
           "summary": "Overnight complete. UX/UI fixed all 6 PO punch-list items (U1 qc produce-to-stock batch+FG-in, U2 RM ledger+loss/return form, U6 OEM surplus bound to correct FG-202 own Batch, U3 trace Own-Brand genealogy, U4 PRD-104/106 dedup, U5 RM-direct example), all consistent with scenario walkthrough S1-S5. Dispatcher HTTP-verified. AWAITING POND: Gate-1 delta review of new+modified mockups (17 screens) + scenario walkthrough + scope spec D1-D18; then Gate 2 for expanded requirements before Stage 2.",
           "overridden_by": null,
           "updated_at": "2026-07-29T03:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "requirements-restructure-per-module",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "8 module docs + 2 flows + permission matrix + README (structured, self-consistent)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTML review view (Hub-styled, renders md) linked from Document Hub; verified 200 over HTTP",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Folded Pond's 2026-07-29 additions; reconciled D1-D18 (D8 v2, credit default 60); U4 closed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Resolved 3 embedded confirmations (Convert-to-PO, SO sell-from-stock, SO produce-to-stock) + Supply Planning formula summary",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No business gap; mockup deltas needed next (search dropdown, pagination 20, FG adjust, BOM type/planning, quotation print, supply-planning->SO prefill)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/README.md",
+            "docs/requirements/erp-v2-ui-first/modules/customer.md",
+            "docs/requirements/erp-v2-ui-first/modules/quotation.md",
+            "docs/requirements/erp-v2-ui-first/modules/po.md",
+            "docs/requirements/erp-v2-ui-first/modules/so.md",
+            "docs/requirements/erp-v2-ui-first/modules/stock.md",
+            "docs/requirements/erp-v2-ui-first/modules/bom.md",
+            "docs/requirements/erp-v2-ui-first/modules/production.md",
+            "docs/requirements/erp-v2-ui-first/modules/supply-planning.md",
+            "docs/requirements/erp-v2-ui-first/modules/permission-matrix.md",
+            "docs/requirements/erp-v2-ui-first/modules/flows/oem-flow.md",
+            "docs/requirements/erp-v2-ui-first/modules/flows/ownbrand-flow.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Consolidated scattered requirements into a per-module canonical package (8 modules + 2 flows + permission matrix + overview HTML review view). Folded Pond 2026-07-29 additions (customer OEM/OwnBrand type + credit 30/60/90 default 60 + mgmt-history + QT/PO history search+pagination20; quotation customer-search-dropdown + material-check-no-PR + Convert-to-PO flow + Save/print-ready; PO customer dropdown; SO date search + sell-from-stock flow + produce-to-stock auto-PR flow; stock FG adjust; BOM user-defined other-costs + total formula + TYPE OEM/FG + planning fields; production queue search/filter; supply-planning button->SO prefill (D8 v2) + FG search + status filter + edit->save to BOM + formula summary). Reconciled D1-D18, curated/removed wrong old reqs, permission-per-action matrix. Zero business questions. Next: UX/UI mockup deltas then Gate 1 -- HOLDING for Pond's requirement review first (his explicit ask).",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T11:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T10:00:00+07:00"
+  "generated_at": "2026-07-29T11:05:00+07:00"
 }
