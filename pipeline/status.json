@@ -2773,9 +2773,59 @@
           "summary": "Consolidated scattered requirements into a per-module canonical package (8 modules + 2 flows + permission matrix + overview HTML review view). Folded Pond 2026-07-29 additions (customer OEM/OwnBrand type + credit 30/60/90 default 60 + mgmt-history + QT/PO history search+pagination20; quotation customer-search-dropdown + material-check-no-PR + Convert-to-PO flow + Save/print-ready; PO customer dropdown; SO date search + sell-from-stock flow + produce-to-stock auto-PR flow; stock FG adjust; BOM user-defined other-costs + total formula + TYPE OEM/FG + planning fields; production queue search/filter; supply-planning button->SO prefill (D8 v2) + FG search + status filter + edit->save to BOM + formula summary). Reconciled D1-D18, curated/removed wrong old reqs, permission-per-action matrix. Zero business questions. Next: UX/UI mockup deltas then Gate 1 -- HOLDING for Pond's requirement review first (his explicit ask).",
           "overridden_by": null,
           "updated_at": "2026-07-29T11:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "source-of-truth-full-modules",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "Module package = COMPLETE source of truth (20 module docs: 8 existing + 12 added)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Existing-good US-*/AC + cross-cutting absorbed; nothing correct lost; RTM intact",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "modules/ declared authoritative + old-doc->module map (README §5/§6); deep principle docs referenced not copied",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTML review views + Document Hub index regenerated (offline/no-build)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "NFR consolidation + deletion-policy adaptation to new entities = NEXT PO step (in progress)",
+              "pass": false,
+              "missing": "non-functional.md + deletion policy for QT/SO/FG/surplus/snapshot pending"
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/home.md",
+            "docs/requirements/erp-v2-ui-first/modules/dashboard.md",
+            "docs/requirements/erp-v2-ui-first/modules/goods-receipt.md",
+            "docs/requirements/erp-v2-ui-first/modules/pr.md",
+            "docs/requirements/erp-v2-ui-first/modules/supplier.md",
+            "docs/requirements/erp-v2-ui-first/modules/qc.md",
+            "docs/requirements/erp-v2-ui-first/modules/shipping.md",
+            "docs/requirements/erp-v2-ui-first/modules/return.md",
+            "docs/requirements/erp-v2-ui-first/modules/invoice.md",
+            "docs/requirements/erp-v2-ui-first/modules/traceability.md",
+            "docs/requirements/erp-v2-ui-first/modules/settings.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Expanded module package to COMPLETE source of truth: +12 modules (platform/home/dashboard/goods-receipt/pr/supplier/qc/shipping/return/invoice/traceability/settings) absorbing existing functional-spec US-*/AC + cross-cutting; source-of-truth statement + old->new map in README; HTML views + Hub index regenerated. No business gap. NEXT (dispatched): fold NFRs (non-functional.md) + adapt deletion policy to new entities (QT/SO/FG/surplus/snapshot) + reorganize remaining ESSENCE Hub detail. UX/UI mockup deltas running in parallel.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T12:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T11:30:00+07:00"
+  "generated_at": "2026-07-29T12:05:00+07:00"
 }
