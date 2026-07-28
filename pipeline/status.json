@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "current_agent": "po + ux-ui",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -14,7 +14,7 @@
         "gate2_requirements": {
           "approved": false,
           "approved_at": null,
-          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval. | 2026-07-29 OVERNIGHT: OEM/Own-Brand/Supply-Planning/Quotation scope added (spec D1-D18 in scope-oem-ownbrand-supply-planning.md). UX/UI drew 7 new + 12 modified mockups (Stage-1 delta); PO e2e review PASS (flow complete, no business gap) + scenario-walkthrough.md/.html (S1-S5,B1-B4 with stock ledger). AWAITING Pond: Gate-1 delta review (look of new/modified screens) + re-approve expanded requirements (Gate 2) before Stage 3. | 2026-07-29 PO restructured ALL requirements into a per-module canonical package (docs/design/erp-v2-ui-first/functional-spec/modules/index.html) with OEM/OwnBrand flows, permission-per-action matrix, Supply-Planning formula summary; folded Pond's module additions; D8->v2, credit default 60. AWAITING Pond review of this requirement package; after approval -> UX/UI mockup deltas -> Gate 1."
+          "note": "Gate 2 FINAL (2026-07-10): PO tri-layer review round 3 PASS — Stock Reservation aligned across BA(70/210)/TL/UX, all Pond answers reflected, M1 closed (per-lot 625), no blockers. Inactive cycle {1,3,6,8} already answered by Pond 07-09 (spec enforces). Package = Document Hub single entry. Ready for Pond review + approval. UPDATE 2026-07-14: user-journeys.html redesigned as visual flow diagrams per Pond (UX/UI build -> BA content verify PASS, 4 fixes -> PO analysis PASS, Q1-Q3 decided + entity-status-map 1.4/1.9 clarified -> UX/UI punch-list V1-V3+O1-O2 applied). Awaiting Pond local review of visual journeys (Gate-1-delta, modified parts only) + Gate 2 approval. | 2026-07-29 OVERNIGHT: OEM/Own-Brand/Supply-Planning/Quotation scope added (spec D1-D18 in scope-oem-ownbrand-supply-planning.md). UX/UI drew 7 new + 12 modified mockups (Stage-1 delta); PO e2e review PASS (flow complete, no business gap) + scenario-walkthrough.md/.html (S1-S5,B1-B4 with stock ledger). AWAITING Pond: Gate-1 delta review (look of new/modified screens) + re-approve expanded requirements (Gate 2) before Stage 3. | 2026-07-29 PO restructured ALL requirements into a per-module canonical package (docs/design/erp-v2-ui-first/functional-spec/modules/index.html) with OEM/OwnBrand flows, permission-per-action matrix, Supply-Planning formula summary; folded Pond's module additions; D8->v2, credit default 60. AWAITING Pond review of this requirement package; after approval -> UX/UI mockup deltas -> Gate 1. | 2026-07-29 COMPLETE: module package = full source of truth (20 modules + non-functional.md + deletion-policy.md, all up-to-date); UX/UI module-delta mockups done; HTTP-verified. AWAITING Pond's FULL review (2026-07-30). 2 non-blocking confirms parked (SP proactive alert; QT abandon)."
         },
         "gate3_app_review": {
           "approved": false,
@@ -2863,9 +2863,69 @@
           "summary": "UX/UI implemented all 2026-07-29 module-delta mockups: customer TYPE(OEM/OwnBrand)+credit 30/60/90 default 60 + consolidated management-history + QT/PO history (search+pagination20); customer search dropdown (phone/company/contact/contact-phone + status/credit + modal, no state loss) on quotation/po/so-create; quotation material-check-no-PR + Convert-to-PO->po-create prefill + Save->quotation-print.html (new); SO date search + sell-from-stock(Ready-to-Ship->Delivery) + produce-to-stock(auto-PR); BOM TYPE OEM/FG + planning fields + live total; production queue filter+date search; supply-planning FG search + Low/OK/Overstock filter + save-back-to-BOM + สั่งผลิต->SO prefill (D8 v2). Global pagination 20. No business gap. -> PO review after NFR round.",
           "overridden_by": null,
           "updated_at": "2026-07-29T12:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "nfr-and-deletion-policy",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "NFR consolidated in modules/non-functional.md (perf/auth/audit/backup/format/J1-J7/noti/search/responsive/soft-delete/reliability), adapted to new scope, zero invented numbers",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Deletion policy folded + extended to Quotation/SO/FG-Batch/OEM-surplus/cost-snapshot (consistent w/ 7 rules)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Remaining ESSENCE Hub detail swept into modules; README source-of-truth + old->new map updated",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTML views + indexes regenerated, verified 200 over HTTP",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "2 non-blocking confirms raised with safe defaults (SP proactive alert, QT abandon)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/deletion-policy.md",
+            "docs/requirements/erp-v2-ui-first/modules/README.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "NFR — Supply Planning ควรมีงานตั้งเวลา 'แจ้งเตือนเชิงรุก' เมื่อ FG cover < safety ไหม? (ตอนนี้เป็น on-read tile ไม่ยิงแจ้งเตือนเอง)",
+              "options": [
+                "ไม่ต้อง คง on-read เหมือนเดิม [default]",
+                "เพิ่มงานรายวัน J8 แจ้งเตือนเมื่อ cover < safety",
+                "แจ้งเตือน + สรุปรายการที่ควรสั่งผลิต"
+              ],
+              "answer": null
+            },
+            {
+              "q": "Deletion — การยกเลิก/ทิ้ง Quotation ที่ยังไม่ตกลง (Draft/Sent) เอาแบบไหน?",
+              "options": [
+                "void อย่างเดียว คงเลข gapless [default]",
+                "soft-delete แบบ master ได้ แต่ยัง search เจอ",
+                "Draft ลบได้, Sent = void อย่างเดียว"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "Folded NFRs into non-functional.md + extended deletion policy to new entities (QT/SO/FG-Batch/surplus/snapshot); README source-of-truth + old->new map updated; HTML views regenerated + HTTP-verified. Overnight full-source-of-truth build COMPLETE. 2 non-blocking confirms parked (SP proactive alert default=on-read; QT abandon default=void-only). AWAITING Pond full review.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T13:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T12:35:00+07:00"
+  "generated_at": "2026-07-29T13:05:00+07:00"
 }
