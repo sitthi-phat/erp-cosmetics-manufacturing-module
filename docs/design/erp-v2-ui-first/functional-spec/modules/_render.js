@@ -21,14 +21,15 @@
       'supplier.md': 'supplier.html', 'qc.md': 'qc.html', 'shipping.md': 'shipping.html',
       'return.md': 'return.html', 'invoice.md': 'invoice.html',
       'traceability.md': 'traceability.html', 'settings.md': 'settings.html',
-      'platform.md': 'platform.html'
+      'platform.md': 'platform.html', 'non-functional.md': 'non-functional.html',
+      'deletion-policy.md': 'deletion-policy.html'
     };
     if (mods[base] && !/requirements\//.test(u)) return mods[base] + hash;
     // PO principle docs already published as hub views
+    // (deletion-policy folded into module view above; root deletion-policy.md remains historical at ../docs/deletion-policy.html)
     var hubDocs = {
       'entity-status-map.md': '../docs/entity-status-map.html',
       'status-journeys.md': '../docs/status-journeys.html',
-      'deletion-policy.md': '../docs/deletion-policy.html',
       'brief.md': '../docs/brief.html',
       'mock-data-spec.md': '../docs/mock-data-spec.html'
     };

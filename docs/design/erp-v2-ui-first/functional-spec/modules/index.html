@@ -29,15 +29,17 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Per-Module Requirement Package — SINGLE SOURCE OF TRUTH</h1>
-<p class="sub">slug <code>erp-v2-ui-first</code> · <b>CANONICAL / COMPLETE</b> (2026-07-29) สำหรับ BA / QA / Tech-Lead · ครบทุก module (existing-good + delta ใหม่ absorb เข้าด้วยกัน) · แต่ละ module .md = spec ปัจจุบันเต็ม · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม (เดิมยังคงไว้เป็น historical reference)</p>
+<p class="sub">slug <code>erp-v2-ui-first</code> · <b>CANONICAL / COMPLETE</b> (2026-07-29) สำหรับ BA / QA / Tech-Lead · ครบทุก module (existing-good + delta ใหม่ absorb เข้าด้วยกัน) + <b>NFR + Deletion Policy</b> · แต่ละ .md = spec ปัจจุบันเต็ม · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม (คงไว้เป็น historical reference)</p>
 
-<div class="srcnote">📄 ทุกหน้า = <b>view สำหรับอ่าน</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> (source of truth). ต้องเปิดผ่าน <b>HTTP (docs-site)</b> เพื่อ render เต็ม · เริ่มอ่านที่ <a href="package-overview.html"><b>ภาพรวม + changelog + source-of-truth statement</b></a> แล้วดูราย module ด้านล่าง · ✚ = module ที่เพิ่งเพิ่มรอบนี้ (absorb existing requirement)</div>
+<div class="srcnote">📄 ทุกหน้า = <b>view สำหรับอ่าน</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> (source of truth). ต้องเปิดผ่าน <b>HTTP (docs-site)</b> เพื่อ render เต็ม · เริ่มอ่านที่ <a href="package-overview.html"><b>ภาพรวม + changelog + source-of-truth statement</b></a> แล้วดูราย module ด้านล่าง · ✚ = เพิ่งเพิ่มรอบนี้ (absorb existing requirement)</div>
 
-<div class="note"><b>ครบ 20 module + 2 flow + permission matrix + overview:</b> Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings · <b>Supply Planning §6 = สรุปสูตรทั้งหมด</b></div>
+<div class="note"><b>ครบ 20 module + NFR + Deletion Policy + 2 flow + permission matrix + overview:</b> Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings · <b>Supply Planning §6 = สรุปสูตร · Non-Functional = NFR รวม · Deletion Policy = fold + entity ใหม่</b></div>
 
-<div class="sec">① ภาพรวม + Rule Spine + Changelog + Source-of-Truth</div>
+<div class="sec">① ภาพรวม + Rule Spine + NFR + Deletion + Permission <small>— system-wide / governance</small></div>
 <div class="tocgrid">
-  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit default 60) · global rules G1–G5 · changelog superseded/removed · <b>old doc → module map</b> · source-of-truth statement</div></a>
+  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit default 60) · global rules G1–G5 · changelog superseded · <b>old doc → module map</b> · source-of-truth statement</div></a>
+  <a class="meta mod newmod" href="non-functional.html"><div class="mt">Non-Functional (NFR)</div><div class="md">perf &lt;2s/50 concurrent/200 PO+50 GR/วัน · auth 24h+06:00 · audit 1yr · GCP Cloud Run+Cloud SQL+backup · Bangkok/พ.ศ./UTC · gapless QT-/SO- · jobs J1–J7 · outbox/search/responsive/soft-delete</div></a>
+  <a class="meta mod newmod" href="deletion-policy.html"><div class="mt">Deletion Policy (folded)</div><div class="md">soft-delete/void baseline · +entity ใหม่: Quotation/SO/FG Batch/OEM surplus/cost snapshot · matrix + reference-guard</div></a>
   <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (consolidated)</div><div class="md">capability→module→action · RUCDAA generic (D14) · +3 module ใหม่ (Quotation/SO/Supply-Planning)</div></a>
 </div>
 
@@ -91,7 +93,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · 20 module + 2 flow + permission matrix + overview · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ยังทำต่อ parallel)</footer>
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · 20 module + NFR + Deletion Policy + 2 flow + permission matrix + overview · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ยังทำต่อ parallel)</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>

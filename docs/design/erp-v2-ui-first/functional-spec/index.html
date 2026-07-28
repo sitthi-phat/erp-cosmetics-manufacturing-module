@@ -32,17 +32,19 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Document Hub — ESSENCE Hub System</h1>
-<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · <b>ที่เดียวอ่านได้ทุกอย่าง</b> — <b>Per-Module Requirement (SINGLE SOURCE OF TRUTH, ครบ 20 module)</b> · เอกสารหลักการ (PO) · สถาปัตยกรรม+API+DB+ADR (Tech-Lead) · Mockups · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4</p>
+<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · <b>ที่เดียวอ่านได้ทุกอย่าง</b> — <b>Per-Module Requirement (SINGLE SOURCE OF TRUTH, ครบ 20 module + NFR + Deletion Policy)</b> · เอกสารหลักการ (PO) · สถาปัตยกรรม+API+DB+ADR (Tech-Lead) · Mockups · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4</p>
 
-<div class="srcnote">📄 <b>แหล่งความจริงหลักของ requirement = Per-Module Package</b> (หมวด 📦 ด้านล่าง) ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> · หมวด ④ เอกสารหลักการ (PO) และ ⑤ ADR = view render จาก Markdown (แก้ที่ <code>docs/requirements/*.md</code> / <code>docs/adr/*.md</code>) · <b>functional-spec module pages เดิม (หมวด ②-legacy) = historical reference</b> — ถ้าขัดกันให้ยึด Per-Module Package</div>
+<div class="srcnote">📄 <b>แหล่งความจริงหลักของ requirement = Per-Module Package</b> (หมวด 📦 ด้านล่าง) ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> — รวม <b>Non-Functional (NFR)</b> และ <b>Deletion Policy (folded)</b> · หมวด ④ เอกสารหลักการ (PO) และ ⑤ ADR = view render จาก Markdown (แก้ที่ <code>docs/requirements/*.md</code> / <code>docs/adr/*.md</code>) · <b>functional-spec module pages เดิม (หมวด ②-legacy) = historical reference</b> — ถ้าขัดกันให้ยึด Per-Module Package</div>
 
-<div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริง) → ลงรายละเอียดที่ <b>Per-Module Package</b> (📦, canonical) → ต้องการเหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤)</div>
+<div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริง) → ลงรายละเอียดที่ <b>Per-Module Package</b> (📦, canonical) → NFR/Deletion/สิทธิ์ ดูหมวด ① ในแพ็กเกจ → เหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤)</div>
 
-<div class="sec">📦 Per-Module Requirement Package — SINGLE SOURCE OF TRUTH (canonical · 2026-07-29) <small>— ครบ 20 module (existing-good + delta) · INPUT ของ BA/QA/TL</small></div>
-<div class="srcnote">📄 <b>แหล่ง requirement ล่าสุด+ครบทั้งระบบ</b>: Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings + 2 flow + permission matrix + สรุปสูตร Supply Planning: <a href="modules/index.html"><b>เปิด Per-Module Package →</b></a> · ต้นฉบับ .md: <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม · <b>READY_FOR_UX_UI</b> (mockups ทำต่อ parallel)</div>
+<div class="sec">📦 Per-Module Requirement Package — SINGLE SOURCE OF TRUTH (canonical · 2026-07-29) <small>— ครบ 20 module + NFR + Deletion Policy · INPUT ของ BA/QA/TL</small></div>
+<div class="srcnote">📄 <b>แหล่ง requirement ล่าสุด+ครบทั้งระบบ</b>: Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings + <b>Non-Functional + Deletion Policy</b> + 2 flow + permission matrix + สรุปสูตร Supply Planning: <a href="modules/index.html"><b>เปิด Per-Module Package →</b></a> · ต้นฉบับ .md: <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม · <b>READY_FOR_UX_UI</b> (mockups ทำต่อ parallel)</div>
 <div class="tocgrid">
-  <a class="mod canon" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">20 module + 2 flow + permission matrix + overview/changelog + old→new map · Supply Planning §6 = FORMULA SUMMARY</div></a>
+  <a class="mod canon" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">20 module + NFR + Deletion + 2 flow + permission matrix + overview/changelog + old→new map · Supply Planning §6 = FORMULA SUMMARY</div></a>
   <a class="mod canon" href="modules/package-overview.html"><div class="mt">ภาพรวม + Source-of-Truth + Map</div><div class="md">file tree · D-rule spine · changelog superseded · old doc → module map · READY_FOR_UX_UI</div></a>
+  <a class="mod canon" href="modules/non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-/jobs J1–J7/outbox/search/responsive/soft-delete</div></a>
+  <a class="mod canon" href="modules/deletion-policy.html"><div class="mt">★ Deletion Policy (folded)</div><div class="md">soft-delete/void baseline + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) + matrix + reference-guard</div></a>
   <a class="mod canon" href="modules/supply-planning.html"><div class="mt">★ Supply Planning — สรุปสูตร</div><div class="md">Available/cover/safety/reorder/target/suggested/badge/rate conv — ให้ปอนด์รีวิว</div></a>
 </div>
 
@@ -114,7 +116,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification</div><div class="md">20 แถว cascade (+C20 reservation) + noti matrix (epic P)</div></a>
   <a class="mod" href="list-conventions.html"><div class="mt">List Page Conventions</div><div class="md">US-LST-01 · filter/sort/page-size/empty (→ G1–G3 ในทุก module)</div></a>
-  <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy</div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (→ settings.md)</div></a>
+  <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy</div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (→ modules/deletion-policy.md + settings.md)</div></a>
   <a class="mod" href="glossary.html"><div class="mt">Glossary + Doc formats</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร</div></a>
   <a class="mod" href="rtm.html"><div class="mt">Requirement Traceability Matrix</div><div class="md">Story↔mockup↔journey↔UC + journey cross-review 6/6</div></a>
 </div>
@@ -123,18 +125,18 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="mod po" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation (11 entity + 20 cascade)</div></a>
   <a class="mod po" href="docs/status-journeys.html"><div class="mt">Status Journeys</div><div class="md">state machine ทุกสาย + RUCDAA + notification/deep-link + dashboard filter</div></a>
-  <a class="mod po" href="docs/deletion-policy.html"><div class="mt">Deletion Policy</div><div class="md">soft-delete ทุก entity (7 กติกา) + matrix</div></a>
-  <a class="mod po" href="docs/brief.html"><div class="mt">Product Brief</div><div class="md">Business Key Value + scope + Definition of Done + Gate 1 criteria</div></a>
+  <a class="mod po" href="docs/deletion-policy.html"><div class="mt">Deletion Policy (root · historical)</div><div class="md">soft-delete ทุก entity (7 กติกา) + matrix — folded/updated ที่ <a href="modules/deletion-policy.html">modules/deletion-policy</a></div></a>
+  <a class="mod po" href="docs/brief.html"><div class="mt">Product Brief</div><div class="md">Business Key Value + scope + Definition of Done + Gate 1 criteria + NFR ที่มา</div></a>
   <a class="mod po" href="docs/mock-data-spec.html"><div class="mt">Mock Data Spec</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
   <a class="mod po" href="docs/po-reviews.html"><div class="mt">ผลตรวจ PO (3 in 1)</div><div class="md">Stage-2 Review (Gate 2) + Spec Depth Audit + Mockup Review r4</div></a>
 </div>
-<p class="sub">หมายเหตุ: Stock Reservation ต้นฉบับ = <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a> (Option A ยึดแล้ว) · scope D1–D18 = <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md">scope-oem-ownbrand-supply-planning.md</a></p>
+<p class="sub">หมายเหตุ: Stock Reservation ต้นฉบับ = <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a> (Option A ยึดแล้ว) · scope D1–D18 = <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md">scope-oem-ownbrand-supply-planning.md</a> · NFR รวม = <a href="modules/non-functional.html">modules/non-functional</a></p>
 
 <div class="sec">⑤ สถาปัตยกรรม (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
 <div class="tocgrid">
   <a class="mod tl" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + ลิงก์ API ทุก module (api-*.html)</div></a>
   <a class="mod tl" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
-  <a class="mod tl" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗</div><div class="md">Active→Inactive · Overdue · Potential Delay · session 06:00 reset</div></a>
+  <a class="mod tl" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗ (J1–J7)</div><div class="md">session 06:00 · inactivity · overdue · potential-delay · outbox · integrity · backup (→ non-functional §6)</div></a>
   <a class="mod tl" href="docs/adrs.html"><div class="mt">ADRs 000–009</div><div class="md">stack, stock-ledger/negative, framework, audit, action-endpoints, noti, storage, auth/RUCDAA, gapless, soft-delete</div></a>
 </div>
 
@@ -143,5 +145,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">หน้าจอ clickable (theme A teal) — ใช้เป็น spec ภาพของทุก module</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · <b>Per-Module Package (SINGLE SOURCE OF TRUTH) ครบ 20 module + 2 flow + permission matrix</b> · Journeys/Walkthrough · Cross-cutting · เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · functional-spec module pages = historical (superseded) · ต้นฉบับ requirement แก้ที่ docs/requirements/erp-v2-ui-first/modules/*.md</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · <b>Per-Module Package (SINGLE SOURCE OF TRUTH) ครบ 20 module + NFR + Deletion Policy + 2 flow + permission matrix</b> · Journeys/Walkthrough · Cross-cutting · เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · functional-spec module pages = historical (superseded) · ต้นฉบับ requirement แก้ที่ docs/requirements/erp-v2-ui-first/modules/*.md</footer>
 </div></body></html>
