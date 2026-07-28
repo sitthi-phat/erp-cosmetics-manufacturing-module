@@ -170,7 +170,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .narr{background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:8px;padding:10px 12px;font-size:13px;color:#0B5754;margin:8px 0}
  .footchips{display:flex;gap:8px;flex-wrap:wrap}
  </style>
- <div class="pagehead"><div><h1>SUPPLY PLANNING — Demand &amp; Production Cover</h1><div class="sub">Own-Brand: วางแผนผลิตเก็บสต็อกจาก demand จริง · <b>FG On Hand = อ่านจาก FG stock</b> · <b>In Production = นับจาก Batch ของ FG นั้น</b> (D4) · ป้าย Low/OK/Overstock ตามจำนวนวันคุ้ม (D5) · ปุ่ม "สั่งผลิต" = สร้าง PRD เก็บสต็อก <b>ไม่ผูกลูกค้า</b> (D8)</div></div></div>
+ <div class="pagehead"><div><h1>SUPPLY PLANNING — Demand &amp; Production Cover</h1><div class="sub">Own-Brand: วางแผนผลิตเก็บสต็อกจาก demand จริง · <b>FG On Hand = อ่านจาก FG stock</b> · <b>In Production = นับจาก Batch ของ FG นั้น</b> (D4) · ป้าย Low/OK/Overstock ตามจำนวนวันคุ้ม (D5) · ปุ่ม "สั่งผลิต" → <b>เปิดหน้าใบสั่งขาย (ข) ผลิตเก็บสต็อกแบบ prefill</b> จำนวน = Suggested (D8 v2) · แก้ Sales Rate/Lead/Safety/Target แล้ว <b>บันทึกกลับ BOM master</b> ได้</div></div></div>
+ <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหา FG ตามชื่อ เช่น 'ไบรท์ เซรั่ม'"></div></div>
+   <div class="r"><span class="tiny">สถานะ:</span><span class="chip on">ทั้งหมด</span><span class="chip"><span class="badge b-error plain" style="height:14px;padding:0 6px">Low</span></span><span class="chip"><span class="badge b-success plain" style="height:14px;padding:0 6px">OK</span></span><span class="chip"><span class="badge b-processing plain" style="height:14px;padding:0 6px">Overstock</span></span></div></div>
  <div class="stats" style="grid-template-columns:repeat(3,1fr)">
    <div class="stat"><div class="k">ITEMS BELOW TARGET</div><div class="v" style="color:var(--error)">1 <span style="font-size:16px;color:var(--text3)">of 3</span></div><div class="d muted">cover ต่ำกว่า Target</div></div>
    <div class="stat"><div class="k">SUGGESTED PRODUCTION</div><div class="v" style="color:var(--primary)">1,500</div><div class="d muted">รวมทุก FG (หน่วย)</div></div>
@@ -180,7 +182,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="spgrid">
 
   <!-- FG-101 LOW -->
-  <div class="card spcard"><div class="card-h"><div><h3>FG-101 · เอสเซนส์ ไบรท์ เซรั่ม <span class="badge b-error">Low</span></h3><div class="tiny">Own-Brand · 1 BOM = 1 FG (auto) · ขวด 30ml</div></div><button class="btn btn-primary">🏭 สั่งผลิต 1,500 (3 แบตช์ × 500)</button></div><div class="card-b">
+  <div class="card spcard"><div class="card-h"><div><h3>FG-101 · เอสเซนส์ ไบรท์ เซรั่ม <span class="badge b-error">Low</span></h3><div class="tiny">Own-Brand · 1 BOM = 1 FG (auto) · ขวด 30ml</div></div><a class="btn btn-primary" href="so-create.html">🏭 สั่งผลิต 1,500 (3 แบตช์ × 500) →</a></div><div class="card-b">
     <div class="cfg">
       <div class="b ro"><label>FG On Hand <span class="lock">🔒</span></label><div class="v tnum">1,200</div></div>
       <div class="b ro"><label>In Production <span class="lock">🔒</span></label><div class="v tnum">13</div></div>
@@ -190,6 +192,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <div class="b"><label>Target Cover (d)</label><input value="30"></div>
       <div class="b"><label>Batch Size</label><input value="500"></div>
     </div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 10px"><span class="tiny">แก้ค่าวางแผนด้านบนแล้ว →</span><button class="btn btn-sm">💾 บันทึกกลับ BOM master</button></div>
     <div class="cvbar">
       <div class="cvfill" style="width:14.3%"></div>
       <div class="cvafter" style="width:31.9%"></div>
@@ -245,5 +248,5 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div></div>
 
  </div>
- <div class="notify" style="margin-top:4px">🏭 กด <b>"สั่งผลิต"</b> → สร้าง <b>PRD เก็บสต็อก ไม่ผูกลูกค้า</b> จำนวน = Suggested → เข้าสาย <a href="production.html">การผลิต</a> ปกติ → QC ผ่าน → FG เข้าคลังราย Batch (D8/D12) · สิทธิ์ = capability "สั่งผลิต / create produce-to-stock PRD" (§7)</div>
+ <div class="notify" style="margin-top:4px">🏭 กด <b>"สั่งผลิต"</b> → เปิดหน้า <b><a href="so-create.html">สร้างใบสั่งขาย (ข) ผลิตเก็บสต็อก</a> แบบ prefill</b> (FG + จำนวน = Suggested, ไม่เลือกลูกค้า) → ผู้ใช้ทวน/ยืนยัน → เข้าสาย <a href="production.html">การผลิต</a> (BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → QC ผ่าน → FG เข้าคลังราย Batch, D8 v2/D12) · Supply Planning ไม่สร้าง PRD เอง — ที่มา produce-to-stock มีที่เดียว · สิทธิ์ = Supply Planning.Create (§7)</div>
 </div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

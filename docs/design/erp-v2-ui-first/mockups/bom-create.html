@@ -154,6 +154,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="grid3"><div class="field"><label>ชื่อสินค้า <span class="req">*</span></label><input class="inp" placeholder="เช่น เซรั่มไฮยาลูรอน"></div>
      <div class="field"><label>ขนาด/บรรจุ (ต่อ 1 หน่วย) <span class="req">*</span></label><input class="inp" placeholder="เช่น ขวด 30ml"></div>
      <div class="field"><label>หมวดสินค้า</label><select class="sel"><option>สกินแคร์</option><option>เมคอัพ</option><option>ผลิตภัณฑ์เส้นผม</option></select></div></div>
+    <div class="field" style="margin-bottom:0"><label>ประเภทสินค้า (TYPE) <span class="req">*</span></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip" onclick="bomType('oem',this)">🏭 OEM — รับจ้างผลิต (made-to-order)</span><span class="chip on" onclick="bomType('fg',this)">🧴 FG — แบรนด์ตัวเอง (เก็บสต็อก/วางแผน)</span></div>
+      <div class="help">1 BOM = 1 FG (auto · D11) · <b>OEM</b> = ผลิตตามสั่ง ไม่ต้องตั้งค่าวางแผน · <b>FG</b> = Own-Brand ที่เก็บสต็อก → กรอกค่าวางแผน (Supply Planning) ด้านล่าง</div></div>
   </div></div>
   <div class="card"><div class="card-h"><div><h3>ส่วนผสมในสูตร (ต่อ 1 หน่วย)</h3><div class="tiny">ไม่ต้องมีสต็อกก็สร้างสูตรได้ แต่โชว์สต็อก + supplier ให้เห็น</div></div></div><div class="card-b">
     <div class="searchbox" style="max-width:none;margin-bottom:12px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาวัตถุดิบเพื่อเพิ่มเข้าสูตร เช่น 'ไฮยาลูรอน' (ค้นหาได้)"></div>
@@ -178,5 +181,19 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="grid2"><div class="field"><label>ต้นทุนรวม/หน่วย <span class="pill">snapshot</span></label><input class="inp tnum" value="115.10"><div class="help"><b>ต้นทุนวัตถุดิบ 97.60 + ต้นทุนอื่น 17.50 = 115.10</b> · snapshot ทั้งก้อนตอนบันทึก · <b>แนบ ณ ตอนขาย (line SO/PO) เพื่อ COGS อนาคต — เฟสนี้ยังไม่ทำรายงานกำไร (D10)</b> · badge "ราคาทุนอาจล้าสมัย" ครอบต้นทุนรวมใหม่</div></div>
      <div class="field"><label>ราคาขาย/หน่วย <span class="req">*</span></label><input class="inp tnum" placeholder="0.00"><div class="help">บังคับกรอก · ใช้เป็น default ราคาใน PO</div></div></div>
   </div></div>
+  <div class="card" id="planningCard"><div class="card-h"><div><h3>ค่าวางแผนสต็อก (Supply Planning) <span class="pill">TYPE = FG</span></h3><div class="tiny">เก็บบน FG master นี้ (D16) · Supply Planning อ่าน/แก้ได้แล้ว save กลับมาที่นี่</div></div></div><div class="card-b">
+    <div class="grid3">
+      <div class="field"><label>Sales Rate <span class="req">*</span></label><div style="display:flex;gap:6px"><input class="inp tnum" style="flex:1;text-align:right" value="85"><select class="sel" style="width:96px"><option>/day</option><option>/week</option><option>/month</option></select></div><div class="help">อัตราขายเฉลี่ย (normalize เป็น /day)</div></div>
+      <div class="field"><label>Lead Time (วัน)</label><input class="inp tnum" style="text-align:right" value="7"></div>
+      <div class="field"><label>Batch Size (หน่วย) <span class="req">*</span></label><input class="inp tnum" style="text-align:right" value="500"><div class="help">จำนวนต่อรอบผลิต — Suggested ปัดเป็นทวีคูณนี้</div></div>
+      <div class="field"><label>Safety Cover (วัน)</label><input class="inp tnum" style="text-align:right" value="5"></div>
+      <div class="field"><label>Target Cover (วัน)</label><input class="inp tnum" style="text-align:right" value="30"></div>
+      <div class="field" style="align-self:end"><div class="notify">ค่าเหล่านี้ป้อน <a href="supply-planning.html">Supply Planning</a> เพื่อคำนวณ cover / reorder / suggested</div></div>
+    </div>
+    <div class="tiny" style="color:var(--text2)">TYPE = OEM → การ์ดนี้ไม่บังคับ (ซ่อน/ปล่อยว่างได้) เพราะผลิตตามสั่ง ไม่วางแผนสต็อก</div>
+  </div></div>
   <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="bom.html">ยกเลิก</a><button class="btn btn-primary">บันทึกสูตรใหม่</button></div>
+ <script>
+ function bomType(t,el){var chips=el.parentNode.querySelectorAll('.chip');chips.forEach(function(c){c.classList.remove('on')});el.classList.add('on');document.getElementById('planningCard').style.display=(t==='fg')?'':'none';}
+ </script>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

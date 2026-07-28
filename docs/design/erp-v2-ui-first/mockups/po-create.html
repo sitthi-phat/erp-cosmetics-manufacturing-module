@@ -139,6 +139,30 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+/* G4 customer search dropdown (reused component) */
+.custdd{position:relative}
+.custdd-tg{display:flex;align-items:center;justify-content:space-between;gap:8px;height:40px;border:1px solid var(--border);border-radius:var(--radius);padding:0 12px;background:#fff;cursor:pointer;font-size:14px}
+.custdd-tg:hover{border-color:var(--primary)}
+.custdd-tg .cur{display:flex;align-items:center;gap:8px;min-width:0}
+.custdd-pan{display:none;position:absolute;left:0;right:0;top:44px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:40;overflow:hidden}
+.custdd.open .custdd-pan{display:block}
+.custdd-sr{padding:10px;border-bottom:1px solid var(--border2);position:relative}
+.custdd-sr .si{position:absolute;left:22px;top:20px;color:var(--text3)}
+.custdd-sr .inp{padding-left:34px}
+.custdd-ls{max-height:280px;overflow:auto}
+.custdd-op{padding:10px 14px;border-bottom:1px solid var(--border2);cursor:pointer}
+.custdd-op:last-child{border-bottom:none}
+.custdd-op:hover{background:var(--primary-bg)}
+.custdd-op .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.custdd-picked{margin-top:10px;display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:8px;padding:10px 12px;font-size:13px;color:#0B5754}
+.custdd-picked .sep{width:1px;height:15px;background:#Bfe3e1}
+.cmodal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:70;overflow:auto;padding:32px 16px}
+.cmodal-bg.open{display:block}
+.cmodal{max-width:540px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.cmodal-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.cmodal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+.cmodal-b{padding:20px}
+.cmodal-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class="active"><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="po-list.html">ใบสั่งซื้อ</a> › <b>เปิดใหม่</b></div></div>
@@ -152,7 +176,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="split">
   <div>
    <div class="card"><div class="card-h"><h3>1. ข้อมูลใบสั่งซื้อ</h3></div><div class="card-b"><div class="grid2">
-     <div class="field"><label>ลูกค้า <span class="req">*</span></label><select class="sel"><option>บริษัท บิวตี้ เอเชีย จำกัด (ลูกค้าประจำ)</option><option>ร้านกลอรี่ คอสเมติก</option></select></div>
+     <div class="field"><label>ลูกค้า <span class="req">*</span></label>
+       <div class="custdd" id="custdd">
+         <div class="custdd-tg" onclick="cddTog()"><span class="cur"><b>บริษัท บิวตี้ เอเชีย จำกัด</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span></span><span style="color:var(--text3)">▾</span></div>
+         <div class="custdd-pan">
+           <div class="custdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นด้วย เบอร์โทร / ชื่อบริษัท / ชื่อผู้ติดต่อ / เบอร์ผู้ติดต่อ" value="เบ"></div>
+           <div class="custdd-ls">
+             <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>บริษัท บิวตี้ เอเชีย จำกัด</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span> <span class="pill">เครดิต 60 วัน</span></div><div class="tiny">CUS-000018 · โทร 02-555-1234 · ผู้ติดต่อ คุณมานี 081-234-5678</div></div>
+             <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>ร้านกลอรี่ คอสเมติก</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span> <span class="pill">เครดิต 30 วัน</span></div><div class="tiny">CUS-000025 · โทร 089-111-2233 · ผู้ติดต่อ คุณกลอรี่ 089-111-2233</div></div>
+             <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>บริษัท กลอสซี่ จำกัด</b> <span class="badge b-warning" style="height:20px">ห่างหาย</span> <span class="pill">เครดิต 90 วัน</span></div><div class="tiny">CUS-000030 · โทร 02-333-4455 · ผู้ติดต่อ คุณกลอส 081-999-0000</div></div>
+           </div>
+         </div>
+       </div>
+       <div class="custdd-picked"><span>✓ <b>บริษัท บิวตี้ เอเชีย จำกัด</b> (CUS-000018)</span><span class="sep"></span><span>สถานะ: <b>ลูกค้าประจำ</b></span><span class="sep"></span><span>เครดิต: <b>60 วัน</b></span><span class="sep"></span><a href="#" onclick="openCust();return false;">👁 ดูข้อมูลลูกค้า</a></div>
+       <div class="help">ค้นด้วยเบอร์/บริษัท/ผู้ติดต่อ · แสดงสถานะ + credit term · ดูข้อมูลลูกค้าแบบ modal โดยฟอร์มไม่หาย (G3/G4)</div></div>
      <div class="field"><label>วันที่ต้องการรับสินค้า <span class="req">*</span></label><input class="inp" type="date" value="2026-07-25"></div>
    </div>
    <div class="field" style="margin-top:4px"><label>สร้างจากใบเสนอราคา (Quotation) <span class="tiny" style="font-weight:400">— ไม่บังคับ (D18)</span></label><select class="sel"><option>— ไม่มี (สร้าง PO ตรง)</option><option>QT-202607-000010 · กลอรี่ คอสเมติก (Agreed)</option><option>QT-202607-000012 · บิวตี้ เอเชีย</option></select><div class="help">ถ้าแปลงมาจาก Quotation ระบบเก็บลิงก์ QT↔PO เพื่อสืบย้อน · เว้นว่าง = สร้าง PO ตรงได้ (optional)</div></div>
@@ -185,4 +222,17 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <p class="tiny" style="margin-top:10px">ผู้ใช้เป็นคนตัดสินใจว่าจะเดินหน้าต่อหรือยกเลิก — ระบบไม่ปิดปุ่มบันทึก</p>
    </div></div>
   </div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ </div></div></div></div><div class="cmodal-bg" id="custModal" onclick="if(event.target===this)closeCust()"><div class="cmodal">
+  <div class="cmodal-h"><h3>ข้อมูลลูกค้า · บริษัท บิวตี้ เอเชีย จำกัด</h3><button class="cmodal-x" onclick="closeCust()" title="ปิด">✕</button></div>
+  <div class="cmodal-b">
+    <div class="alert alert-info" style="font-size:13px;margin-bottom:14px"><span class="ai">ℹ️</span><div>เปิดจากฟอร์ม PO — <b>ปิดแล้วกลับมากรอกต่อได้ ฟอร์มไม่หาย</b> (G3)</div></div>
+    <dl class="kv"><dt>รหัสลูกค้า</dt><dd>CUS-000018</dd><dt>ประเภท (TYPE)</dt><dd><span class="badge b-processing" style="height:20px">OEM</span> <span class="badge b-neutral" style="height:20px">Own-Brand</span></dd><dt>สถานะ</dt><dd><span class="badge b-success" style="height:20px">ลูกค้าประจำ</span></dd><dt>Credit term</dt><dd><b>60 วัน</b></dd><dt>Sale ที่ดูแล</dt><dd>สมชาย</dd><dt>เบอร์บริษัท</dt><dd class="tnum">02-555-1234</dd><dt>ผู้ติดต่อหลัก</dt><dd>คุณมานี · 081-234-5678</dd><dt>เลขผู้เสียภาษี</dt><dd class="tnum">0105551000099</dd></dl>
+  </div>
+  <div class="cmodal-f"><a class="btn" href="customer-detail.html">เปิดหน้าเต็ม</a><button class="btn btn-primary" onclick="closeCust()">← กลับไปกรอกฟอร์ม</button></div>
+</div></div>
+<script>
+function cddTog(){document.getElementById('custdd').classList.toggle('open')}
+function openCust(){document.getElementById('custModal').classList.add('open')}
+function closeCust(){document.getElementById('custModal').classList.remove('open')}
+</script>
+<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

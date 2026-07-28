@@ -151,8 +151,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 
  <div class="pagehead"><div><h1>ใบสั่งขาย (SO) — Own-Brand</h1><div class="sub">สายแบรนด์ตัวเอง · เลข <b>SO-{YYYYMM}-{NNNNNN}</b> · คนละโมดูลกับ PO (D1) · <b>ไม่มีใบเสนอราคา</b> · 2 ประเภท: ขายจากสต็อก / ผลิตเก็บสต็อก</div></div><a class="btn btn-primary" href="so-create.html">➕ สร้างใบสั่งขาย</a></div>
  <div class="card"><div class="card-b">
-   <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาเลข SO / ลูกค้า / FG"></div></div>
+   <div class="toolbar"><div class="l"><div class="searchbox" style="max-width:260px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาเลข SO / ลูกค้า / FG"></div>
+     <input class="inp" type="date" style="width:150px" value="2026-07-01"><span class="tiny">ถึง</span><input class="inp" type="date" style="width:150px" value="2026-07-31"></div>
     <div class="r"><span class="chip on">ทั้งหมด</span><span class="chip">ขายจากสต็อก</span><span class="chip">ผลิตเก็บสต็อก</span><span class="chip">พร้อมจัดส่ง</span><span class="chip">ค้างชำระ</span></div></div>
+   <div class="tiny" style="margin:-6px 0 12px;color:var(--text2)">ค้นด้วยเลขเอกสาร <b>หรือ</b> ช่วงวันที่สร้าง (G2) · filter โหมด (ก)/(ข) · แสดง 20/หน้า (G1)</div>
    <div class="tblwrap"><table class="tbl" style="min-width:760px"><thead><tr><th>เลข SO</th><th>ประเภท</th><th>ลูกค้า</th><th class="num">ยอด+VAT</th><th>สถานะ</th><th></th></tr></thead><tbody>
     <tr><td class="strong">SO-202607-000031</td><td><span class="badge b-neutral plain" style="height:20px">🧴 ขายจากสต็อก</span></td><td>บิวตี้ เอเชีย</td><td class="num strong tnum">45,000</td><td><span class="badge b-processing">ยืนยันแล้ว · จอง FG</span></td><td class="num"><a href="so-detail.html">เปิด</a></td></tr>
     <tr><td class="strong">SO-202607-000030</td><td><span class="badge b-neutral plain" style="height:20px">🧴 ขายจากสต็อก</span></td><td>ร้านสวยใส</td><td class="num strong tnum">12,840</td><td><span class="badge b-warning">พร้อมจัดส่ง</span></td><td class="num"><a href="so-detail.html">เปิด</a></td></tr>

@@ -149,7 +149,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย OEM</div></div></div></div></div>
   <div class="content">
 
- <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-success">ตกลง (Agreed)</span></h1><div class="sub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569 · ลูกค้าตกลง 28/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><button class="btn">🖨 พิมพ์</button><button class="btn btn-primary">➡️ Convert to PO</button></div></div>
+ <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-success">ตกลง (Agreed)</span></h1><div class="sub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569 · ลูกค้าตกลง 28/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><a class="btn" href="quotation-print.html">🖨 พิมพ์ (print-ready)</a><a class="btn btn-primary" href="po-create.html">➡️ Convert to PO</a></div></div>
  <div class="alert alert-ok"><span class="ai">✓</span><div><b>สถานะ "ตกลง (Agreed)" — ปุ่ม "Convert to PO" เปิดใช้งานแล้ว.</b> กดเพื่อออก <b>PO เลขใหม่</b> (ยกยอด line/จำนวน/ราคา จากใบนี้ + เก็บลิงก์ QT↔PO เพื่อสืบย้อน) แล้วเข้าสาย OEM เดิม · ปุ่มนี้จะปิดถ้าสถานะเป็น ร่าง/ส่งแล้ว/ปฏิเสธ (D18-4)</div></div>
  <div class="split">
   <div>
@@ -165,7 +165,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>การดำเนินการ</h3></div><div class="card-b">
-     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px">➡️ Convert to PO (ออก PO เลขใหม่)</button>
+     <a class="btn btn-primary" href="po-create.html" style="width:100%;justify-content:center;margin-bottom:10px">➡️ Convert to PO (ออก PO เลขใหม่)</a>
+     <div class="notify" style="margin-bottom:10px">ยืนยัน → ตั้ง QT = <b>ตกลง (Agreed)</b> (immutable) + เก็บลิงก์ QT↔PO → เปิด <b>po-create ที่ prefill</b> line/จำนวน/ราคา → กรอกวันที่ต้องการรับของ → บันทึก = <b>PO เลขใหม่</b></div>
      <div style="display:flex;gap:8px"><button class="btn btn-sm" style="flex:1;justify-content:center">✎ แก้ (เวอร์ชันใหม่)</button><button class="btn btn-sm btn-danger" style="flex:1;justify-content:center">ปฏิเสธ</button></div>
      <div class="notify" style="margin-top:12px">🔗 <b>PO ที่แปลง:</b> ยังไม่แปลง — กด Convert เพื่อออก PO เลขใหม่ แล้วลิงก์จะปรากฏที่นี่ · ตัวอย่างที่แปลงแล้ว: <a href="po-detail.html">QT-000008 → PO-202607-000181</a></div>
    </div></div>

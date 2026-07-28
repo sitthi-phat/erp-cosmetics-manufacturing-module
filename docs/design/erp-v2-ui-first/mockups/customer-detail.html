@@ -149,7 +149,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">Sale Manager</div></div></div></div></div>
   <div class="content">
  <div class="pagehead"><div><h1>บริษัท เดอร์มา แคร์ จำกัด &nbsp;<span style="position:relative;display:inline-block"><span class="badge b-processing">ต้องติดตาม</span></span></h1>
-   <div class="sub">CUS-000021 · เลขผู้เสียภาษี 0107561000099 · <b>Sale ที่ดูแล: สมหญิง</b></div></div>
+   <div class="sub">CUS-000021 · เลขผู้เสียภาษี 0107561000099 · <b>Sale ที่ดูแล: สมหญิง</b></div>
+   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><span class="tiny">ประเภท (TYPE):</span><span class="badge b-processing" style="height:22px">OEM</span><span class="badge b-neutral" style="height:22px">Own-Brand</span><span class="tiny" style="margin-left:8px">Credit term:</span><span class="pill">60 วัน</span></div></div>
   <div style="display:flex;gap:10px"><a class="btn btn-ghost" href="customers.html">← ย้อนกลับ</a><button class="btn">เปลี่ยนสถานะ ▾</button></div></div>
  <div class="alert alert-info"><span class="ai">📌</span><div>ลูกค้ารายนี้ถูกตั้งเป็น <b>ต้องติดตาม</b> โดย สมหญิง (04/07 14:10) — เหตุ: งานผลิต <a href="po-detail.html">PO-202607-000188</a> (เซรั่มวิตซี) ติด <b>Hold</b> เพราะลูกค้าขอแก้สูตร → ฝ่ายผลิต raise Sale → <b>โทรยืนยันการแก้สูตรก่อนผลิตต่อ</b> · <span class="tiny">โยงจาก Production Hold → raise Sale → tile "ต้องติดตาม" บน Sale Dashboard</span></div></div>
  <div class="split">
@@ -159,14 +160,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <tr><td>คุณธนา</td><td>บัญชี</td><td class="tnum">02-777-8800</td><td>thana@dermacare.co.th</td><td class="num"><a href="#">แก้ไข</a></td></tr>
      <tr><td>คุณมานพ</td><td>คลังสินค้า</td><td class="tnum">089-555-1200</td><td>—</td><td class="num"><a href="#">แก้ไข</a></td></tr>
    </tbody></table></div></div></div>
-   <div class="card"><div class="card-h"><h3>ประวัติ PO ทั้งหมด</h3><div class="searchbox" style="max-width:220px"><span class="si">🔍</span><input class="inp" placeholder="ค้นเลข PO / วันที่"></div></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลข PO</th><th>วันที่</th><th class="num">มูลค่า</th><th>สถานะผลิต/จัดส่ง</th><th>การชำระ</th></tr></thead><tbody>
+   <div class="card"><div class="card-h"><h3>ประวัติใบเสนอราคา (Quotation)</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="searchbox" style="max-width:180px"><span class="si">🔍</span><input class="inp" placeholder="ค้นเลข QT"></div><input class="inp" type="date" style="width:140px" value="2026-07-01"><span class="tiny">ถึง</span><input class="inp" type="date" style="width:140px" value="2026-07-31"></div></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลข QT</th><th>วันที่สร้าง</th><th class="num">ยอด+VAT</th><th>สถานะ</th><th>PO ที่แปลง</th></tr></thead><tbody>
+     <tr><td class="strong"><a href="quotation-detail.html">QT-202607-000010</a></td><td class="tnum">26/07/2569</td><td class="num tnum">22,470</td><td><span class="badge b-success">ตกลง (Agreed)</span></td><td><a href="po-detail.html">PO-202607-000181</a></td></tr>
+     <tr><td class="strong"><a href="quotation-detail.html">QT-202607-000006</a></td><td class="tnum">18/07/2569</td><td class="num tnum">15,900</td><td><span class="badge b-processing">ส่งแล้ว (Sent)</span></td><td>—</td></tr>
+     <tr><td class="strong"><a href="quotation-detail.html">QT-202606-000094</a></td><td class="tnum">20/06/2569</td><td class="num tnum">48,200</td><td><span class="badge b-error">ปฏิเสธ (Rejected)</span></td><td>—</td></tr>
+   </tbody></table></div><div class="card-b" style="padding:0 16px 14px"><div class="pager"><span class="tiny">แสดง 1–3 จาก 5 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn ">2</button><button class="pgbtn">›</button></div></div></div></div></div>
+   <div class="card"><div class="card-h"><h3>ประวัติ PO ทั้งหมด</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="searchbox" style="max-width:180px"><span class="si">🔍</span><input class="inp" placeholder="ค้นเลข PO"></div><input class="inp" type="date" style="width:140px" value="2026-07-01"><span class="tiny">ถึง</span><input class="inp" type="date" style="width:140px" value="2026-07-31"></div></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลข PO</th><th>วันที่</th><th class="num">มูลค่า</th><th>สถานะผลิต/จัดส่ง</th><th>การชำระ</th></tr></thead><tbody>
      <tr><td class="strong">PO-202607-000188</td><td class="tnum">04/07/2569</td><td class="num tnum">28,248</td><td><span class="badge b-warning">กำลังผลิต · Hold</span></td><td><span class="badge b-neutral">ยังไม่วางบิล</span></td></tr>
      <tr><td class="strong">PO-202607-000181</td><td class="tnum">02/07/2569</td><td class="num tnum">95,230</td><td><span class="badge b-processing">กำลังผลิต · line2 rework</span></td><td><span class="badge b-neutral">ยังไม่วางบิล</span></td></tr>
      <tr><td class="strong">PO-202606-000155</td><td class="tnum">18/06/2569</td><td class="num tnum">142,000</td><td><span class="badge b-success">ส่งถึงแล้ว</span></td><td><span class="badge b-success">ชำระแล้ว</span></td></tr>
    </tbody></table></div><div class="card-b" style="padding:0 16px 14px"><div class="pager"><span class="tiny">แสดง 1–3 จาก 9 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn ">2</button><button class="pgbtn ">3</button><button class="pgbtn">›</button></div></div></div></div></div>
   </div>
   <div>
-   <div class="card"><div class="card-h"><h3>เปลี่ยนสถานะ / มอบหมาย</h3></div><div class="card-b">
+   <div class="card"><div class="card-h"><div><h3>ประวัติการจัดการลูกค้า (Management History)</h3><div class="tiny">รวมไว้ที่เดียว: เปลี่ยนสถานะ · มอบหมาย/reassign Sale · บันทึก + timeline (ทุก entry เก็บ ใคร/เมื่อไหร่/เหตุผล)</div></div></div><div class="card-b">
+    <div class="tiny" style="font-weight:600;color:var(--text2);margin-bottom:8px">1) เปลี่ยนสถานะ / มอบหมาย</div>
     <div class="pop" style="max-width:none;box-shadow:none;border-color:var(--primary-bg)">
      <div class="tiny" style="margin-bottom:8px">เปลี่ยนสถานะลูกค้า (6 สถานะ · บันทึก trace + เหตุผล)</div>
      <select class="sel" style="margin-bottom:10px"><option>ต้องติดตาม (ปัจจุบัน)</option><option>ลูกค้าประจำ (Active)</option><option>ห่างหาย (Inactive)</option><option>ปิดใช้งาน (Disabled)</option><option>บัญชีดำ (Blacklist)</option></select>
@@ -175,10 +182,11 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-top:10px">บันทึก</button>
     </div>
     <div style="border-top:1px dashed var(--border);margin:16px 0 12px;padding-top:12px"></div>
+    <div class="tiny" style="font-weight:600;color:var(--text2);margin-bottom:8px">2) Sale ที่ดูแล (reassign)</div>
     <div class="field" style="margin-bottom:8px"><label>Sale ที่ดูแล (reassign — Sale Manager/Admin)</label><select class="sel"><option>สมหญิง (ปัจจุบัน)</option><option>สมชาย</option><option>อารดา</option></select></div>
     <button class="btn btn-sm" style="width:100%;justify-content:center">มอบหมายใหม่</button>
-   </div></div>
-   <div class="card"><div class="card-h"><h3>บันทึก/ประวัติการจัดการ</h3></div><div class="card-b">
+    <div style="border-top:1px dashed var(--border);margin:16px 0 12px;padding-top:12px"></div>
+    <div class="tiny" style="font-weight:600;color:var(--text2);margin-bottom:8px">3) บันทึก / ประวัติการจัดการ (timeline)</div>
     <textarea class="inp" rows="2" placeholder="เพิ่มบันทึก เช่น โทรตามแล้ว ลูกค้าขอเลื่อน…"></textarea><button class="btn btn-sm btn-primary" style="margin-top:8px">เพิ่มบันทึก</button>
     <div style="margin-top:16px"><div class="timeline"><div class="t"><div class="th">สมหญิง ตั้งเป็น "ต้องติดตาม" + comment</div><div class="tm">04/07/2569 14:10</div><div class="tc">เหตุ: PO-202607-000188 ติด Hold (ลูกค้าขอแก้สูตร) — raise จากฝ่ายผลิต</div></div><div class="t"><div class="th">ฝ่ายผลิต raise Sale: PO-188 Hold</div><div class="tm">04/07/2569 13:50 · วิชัย (ผลิต)</div></div><div class="t"><div class="th">สมชาย → สมหญิง reassign ลูกค้า</div><div class="tm">01/07/2569 09:10 · โดย Sale Manager</div><div class="tc">เหตุผล: ปรับพื้นที่ดูแล</div></div></div></div>
    </div></div>

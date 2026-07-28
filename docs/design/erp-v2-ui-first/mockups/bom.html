@@ -152,7 +152,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="split" style="grid-template-columns:280px 1fr">
   <div class="card"><div class="card-b"><div class="searchbox" style="max-width:none;margin-bottom:12px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาสินค้า"></div>
     <nav class="menu" style="background:none"><a href="#" style="color:var(--text);border-radius:8px;background:var(--primary-bg);color:var(--primary);font-weight:500">ครีมกันแดด SPF50</a><a href="#" style="color:var(--text);border-radius:8px;">เซรั่มวิตามินซี 15%</a><a href="#" style="color:var(--text);border-radius:8px;">โลชั่นบำรุงผิว</a><a href="#" style="color:var(--text);border-radius:8px;">ลิปสติกแมตต์</a></nav></div></div>
-  <div class="card"><div class="card-h"><div><h3>สูตร: ครีมกันแดด SPF50</h3><div class="tiny">ต่อ 1 หน่วย (ขวด 30ml)</div></div><span><span class="badge b-success">สูตรพร้อมใช้</span></span></div><div class="card-b">
+  <div class="card"><div class="card-h"><div><h3>สูตร: ครีมกันแดด SPF50 &nbsp;<span class="badge b-processing" style="height:22px">TYPE: OEM</span></h3><div class="tiny">ต่อ 1 หน่วย (ขวด 30ml) · 1 BOM = 1 FG (auto · D11) · OEM = ผลิตตามสั่ง (ไม่ตั้งค่าวางแผนสต็อก)</div></div><span><span class="badge b-success">สูตรพร้อมใช้</span></span></div><div class="card-b">
     <div class="tblwrap"><table class="tbl"><thead><tr><th>วัตถุดิบ</th><th class="num">ปริมาณ/หน่วย</th><th>UOM</th><th class="num">ราคาซื้อ</th><th>สต็อก</th><th></th></tr></thead><tbody>
      <tr><td><b>ไทเทเนียมไดออกไซด์</b></td><td class="num tnum">0.025</td><td>กก.</td><td class="num tnum">320</td><td><span class="badge b-success">40 กก.</span></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
      <tr><td><b>กลีเซอรีน</b></td><td class="num tnum">0.040</td><td>กก.</td><td class="num tnum">45</td><td><span class="badge b-error">2 กก.</span></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
@@ -167,6 +167,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <div class="field"><label>ราคาขาย/หน่วย <span class="req">*</span></label><input class="inp tnum" value="150.00"><div class="help">บังคับกรอก · ใช้เป็น default ราคาใน PO</div></div>
      </div>
     </div>
+    <div class="card" style="box-shadow:none;margin-top:16px"><div class="card-b" style="padding:12px 14px"><div class="tiny" style="text-transform:uppercase;margin-bottom:6px;color:var(--text3)">ค่าวางแผนสต็อก (Supply Planning · D16)</div>
+      <div class="alert alert-info" style="font-size:13px;margin:0"><span class="ai">ℹ️</span><div>สินค้านี้ <b>TYPE = OEM</b> → ไม่ตั้งค่าวางแผนสต็อก (Sales Rate / Lead Time / Safety / Target / Batch Size) · ค่าเหล่านี้จะโผล่และบังคับกรอกเฉพาะสินค้า <b>TYPE = FG</b> (Own-Brand) — ดูตัวอย่างในหน้า <a href="bom-create.html">สร้าง/แก้สูตร</a> และแก้ได้จาก <a href="supply-planning.html">Supply Planning</a> (save กลับ BOM master)</div></div></div></div>
     <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึกสูตร</button></div>
   </div></div>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

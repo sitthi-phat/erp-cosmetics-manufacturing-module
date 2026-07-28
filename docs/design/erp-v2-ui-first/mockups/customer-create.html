@@ -157,6 +157,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="grid2"><div class="field"><label>เลขผู้เสียภาษี (13 หลัก)</label><input class="inp tnum" placeholder="0-0000-00000-00-0" maxlength="17"></div>
      <div class="field"><label>เบอร์โทร <span class="req">*</span></label><input class="inp tnum" placeholder="0x-xxx-xxxx"></div></div>
     <div class="field"><label>ที่อยู่จดทะเบียน <span class="req">*</span></label><textarea class="inp" rows="2" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์"></textarea></div>
+    <div class="field" style="margin-bottom:0"><label>ประเภทงาน (TYPE) <span class="req">*</span> <span class="tiny">เลือกได้ทั้งคู่</span></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on" onclick="this.classList.toggle('on')">✓ OEM (รับจ้างผลิต)</span><span class="chip" onclick="this.classList.toggle('on')">Own-Brand (แบรนด์ลูกค้า)</span></div>
+      <div class="help">เลือกอย่างน้อย 1 · ใช้ทำรายงาน + เตือน (ไม่บล็อก) เมื่อเปิด order ผิดสาย · ลูกค้าเป็นได้ทั้ง OEM และ Own-Brand</div></div>
   </div></div>
   <div class="card"><div class="card-h"><h3>ผู้ติดต่อหลัก</h3><span class="tiny">เพิ่มผู้ติดต่ออื่นได้ในหน้ารายละเอียดหลังบันทึก</span></div><div class="card-b">
     <div class="grid2"><div class="field"><label>ชื่อผู้ติดต่อ <span class="req">*</span></label><input class="inp" placeholder="เช่น คุณ..."></div>
@@ -166,7 +169,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div></div>
   <div class="card"><div class="card-h"><h3>การดูแล & เงื่อนไข</h3></div><div class="card-b">
     <div class="grid3"><div class="field"><label>Sale ที่ดูแล <span class="req">*</span> <span class="tiny">(ค้นได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="ค้น/เลือก Sale…"></div></div>
-     <div class="field"><label>เงื่อนไขเครดิต</label><select class="sel"><option>เงินสด</option><option>เครดิต 15 วัน</option><option>เครดิต 30 วัน</option><option>เครดิต 45 วัน</option></select></div>
+     <div class="field"><label>Credit term (ระดับลูกค้า)</label><select class="sel"><option>30 วัน</option><option selected>60 วัน (ค่าเริ่มต้น)</option><option>90 วัน</option></select><div class="help">preset 30/60/90 · default 60 · override รายใบแจ้งหนี้ยังทำได้</div></div>
      <div class="field"><label>รอบ "ลูกค้าประจำ"</label><select class="sel"><option>3 เดือน (ค่าเริ่มต้น)</option><option>1 เดือน</option><option>6 เดือน</option><option>8 เดือน</option></select><div class="help">ใช้คำนวณ ประจำ/ห่างหาย อัตโนมัติ</div></div></div>
     <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>สถานะเริ่มต้น = <b>ผู้สนใจ (Lead)</b> → เปลี่ยนเป็น <b>ลูกค้าประจำ</b> อัตโนมัติเมื่อมี PO ใบแรก + ข้อมูลครบ (C1)</div></div>
   </div></div>
