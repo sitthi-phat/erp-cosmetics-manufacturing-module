@@ -37,6 +37,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริงต่อเนื่อง) → ลงรายละเอียด <b>Requirement ราย module</b> (②) → ต้องการเหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → เรื่อง API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤) · <b>ล่าสุด (r5):</b> Stock Reservation — ยืนยัน PO=จองวัตถุดิบ → เริ่มผลิต=ตัดจริง FIFO → cancel=คืน/dialog (ดู <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a>)</div>
 
+<div class="sec">📦 Per-Module Requirement Package (canonical ล่าสุด · 2026-07-29) <small>— consolidation + reconcile D1–D18 · INPUT ของ BA/QA/TL</small></div>
+<div class="srcnote">📄 <b>แหล่ง requirement ล่าสุดแบบราย module</b> (customer/quotation/po/so/stock/bom/production/supply-planning) + OEM/Own-Brand flow + permission matrix + สรุปสูตร Supply Planning: <a href="modules/index.html"><b>เปิด Per-Module Package →</b></a> · ต้นฉบับ .md: <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> · fold คำสั่งใหม่ปอนด์ (customer TYPE + credit 30/60/90 · pagination 20 · date-range search · drill+back · customer dropdown · permission-per-action · BOM TYPE/planning · FG adjust · D8 v2) · <b>READY_FOR_UX_UI</b></div>
+<div class="tocgrid">
+  <a class="mod" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">8 module + 2 flow + permission matrix + overview/changelog · Supply Planning §6 = FORMULA SUMMARY</div></a>
+  <a class="mod" href="modules/supply-planning.html"><div class="mt">★ Supply Planning — สรุปสูตร</div><div class="md">Available/cover/safety/reorder/target/suggested(batch round)/badge/rate conv — ให้ปอนด์รีวิว</div></a>
+  <a class="mod" href="modules/oem-flow.html"><div class="mt">OEM / Own-Brand Flow</div><div class="md">end-to-end + stock-ledger effect + trace</div></a>
+</div>
+
 <div class="sec">🆕 สโคปใหม่ (Delta) — OEM Quotation · Own-Brand SO · Supply Planning · FG Stock <small>— D1–D18 · Stage 1 รอบใหม่</small></div>
 <div class="srcnote">📄 ที่มา/กติกา (source of truth): <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><code>scope-oem-ownbrand-supply-planning.md</code></a> — ล็อกครบ D1–D18 (ZERO open questions) · Mockups delta อยู่ในหมวดบนสุดของ <a href="../mockups/index.html" target="_blank">Gallery</a> · <b>🟢 หน้าใหม่ · 🔵 หน้าแก้</b> · เดินเรื่องด้วย mock data: <a href="scenario-walkthrough.html"><b>Scenario Walkthrough</b></a> · ตรวจ flow ครบ + punch-list: <a href="../../../requirements/erp-v2-ui-first/po-e2e-review-oem-ownbrand.md"><code>po-e2e-review-oem-ownbrand.md</code></a></div>
 <div class="tocgrid">
@@ -108,5 +116,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">28 หน้าจอ clickable (theme A teal) — ใช้เป็น spec ภาพของทุก module</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-10 · 6 หมวด — Journeys/Walkthrough · 16 module requirement (70 stories/210 AC) · 5 cross-cutting · 6 เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · <b>ทุกลิงก์ .html</b> · ต้นฉบับ PO/TL แก้ที่ docs/requirements + docs/adr (HTML sync 2026-07-10)</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-10 (+ Per-Module Package 2026-07-29) · 6 หมวด — Journeys/Walkthrough · 16 module requirement (70 stories/210 AC) · 5 cross-cutting · 6 เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · <b>ทุกลิงก์ .html</b> · ต้นฉบับ PO/TL แก้ที่ docs/requirements + docs/adr</footer>
 </div></body></html>
