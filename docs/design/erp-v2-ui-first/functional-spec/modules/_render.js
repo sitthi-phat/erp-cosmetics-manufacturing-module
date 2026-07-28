@@ -15,7 +15,13 @@
       'customer.md': 'customer.html', 'quotation.md': 'quotation.html', 'po.md': 'po.html',
       'so.md': 'so.html', 'stock.md': 'stock.html', 'bom.md': 'bom.html',
       'production.md': 'production.html', 'supply-planning.md': 'supply-planning.html',
-      'oem-flow.md': 'oem-flow.html', 'ownbrand-flow.md': 'ownbrand-flow.html'
+      'oem-flow.md': 'oem-flow.html', 'ownbrand-flow.md': 'ownbrand-flow.html',
+      'home.md': 'home.html', 'dashboard.md': 'dashboard.html',
+      'goods-receipt.md': 'goods-receipt.html', 'pr.md': 'pr.html',
+      'supplier.md': 'supplier.html', 'qc.md': 'qc.html', 'shipping.md': 'shipping.html',
+      'return.md': 'return.html', 'invoice.md': 'invoice.html',
+      'traceability.md': 'traceability.html', 'settings.md': 'settings.html',
+      'platform.md': 'platform.html'
     };
     if (mods[base] && !/requirements\//.test(u)) return mods[base] + hash;
     // PO principle docs already published as hub views

@@ -17,6 +17,7 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
 .tocgrid a.mod:hover{border-color:var(--primary);box-shadow:0 3px 10px rgba(14,124,123,.12);text-decoration:none}
 .tocgrid a.flow{border-left-color:#B8873B}
 .tocgrid a.meta{border-left-color:var(--info)}
+.tocgrid a.newmod .mt::after{content:" ✚";color:var(--success);font-size:12px}
 .tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
 .srcnote{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
@@ -27,42 +28,70 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Per-Module Requirement</span><span class="crumb"><a href="../index.html">Document Hub</a> › Per-Module</span></header>
 <div class="wrap">
 
-<h1>Per-Module Requirement Package</h1>
-<p class="sub">slug <code>erp-v2-ui-first</code> · <b>CANONICAL INPUT</b> ล่าสุด (2026-07-29) สำหรับ BA / QA / Tech-Lead · consolidation ของ requirement เดิม + fold คำสั่งใหม่ปอนด์ + reconcile D1–D18</p>
+<h1>Per-Module Requirement Package — SINGLE SOURCE OF TRUTH</h1>
+<p class="sub">slug <code>erp-v2-ui-first</code> · <b>CANONICAL / COMPLETE</b> (2026-07-29) สำหรับ BA / QA / Tech-Lead · ครบทุก module (existing-good + delta ใหม่ absorb เข้าด้วยกัน) · แต่ละ module .md = spec ปัจจุบันเต็ม · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม (เดิมยังคงไว้เป็น historical reference)</p>
 
-<div class="srcnote">📄 ทุกหน้า = <b>view สำหรับอ่าน</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> (source of truth). ต้องเปิดผ่าน <b>HTTP (docs-site)</b> เพื่อ render เต็ม · เริ่มอ่านที่ <a href="index.html#"><b>ภาพรวม + changelog</b></a> ด้านล่าง แล้วดูราย module.</div>
+<div class="srcnote">📄 ทุกหน้า = <b>view สำหรับอ่าน</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> (source of truth). ต้องเปิดผ่าน <b>HTTP (docs-site)</b> เพื่อ render เต็ม · เริ่มอ่านที่ <a href="package-overview.html"><b>ภาพรวม + changelog + source-of-truth statement</b></a> แล้วดูราย module ด้านล่าง · ✚ = module ที่เพิ่งเพิ่มรอบนี้ (absorb existing requirement)</div>
 
-<div class="note"><b>อ่านลำดับนี้:</b> ① ภาพรวม/D-rule spine/changelog → ② ราย module (customer…supply-planning) → ③ 2 flow (OEM / Own-Brand) → ④ permission matrix · <b>Supply Planning §6 = สรุปสูตรทั้งหมดให้ปอนด์รีวิว</b></div>
+<div class="note"><b>ครบ 20 module + 2 flow + permission matrix + overview:</b> Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings · <b>Supply Planning §6 = สรุปสูตรทั้งหมด</b></div>
 
-<div class="sec">① ภาพรวม + Rule Spine + Changelog</div>
+<div class="sec">① ภาพรวม + Rule Spine + Changelog + Source-of-Truth</div>
 <div class="tocgrid">
-  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit default) · global rules G1–G5 · changelog superseded/removed · resolved confirmations</div></a>
+  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit default 60) · global rules G1–G5 · changelog superseded/removed · <b>old doc → module map</b> · source-of-truth statement</div></a>
+  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (consolidated)</div><div class="md">capability→module→action · RUCDAA generic (D14) · +3 module ใหม่ (Quotation/SO/Supply-Planning)</div></a>
 </div>
 
-<div class="sec">② Requirement ราย Module <small>— purpose · screens · fields(หน่วย/computed) · actions+permission · statuses · validations · pagination/search · formulas</small></div>
+<div class="sec">② Platform &amp; Navigation <small>— เปลือกระบบร่วมทุกหน้า</small></div>
+<div class="tocgrid">
+  <a class="mod newmod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login local+Google · session 24h/06:00 reset · notification outbox+read-bit · global search · responsive+guard</div></a>
+  <a class="mod newmod" href="home.html"><div class="mt">Home / Task Inbox</div><div class="md">งานที่รอตามสิทธิ์ Read · quick actions · onboarding (Lot vs Batch) · source เดียวกับ dashboard/noti</div></a>
+  <a class="mod newmod" href="dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">SALE/STK/PRD/QC/SHP/FIN/ADM · event vs state · date filter · drill+deep link · ใกล้หมด=Available</div></a>
+</div>
+
+<div class="sec">③ Sales &amp; Customer (OEM / Own-Brand) <small>— งานหน้าบ้าน</small></div>
 <div class="tocgrid">
   <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · management-history · QT/PO history · customer dropdown</div></a>
   <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">D18 · material check (no auto-PR) · บันทึก→print-ready · Convert to PO (prefill)</div></a>
   <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · origin QT · 2 ราง</div></a>
   <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก→Ready to Ship · (ข) ผลิตเก็บสต็อก auto-PR · date-range search</div></a>
-  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · ledger reason/source(D15) · surplus/loss</div></a>
-  <a class="mod" href="bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit(D9)+สูตรรวม · TYPE OEM/FG · planning config(D16)</div></a>
-  <a class="mod" href="production.html"><div class="mt">Production</div><div class="md">queue search+filter OEM/Own-Brand · actual qty/surplus(D13) · PRD ไม่ผูกลูกค้า</div></a>
-  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · search/filter Low/OK/Overstock · edit→save BOM · <b>§6 FORMULA SUMMARY</b> · ปุ่มสั่งผลิต(D8 v2)</div></a>
 </div>
 
-<div class="sec">③ End-to-End Flows</div>
+<div class="sec">④ Supply Planning &amp; Production <small>— งานหลังบ้าน + คุณภาพ</small></div>
+<div class="tocgrid">
+  <a class="mod" href="bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit(D9)+สูตรรวม · TYPE OEM/FG · planning config(D16)</div></a>
+  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · <b>§6 FORMULA SUMMARY</b> · ปุ่มสั่งผลิต(D8 v2)</div></a>
+  <a class="mod" href="production.html"><div class="mt">Production</div><div class="md">queue search+filter OEM/Own-Brand · actual qty/surplus(D13) · PRD ไม่ผูกลูกค้า</div></a>
+  <a class="mod newmod" href="qc.html"><div class="mt">QC</div><div class="md">ตัดสิน Batch ราย line · Lot ขาเข้า · rework เฉพาะ line เสีย + feedback บังคับ · GMP chain</div></a>
+</div>
+
+<div class="sec">⑤ Inventory &amp; Procurement <small>— คลัง/จัดซื้อ/รับ-คืน</small></div>
+<div class="tocgrid">
+  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source(D15) · มูลค่าสต็อก</div></a>
+  <a class="mod newmod" href="goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line 1 supplier · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link</div></a>
+  <a class="mod newmod" href="pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto จาก PO/SO ส่วนขาด / สร้างตรง · partial→PR ใหม่ (รอ review) · void</div></a>
+  <a class="mod newmod" href="supplier.html"><div class="mt">Supplier</div><div class="md">price matrix (max active→BOM) · Active/Inactive · snapshot ไม่ retro · Lot prefix</div></a>
+  <a class="mod newmod" href="return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ · ไม่เกินคงเหลือ</div></a>
+</div>
+
+<div class="sec">⑥ Fulfilment &amp; Finance <small>— จัดส่ง/การเงิน</small></div>
+<div class="tocgrid">
+  <a class="mod newmod" href="shipping.html"><div class="mt">Shipping (Shipment+DN)</div><div class="md">2 ชั้น · 1 DN=1 order · Delivered/Rejected/Postponed · reconcile Partially/Closed</div></a>
+  <a class="mod newmod" href="invoice.html"><div class="mt">Invoice / การเงิน</div><div class="md">ออกตั้งแต่ Confirmed · ใบกำกับภาษีไทย · VAT effective date · overdue · void/versioning</div></a>
+</div>
+
+<div class="sec">⑦ Governance <small>— trace/สิทธิ์/ตั้งค่า</small></div>
+<div class="tocgrid">
+  <a class="mod newmod" href="traceability.html"><div class="mt">Traceability + Audit</div><div class="md">entity/field search · genealogy Lot→Batch→FG · field-audit · QT head-of-chain · archive Super User</div></a>
+  <a class="mod newmod" href="settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit · +3 module ใหม่ใน matrix</div></a>
+</div>
+
+<div class="sec">⑧ End-to-End Flows</div>
 <div class="tocgrid">
   <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger</div></a>
   <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
 </div>
 
-<div class="sec">④ Permission Matrix</div>
-<div class="tocgrid">
-  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (consolidated)</div><div class="md">capability→module→action · RUCDAA generic(D14) · +3 module ใหม่</div></a>
-</div>
-
-<footer>ESSENCE Hub System · Per-Module Requirement Package · 8 module + 2 flow + permission matrix + overview · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI</footer>
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · 20 module + 2 flow + permission matrix + overview · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ยังทำต่อ parallel)</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>
