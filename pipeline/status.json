@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po + ux-ui",
+      "current_agent": "po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -2823,9 +2823,49 @@
           "summary": "Expanded module package to COMPLETE source of truth: +12 modules (platform/home/dashboard/goods-receipt/pr/supplier/qc/shipping/return/invoice/traceability/settings) absorbing existing functional-spec US-*/AC + cross-cutting; source-of-truth statement + old->new map in README; HTML views + Hub index regenerated. No business gap. NEXT (dispatched): fold NFRs (non-functional.md) + adapt deletion policy to new entities (QT/SO/FG/surplus/snapshot) + reorganize remaining ESSENCE Hub detail. UX/UI mockup deltas running in parallel.",
           "overridden_by": null,
           "updated_at": "2026-07-29T12:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "module-delta-mockups",
+          "status": "READY_FOR_PO_REVIEW",
+          "gate_checklist": [
+            {
+              "item": "Global patterns applied: pagination 20, customer search dropdown (G4), date-range search (G2), drill+back via customer modal (G3)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Per-module deltas: customer type+credit+mgmt-history+QT/PO history; quotation matcheck+print+convert; SO flows; BOM type/planning; production filter; supply-planning filter+save-to-BOM+D8v2",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "New quotation-print.html; design system matched; offline; screenshots produced",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No business gap (all from module docs)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/quotation-print.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-create.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/quotation-create.html",
+            "docs/design/erp-v2-ui-first/mockups/so-create.html",
+            "docs/design/erp-v2-ui-first/mockups/bom-create.html",
+            "docs/design/erp-v2-ui-first/mockups/supply-planning.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "UX/UI implemented all 2026-07-29 module-delta mockups: customer TYPE(OEM/OwnBrand)+credit 30/60/90 default 60 + consolidated management-history + QT/PO history (search+pagination20); customer search dropdown (phone/company/contact/contact-phone + status/credit + modal, no state loss) on quotation/po/so-create; quotation material-check-no-PR + Convert-to-PO->po-create prefill + Save->quotation-print.html (new); SO date search + sell-from-stock(Ready-to-Ship->Delivery) + produce-to-stock(auto-PR); BOM TYPE OEM/FG + planning fields + live total; production queue filter+date search; supply-planning FG search + Low/OK/Overstock filter + save-back-to-BOM + สั่งผลิต->SO prefill (D8 v2). Global pagination 20. No business gap. -> PO review after NFR round.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T12:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T12:05:00+07:00"
+  "generated_at": "2026-07-29T12:35:00+07:00"
 }
