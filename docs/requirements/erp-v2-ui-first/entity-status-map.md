@@ -1,12 +1,13 @@
 # Entity Status Map — ESSENCE Hub System (แผนที่สถานะฉบับเดียวจบ)
 
-เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก (default ถอด Follow-up จาก enum — รอปอนด์ยืนยัน; ดู `modules/customer.md` §4/§12)**
+เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก (default ถอด Follow-up จาก enum — รอปอนด์ยืนยัน; ดู `modules/customer.md` §4/§12)** · **r7 (2026-07-29): เพิ่ม §1.1b Quotation (QT) lifecycle — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" ตั้งโดย Convert-to-PO + cancel ทุกสถานะ; authoritative spec = `modules/quotation.md`**
 เป็น **ความจริงหลัก** เรื่อง entity/สถานะ/ใครเปลี่ยน/cascade · `status-journeys.md` อ้างอิงเอกสารนี้ (sync แล้ว ไม่ให้มี 2 ความจริง)
 
 ## สรุปภาษาไทย
 **ปอนด์ปรับ flow (r4.1):** PO ยืนยันแล้ว → งานแต่ละ line เข้า **คิวผลิตสถานะ "รอรับงาน"** (ยัง**ไม่**เกิด PRD) → **ฝ่ายผลิตกด "รับงาน" เอง → ตอนนั้นถึงสร้าง PRD** (1 ใบต่อ line, สถานะเริ่ม = รับงาน) → กด "เริ่มผลิต" = gen เลข **Batch** · **1 PO : N PRD (N=line) : M Batch (M≥N, +1/rework)** · **วัตถุดิบขาดไม่บล็อก** — รับงาน/เริ่มผลิตได้เลย (เตือนวัตถุดิบอาจไม่พร้อม) และ **ผลิตจริงตัด stock ติดลบได้** พอทำ GR ค่อยบวกกลับ (หน้า stock/GR ต้องโชว์ยอดติดลบชัด) · Batch ผ่าน QC → PRD line พร้อมส่งมอบ → ทุก PRD ของ PO พร้อม → PO พร้อมจัดส่ง
 **★ r5 Stock Reservation (ปอนด์ถาม 2026-07-10):** **PO Confirmed → จอง (Reserve) วัตถุดิบ = ΣBOM×qty ต่อ line** (ยังไม่ตัดจริง) → เกิดยอด **ใช้ได้ (Available) = คงคลัง − จองแล้ว** · **ตัดจริง (Consume)** ตอนไหน = คำถามหลัก (PO เสนอ "เริ่มผลิต" ราย Batch) · **Cancel PO = คืน (Release) ที่จองอัตโนมัติ** · จองเกิน available ได้+เตือน · **ดู `stock-reservation.md` (ความจริงหลักเรื่อง reservation)**
 **★ r6 Customer (ปอนด์ 2026-07-29):** สถานะลูกค้า **6 → 5** (Lead/Active/Inactive/Disabled/Blacklist) · **"ต้องติดตาม (Follow-up)" ไม่เป็นสถานะอีกต่อไป → เป็น flag แยกอิสระ** (boolean + เหตุผล + ใคร/เมื่อ) ที่ **ควบคู่ได้ทุกสถานะ** (Blacklist+ติดเงิน, Active+PO มีปัญหา) · **Disabled/Blacklist = HARD block เปิดงานขาย QT/PO/SO** · **★ default ถอด Follow-up ออกจาก enum — รอปอนด์ยืนยัน** (`modules/customer.md` §12).
+**★ r7 Quotation (ปอนด์ 2026-07-29 — Quotation review):** เพิ่ม lifecycle QT ที่ยังไม่เคยมีในแผนที่นี้ (§1.1b) · สถานะ **ร่าง (Draft) / ส่งแล้ว (Sent) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **"ยืนยัน (Confirmed)" reseat จาก D18-4 "ตกลง (Agreed)"** — ตั้งโดยการกด **"Convert to PO"** (popup, ทันที, immutable) โดยการสร้าง PO เป็นขั้นอิสระ · เพิ่มฟิลด์ **sent-date** (ตั้งตอนส่งลูกค้า) · **ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ, activity-log) · **PO = loose reference → no cascade**. authoritative = `modules/quotation.md`.
 
 ---
 
@@ -45,6 +46,24 @@
 - **★ default = ถอด "Follow-up" ออกจาก status enum (6→5) — รอปอนด์ยืนยัน** (`modules/customer.md` §12). ถ้าปอนด์ให้คงไว้ → เพิ่มกลับเป็นสถานะที่ 6 (แต่ flag ยังคงเป็น attribute แยก).
 - **Soft-delete** ได้เสมอ (deletion-policy §2.1) — PO เดิมเดินต่อ, ห้ามเปิด order ใหม่, หายจาก dropdown.
 
+### 1.1b ★ Quotation (QT — OEM) · `QT-{YYYYMM}-{NNNNNN}` · หน้า: quotation-list / quotation-create / quotation-detail
+**r7 (2026-07-29): lifecycle ที่ authoritative = `modules/quotation.md` §4** (เดิมแผนที่นี้ไม่มี QT — เพิ่มเพื่อความครบ). สาย OEM เท่านั้น (Own-Brand SO ไม่มี Quotation).
+
+| สถานะ QT (enum) | ใครเปลี่ยน | เกิดตอน |
+|---|---|---|
+| ร่าง (Draft) | ผู้มีสิทธิ์ Quotation.C | บันทึกครั้งแรก (ออกเลข QT, gapless) |
+| ส่งแล้ว (Sent) | Quotation.U (กด "ส่งลูกค้า") | ส่งใบเสนอราคาให้ลูกค้า → **ตั้ง sent-date** |
+| **ยืนยัน (Confirmed)** ★ | Quotation.U (**กด "Convert to PO"** → popup) | ลูกค้าตกลง → กด Convert → **ตั้งทันที + immutable** (การสร้าง PO เป็นขั้นอิสระ) · **reseat จาก D18-4 "ตกลง (Agreed)"** |
+| ปฏิเสธ (Rejected) | Quotation.U | ลูกค้าไม่ตกลง → จบสาย ไม่เกิด PO (เก็บประวัติ) |
+| ยกเลิก (Cancelled) | Quotation.D/Approve (บังคับเหตุผล) | **กดได้ทุกสถานะ** (Draft/Sent/Confirmed/Rejected) → activity-log + gapless (ไม่ hard-delete) |
+
+- **แก้ = เวอร์ชันใหม่เสมอ** (immutable เมื่อออกไปแล้ว) · **ไม่มี Expired** (D18-4).
+- **ฟิลด์วันที่:** created-date (ออกเลข) + **sent-date (ตั้งตอน → Sent)** — ทั้งสองเป็นแกนค้นหาใน quotation-list (`modules/quotation.md` §9).
+- **Convert to PO:** กดได้เมื่อ QT ∈ {Draft, Sent} + ลูกค้าไม่ใช่ Disabled/Blacklist → ตั้ง Confirmed ทันที → เลือก "สร้าง PO เดี๋ยวนี้ (prefill)/ไว้ทีหลัง" · ถ้า Confirmed แต่ยังไม่มี PO → banner ถาวรบน detail "ไปสร้าง PO ด้วยข้อมูลนี้".
+- **ผูก PO = loose reference** ("created from QT-…") → **ยกเลิก QT ไม่ cascade ไป PO และในทางกลับกัน** (deletion-policy §2.9).
+- **activity-log:** ทุก action (create/send/edit→version/convert→Confirmed/reject/cancel) เข้า field-audit + trace (QT = head-of-chain สาย OEM · `traceability.md` §4).
+- **Hard block Disabled/Blacklist:** เปิด/convert QT ให้ลูกค้า Disabled/Blacklist ไม่ได้ (`modules/customer.md` §4.2).
+
 ### 1.2 PO — ราง Fulfilment (การผลิต/จัดส่ง) · `PO-{YYYYMM}-{NNNNNN}` · หน้า: po-create / po-detail / po-list
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
 |---|---|---|
@@ -57,6 +76,7 @@
 | ยกเลิก (Cancelled) → เปิดใหม่เป็น ร่าง | Sale/Admin (บังคับ comment) · reopen คงเลข PO เดิม | ทุกขั้น |
 > force override (ข้ามลำดับ) = เฉพาะสิทธิ์ **Admin** + เหตุผล + trace (ที่การ์ด "เปลี่ยนสถานะ PO" หน้า po-detail)
 > **Create-time gate (r6):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** (HARD block — `modules/customer.md` §4.2)
+> **หมายเหตุ vs QT (r7):** "PO Confirmed" (ราง fulfilment นี้) ≠ "QT Confirmed (ยืนยัน)". เมื่อสร้าง PO จาก QT ที่ Confirmed → PO เริ่มที่ **ร่าง (Draft)** ตามปกติ (`modules/po.md` §4).
 
 ### 1.3 PO — ราง Billing (วางบิล/ชำระ) · หน้า: invoices / invoice-detail / po-detail
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
@@ -154,6 +174,7 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 ## 2. Cascade Table (X เปลี่ยน → Y เปลี่ยน → เห็นที่หน้า → noti ไปหา)
 | # | ต้นเหตุ (ใคร) | ผล cascade | เห็นที่หน้า | noti |
 |---|---|---|---|---|
+| 0 | **★ QT → ยืนยัน (Confirmed)** (กด "Convert to PO", r7) | ตั้ง QT=Confirmed (immutable) ทันที; **ไม่บังคับให้เกิด PO** (สร้าง PO เป็นขั้นอิสระ); เมื่อสร้าง PO → ผูก loose ref QT↔PO; **ยกเลิก QT ภายหลัง = ไม่ cascade ไป PO** | quotation-detail, po-create (prefill) | — |
 | 1 | **PO Draft → ยืนยันแล้ว** (Sale) | **แต่ละ line เข้าคิวผลิต "รอรับงาน"** (ยังไม่เกิด PRD); **+ จองวัตถุดิบ (Reserved เพิ่ม, Available ลด — r5)**; ลูกค้า Lead→Active (ใบแรก) | po-detail, production (คิวรอรับงาน), stock, customers | Production |
 | 2 | **รอรับงาน → รับงาน** (Production กด "รับงาน") | **gen เลข PRD** `PRD-{YYYYMM}-{NNNNNN}` (สถานะ รับงาน) | production | — |
 | 3 | **PRD รับงาน → กำลังผลิต** (Production "เริ่มผลิต") | **gen Batch run แรก** `B-{PO}-{line}-1`; **ตัด stock จริง (convert จอง→ตัด, FIFO lot, ติดลบได้ — r5 ถ้า Option A)**; PO=กำลังผลิต | production, stock | — |
@@ -175,14 +196,19 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 | 19 | **PO ยกเลิก → เปิดใหม่(ร่าง)** (Sale/Admin) | คงเลข PO เดิม + trace; คิว/PRD/Batch ยกเลิกตาม; **+ Release reservation ที่ยังไม่ consume ทั้งหมด (คืน Available — r5)** | po-detail, stock | Production |
 | 20 | **★ Reservation (r5)** — Confirm=จอง / Cancel-แก้ลด=คืน / เริ่มผลิต=ตัดจริง | Reserved/Available เปลี่ยน (ดู `stock-reservation.md`) | stock (3 ยอด), po-detail | Stock (ถ้า available ติดลบ) |
 | 21 | **★ Customer → Disabled/Blacklist (r6)** (Sale Manager/Admin) | **HARD block เปิดงานขายใหม่ (QT/PO/SO) ของลูกค้ารายนั้น** (ดู `modules/customer.md` §4.2); PO/QT/SO เดิมเดินต่อ (no cascade) | customers, quotation/po/so-create (dropdown บล็อก) | Sale |
+| 22 | **★ QT ยกเลิก (Cancelled) — ทุกสถานะ (r7)** (Quotation D/Approve) | QT=ยกเลิก + activity-log + เหตุผล; เลข gapless คงอยู่; **PO ที่ผูก = loose ref → ไม่ cascade (PO เดินต่อ)** | quotation-detail, trace | — |
 
 ---
 
 ## 3. แผนภาพเส้นเดียว จากต้นจนจบ (ใครทำ / gen อะไร ตอนไหน)
 
 ```
+[OEM] ใบเสนอราคา (optional, D18)
+  │  [Quotation] สร้าง QT (ร่าง) → "ส่งลูกค้า" (ตั้ง sent-date, →ส่งแล้ว) → กด "Convert to PO" (popup) → QT=ยืนยัน (Confirmed)
+  │  └─ เลือก "สร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง (banner ถาวร)"  · loose ref QT↔PO (no cascade)
+  ▼
 ลูกค้าสั่ง
-  │  [Sale] สร้าง PO
+  │  [Sale] สร้าง PO (จาก QT prefill หรือสร้างตรง)
   ▼
 PO = ร่าง (Draft)                                   PO-{YYYYMM}-{NNNNNN}
   │  [Sale] กดยืนยัน
@@ -223,12 +249,14 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 **หมายเหตุ negative stock:** ถ้าผลิตก่อนของเข้า → Batch ตัด stock ติดลบ (badge แดงหน้า stock) → GR เข้ามาบวกกลับ + ผูก Lot ย้อน FIFO ให้ genealogy ครบ (notice "ชดเชยยอดติดลบ")
 **หมายเหตุ reservation (r5):** Confirmed=จอง (Available ลด) · เริ่มผลิต=ตัดจริง (Option A) · Cancel=คืนจอง · ดู `stock-reservation.md`
 **หมายเหตุ customer r6:** ก่อนเปิด PO/QT/SO → เช็คสถานะลูกค้า; **Disabled/Blacklist = บล็อก (hard)**; flag ⚑ "ต้องติดตาม" = ป้ายเตือน ไม่บล็อก
+**หมายเหตุ QT r7:** "Convert to PO" ตั้ง QT=ยืนยัน (Confirmed) ทันที (immutable) — การไปสร้าง PO เป็นขั้นอิสระ (banner ถาวรถ้ายังไม่สร้าง); loose ref → ยกเลิก QT ไม่กระทบ PO
 
 ---
 
 ## 4. ตรวจ mockups ปัจจุบัน สอดคล้องนิยามนี้ไหม (รายการแก้ — ไม่แก้เอง)
 | จุด | สถานะ | รายการแก้ (ให้ UX/UI) |
 |---|---|---|
+| **★ Quotation lifecycle r7 (Confirmed/sent-date/activity)** | ⚠ ต้องแก้ | quotation-list: badge/filter ครบชุด **รวม "ส่งแล้ว (Sent)"** + ค้น **2 แกนวันที่ (created + sent)** · quotation-detail: **Convert-to-PO popup → ยืนยัน (Confirmed) + เลือกสร้าง PO ตอนนี้/ทีหลัง** + **banner ถาวร "ยืนยันแล้ว · ไปสร้าง PO"** เมื่อ Confirmed-ยังไม่มี PO + **activity-log แสดงในหน้า** · quotation-edit: **material check** เหมือน create (ดู `modules/quotation.md`) |
 | **★ Customer status 6→5 + follow-up flag (r6)** | ⚠ ต้องแก้ | customers/customer-detail: ถอด "Follow-up" จาก status badge → เพิ่ม **flag ⚑ "ต้องติดตาม" แยก badge + เหตุผล** · list filter ⚑ · financial summary card · block affordance บน QT/PO/SO create (รอปอนด์ยืนยันการถอด §12) |
 | **PRD manual accept (รอรับงาน → รับงาน)** | ⚠ ต้องแก้ | **เดิม mockup ทำ PRD auto ตอน Confirm** — ต้องเพิ่ม **คิว "รอรับงาน" + ปุ่ม "รับงาน"** ในหน้า production; เลข PRD ออกตอนกดรับงาน (ก่อนกด = ยังไม่มีเลข PRD) |
 | **Negative stock display** | ⚠ ต้องเพิ่ม | stock.html: ยอดติดลบ = **สีแดง + badge "ติดลบ (รอรับเข้า)"**; production: เตือน "จะตัด stock ติดลบ X หน่วย" ตอนรับงาน/เริ่มผลิต |
@@ -247,3 +275,4 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 - **Deletion Policy: ตอบครบ 7 ข้อ ล็อกแล้ว ✅** — ดู `deletion-policy.md`
 - **★ r5 Stock Reservation: มี 5 คำถามค้าง (จุดตัดจริงสำคัญสุด)** — ดู `stock-reservation.md` §8: (1) ตัดจริงตอนไหน [PO แนะนำ เริ่มผลิต] (2) เกณฑ์ใกล้หมด available/on_hand (3) จองเกิน available (4) rework material (5) มูลค่าสต็อก on_hand เท่านั้น
 - **★ r6 Customer (2026-07-29): 1 คำถามค้าง** — **ถอด "Follow-up" ออกจาก status enum จริงไหม?** (default = ถอด, เหลือ 5 สถานะ + flag แยก) ดู `modules/customer.md` §12.
+- **★ r7 Quotation (2026-07-29): ไม่มีคำถามค้าง** — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" ตั้งโดย Convert-to-PO + cancel ทุกสถานะ **settled** (ปอนด์กำหนดโมเดลชัด). authoritative = `modules/quotation.md`.

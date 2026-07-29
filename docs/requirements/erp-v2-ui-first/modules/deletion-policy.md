@@ -42,12 +42,12 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 |---|---|
 | ประเภท | เอกสารเชิงการค้าก่อน order · เลข **`QT-` gapless** (NFR D-F2) → **ไม่มี hard delete** |
 | แก้ไข | **แก้ = เวอร์ชันใหม่** (เก็บเวอร์ชันเดิม read-only) |
-| Agreed (Convert-to-PO) | QT = **"ตกลง (Agreed)" immutable** + สร้างลิงก์ QT↔PO แบบ **loose reference** ("created from QT-…") |
-| **ยกเลิก (Cancel) — ★ ทุกสถานะ** | **กด "ยกเลิก" ได้ไม่ว่า QT อยู่สถานะใด (Draft / Sent / Agreed / Rejected)** → QT = **ยกเลิก (Cancelled)** + **เหตุผลบังคับ** → บันทึก **activity-log (ใคร/เมื่อ/ทำไม)** · เลข QT คงอยู่ **gapless** (ไม่ hard-delete, ไม่ soft-delete แบบ master) |
+| **ยืนยัน (Confirmed) — Convert-to-PO** | กด "Convert to PO" → QT = **"ยืนยัน (Confirmed)" immutable ทันที** (แทนคำเดิม "ตกลง/Agreed" — quotation.md §6) + สร้างลิงก์ QT↔PO แบบ **loose reference** ("created from QT-…") เมื่อสร้าง PO จริง · การสร้าง PO **อิสระ**จากการตั้ง Confirmed |
+| **ยกเลิก (Cancel) — ★ ทุกสถานะ** | **กด "ยกเลิก" ได้ไม่ว่า QT อยู่สถานะใด (Draft / Sent / Confirmed / Rejected)** → QT = **ยกเลิก (Cancelled)** + **เหตุผลบังคับ** → บันทึก **activity-log (ใคร/เมื่อ/ทำไม)** · เลข QT คงอยู่ **gapless** (ไม่ hard-delete, ไม่ soft-delete แบบ master) |
 | **ผลต่อ PO — ★ ไม่ cascade** | PO อ้าง QT แบบ **loose reference เท่านั้น** (ไม่ใช่ hard dependency) → **ยกเลิก QT = ไม่ทำอะไรกับ PO เลย** (PO ยืนด้วยตัวเอง, เดินต่อปกติ) |
 | ของที่ผูกอยู่ | activity/ประวัติเวอร์ชัน + trace คงอยู่ทั้งหมด (read-only) |
 | ใครมีสิทธิ์ | Quotation bit **D**/Approve (cancel) + comment · undo/undelete = Admin |
-> **แทนที่ default เดิม** ("abandon = void-only" + open question) — **ปิดคำถามแล้ว** (ปอนด์ตัดสิน cancel-anytime + no cascade).
+> **แทนที่ default เดิม** ("abandon = void-only" + open question) — **ปิดคำถามแล้ว** (ปอนด์ตัดสิน cancel-anytime + no cascade). **สถานะ "Confirmed" reseat จาก "Agreed" (2026-07-29 Quotation review).**
 
 ### 2.10 ★ Sales Order (SO — Own-Brand) — NEW
 | ประเด็น | กติกา (derive — SO = ฝาแฝด Own-Brand ของ PO, ยึดกติกา PO §2.8) |
@@ -92,7 +92,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | Supplier | inactive/soft delete | ห้ามซื้อใหม่ | D | Admin |
 | Contact | soft delete | ห้ามถ้าเป็นหลักคนเดียว | D | Admin |
 | Role | soft delete | ห้ามจนย้าย user ออกหมด | Admin | Admin |
-| **Quotation (QT)** | **★ ยกเลิก (Cancel) ได้ทุกสถานะ** (edit=version, Agreed=immutable) | gapless; **PO = loose ref → ยกเลิก QT ไม่ cascade**; บันทึก activity-log + เหตุผล | D/Approve | Admin (undo) |
+| **Quotation (QT)** | **★ ยกเลิก (Cancel) ได้ทุกสถานะ** (edit=version, Confirmed=immutable) | gapless; **PO = loose ref → ยกเลิก QT ไม่ cascade**; บันทึก activity-log + เหตุผล | D/Approve | Admin (undo) |
 | **SO** | **void** | gapless; release FG จอง/ยกเลิก PRD ที่ยังไม่เริ่ม | D/Approve | — |
 | PO/INV/DN/PR/GR/Shipment | **void** | gapless | D/Approve/Admin | — |
 | PRD/Batch | ยกเลิกตาม order | GMP ห้ามหาย | ตาม order | — |
@@ -112,3 +112,4 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 - **Folded:** root `deletion-policy.md` (หลักการ 7 ข้อ + entity 2.1–2.8) verbatim ในความหมาย.
 - **Added (derive):** SO (void=PO twin), FG Batch (ห้ามลบ, ledger adjust/loss), OEM surplus (ledger), cost snapshot (immutable).
 - **★ DECIDED (2026-07-29) — Quotation §2.9:** ยกเลิกได้ **ทุกสถานะ** · PO = **loose reference** · ยกเลิก QT **ไม่ cascade** · **activity-log** + gapless · **แทน default เดิม (void-only) + ปิด open question §5**.
+- **★ อัปเดต (2026-07-29 — Quotation module review):** สถานะ Convert-to-PO **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** (immutable, ตั้งทันทีตอน Convert) · รายการสถานะที่ยกเลิกได้ = Draft/Sent/**Confirmed**/Rejected (§2.9, matrix).
