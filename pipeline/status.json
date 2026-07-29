@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -2975,9 +2975,52 @@
           "summary": "Reorganized Document Hub IA into ① Functional (app-sidebar groups + flows + labeled reference band) and ② Non-Functional (NFR + deletion) as the two primary buckets; Architecture, Mockups, then a collapsed ⑤ Archive with all 16 superseded legacy pages out of the main flow. new<->old link tangle removed (verified: legacy hrefs only inside archive <details>; main flow links only to package + valid references). modules/index mirrors the split. HTTP-verified. 2 IA placement confirms (non-blocking, defaults applied). AWAITING Pond review.",
           "overridden_by": null,
           "updated_at": "2026-07-29T14:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "apply-4-decisions",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "Traceability -> Non-Functional; Reference -> own section 3; Hub reordered 1-6 (verified HTTP)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "SP proactive Low alerting decided (real-time + J8 06:00 digest, suggested qty attached, outbox by Read); non-functional/supply-planning/platform updated",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "QT cancel-anytime + loose PO reference + no cascade + activity-log; deletion-policy + quotation.md updated",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Both parked questions closed; zero open questions",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "UI follow-ups (SP Low bell/badge, noti FG->Low entry, QT cancel button) dispatched to UX/UI",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/supply-planning.md",
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/quotation.md",
+            "docs/requirements/erp-v2-ui-first/modules/deletion-policy.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Applied Pond's 4 decisions: traceability->Non-Functional, Reference->section 3 (Hub order 1 Functional/2 Non-Functional/3 Reference/4 Architecture/5 Mockups/6 Archive verified), SP proactive Low alerting (real-time + J8 daily digest, suggested qty, outbox by Read), QT cancel-anytime + loose PO reference + no cascade + activity-log. Both parked questions closed, zero open. UI follow-ups dispatched to UX/UI (SP Low bell/badge, noti FG->Low entry, QT cancel button).",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T15:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T15:00:00+07:00"
+  "generated_at": "2026-07-29T15:35:00+07:00"
 }
