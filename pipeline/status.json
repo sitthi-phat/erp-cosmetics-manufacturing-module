@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po + ux-ui",
+      "current_agent": "po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3173,9 +3173,28 @@
           "summary": "Quotation module feedback done: Sent status+badge/filter, sent-date 2-axis search, Convert-to-PO Agreed->Confirmed (popup immediate immutable, PO independent) + Confirmed-no-PO banner, material-check on edit, activity-log+trace (QT head). D18 reconciled (package wins). UX/UI list = README §8 Q1-Q6. No open Q.",
           "overridden_by": null,
           "updated_at": "2026-07-29T18:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "customer-edit-all-fields",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "customer-edit.html full-field edit (all fields like create; financial read-only) + entry points",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/customer-edit.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Customer edit = all fields (type/credit/status5/follow-up flag/contacts), financial read-only, entry points on detail+list. CUSTOMER MODULE fully done. PO comment-pattern (module 3) running; Quotation screens queued for UX/UI after comment-pattern edits quotation.md.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T19:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T18:35:00+07:00"
+  "generated_at": "2026-07-29T19:05:00+07:00"
 }
