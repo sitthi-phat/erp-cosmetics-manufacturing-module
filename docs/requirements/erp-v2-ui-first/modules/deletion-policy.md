@@ -1,11 +1,11 @@
 # Deletion Policy (Folded + Updated) — ESSENCE Hub System
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE deletion policy** (folds root `deletion-policy.md` + updates ให้ครอบ entity ใหม่ของ scope OEM/Own-Brand/Supply-Planning)
-ที่มา (locked): root `deletion-policy.md` (7 กติกา ปอนด์ล็อก) · `entity-status-map.md` · scope D1–D18 · `non-functional.md` §10 · `permission-matrix.md` · **QT cancel decision (ปอนด์ 2026-07-29)** · **BOM inactivate decision (ปอนด์ 2026-07-29)**
+ที่มา (locked): root `deletion-policy.md` (7 กติกา ปอนด์ล็อก) · `entity-status-map.md` · scope D1–D18 · `non-functional.md` §10 · `permission-matrix.md` · **QT cancel decision (ปอนด์ 2026-07-29)** · **BOM inactivate decision (ปอนด์ 2026-07-29)** · **★ Role disable+soft-delete decision (ปอนด์ 2026-07-29 Settings review)**
 > **Source of truth:** ไฟล์นี้เป็นฉบับ **authoritative ปัจจุบัน** สำหรับนโยบายการลบ. root `deletion-policy.md` = historical reference — ถ้าขัดกันให้ยึดไฟล์นี้.
 
 ## สรุปภาษาไทย
-ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **★ QT status list = Draft / Confirmed / Rejected (+ Cancelled) — ถอด "Sent" ออกแล้ว (ปอนด์ revert 2026-07-29).** **★ BOM (DECIDED 2026-07-29):** **ลบถาวรไม่ได้ → ใช้ Active/Inactive (inactivate) แทน** · **Inactive = บล็อกการเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** (คนละเรื่องกับ block ลูกค้า) **แต่ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** + กันออกจาก Supply Planning. **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
+ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **★ QT status list = Draft / Confirmed / Rejected (+ Cancelled) — ถอด "Sent" ออกแล้ว (ปอนด์ revert 2026-07-29).** **★ BOM (DECIDED 2026-07-29):** **ลบถาวรไม่ได้ → ใช้ Active/Inactive (inactivate) แทน** · **Inactive = บล็อกการเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** (คนละเรื่องกับ block ลูกค้า) **แต่ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** + กันออกจาก Supply Planning. **★ Role (DECIDED 2026-07-29 Settings review):** role มี 3 สถานะ **Active / Disabled / Deleted(soft)** — **Disabled = พักชั่วคราว (reversible), Deleted = soft-delete (recoverable)**; ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น**; **ไม่ต้องย้าย user ออกก่อน (supersede กฎเดิม "block until users moved")**. **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
 
 ---
 
@@ -24,7 +24,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 
 ## 2. กติกาต่อ Entity
 
-### 2.1–2.8 (คงเดิม — ปอนด์ล็อก, absorb จาก root deletion-policy · BOM = ★ อัปเดต 2026-07-29)
+### 2.1–2.8 (คงเดิม — ปอนด์ล็อก, absorb จาก root deletion-policy · BOM + Role = ★ อัปเดต 2026-07-29)
 | Entity | วิธี "ลบ" | เงื่อนไขหลัก (ล็อก) | สิทธิ์ | กู้คืน |
 |---|---|---|---|---|
 | **Customer** | soft delete (flag) | flag ได้เสมอ; PO เดิมเดินต่อ, ห้าม PO/QT/SO ใหม่; แนะนำ Disabled/Blacklist แทน | D + Approve(Sale Mgr) | Admin |
@@ -33,7 +33,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | **BOM** | **★ inactivate (Active/Inactive) — ไม่มี hard/soft-delete-flag แยก** | **ดู §2.4 (ขยาย):** Inactive → **บล็อกเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** + กันออกจาก Supply Planning; **PO/SO/QT/PRD/Batch/FG stock ที่วิ่งอยู่แล้วเดินต่อจนจบ**; snapshot ต่อได้; **รหัส BOM/FG แก้ไม่ได้ (create-only-lock)** | D (inactivate) / U (reactivate) + เหตุผล | Reactivate (U) |
 | **Supplier** | inactive/soft delete | ห้ามซื้อใหม่; Lot เดิมใช้ได้; snapshot ราคาคงอยู่; **create/edit/active-inactive/price-matrix = audit** | D | Admin |
 | **Contact** | soft delete | ห้ามถ้าเป็นผู้ติดต่อหลักคนเดียว (ตั้งคนใหม่ก่อน) | D | Admin |
-| **Role** | soft delete | **ห้ามลบจนย้าย user ออกหมด** (ไม่มี force-migrate) | Admin | Admin |
+| **Role** | **★ Disable (พักชั่วคราว) / Soft-delete (Deleted, recoverable)** | **ดู §2.14 (ขยาย):** ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น** (Disabled=reversible, Deleted=recoverable); **★ ไม่ต้องย้าย user ออกก่อน (supersede "block until moved")**; membership คงอยู่เพื่อ restore | Admin (disable/enable/restore) · **D** (soft-delete) | Restore (Admin) |
 | **PO/INV/DN/PR/GR/Shipment** | **void/ยกเลิก (ไม่ลบ)** | gapless — เลขคงอยู่; PO reopen คงเลข | D/Approve/Admin | — (คงอยู่) |
 | **PRD/Batch** | ยกเลิกตาม PO/SO | หลักฐาน GMP ห้ามหาย | ตาม order | — |
 
@@ -91,6 +91,19 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | "ลบ" snapshot | **ไม่มี / ไม่ deletable เดี่ยว** — อยู่กับ order เสมอ · ลบ/inactivate BOM/Supplier/Material ไม่กระทบ snapshot |
 | ใครมีสิทธิ์ | — (ไม่มี action ลบ) |
 
+### 2.14 ★ Role — Disable + Soft-delete (DECIDED 2026-07-29 — Settings review, ปอนด์)
+| ประเด็น | กติกา |
+|---|---|
+| ประเภท | master สิทธิ์ (RBAC) · 1 role → many users · **ไม่มี hard delete** |
+| **3 สถานะ + filter** | **Active** (grant permission) · **Disabled** (พักชั่วคราว, reversible) · **Deleted** (soft-delete, recoverable) — หน้า role list ค้นหา role ได้ + filter ตามสถานะ |
+| **Disable (ปิดใช้งาน)** | role = **Disabled** → **สมาชิกทุกคนเสีย permission ของ role นี้ทันที** (reversible) → **Enable** คืนสิทธิ์. ใช้พักสิทธิ์ชั่วคราว |
+| **Soft-delete (ลบ)** | role = **Deleted** + **เหตุผลบังคับ + audit** → สมาชิกเสีย permission เช่นกัน; **role ไม่ถูกลบจริง (retained)** → **Restore/undelete = Admin** คืน Active |
+| **★ ไม่ต้องย้าย user ออกก่อน — SUPERSEDE** | **แทนกฎเดิม "ห้ามลบ role จนย้าย user ออกหมด (no force-migrate)"** — Disable/Soft-delete ทำได้ทันทีแม้ role มีสมาชิก; **สมาชิกเสีย permission โดยกลไก** (Disabled/Deleted ไม่ grant). Admin **อาจ** ถอด user ราย ๆ จาก role's user list (optional, ไม่ใช่ precondition) |
+| **membership คงอยู่** | user ยังผูก role (เพื่อ Enable/Restore แล้วสิทธิ์กลับมา) — role ที่ Disabled/Deleted แค่ไม่ grant |
+| effective permission | = union ของ grant จาก role ที่ **Active** เท่านั้น (Disabled/Deleted ไม่ contribute) |
+| ใครมีสิทธิ์ | Disable/Enable/Restore/remove-user-from-role = **Settings.Admin** · Soft-delete = **Settings.D** · ทุก action audit + trace |
+> authoritative = `settings.md` §4b/§5 US-SET-01. **แทน** ถ้อยคำเดิม (root rbac-deletion) "Role soft delete · ห้ามลบจนย้าย user ออกหมด".
+
 ---
 
 ## 3. Matrix รวม (updated — เพิ่ม entity ใหม่)
@@ -102,7 +115,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | **BOM** | **★ inactivate (Active/Inactive)** | **Inactive บล็อกเปิด QT/PO/SO ใหม่ + กันออก Supply Planning**; งานที่วิ่งอยู่/FG stock เดินต่อ; snapshot ต่อได้; รหัสแก้ไม่ได้ | D (inactivate)/U (reactivate) | Reactivate |
 | Supplier | inactive/soft delete | ห้ามซื้อใหม่; audit ทุกการเปลี่ยน + price-matrix | D | Admin |
 | Contact | soft delete | ห้ามถ้าเป็นหลักคนเดียว | D | Admin |
-| Role | soft delete | ห้ามจนย้าย user ออกหมด | Admin | Admin |
+| **Role** | **★ Disable / Soft-delete (Active/Disabled/Deleted)** | **ทั้งสองแบบสมาชิกเสีย permission; ★ ไม่ต้องย้าย user ก่อน (supersede)**; membership คงอยู่; ค้นหา+filter สถานะ | Admin (disable/enable/restore) · D (soft-delete) | Restore (Admin) |
 | **Quotation (QT)** | **★ ยกเลิก (Cancel) ได้ทุกสถานะ** (edit=version, Confirmed=immutable) | gapless; status = Draft/Confirmed/Rejected(+Cancelled) — **ไม่มี Sent**; **PO = loose ref → ยกเลิก QT ไม่ cascade**; บันทึก activity-log + เหตุผล | D/Approve | Admin (undo) |
 | **SO** | **void** | gapless; release FG จอง/ยกเลิก PRD ที่ยังไม่เริ่ม | D/Approve | — |
 | PO/INV/DN/PR/GR/Shipment | **void** | gapless | D/Approve/Admin | — |
@@ -114,15 +127,16 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 ---
 
 ## 4. อ้างอิงจาก module docs (ให้ module ชี้มาที่นี่)
-- `customer.md` §soft-delete · `quotation.md` §4/§8 (cancel-anytime) · `so.md` §cancel · **`bom.md` §2b/§5c (inactivate + inactive blocks sales)** · `supplier.md`/`stock.md` (FG adjust/loss) · `settings.md` (ลบ Sale/Role, bit D/Admin) · `pr.md`/`goods-receipt.md`/`invoice.md`/`shipping.md` (void เอกสารการค้า) · `non-functional.md` §10 (soft-delete + reference-guard baseline).
+- `customer.md` §soft-delete · `quotation.md` §4/§8 (cancel-anytime) · `so.md` §cancel · **`bom.md` §2b/§5c (inactivate + inactive blocks sales)** · `supplier.md`/`stock.md` (FG adjust/loss) · **`settings.md` §4b/§5 (ลบ Sale/Role disable+soft-delete, bit D/Admin)** · `pr.md`/`goods-receipt.md`/`invoice.md`/`shipping.md` (void เอกสารการค้า) · `non-functional.md` §10 (soft-delete + reference-guard baseline).
 
 ## 5. Open questions
-**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง "QT abandon = void-only?" = **ปิดแล้ว** — ปอนด์ตัดสิน **Quotation ยกเลิกได้ทุกสถานะ + PO loose reference + ไม่ cascade + activity-log** (§2.9). **BOM = inactivate (ไม่ลบถาวร) + inactive บล็อก QT/PO/SO** = ปอนด์ตัดสินแล้ว (§2.4). กติกา entity ที่เหลือ derive จากหลักการที่ล็อก.
+**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง "QT abandon = void-only?" = **ปิดแล้ว** (§2.9). **BOM = inactivate + inactive บล็อก QT/PO/SO** = ปิดแล้ว (§2.4). **★ Role disable+soft-delete + supersede "move users first"** = ปอนด์ตัดสินแล้ว (§2.14) — Disable/Soft-delete ได้ทันทีแม้มีสมาชิก, สมาชิกเสีย permission โดยกลไก. กติกา entity ที่เหลือ derive จากหลักการที่ล็อก.
 
 ## 6. Module changelog
 - **Folded:** root `deletion-policy.md` (หลักการ 7 ข้อ + entity 2.1–2.8) verbatim ในความหมาย.
 - **Added (derive):** SO (void=PO twin), FG Batch (ห้ามลบ, ledger adjust/loss), OEM surplus (ledger), cost snapshot (immutable).
 - **★ DECIDED (2026-07-29) — Quotation §2.9:** ยกเลิกได้ **ทุกสถานะ** · PO = **loose reference** · ยกเลิก QT **ไม่ cascade** · **activity-log** + gapless · **แทน default เดิม (void-only) + ปิด open question §5**.
 - **★ อัปเดต (2026-07-29 — Quotation module review):** สถานะ Convert-to-PO **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** (immutable, ตั้งทันทีตอน Convert).
-- **★ REVERTED (2026-07-29 — Pond):** ถอดสถานะ **"ส่งแล้ว (Sent)"** ออกจาก QT lifecycle ทั้งหมด → รายการสถานะที่ยกเลิกได้ = **Draft / Confirmed / Rejected** (§2.9, matrix). การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (sync `quotation.md` §4 + `entity-status-map.md` §1.1b).
-- **★ DECIDED (2026-07-29 — BOM module review, ปอนด์) — §2.4:** **BOM ลบถาวรไม่ได้ → inactivate (Active/Inactive)** · **Inactive บล็อกเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG + กันออกจาก Supply Planning** · **ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** · แยกจาก block ลูกค้า. อัปเดต BOM row (§2.1-2.8 table + matrix §3), เพิ่ม §2.4 dedicated, cross-ref `bom.md`/`quotation.md`/`po.md`/`so.md`/`supply-planning.md`/`entity-status-map.md`. **RM/BOM รหัส create-only-lock** ระบุใน Material/BOM row.
+- **★ REVERTED (2026-07-29 — Pond):** ถอดสถานะ **"ส่งแล้ว (Sent)"** ออกจาก QT lifecycle ทั้งหมด → รายการสถานะที่ยกเลิกได้ = **Draft / Confirmed / Rejected** (§2.9, matrix).
+- **★ DECIDED (2026-07-29 — BOM module review, ปอนด์) — §2.4:** **BOM ลบถาวรไม่ได้ → inactivate (Active/Inactive)** · **Inactive บล็อกเปิด QT/PO/SO ใหม่ + กันออกจาก Supply Planning** · **ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** · แยกจาก block ลูกค้า.
+- **★ DECIDED (2026-07-29 — Settings module review, ปอนด์) — §2.14 (Role):** role มี 3 สถานะ **Active/Disabled/Deleted** · **Disable = พักชั่วคราว (reversible)**, **Soft-delete = recoverable** · ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น** · **★ SUPERSEDE กฎเดิม "ห้ามลบ role จนย้าย user ออกหมด"** → ทำได้ทันทีแม้มีสมาชิก (member เสีย permission โดยกลไก); ถอด user ราย ๆ = optional · membership คงอยู่เพื่อ restore · ค้นหา+filter สถานะ. อัปเดต Role row (§2.1-2.8 + matrix §3), เพิ่ม §2.14 dedicated, cross-ref `settings.md` §4b/§5.
