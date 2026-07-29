@@ -139,6 +139,28 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+/* G7 stock search-in-dropdown (RM/Lot/FG · reuse of G4 pattern) */
+.ssdd{position:relative}
+.ssdd-tg{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;background:#fff;cursor:pointer;font-size:14px}
+.ssdd-tg:hover{border-color:var(--primary)}
+.ssdd-tg .cur{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.ssdd-pan{display:none;position:absolute;left:0;right:0;top:44px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:40;overflow:hidden}
+.ssdd.open .ssdd-pan{display:block}
+.ssdd-sr{padding:10px;border-bottom:1px solid var(--border2);position:relative}
+.ssdd-sr .si{position:absolute;left:22px;top:20px;color:var(--text3)}
+.ssdd-sr .inp{padding-left:34px}
+.ssdd-ls{max-height:260px;overflow:auto}
+.ssdd-op{padding:9px 14px;border-bottom:1px solid var(--border2);cursor:pointer}
+.ssdd-op:last-child{border-bottom:none}
+.ssdd-op:hover,.ssdd-op.sel{background:var(--primary-bg)}
+.ssdd-op .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ssdd-op .code{font-size:12px;color:var(--primary);font-weight:600;background:var(--primary-bg);border-radius:5px;padding:1px 7px}
+.ssdd-none{padding:14px;text-align:center;color:var(--text3);font-size:13px}
+.subtabs{display:inline-flex;gap:4px;background:#EEF1F4;border-radius:10px;padding:4px;margin-bottom:16px}
+.subtabs button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--text2);padding:7px 14px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.subtabs button.on{background:#fff;color:var(--primary);box-shadow:0 1px 3px rgba(16,25,40,.12)}
+.dirtag{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px}
+.dirtag.minus{color:var(--error);background:#FCEAEA}.dirtag.plus{color:var(--success);background:#E6F5EC}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class="active"><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>สต็อก (RM + FG)</b></div></div>
@@ -167,13 +189,17 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="alert alert-warn" style="margin-top:12px;font-size:13px"><span class="ai">⚠️</span><div><b>ยอดติดลบ 2 แบบ (เตือน ไม่บล็อก):</b> <span class="badge b-warning" style="height:20px">จองเกิน</span> = <b>ใช้ได้ติดลบ</b> (PO จองเกินของในคลัง แต่ของยังอยู่) → รอรับเข้าเพิ่ม · <span class="badge b-error" style="height:20px">ติดลบ (รอรับเข้า)</span> = <b>คงคลังติดลบ</b> (ผลิตตัดของจริงเกินกายภาพ) → <a href="goods-receipt.html">รับเข้าคลัง</a> บวกกลับชดเชยก่อน (retro-link FIFO)</div></div>
     <p class="tiny" style="margin-top:12px">วัตถุดิบที่ "ยังไม่ตั้งเกณฑ์เตือน" ระบบจะ<b>ไม่เตือน</b>ใกล้หมด จนกว่าจะตั้งค่า · สถานะที่ตั้งแล้วไปแสดงบน <a href="dashboard.html">Stock Dashboard</a> อัตโนมัติ</p>
   </div></div>
-  <div class="card"><div class="card-h"><h3>เพิ่มวัตถุดิบใหม่</h3></div><div class="card-b">
+  <div class="card"><div class="card-h"><h3>เพิ่มวัตถุดิบใหม่</h3><span class="badge b-neutral plain" style="height:22px">Master · on_hand เริ่ม 0</span></div><div class="card-b">
+    <div class="field"><label>รหัสวัตถุดิบ (RM code) <span class="req">*</span> <span class="tiny" style="font-weight:400">(ผู้ใช้ตั้งเอง · ต้องไม่ซ้ำ)</span></label>
+      <input class="inp tnum" style="border-color:var(--error);box-shadow:0 0 0 3px #FCEAEA" value="RM-005">
+      <div class="help err">⛔ รหัสนี้ถูกใช้แล้ว (กลีเซอรีน · RM-005) — กรุณาใช้รหัสอื่น</div>
+      <div class="help">พิมพ์รหัสเองได้อิสระ · ระบบตรวจ <b>ซ้ำ (unique)</b> ทันทีก่อนบันทึก · รหัส RM ตั้งเอง (ต่างจากรหัส FG/BOM ที่ระบบสร้างอัตโนมัติ)</div></div>
     <div class="field"><label>ชื่อวัตถุดิบ <span class="req">*</span></label><input class="inp" placeholder="เช่น ไฮยาลูรอนิก แอซิด"></div>
-    <div class="grid2"><div class="field"><label>หน่วยนับ (UOM) <span class="req">*</span></label><select class="sel"><option>กก.</option><option>ลิตร</option><option>ชิ้น</option><option>+ เพิ่มหน่วยใหม่…</option></select></div>
-     <div class="field"><label>รหัส</label><input class="inp" value="RM-033 (อัตโนมัติ)" disabled></div></div>
+    <div class="field"><label>หน่วยนับ (UOM) <span class="req">*</span></label><select class="sel"><option>กก.</option><option>ลิตร</option><option>ชิ้น</option><option>+ เพิ่มหน่วยใหม่…</option></select></div>
     <div class="field"><label>เกณฑ์ "ใกล้หมด" <span class="tiny" style="font-weight:400">(ไม่บังคับ)</span></label><div style="display:flex;gap:10px"><select class="sel" style="flex:1"><option>ยังไม่ตั้ง (ไม่เตือน)</option><option>เป็นเปอร์เซ็นต์ (%)</option><option>เป็นจำนวน</option></select><input class="inp tnum" style="width:90px" placeholder="—"></div><div class="help">ไม่มีค่าเริ่มต้น — ถ้าไม่ตั้ง ระบบจะไม่เตือนใกล้หมดสำหรับวัตถุดิบนี้</div></div>
     <div class="grid2"><div class="field"><label>ราคาซื้อเริ่มต้น</label><input class="inp tnum" placeholder="0.00"><div class="help">ตั้งเป็น 0 ได้</div></div>
      <div class="field"><label>ราคาขาย</label><input class="inp tnum" placeholder="0.00"><div class="help">ใช้เป็น default ตอนขายวัตถุดิบตรงใน PO · <b>ตั้งเป็น 0 ได้</b></div></div></div>
+    <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>สร้างเป็น <b>master วัตถุดิบ</b> เท่านั้น — ยอด <b>คงคลังเริ่มต้น = 0</b> · ของจริงเข้าคลังผ่าน <a href="goods-receipt.html">รับเข้าคลัง (GR)</a> (gen Lot) เท่านั้น · การสร้างถูก <b>audit + ปรากฏบน trace</b> (entity=RM · action=create · ใคร/เมื่อ — D15)</div></div>
     <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกวัตถุดิบ</button></div>
   </div></div>
  </div>
@@ -181,16 +207,69 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="card"><div class="card-h"><h3>การเคลื่อนไหวสต็อกวัตถุดิบ (Ledger · reason + source)</h3><span class="tiny">append-only · D15 · GR/reserve/consume/loss/return/adjust</span></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl" style="min-width:600px"><thead><tr><th>เวลา</th><th>วัตถุดิบ</th><th>movement</th><th class="num">จำนวน</th><th>เหตุผล</th><th>แหล่งที่มา</th></tr></thead><tbody>
    <tr><td class="tnum">08/07 10:30</td><td>แอลกอฮอล์</td><td><span class="badge b-processing" style="height:20px">GR (+)</span></td><td class="num tnum">+200</td><td>รับเข้า (ชดเชยติดลบ −30 retro-FIFO)</td><td class="tiny"><a href="goods-receipt.html">Lot L-TT-ALC-2607 · GR-…008 · PR-000028</a></td></tr>
    <tr style="background:#FFF7F7"><td class="tnum">08/07 15:00</td><td>น้ำหอม</td><td><span class="badge b-error" style="height:20px">return (−)</span></td><td class="num tnum" style="color:var(--error)">−5</td><td>กลิ่นผิดเพี้ยน (คืน supplier)</td><td class="tiny"><a href="return.html">Lot L-ARM-FRG-2606 · RT-…0007 · อโรมา เฮ้าส์</a></td></tr>
-   <tr style="background:#FFF7F7"><td class="tnum">08/07 11:20</td><td>ไทเทเนียมไดออกไซด์</td><td><span class="badge b-error" style="height:20px">loss (−)</span></td><td class="num tnum" style="color:var(--error)">−2</td><td>ผงหกระหว่างชั่ง</td><td class="tiny">warehouse (RM)</td></tr>
+   <tr style="background:#FFF7F7"><td class="tnum">08/07 11:20</td><td>ไทเทเนียมไดออกไซด์</td><td><span class="badge b-error" style="height:20px">loss (−)</span></td><td class="num tnum" style="color:var(--error)">−2</td><td>ผงหกระหว่างชั่ง</td><td class="tiny">warehouse (RM · Lot L-TT-TIO-2606)</td></tr>
+   <tr style="background:#F3FBF6"><td class="tnum">07/07 16:10</td><td>กลีเซอรีน</td><td><span class="badge b-success" style="height:20px">adjust (+)</span></td><td class="num tnum" style="color:var(--success)">+3</td><td>นับสต็อกพบเพิ่ม (ปรับยอด)</td><td class="tiny">warehouse-adjust</td></tr>
    <tr><td class="tnum">06/07 08:40</td><td>กลีเซอรีน</td><td><span class="badge b-neutral" style="height:20px">CONSUME (−)</span></td><td class="num tnum">−8</td><td>ตัดจริงตอนเริ่มผลิต (FIFO)</td><td class="tiny"><a href="production.html">B-PO-…181-1-1 · PRD-091</a></td></tr>
    <tr><td class="tnum">05/07 09:15</td><td>ไทเทเนียมไดออกไซด์</td><td><span class="badge b-neutral" style="height:20px">reserve (−ใช้ได้)</span></td><td class="num tnum">−2.5</td><td>จอง PO ยืนยัน</td><td class="tiny"><a href="po-detail.html">PO-202607-000193</a></td></tr>
   </tbody></table></div><div style="padding:12px 16px"><div class="notify">↩️ <b>Return จาก <a href="return.html">ใบคืนของ</a></b> โผล่เป็น movement <code>return (−)</code> ที่นี่ด้วย (S2) · ทุก movement มี <b>เหตุผล + แหล่งที่มา</b> ลิงก์ Lot/PR/PO/PRD — ตอบได้เสมอว่าทำไมยอดขึ้น/ลง (D15)</div></div></div></div>
-  <div class="card"><div class="card-h"><h3>บันทึก loss / ปรับยอดวัตถุดิบ (RM)</h3></div><div class="card-b">
-    <div class="field"><label>วัตถุดิบ / Lot <span class="req">*</span></label><select class="sel"><option>ไทเทเนียมไดออกไซด์ · L-TT-TIO-2606</option><option>กลีเซอรีน · L-GLY-2506</option><option>น้ำหอม · L-ARM-FRG-2606</option></select></div>
-    <div class="grid2"><div class="field"><label>ประเภท</label><select class="sel"><option>loss (ตัดคงคลัง)</option><option>ปรับยอด (adjust)</option></select></div><div class="field"><label>จำนวน <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 2"></div></div>
-    <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น ผงหกระหว่างชั่ง / นับสต็อกคลาดเคลื่อน"></textarea></div>
-    <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>loss ตัด on_hand อย่างเดียว · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> (D15) · <b>คืนวัตถุดิบ (Return) ทำที่หน้า <a href="return.html">ใบคืนของ</a></b> แล้วจะโผล่ใน ledger นี้อัตโนมัติเป็น <code>return (−)</code></div></div>
-    <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (ตัดคงคลัง)</button></div>
+  <div class="card"><div class="card-h"><h3>ปรับสต็อกวัตถุดิบ (RM)</h3></div><div class="card-b">
+    <div class="subtabs"><button class="on" onclick="rmAct(0,this)">📉 ตัดคงคลัง (Loss) <span class="dirtag minus">−</span></button><button onclick="rmAct(1,this)">📈 ปรับยอด (Adjust) <span class="dirtag plus">+</span></button></div>
+    <!-- Loss (−) -->
+    <div id="rm-loss">
+      <div class="field"><label>วัตถุดิบ <span class="req">*</span> <span class="tiny" style="font-weight:400">(ค้นได้ทั้งชื่อและรหัส)</span></label>
+        <div class="ssdd" id="ssdd-rm-loss">
+          <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><b>ไทเทเนียมไดออกไซด์</b> <span class="ssdd-op code" style="padding:1px 7px">RM-020</span></span><span style="color:var(--text3)">▾</span></div>
+          <div class="ssdd-pan">
+            <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นชื่อ หรือ รหัส เช่น 'กลีเซอรีน' หรือ 'RM-005'" oninput="ssFilter(this)"></div>
+            <div class="ssdd-ls">
+              <div class="ssdd-op sel" data-s="ไทเทเนียมไดออกไซด์ RM-020" onclick="ssPick(this,'ไทเทเนียมไดออกไซด์','RM-020')"><div class="nm"><b>ไทเทเนียมไดออกไซด์</b> <span class="code">RM-020</span></div><div class="tiny">คงคลัง 40 กก. · ใช้ได้ −15</div></div>
+              <div class="ssdd-op" data-s="กลีเซอรีน RM-005" onclick="ssPick(this,'กลีเซอรีน','RM-005')"><div class="nm"><b>กลีเซอรีน</b> <span class="code">RM-005</span></div><div class="tiny">คงคลัง 66 กก. · ใช้ได้ 46</div></div>
+              <div class="ssdd-op" data-s="วิตามินซี RM-014" onclick="ssPick(this,'วิตามินซี','RM-014')"><div class="nm"><b>วิตามินซี</b> <span class="code">RM-014</span></div><div class="tiny">คงคลัง 12 กก. · ใช้ได้ 8</div></div>
+              <div class="ssdd-op" data-s="น้ำหอม RM-030" onclick="ssPick(this,'น้ำหอม','RM-030')"><div class="nm"><b>น้ำหอม</b> <span class="code">RM-030</span></div><div class="tiny">คงคลัง 15 กก. · ใช้ได้ 15</div></div>
+              <div class="ssdd-none" style="display:none">ไม่พบวัตถุดิบที่ตรงกับคำค้น</div>
+            </div>
+          </div>
+        </div></div>
+      <div class="field"><label>Lot <span class="tiny" style="font-weight:400">(ไม่บังคับ)</span></label>
+        <div class="ssdd" id="ssdd-lot-loss">
+          <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><span class="muted">ไม่ระบุ Lot → ตัดแบบ FIFO (lot เก่าก่อน)</span></span><span style="color:var(--text3)">▾</span></div>
+          <div class="ssdd-pan">
+            <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้น Lot เช่น 'L-TT-TIO-2606'" oninput="ssFilter(this)"></div>
+            <div class="ssdd-ls">
+              <div class="ssdd-op" data-s="ไม่ระบุ FIFO" onclick="ssPick(this,'ไม่ระบุ Lot → ตัดแบบ FIFO (lot เก่าก่อน)','')"><div class="nm"><b>ไม่ระบุ Lot</b> <span class="tiny">— ตัดแบบ FIFO (lot เก่าก่อน)</span></div></div>
+              <div class="ssdd-op" data-s="L-TT-TIO-2606" onclick="ssPick(this,'L-TT-TIO-2606','')"><div class="nm"><b>L-TT-TIO-2606</b></div><div class="tiny">คงเหลือ 25 กก. · รับ 05/06</div></div>
+              <div class="ssdd-op" data-s="L-TT-TIO-2607" onclick="ssPick(this,'L-TT-TIO-2607','')"><div class="nm"><b>L-TT-TIO-2607</b></div><div class="tiny">คงเหลือ 15 กก. · รับ 08/07</div></div>
+              <div class="ssdd-none" style="display:none">ไม่พบ Lot ที่ตรงกับคำค้น</div>
+            </div>
+          </div>
+        </div>
+        <div class="help">มี Lot → ตัด lot นั้นเจาะจง (GMP) · ไม่มี Lot → ตัด RM แบบ FIFO (lot เก่าก่อน)</div></div>
+      <div class="field"><label>จำนวนที่ตัด <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 2"></div>
+      <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น ผงหกระหว่างชั่ง / เสียหายระหว่างจัดเก็บ"></textarea></div>
+      <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>ตัด on_hand อย่างเดียว (−) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · ledger source = <code>warehouse</code> · <b>audit + trace</b> (D15) · <b>คืน supplier</b> ทำที่หน้า <a href="return.html">ใบคืนของ</a> (โผล่ ledger เป็น <code>return (−)</code>)</div></div>
+      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
+    </div>
+    <!-- Adjust (+) -->
+    <div id="rm-adjust" style="display:none">
+      <div class="field"><label>วัตถุดิบ <span class="req">*</span> <span class="tiny" style="font-weight:400">(ค้นได้ทั้งชื่อและรหัส)</span></label>
+        <div class="ssdd" id="ssdd-rm-adj">
+          <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><span class="muted">— เลือกวัตถุดิบ (ค้นชื่อหรือรหัส) —</span></span><span style="color:var(--text3)">▾</span></div>
+          <div class="ssdd-pan">
+            <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นชื่อ หรือ รหัส เช่น 'กลีเซอรีน' หรือ 'RM-005'" oninput="ssFilter(this)"></div>
+            <div class="ssdd-ls">
+              <div class="ssdd-op" data-s="ไทเทเนียมไดออกไซด์ RM-020" onclick="ssPick(this,'ไทเทเนียมไดออกไซด์','RM-020')"><div class="nm"><b>ไทเทเนียมไดออกไซด์</b> <span class="code">RM-020</span></div><div class="tiny">คงคลัง 40 กก.</div></div>
+              <div class="ssdd-op" data-s="กลีเซอรีน RM-005" onclick="ssPick(this,'กลีเซอรีน','RM-005')"><div class="nm"><b>กลีเซอรีน</b> <span class="code">RM-005</span></div><div class="tiny">คงคลัง 66 กก.</div></div>
+              <div class="ssdd-op" data-s="วิตามินซี RM-014" onclick="ssPick(this,'วิตามินซี','RM-014')"><div class="nm"><b>วิตามินซี</b> <span class="code">RM-014</span></div><div class="tiny">คงคลัง 12 กก.</div></div>
+              <div class="ssdd-none" style="display:none">ไม่พบวัตถุดิบที่ตรงกับคำค้น</div>
+            </div>
+          </div>
+        </div>
+        <div class="help">ปรับยอดเพิ่มระดับ RM (ระบบจัดการ genealogy ราย lot ให้)</div></div>
+      <div class="field"><label>จำนวนที่เพิ่ม <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 5"></div>
+      <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น นับสต็อกพบเพิ่ม / ปรับยอดจากการตรวจนับ"></textarea></div>
+      <div class="alert alert-ok" style="font-size:13px"><span class="ai">✅</span><div><b>เพิ่ม on_hand อย่างเดียว (+) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · ledger source = <code>warehouse-adjust</code> · <b>audit + trace</b> (D15)</div></div>
+      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
+    </div>
   </div></div>
  </div>
  </div>
@@ -217,12 +296,33 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <tr><td class="tnum">10/07 11:10</td><td><span class="badge b-neutral" style="height:20px">reserve (−ใช้ได้)</span></td><td class="num tnum">−50</td><td>จอง SO-030</td><td class="tiny"><a href="so-detail.html">SO-202607-000030</a></td></tr>
     </tbody></table></div><div style="padding:12px 16px"><div class="notify">📦 <b>surplus</b> (ผลิตเกิน OEM) เพิ่มเข้า FG อัตโนมัติตอน "พร้อมส่ง" + <b>remark</b> "สต็อกเพิ่มจากการผลิตเกิน" — <b>ไม่ใช่ approval</b> แค่แจ้งคลัง (D13)</div></div></div></div>
    <div class="card"><div class="card-h"><h3>บันทึก loss / ปรับยอด FG</h3></div><div class="card-b">
-     <div class="field"><label>สินค้า / Batch <span class="req">*</span></label><select class="sel"><option>FG-101 · B-PRD-…101-1</option><option>FG-101 · B-PRD-…101-2</option><option>FG-150 · B-PRD-…150-1</option></select></div>
-     <div class="grid2"><div class="field"><label>ประเภท</label><select class="sel"><option>loss (ตัด on_hand)</option><option>ปรับยอด (adjust)</option></select></div><div class="field"><label>จำนวน <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 12"></div></div>
+     <div class="field"><label>สินค้าสำเร็จรูป (FG) <span class="req">*</span> <span class="tiny" style="font-weight:400">(ค้นได้ทั้งชื่อและรหัส · รหัส = รหัส BOM)</span></label>
+       <div class="ssdd" id="ssdd-fg">
+         <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><b>เอสเซนส์ ไบรท์ เซรั่ม</b> <span class="ssdd-op code" style="padding:1px 7px">FG-101</span></span><span style="color:var(--text3)">▾</span></div>
+         <div class="ssdd-pan">
+           <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นชื่อ หรือ รหัส FG เช่น 'ไบรท์ เซรั่ม' หรือ 'FG-101'" oninput="ssFilter(this)"></div>
+           <div class="ssdd-ls">
+             <div class="ssdd-op sel" data-s="เอสเซนส์ ไบรท์ เซรั่ม FG-101" onclick="ssPick(this,'เอสเซนส์ ไบรท์ เซรั่ม','FG-101')"><div class="nm"><b>เอสเซนส์ ไบรท์ เซรั่ม</b> <span class="code">FG-101</span></div><div class="tiny">คงคลัง 1,200 ขวด · 2 Batch</div></div>
+             <div class="ssdd-op" data-s="ครีมกันแดด SPF50 FG-202" onclick="ssPick(this,'ครีมกันแดด SPF50','FG-202')"><div class="nm"><b>ครีมกันแดด SPF50</b> <span class="code">FG-202</span></div><div class="tiny">คงคลัง 20 ขวด · OEM surplus</div></div>
+             <div class="ssdd-op" data-s="เอสเซนส์ ลิปบาล์ม FG-150" onclick="ssPick(this,'เอสเซนส์ ลิปบาล์ม','FG-150')"><div class="nm"><b>เอสเซนส์ ลิปบาล์ม</b> <span class="code">FG-150</span></div><div class="tiny">คงคลัง 1,500 หลอด</div></div>
+             <div class="ssdd-op" data-s="เอสเซนส์ ซันสกรีน SPF50 FG-204" onclick="ssPick(this,'เอสเซนส์ ซันสกรีน SPF50','FG-204')"><div class="nm"><b>เอสเซนส์ ซันสกรีน SPF50</b> <span class="code">FG-204</span></div><div class="tiny">คงคลัง 2,900 หลอด · 2 Batch</div></div>
+             <div class="ssdd-none" style="display:none">ไม่พบ FG ที่ตรงกับคำค้น</div>
+           </div>
+         </div>
+       </div></div>
+     <div class="grid2"><div class="field"><label>ประเภท</label><select class="sel"><option>loss (ตัด on_hand) −</option><option>ปรับยอด (adjust) ±</option></select></div><div class="field"><label>จำนวน <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 12"></div></div>
      <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น ขวดแตกระหว่างจัดเก็บ / นับสต็อกคลาดเคลื่อน"></textarea></div>
-     <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>loss ตัด on_hand อย่างเดียว · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> (D15) · แก้ได้ทั้งหน้านี้และหน้า <a href="production.html">การผลิต</a> · ของไม่ครบตามสั่ง = <b>ไม่ผลิตซ้ำอัตโนมัติ</b> (คนกด "ผลิตซ้ำ" เอง)</div></div>
-     <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (ตัด on_hand)</button></div>
+     <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>ปรับยอด FG (±) · loss (−) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · loss ตัด on_hand ราย Batch แบบ <b>FIFO</b> · ledger source = <code>warehouse</code> · <b>audit + trace</b> (D15) · แก้ได้ทั้งหน้านี้และหน้า <a href="production.html">การผลิต</a></div></div>
+     <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
    </div></div>
   </div>
  </div>
- </div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ </div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav>
+<script>
+function rmAct(i,el){el.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('rm-loss').style.display=i===0?'block':'none';document.getElementById('rm-adjust').style.display=i===1?'block':'none';}
+function ssTog(tg){var dd=tg.closest('.ssdd');var wasOpen=dd.classList.contains('open');document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});if(!wasOpen){dd.classList.add('open');var sr=dd.querySelector('.ssdd-sr .inp');if(sr){sr.value='';ssFilter(sr);setTimeout(function(){sr.focus()},0);}}}
+function ssFilter(inp){var q=inp.value.trim().toLowerCase();var ls=inp.closest('.ssdd-pan').querySelector('.ssdd-ls');var n=0;ls.querySelectorAll('.ssdd-op').forEach(function(op){var hit=(op.getAttribute('data-s')||'').toLowerCase().indexOf(q)>-1;op.style.display=hit?'block':'none';if(hit)n++;});var none=ls.querySelector('.ssdd-none');if(none)none.style.display=n?'none':'block';}
+function ssPick(op,name,code){var dd=op.closest('.ssdd');dd.querySelectorAll('.ssdd-op').forEach(function(o){o.classList.remove('sel')});op.classList.add('sel');var cur=dd.querySelector('.ssdd-tg .cur');cur.innerHTML=code?('<b>'+name+'</b> <span class="ssdd-op code" style="padding:1px 7px">'+code+'</span>'):('<b>'+name+'</b>');dd.classList.remove('open');}
+document.addEventListener('click',function(e){if(!e.target.closest('.ssdd'))document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});});
+</script>
+</body></html>

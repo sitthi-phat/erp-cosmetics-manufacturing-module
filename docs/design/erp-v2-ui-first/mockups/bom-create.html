@@ -151,6 +151,11 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="pagehead"><div><h1>สร้างสูตรใหม่</h1><div class="sub">สร้างสูตร BOM ของสินค้าใหม่ (ฟอร์มว่าง · คนละหน้ากับแก้ไขสูตรเดิม) · เลือกวัตถุดิบเข้าสูตร → ระบบคำนวณราคาทุน · ราคาขายบังคับกรอก</div></div><a class="btn btn-ghost" href="bom.html">← ย้อนกลับ</a></div>
  <div style="max-width:960px">
   <div class="card"><div class="card-h"><h3>ข้อมูลสินค้า</h3></div><div class="card-b">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:12px 16px;margin-bottom:18px">
+      <div><div class="tiny" style="color:#0B5754;text-transform:uppercase;letter-spacing:.04em">รหัส BOM / FG (auto)</div>
+        <div style="font-size:20px;font-weight:700;color:#0B5754;font-variant-numeric:tabular-nums">FG-233 <span class="badge b-neutral plain" style="height:20px;background:#fff">🔒 สร้างอัตโนมัติ</span></div></div>
+      <div class="tiny" style="color:#0B5754;flex:1;min-width:200px">1 BOM = 1 FG (1:1 · แชร์รหัสเดียว · D11) · ระบบสร้างให้ <b>อัตโนมัติเมื่อบันทึก · แก้ไม่ได้</b> (ต่างจากรหัส RM ที่ผู้ใช้ตั้งเอง) · FG <b>ค้นได้ทั้งชื่อและรหัส</b>ในคลัง</div>
+    </div>
     <div class="grid3"><div class="field"><label>ชื่อสินค้า <span class="req">*</span></label><input class="inp" placeholder="เช่น เซรั่มไฮยาลูรอน"></div>
      <div class="field"><label>ขนาด/บรรจุ (ต่อ 1 หน่วย) <span class="req">*</span></label><input class="inp" placeholder="เช่น ขวด 30ml"></div>
      <div class="field"><label>หมวดสินค้า</label><select class="sel"><option>สกินแคร์</option><option>เมคอัพ</option><option>ผลิตภัณฑ์เส้นผม</option></select></div></div>
