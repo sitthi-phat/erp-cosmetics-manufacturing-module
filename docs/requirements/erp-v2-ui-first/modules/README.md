@@ -4,7 +4,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** (existing-good absorb + delta ใหม่) · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29)
 
 ## สรุปภาษาไทย
-เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม** (requirement เดิมที่ดี + ของใหม่ รวมเข้าด้วยกัน). รอบล่าสุดเพิ่ม **`non-functional.md` (NFR รวม+อัปเดตสู่ scope ใหม่)** และ **`deletion-policy.md` (fold กติกาลบเดิม + entity ใหม่ Quotation/SO/FG Batch/OEM surplus/cost snapshot)** เข้าแพ็กเกจ ให้ md / system / mockup เป็นความจริงเดียว. ก่อนหน้านี้ absorb requirement เดิมจาก functional-spec (BA US/AC), cross-cutting, entity-status-map, status-journeys, stock-reservation, deletion-policy, brief, ADRs, scheduled-jobs และเพิ่ม module ที่ยังขาด (Platform/Home/Dashboard/GR/PR/Supplier/QC/Shipping/Return/Invoice/Traceability/Settings). ฝังกฎ D1–D18 + ของใหม่ปอนด์ + แก้กติกาเก่าที่ผิด. **แพ็กเกจ modules/ นี้ supersede** functional-spec module pages + root deletion-policy เดิม (คงไว้เป็น historical reference). **ไม่มี business-gap ค้าง** — มี 1 confirm NFR (Supply-Planning proactive alert) + 1 confirm deletion (QT abandon) แบบ non-blocking → **READY_FOR_UX_UI** (mockup ทำต่อ parallel).
+เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม** (requirement เดิมที่ดี + ของใหม่ รวมเข้าด้วยกัน). Document Hub จัดเป็น 2 ก้อนหลัก **① Functional** (จัดตามแถบเมนูแอป) และ **② Non-Functional**, ตามด้วย Architecture / Mockups / **⑤ Archive (หน้าเก่า superseded, collapsed)** — หมวด ①/② ลิงก์เฉพาะภายในแพ็กเกจ ไม่เด้งออกไปหน้าเก่า. รอบล่าสุดเพิ่ม **`non-functional.md`** และ **`deletion-policy.md` (fold + entity ใหม่)** เข้าแพ็กเกจ. ก่อนหน้านี้ absorb requirement เดิมจาก functional-spec (BA US/AC), cross-cutting, entity-status-map, status-journeys, stock-reservation, deletion-policy, brief, ADRs, scheduled-jobs และเพิ่ม module ที่ยังขาด (Platform/Home/Dashboard/GR/PR/Supplier/QC/Shipping/Return/Invoice/Traceability/Settings). **แพ็กเกจ modules/ นี้ supersede** functional-spec module pages + root deletion-policy (คงไว้เป็น historical reference ใน Archive). **ไม่มี business-gap ค้าง** — มี 2 confirm non-blocking (SP proactive alert, QT abandon) → **READY_FOR_UX_UI** (mockup ทำต่อ parallel).
 
 ---
 
@@ -15,39 +15,39 @@ docs/requirements/erp-v2-ui-first/modules/
   README.md                  ← ไฟล์นี้ (index + D-rule spine + changelog + source-of-truth + old→new map + global rules)
   permission-matrix.md       ← capability → module → action/button (รวมทุก module, +3 module ใหม่)
 
-  # System-wide / Governance (ใหม่รอบ NFR)
+  # System-wide / Governance (Non-Functional)
   non-functional.md          ← NFR รวม: perf/auth-session/audit/backup-infra/data-format/jobs J1–J7/noti/search/responsive/soft-delete/reliability
   deletion-policy.md         ← (folded) soft-delete/void baseline + entity เดิม + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot)
 
-  # Platform & Navigation
+  # Platform & Navigation (Functional · ระบบ)
   platform.md                ← login local+Google · session 24h/06:00 · notification outbox+read-bit · global search · responsive+guard
   home.md                    ← task inbox ตามสิทธิ์ · quick actions · onboarding
   dashboard.md               ← 7 แผนก × 29 tile · event/state · date filter · drill · permission-based
 
-  # Sales & Customer (OEM / Own-Brand)
+  # Sales & Customer (Functional · งานขาย/Order)
   customer.md
   quotation.md               ← OEM Quotation (create/edit/convert-to-PO)
   po.md                      ← OEM Purchase Order
   so.md                      ← Own-Brand Sales Order (sell-from-stock + produce-to-stock)
 
-  # Supply Planning & Production
+  # Supply Planning & Production (Functional · ผลิต&คุณภาพ)
   bom.md                     ← BOM + other-cost + TYPE(OEM/FG) + Supply-Planning config
   supply-planning.md         ← Demand & Production Cover + FORMULA SUMMARY (Pond review)
   production.md              ← PRD/Batch + actual-qty/surplus + queue search/filter
   qc.md                      ← ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain
 
-  # Inventory & Procurement
+  # Inventory & Procurement (Functional · คลัง&จัดซื้อ)
   stock.md                   ← RM + FG (per-Batch/FIFO) + ledger + loss/adjust/surplus + 3 ยอด
   goods-receipt.md           ← GR multi-line · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link
   pr.md                      ← Purchase Request: auto/สร้างตรง · partial→PR ใหม่
   supplier.md                ← price matrix (max active→BOM) · Active/Inactive · snapshot
   return.md                  ← คืน RM: lot→supplier→ตัด stock + comment
 
-  # Fulfilment & Finance
+  # Fulfilment & Finance (Functional · จัดส่ง&การเงิน)
   shipping.md                ← Shipment รอบ + DN 2 ชั้น · 1 DN=1 order · reconcile · driver/route/vehicle
   invoice.md                 ← ออกตั้งแต่ Confirmed · VAT effective date · overdue · ใบกำกับภาษีไทย · void
 
-  # Governance
+  # Governance (Functional · ระบบ)
   traceability.md            ← entity/field search · genealogy · audit table · QT head-of-chain · FG per-Batch
   settings.md                ← RUCDAA + Admin bit · user + bulk reassign · VAT · company · audit · +3 module ใหม่
 
@@ -57,7 +57,7 @@ docs/requirements/erp-v2-ui-first/modules/
 ```
 
 HTML review view (Hub-styled, render จาก .md เหล่านี้):
-`docs/design/erp-v2-ui-first/functional-spec/modules/index.html` (+ ราย module) — มีลิงก์จาก Document Hub (`functional-spec/index.html`).
+`docs/design/erp-v2-ui-first/functional-spec/modules/index.html` (+ ราย module) — มีลิงก์จาก Document Hub (`functional-spec/index.html`). Hub จัด ① Functional / ② Non-Functional / ③ Architecture / ④ Mockups / ⑤ Archive.
 
 ---
 
@@ -110,9 +110,10 @@ D1–D18 ยังเป็นกฎแกน (ดูฉบับเต็ม `s
 
 1. **`docs/requirements/erp-v2-ui-first/modules/*.md` คือ AUTHORITATIVE spec ปัจจุบันของทุก module + NFR + Deletion Policy** — ชุดเดียวที่ BA/QA/Tech-Lead ต้องยึด.
 2. แต่ละ .md เป็น **spec เต็ม** (existing-good absorbed + delta ใหม่) ไม่ใช่แค่ส่วนที่เปลี่ยน. **`non-functional.md` = NFR authoritative · `deletion-policy.md` = deletion authoritative** (fold + entity ใหม่).
-3. **เอกสารเก่ากระจัดกระจาย** (functional-spec module pages + cross-cutting + **root `deletion-policy.md`**) = **historical reference** — ไม่ลบทิ้ง แต่ **ไม่ใช่แหล่งความจริงหลักอีกต่อไป**; ถ้าขัดกัน ให้ยึด per-module ชุดนี้.
-4. **หลักการ/กติกาลึกที่ยังถูกต้อง (ไม่ซ้ำซ้อน) ยังใช้ได้ (per-module อ้างอิง ไม่ทำสำเนา):** `entity-status-map.md`, `status-journeys.md`, `stock-reservation.md`, `scope-oem-ownbrand-supply-planning.md` (D1–D18), `mock-data-spec.md`, `brief.md`, ADR-000..009, `scheduled-jobs.html`, `rtm` — เพื่อไม่ให้มี "2 ความจริง". *(หมายเหตุ: กติกาลบ + NFR ที่เคยกระจายในเอกสารเหล่านี้ ถูก fold เข้า `deletion-policy.md`/`non-functional.md` แล้ว — ให้ยึด 2 ไฟล์นี้.)*
+3. **เอกสารเก่ากระจัดกระจาย** (functional-spec module pages + cross-cutting + **root `deletion-policy.md`**) = **historical reference** — ไม่ลบทิ้ง แต่ **ไม่ใช่แหล่งความจริงหลักอีกต่อไป**; ถ้าขัดกัน ให้ยึด per-module ชุดนี้. ใน Document Hub เอกสารเหล่านี้ถูกย้ายไป **หมวด ⑤ Archive (collapsed)** ออกจากเส้นทางหลัก.
+4. **หลักการ/กติกาลึกที่ยังถูกต้อง (ไม่ซ้ำซ้อน) ยังใช้ได้ (per-module อ้างอิง ไม่ทำสำเนา):** `entity-status-map.md`, `status-journeys.md`, `stock-reservation.md`, `scope-oem-ownbrand-supply-planning.md` (D1–D18), `mock-data-spec.md`, `brief.md`, ADR-000..009, `scheduled-jobs.html`, `rtm`, `glossary`, `continuity`, `list-conventions` — เพื่อไม่ให้มี "2 ความจริง". ใน Hub รวมเป็นแถบ **"อ้างอิงเชิงลึก (reference)"** ในหมวด ① (ติดป้าย reference ชัด, ไม่ใช่ spec แข่ง). *(หมายเหตุ: กติกาลบ + NFR ที่เคยกระจายในเอกสารเหล่านี้ ถูก fold เข้า `deletion-policy.md`/`non-functional.md` แล้ว — ให้ยึด 2 ไฟล์นี้.)*
 5. **RTM/Traceability คงครบ:** ทุก story/AC ยัง map → module + mockup + journey (ดู `traceability.md` + rtm).
+6. **Navigation IA (Document Hub, 2026-07-29):** ① **Functional** (จัดตามแถบเมนูแอป: งานขาย/Order · คลัง&จัดซื้อ · ผลิต&คุณภาพ · จัดส่ง&การเงิน · ระบบ + flows + permission + reference band) · ② **Non-Functional** (`non-functional.md` + `deletion-policy.md`) · ③ Architecture · ④ Mockups · ⑤ 🗄 Archive (superseded, collapsed). **หมวด ①/② ลิงก์เฉพาะภายในแพ็กเกจ — ไม่เด้งเข้าไปหน้าเก่า.** modules/index.html สะท้อนโครงเดียวกัน.
 
 ---
 
@@ -120,7 +121,7 @@ D1–D18 ยังเป็นกฎแกน (ดูฉบับเต็ม `s
 
 | เอกสารเก่า (functional-spec / cross-cutting / principle) | ครอบคลุมโดย module (authoritative) | หมายเหตุ |
 |---|---|---|
-| `functional-spec/home.html` (US-HOME-01..03) | **home.md** | absorbed เต็ม |
+| `functional-spec/home.html` (US-HOME-01..03) | **home.md** | absorbed เต็ม · เก่าอยู่ Archive |
 | `functional-spec/dashboard.html` (US-DSH-01..04 + 7 dept, 29 tile) | **dashboard.md** | absorbed เต็ม (event/state, สูตร tile) |
 | `functional-spec/platform.html` (US-PLT-01..05) | **platform.md** | login/noti/search/session/responsive |
 | `functional-spec/stock.html` (US-STK-01..06) | **stock.md** (ยอด/ledger) + **goods-receipt.md** (GR) | GR-specific แยกเป็น module |
@@ -134,12 +135,13 @@ D1–D18 ยังเป็นกฎแกน (ดูฉบับเต็ม `s
 | `functional-spec/settings.html` (US-SET-01..05) | **settings.md** | +RUCDAA row Quotation/SO/Supply-Planning |
 | `functional-spec/customer.html` (US-CUS-01..04) | **customer.md** | TYPE/credit/history/dropdown |
 | `functional-spec/po.html` · `production.html` · `bom.html` | **po.md · production.md · bom.md** | reserve/consume/surplus · queue/actual · cost/TYPE/planning |
-| `list-conventions.html` (US-LST-01) | **G1–G3 (README §3)** + Pagination/Search ของทุก module | มาตรฐาน list |
-| `continuity.html` (cascade + noti matrix) | **platform.md** (noti) + cross-links ทุก module | ยังใช้เป็น cascade reference |
-| **`brief.md` §5/§8 (NFR) · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · entity-status-map §1.6 · stock-reservation** | **non-functional.md** | NFR รวม+อัปเดต scope ใหม่ (load profile + gapless QT-/SO- + RBAC 3 module ใหม่ + FG/QT ใน GMP chain) |
-| **root `deletion-policy.md` (7 กติกา) · `rbac-deletion.html` (deletion ส่วน)** | **deletion-policy.md** (folded) + **settings.md**/**permission-matrix.md** (สิทธิ์) | fold เดิม + เพิ่ม entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) |
+| `list-conventions.html` (US-LST-01) | **G1–G3 (README §3)** + Pagination/Search ของทุก module (ยังเป็น reference) | มาตรฐาน list |
+| `continuity.html` (cascade + noti matrix) | **platform.md** (noti) + cross-links ทุก module (ยังเป็น reference) | cascade reference |
+| **`brief.md` §5/§8 (NFR) · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · entity-status-map §1.6 · stock-reservation** | **non-functional.md** | NFR รวม+อัปเดต scope ใหม่ |
+| **root `deletion-policy.md` (7 กติกา) · `rbac-deletion.html` (deletion ส่วน)** | **deletion-policy.md** (folded) + **settings.md**/**permission-matrix.md** (สิทธิ์) | fold เดิม + เพิ่ม entity ใหม่ |
 
 > Visual punch-list เดิม **U1/U2/U3/U5/U6** = **ยังค้าง เป็นงาน UX/UI** (ไม่ใช่ business-gap). **U4 = ปิดแล้ว** (D8 v2).
+> **Archive (Document Hub ⑤):** functional-spec module pages (16), `rbac-deletion.html`, root `docs/deletion-policy.html`, `docs/po-reviews.html` — collapsed, ติดป้าย superseded, ไม่อยู่เส้นทางหลัก.
 
 ---
 
@@ -149,8 +151,8 @@ D1–D18 ยังเป็นกฎแกน (ดูฉบับเต็ม `s
 
 | เอกสารเดิม | สถานะ | เหตุผล / สิ่งที่ถูกแทน |
 |---|---|---|
-| functional-spec module pages (16 หน้า) | **superseded (historical ref)** | absorbed เข้าราย module .md (ดู map §6) |
-| **root `deletion-policy.md`** | **superseded (historical ref)** | fold + updated → `modules/deletion-policy.md` (เพิ่ม Quotation/SO/FG Batch/OEM surplus/cost snapshot) |
+| functional-spec module pages (16 หน้า) | **superseded (Archive)** | absorbed เข้าราย module .md (ดู map §6) |
+| **root `deletion-policy.md`** | **superseded (Archive)** | fold + updated → `modules/deletion-policy.md` |
 | **NFR ที่กระจายใน brief/ADR/scheduled-jobs** | **consolidated** | รวม+อัปเดต → `modules/non-functional.md` (คงแหล่ง principle ไว้อ้างอิง) |
 | `scope-oem-ownbrand-supply-planning.md` | **ยังใช้ (rule spine)** แต่ **D8 + credit default override** | D8 v1→v2 · credit preset 30/60/90 default 60 · D1–D7/D9–D18 คงเดิม |
 | `po-e2e-review-oem-ownbrand.md` §2 punch-list **U4** | **RESOLVED / ปิด** | D8 v2 |

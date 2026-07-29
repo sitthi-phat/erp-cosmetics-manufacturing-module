@@ -4,146 +4,177 @@
 :root{--primary:#0E7C7B;--primary-bg:#E6F4F3;--sidebar:#10322F;--text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#fff;--success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;--radius:8px}
 body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
 a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:1060px;margin:0 auto;padding:24px 20px 80px}
+.wrap{max-width:1060px;margin:0 auto;padding:24px 20px 90px}
 header.top{background:var(--sidebar);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 header.top .logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#10322F,#0E7C7B);display:grid;place-items:center;color:#fff;font-weight:700}
 header.top b{font-size:15px}header.top .crumb{color:#9DBAB7;font-size:12px;margin-left:auto}
 h1{font-size:26px;margin:18px 0 6px}
-.sec{margin:26px 0 6px;padding:8px 12px;border-radius:8px;background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;font-size:17px;font-weight:600}
-.sec small{font-weight:400;color:#BfeCe8;font-size:12px}
+.sec{margin:30px 0 4px;padding:11px 15px;border-radius:9px;background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec .n{background:rgba(255,255,255,.16);border-radius:6px;padding:1px 9px;font-size:14px}
+.sec small{font-weight:400;color:#Bfece8;font-size:12.5px}
+.lead{color:var(--text2);font-size:13px;margin:6px 2px 2px}
+.grp{margin:16px 0 2px;font-weight:700;color:#10322F;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.grp .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);display:inline-block}
 p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
-.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:var(--primary-bg);color:var(--primary);font-size:12px;font-weight:600}
-.tocgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:12px 0}
-.tocgrid a.mod{display:block;border:1px solid var(--border2);border-radius:10px;padding:13px;background:#fff;color:inherit}
+.tocgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:11px;margin:8px 0}
+.tocgrid a.mod{display:block;border:1px solid var(--border2);border-radius:10px;padding:12px 13px;background:#fff;color:inherit;border-left:4px solid var(--primary)}
 .tocgrid a.mod:hover{border-color:var(--primary);box-shadow:0 3px 10px rgba(14,124,123,.12);text-decoration:none}
-.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
-.tocgrid a.start{border-left:4px solid var(--success)}
-.tocgrid a.po{border-left:4px solid #B8873B}
-.tocgrid a.tl{border-left:4px solid var(--info)}
-.tocgrid a.canon{border-left:4px solid var(--primary)}
-.done{background:#E6F5EC;color:#1E7A44;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600}
+.tocgrid a.flow{border-left-color:#B8873B}
+.tocgrid a.nfr{border-left-color:#7A4E9E}
+.tocgrid a.arch{border-left-color:var(--info)}
+.tocgrid a.ref{border-left-color:#9AA5B1;background:#FbFcFd}
+.tocgrid a.legacy{border-left-color:#B9C0C8;background:#FAFAFB}
+.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid a.ref .mt,.tocgrid a.legacy .mt{color:var(--text2)}
+.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
+.hero{border:1px solid #Bfe3e0;background:linear-gradient(135deg,#F2FAF9,#E6F4F3);border-radius:12px;padding:14px 16px;margin:14px 0}
+.hero b{color:#0B5D5C}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
-.srcnote{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
-.srcnote code{background:#fff;border:1px solid #F1D6A6;padding:1px 5px;border-radius:4px}
-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
+.refnote{background:#F4F6F8;border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:7px;margin:14px 0 4px;font-size:12.5px}
+details.arch{margin:14px 0 0;border:1px dashed var(--border);border-radius:10px;background:#FAFAFB}
+details.arch>summary{cursor:pointer;padding:12px 15px;font-weight:600;color:var(--text2);font-size:14px}
+details.arch>summary::marker{color:var(--text3)}
+details.arch[open]>summary{border-bottom:1px solid var(--border2)}
+details.arch .inner{padding:10px 15px 16px}
+.warnband{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:8px 12px;border-radius:7px;margin:0 0 10px;font-size:12.5px}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
 code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </style></head><body>
 <header class="top"><span class="logo">E</span><b>ESSENCE Hub System</b><span style="font-size:12px;color:#9DBAB7">· Document Hub (Stage 2)</span><span class="crumb">สารบัญกลาง</span></header>
 <div class="wrap">
 
 <h1>Document Hub — ESSENCE Hub System</h1>
-<p class="sub">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · <b>ที่เดียวอ่านได้ทุกอย่าง</b> — <b>Per-Module Requirement (SINGLE SOURCE OF TRUTH, ครบ 20 module + NFR + Deletion Policy)</b> · เอกสารหลักการ (PO) · สถาปัตยกรรม+API+DB+ADR (Tech-Lead) · Mockups · Gate 1 (หน้าตา) ผ่านแล้วรอบ 4</p>
+<p class="lead">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · โครงสร้าง 2 ก้อนหลัก: <b>Functional</b> (ระบบทำอะไร) และ <b>Non-Functional</b> (ระบบต้องทำงานอย่างไร) · ตามด้วย Architecture · Mockups · Archive</p>
 
-<div class="srcnote">📄 <b>แหล่งความจริงหลักของ requirement = Per-Module Package</b> (หมวด 📦 ด้านล่าง) ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> — รวม <b>Non-Functional (NFR)</b> และ <b>Deletion Policy (folded)</b> · หมวด ④ เอกสารหลักการ (PO) และ ⑤ ADR = view render จาก Markdown (แก้ที่ <code>docs/requirements/*.md</code> / <code>docs/adr/*.md</code>) · <b>functional-spec module pages เดิม (หมวด ②-legacy) = historical reference</b> — ถ้าขัดกันให้ยึด Per-Module Package</div>
+<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง (Single Source of Truth).</b> ทุกลิงก์ในหมวด ① และ ② พาอยู่ใน <b>Per-Module Package</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> เท่านั้น ไม่เด้งออกไปหน้าเก่า. เอกสารเก่า/ซ้ำถูกย้ายไป <a href="#archive"><b>หมวด ⑤ Archive</b></a> ด้านล่าง (เก็บไว้เป็นประวัติ). เปิดผ่าน HTTP (docs-site) เพื่อ render เต็ม.</div>
 
-<div class="note"><b>เริ่มยังไง:</b> อ่าน <a href="user-journeys.html"><b>User Journeys 6 สาย</b></a> (เห็นภาพงานจริง) → ลงรายละเอียดที่ <b>Per-Module Package</b> (📦, canonical) → NFR/Deletion/สิทธิ์ ดูหมวด ① ในแพ็กเกจ → เหตุผล/กติกาลึก ดู <b>เอกสารหลักการ PO</b> (④) → API/DB/ADR ดู <b>สถาปัตยกรรม TL</b> (⑤)</div>
+<!-- ========================= (1) FUNCTIONAL ========================= -->
+<div class="sec"><span class="n">①</span> FUNCTIONAL Requirements <small>— สิ่งที่ระบบทำ · จัดกลุ่มตามแถบเมนูของแอป</small></div>
+<p class="lead">Requirement ราย module (ฉบับจริง) จัดตาม flow การทำงาน + module. เริ่มที่ "ภาพรวม &amp; การไหลของงาน" แล้วเจาะราย module.</p>
 
-<div class="sec">📦 Per-Module Requirement Package — SINGLE SOURCE OF TRUTH (canonical · 2026-07-29) <small>— ครบ 20 module + NFR + Deletion Policy · INPUT ของ BA/QA/TL</small></div>
-<div class="srcnote">📄 <b>แหล่ง requirement ล่าสุด+ครบทั้งระบบ</b>: Platform/Home/Dashboard · Customer/Quotation/PO/SO · BOM/Supply-Planning/Production/QC · Stock/Goods-Receipt/PR/Supplier/Return · Shipping/Invoice · Traceability/Settings + <b>Non-Functional + Deletion Policy</b> + 2 flow + permission matrix + สรุปสูตร Supply Planning: <a href="modules/index.html"><b>เปิด Per-Module Package →</b></a> · ต้นฉบับ .md: <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> · แพ็กเกจนี้ <b>supersede</b> functional-spec module pages เดิม · <b>READY_FOR_UX_UI</b> (mockups ทำต่อ parallel)</div>
+<div class="grp"><span class="dot"></span> ภาพรวม &amp; การไหลของงาน (how it flows)</div>
 <div class="tocgrid">
-  <a class="mod canon" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">20 module + NFR + Deletion + 2 flow + permission matrix + overview/changelog + old→new map · Supply Planning §6 = FORMULA SUMMARY</div></a>
-  <a class="mod canon" href="modules/package-overview.html"><div class="mt">ภาพรวม + Source-of-Truth + Map</div><div class="md">file tree · D-rule spine · changelog superseded · old doc → module map · READY_FOR_UX_UI</div></a>
-  <a class="mod canon" href="modules/non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-/jobs J1–J7/outbox/search/responsive/soft-delete</div></a>
-  <a class="mod canon" href="modules/deletion-policy.html"><div class="mt">★ Deletion Policy (folded)</div><div class="md">soft-delete/void baseline + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) + matrix + reference-guard</div></a>
-  <a class="mod canon" href="modules/supply-planning.html"><div class="mt">★ Supply Planning — สรุปสูตร</div><div class="md">Available/cover/safety/reorder/target/suggested/badge/rate conv — ให้ปอนด์รีวิว</div></a>
+  <a class="mod" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">สารบัญฉบับจริง — ทุก module + flow + permission + NFR + deletion</div></a>
+  <a class="mod" href="modules/package-overview.html"><div class="mt">ภาพรวม + Source-of-Truth + Map</div><div class="md">file tree · D-rule spine · changelog · old→new map</div></a>
+  <a class="mod flow" href="modules/oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger</div></a>
+  <a class="mod flow" href="modules/ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
+  <a class="mod flow" href="scenario-walkthrough.html"><div class="mt">Scenario Walkthrough 🆕</div><div class="md">S1–S5 + B1–B4 · เดินเรื่อง mock data + ledger before→after</div></a>
+  <a class="mod flow" href="user-journeys.html"><div class="mt">Visual Journeys — 6 สาย</div><div class="md">Customer→PO→ผลิต→QC→จัดส่ง→Billing (BA cross-reviewed 6/6)</div></a>
+  <a class="mod flow" href="walkthrough.html"><div class="mt">8 Use-Case Walkthrough</div><div class="md">เดินจริงด้วย dataset กลาง (PO-181 rework, SHP-0046)</div></a>
 </div>
 
-<div class="sec">② Requirement ราย Module (canonical) <small>— purpose · screens · fields · actions+permission · statuses · validations · pagination/search · formulas</small></div>
-<div class="srcnote">📄 การ์ดด้านล่างลิงก์ไป <b>Per-Module Package (canonical)</b> ซึ่ง absorb User Stories/AC เดิมไว้ครบแล้ว · functional-spec pages เดิม (US-XxX) = historical reference ในหมวด ②-legacy</div>
+<div class="grp"><span class="dot"></span> งานขาย / Order</div>
 <div class="tocgrid">
-  <a class="mod canon" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login local+Google · session 24h/06:00 · noti outbox+read-bit · global search · responsive+guard</div></a>
-  <a class="mod canon" href="modules/home.html"><div class="mt">Home / งานที่รอ</div><div class="md">task inbox ตามสิทธิ์ · quick actions · onboarding · source เดียวกับ dashboard/noti</div></a>
-  <a class="mod canon" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill+deep link · ใกล้หมด=Available · permission-based</div></a>
-  <a class="mod canon" href="modules/customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · management-history · QT/PO history</div></a>
-  <a class="mod canon" href="modules/quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO</div></a>
-  <a class="mod canon" href="modules/po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume · surplus(D13) · 2 ราง</div></a>
-  <a class="mod canon" href="modules/so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
-  <a class="mod canon" href="modules/bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit + รวม · TYPE OEM/FG · planning config</div></a>
-  <a class="mod canon" href="modules/production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus · PRD ไม่ผูกลูกค้า</div></a>
-  <a class="mod canon" href="modules/qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain</div></a>
-  <a class="mod canon" href="modules/stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source · มูลค่าสต็อก</div></a>
-  <a class="mod canon" href="modules/goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link</div></a>
-  <a class="mod canon" href="modules/pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto/สร้างตรง · partial→PR ใหม่ · void</div></a>
-  <a class="mod canon" href="modules/supplier.html"><div class="mt">Supplier</div><div class="md">price matrix (max active→BOM) · Active/Inactive · snapshot</div></a>
-  <a class="mod canon" href="modules/return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ</div></a>
-  <a class="mod canon" href="modules/shipping.html"><div class="mt">Shipping (Shipment+DN)</div><div class="md">2 ชั้น · 1 DN=1 order · Delivered/Rejected/Postponed · reconcile</div></a>
-  <a class="mod canon" href="modules/invoice.html"><div class="mt">Invoice / การเงิน</div><div class="md">ออกตั้งแต่ Confirmed · VAT effective date · overdue · void</div></a>
-  <a class="mod canon" href="modules/traceability.html"><div class="mt">Traceability + Audit</div><div class="md">entity/field search · genealogy · field-audit · QT head-of-chain</div></a>
-  <a class="mod canon" href="modules/settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit · +3 module ใหม่</div></a>
-  <a class="mod canon" href="modules/permission-matrix.html"><div class="mt">Permission Matrix</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
+  <a class="mod" href="modules/customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · management-history · QT/PO history</div></a>
+  <a class="mod" href="modules/quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO</div></a>
+  <a class="mod" href="modules/po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume · surplus(D13) · 2 ราง</div></a>
+  <a class="mod" href="modules/so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
 </div>
 
-<div class="sec">🆕 สโคปใหม่ (Delta) — Mockups <small>— หน้าจอจริง (spec ภาพ) · Stage 1 รอบใหม่</small></div>
-<div class="srcnote">📄 ที่มา/กติกา (source of truth): <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><code>scope-oem-ownbrand-supply-planning.md</code></a> (D1–D18) · Mockups อยู่ใน <a href="../mockups/index.html" target="_blank">Gallery</a> · <b>🟢 หน้าใหม่ · 🔵 หน้าแก้</b> · เดินเรื่อง mock data: <a href="scenario-walkthrough.html"><b>Scenario Walkthrough</b></a></div>
+<div class="grp"><span class="dot"></span> คลัง &amp; จัดซื้อ</div>
 <div class="tocgrid">
-  <a class="mod" href="../mockups/quotation-list.html" target="_blank"><div class="mt">Quotation (OEM) 🟢</div><div class="md">quotation-list/create/detail · Draft/Sent/Agreed/Rejected · Convert to PO (D18)</div></a>
-  <a class="mod" href="../mockups/so-list.html" target="_blank"><div class="mt">Sales Order (Own-Brand) 🟢</div><div class="md">so-list/create/detail · ขายจากสต็อก/ผลิตเก็บสต็อก (D1/D2)</div></a>
-  <a class="mod" href="../mockups/supply-planning.html" target="_blank"><div class="mt">Supply Planning 🟢</div><div class="md">Demand &amp; Production Cover · 3 tiles + การ์ด FG + สูตร D4–D8 + สั่งผลิต</div></a>
-  <a class="mod" href="../mockups/stock.html" target="_blank"><div class="mt">FG Stock (แท็บใน สต็อก) 🔵</div><div class="md">FG ราย Batch/FIFO (D16) · surplus/loss + ledger reason/source (D15)</div></a>
-  <a class="mod" href="../mockups/production.html" target="_blank"><div class="mt">ผลิต — surplus/actual qty 🔵</div><div class="md">actual produced qty + surplus→FG ตอนพร้อมส่ง (D13)</div></a>
-  <a class="mod" href="../mockups/bom-create.html" target="_blank"><div class="mt">BOM ต้นทุนหลายหมวด 🔵</div><div class="md">หมวดต้นทุน per-unit (D9) + ต้นทุนรวม snapshot (D10)</div></a>
+  <a class="mod" href="modules/stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source · มูลค่าสต็อก</div></a>
+  <a class="mod" href="modules/goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link</div></a>
+  <a class="mod" href="modules/pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto/สร้างตรง · partial→PR ใหม่ · void</div></a>
+  <a class="mod" href="modules/supplier.html"><div class="mt">Supplier</div><div class="md">price matrix (max active→BOM) · Active/Inactive · snapshot</div></a>
+  <a class="mod" href="modules/return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ</div></a>
 </div>
 
-<div class="sec">① เริ่มที่นี่ <small>— เห็นภาพรวมทั้งระบบก่อน</small></div>
+<div class="grp"><span class="dot"></span> ผลิต &amp; คุณภาพ</div>
 <div class="tocgrid">
-  <a class="mod start" href="user-journeys.html"><div class="mt">User Journeys — 6 สาย</div><div class="md">Customer→PO→ผลิต→QC→จัดส่ง→Billing · narrative + step↔story (BA cross-reviewed 6/6 PASS)</div></a>
-  <a class="mod start" href="walkthrough.html"><div class="mt">8 Use-Case Walkthrough</div><div class="md">เดินจริงด้วย dataset กลาง (PO-181 rework, SHP-0046 partially, GR-008)</div></a>
-  <a class="mod start" href="scenario-walkthrough.html"><div class="mt">Scenario Walkthrough (Delta) 🆕</div><div class="md">S1–S5 + B1–B4 · OEM surplus / RM return / produce-to-stock→ขาย · ledger before→after</div></a>
+  <a class="mod" href="modules/production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus · PRD ไม่ผูกลูกค้า</div></a>
+  <a class="mod" href="modules/qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain</div></a>
+  <a class="mod" href="modules/supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA SUMMARY · สั่งผลิต(D8 v2)</div></a>
+  <a class="mod" href="modules/bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit + รวม · TYPE OEM/FG · planning config</div></a>
 </div>
 
-<div class="sec">②-legacy Requirement ราย Module (functional-spec เดิม · historical) <small>— User Stories + AC · superseded โดย Per-Module Package</small></div>
-<div class="srcnote">📄 หน้าเหล่านี้เก็บไว้เป็น <b>ประวัติ/ที่มา</b> (US-XxX + AC Given/When/Then). เนื้อหาถูก absorb เข้าราย module .md แล้ว — <b>ยึด Per-Module Package (หมวด ②) เป็นหลัก</b>. map old→new ดู <a href="modules/package-overview.html">package-overview §6</a></div>
+<div class="grp"><span class="dot"></span> จัดส่ง &amp; การเงิน</div>
 <div class="tocgrid">
-  <a class="mod" href="home.html"><div class="mt">Home (legacy)</div><div class="md">US-HOME-01..03 → modules/home.md</div></a>
-  <a class="mod" href="dashboard.html"><div class="mt">Dashboard (legacy)</div><div class="md">US-DSH-01..04 + 7 dept → modules/dashboard.md</div></a>
-  <a class="mod" href="platform.html"><div class="mt">Platform (legacy)</div><div class="md">US-PLT-01..05 → modules/platform.md</div></a>
-  <a class="mod" href="po.html"><div class="mt">PO (legacy)</div><div class="md">US-PO-01..07 → modules/po.md</div></a>
-  <a class="mod" href="production.html"><div class="mt">การผลิต (legacy)</div><div class="md">US-PRD-01..06 → modules/production.md</div></a>
-  <a class="mod" href="invoice.html"><div class="mt">Invoice (legacy)</div><div class="md">US-INV-01..04 → modules/invoice.md</div></a>
-  <a class="mod" href="stock.html"><div class="mt">คลัง + GR (legacy)</div><div class="md">US-STK-01..06 → modules/stock.md + goods-receipt.md</div></a>
-  <a class="mod" href="customer.html"><div class="mt">ลูกค้า (legacy)</div><div class="md">US-CUS-01..04 → modules/customer.md</div></a>
-  <a class="mod" href="purchase-request.html"><div class="mt">PR (legacy)</div><div class="md">US-PR-01..03 → modules/pr.md</div></a>
-  <a class="mod" href="supplier.html"><div class="mt">Supplier (legacy)</div><div class="md">US-SUP-01..03 → modules/supplier.md</div></a>
-  <a class="mod" href="bom.html"><div class="mt">BOM (legacy)</div><div class="md">US-BOM-01..02 → modules/bom.md</div></a>
-  <a class="mod" href="qc.html"><div class="mt">QC (legacy)</div><div class="md">US-QC-01..03 → modules/qc.md</div></a>
-  <a class="mod" href="shipping.html"><div class="mt">จัดส่ง (legacy)</div><div class="md">US-SHP-01..03 → modules/shipping.md</div></a>
-  <a class="mod" href="return.html"><div class="mt">คืนของ (legacy)</div><div class="md">US-RET-01 → modules/return.md</div></a>
-  <a class="mod" href="traceability.html"><div class="mt">Traceability (legacy)</div><div class="md">US-TRC-01..03 → modules/traceability.md</div></a>
-  <a class="mod" href="settings.html"><div class="mt">Settings (legacy)</div><div class="md">US-SET-01..05 → modules/settings.md</div></a>
+  <a class="mod" href="modules/shipping.html"><div class="mt">Shipping (Shipment+DN)</div><div class="md">2 ชั้น · 1 DN=1 order · Delivered/Rejected/Postponed · reconcile</div></a>
+  <a class="mod" href="modules/invoice.html"><div class="mt">Invoice / การเงิน</div><div class="md">ออกตั้งแต่ Confirmed · VAT effective date · overdue · void</div></a>
 </div>
 
-<div class="sec">③ Cross-cutting <small>— ความต่อเนื่อง/มาตรฐานข้าม module (reference)</small></div>
+<div class="grp"><span class="dot"></span> ระบบ (System) &amp; การเข้าถึง</div>
 <div class="tocgrid">
-  <a class="mod" href="continuity.html"><div class="mt">Cascade + Notification</div><div class="md">20 แถว cascade (+C20 reservation) + noti matrix (epic P)</div></a>
-  <a class="mod" href="list-conventions.html"><div class="mt">List Page Conventions</div><div class="md">US-LST-01 · filter/sort/page-size/empty (→ G1–G3 ในทุก module)</div></a>
-  <a class="mod" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion Policy</div><div class="md">6 ระดับ · soft-delete 7 กติกา + matrix (→ modules/deletion-policy.md + settings.md)</div></a>
-  <a class="mod" href="glossary.html"><div class="mt">Glossary + Doc formats</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร</div></a>
-  <a class="mod" href="rtm.html"><div class="mt">Requirement Traceability Matrix</div><div class="md">Story↔mockup↔journey↔UC + journey cross-review 6/6</div></a>
+  <a class="mod" href="modules/home.html"><div class="mt">Home / งานที่รอ</div><div class="md">task inbox ตามสิทธิ์ · quick actions · onboarding · source เดียวกับ dashboard/noti</div></a>
+  <a class="mod" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill+deep link · ใกล้หมด=Available</div></a>
+  <a class="mod" href="modules/settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
+  <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit · global search · shell/นำทาง</div></a>
+  <a class="mod" href="modules/traceability.html"><div class="mt">Traceability + Audit</div><div class="md">entity/field search · genealogy Lot→Batch→FG · field-audit · QT head-of-chain</div></a>
+  <a class="mod" href="modules/permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
 </div>
 
-<div class="sec">④ เอกสารหลักการ (PO) <small>— ที่มา/กติกา/เหตุผลของธุรกิจ (render จาก .md — reference)</small></div>
+<div class="refnote">📎 <b>อ้างอิงเชิงลึก (reference — ยังใช้ได้ ไม่ใช่ spec แข่ง):</b> per-module docs อ้างอิงเอกสารหลักการเหล่านี้ (ไม่ทำสำเนากติกาซ้ำ) — ไม่ใช่หน้าเก่าที่ถูกแทน.</div>
 <div class="tocgrid">
-  <a class="mod po" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation (11 entity + 20 cascade)</div></a>
-  <a class="mod po" href="docs/status-journeys.html"><div class="mt">Status Journeys</div><div class="md">state machine ทุกสาย + RUCDAA + notification/deep-link + dashboard filter</div></a>
-  <a class="mod po" href="docs/deletion-policy.html"><div class="mt">Deletion Policy (root · historical)</div><div class="md">soft-delete ทุก entity (7 กติกา) + matrix — folded/updated ที่ <a href="modules/deletion-policy.html">modules/deletion-policy</a></div></a>
-  <a class="mod po" href="docs/brief.html"><div class="mt">Product Brief</div><div class="md">Business Key Value + scope + Definition of Done + Gate 1 criteria + NFR ที่มา</div></a>
-  <a class="mod po" href="docs/mock-data-spec.html"><div class="mt">Mock Data Spec</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
-  <a class="mod po" href="docs/po-reviews.html"><div class="mt">ผลตรวจ PO (3 in 1)</div><div class="md">Stage-2 Review (Gate 2) + Spec Depth Audit + Mockup Review r4</div></a>
-</div>
-<p class="sub">หมายเหตุ: Stock Reservation ต้นฉบับ = <a href="../../../requirements/erp-v2-ui-first/stock-reservation.md">stock-reservation.md</a> (Option A ยึดแล้ว) · scope D1–D18 = <a href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md">scope-oem-ownbrand-supply-planning.md</a> · NFR รวม = <a href="modules/non-functional.html">modules/non-functional</a></p>
-
-<div class="sec">⑤ สถาปัตยกรรม (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
-<div class="tocgrid">
-  <a class="mod tl" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + ลิงก์ API ทุก module (api-*.html)</div></a>
-  <a class="mod tl" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
-  <a class="mod tl" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗ (J1–J7)</div><div class="md">session 06:00 · inactivity · overdue · potential-delay · outbox · integrity · backup (→ non-functional §6)</div></a>
-  <a class="mod tl" href="docs/adrs.html"><div class="mt">ADRs 000–009</div><div class="md">stack, stock-ledger/negative, framework, audit, action-endpoints, noti, storage, auth/RUCDAA, gapless, soft-delete</div></a>
+  <a class="mod ref" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★ (ref)</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation</div></a>
+  <a class="mod ref" href="docs/status-journeys.html"><div class="mt">Status Journeys (ref)</div><div class="md">state machine ทุกสาย + RUCDAA + noti/deep-link</div></a>
+  <a class="mod ref" href="../../../requirements/erp-v2-ui-first/stock-reservation.md"><div class="mt">Stock Reservation (ref)</div><div class="md">Option A: ยืนยัน=จอง / เริ่มผลิต=ตัดจริง FIFO</div></a>
+  <a class="mod ref" href="../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><div class="mt">Scope D1–D18 (ref)</div><div class="md">rule spine OEM/Own-Brand/Supply-Planning</div></a>
+  <a class="mod ref" href="docs/mock-data-spec.html"><div class="mt">Mock Data Spec (ref)</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
+  <a class="mod ref" href="docs/brief.html"><div class="mt">Product Brief (ref)</div><div class="md">Business Key Value + scope + Definition of Done + Gate 1</div></a>
+  <a class="mod ref" href="rtm.html"><div class="mt">RTM (ref)</div><div class="md">Story↔mockup↔journey↔UC + journey cross-review 6/6</div></a>
+  <a class="mod ref" href="glossary.html"><div class="mt">Glossary (ref)</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร · Lot vs Batch</div></a>
+  <a class="mod ref" href="continuity.html"><div class="mt">Cascade + Notification (ref)</div><div class="md">20 แถว cascade (+C20) + noti matrix</div></a>
+  <a class="mod ref" href="list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3 ในทุก module</div></a>
 </div>
 
-<div class="sec">⑥ Mockups <small>— หน้าจอจริง (spec ภาพ)</small></div>
+<!-- ========================= (2) NON-FUNCTIONAL ========================= -->
+<div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
+<p class="lead">ข้อกำหนดคุณภาพระดับระบบ + วงจรชีวิตข้อมูล — เป็นฉบับจริงในแพ็กเกจเดียวกัน.</p>
 <div class="tocgrid">
-  <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">หน้าจอ clickable (theme A teal) — ใช้เป็น spec ภาพของทุก module</div></a>
+  <a class="mod nfr" href="modules/non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf &lt;2s/50 concurrent/200 PO+50 GR·วัน · auth 24h+เตะออก 06:00 · audit 1yr · GCP Cloud Run+Cloud SQL+backup · Bangkok/พ.ศ./UTC · gapless QT-/SO- · jobs J1–J7 · notification/global search/responsive/reliability</div></a>
+  <a class="mod nfr" href="modules/deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) + matrix</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · <b>Per-Module Package (SINGLE SOURCE OF TRUTH) ครบ 20 module + NFR + Deletion Policy + 2 flow + permission matrix</b> · Journeys/Walkthrough · Cross-cutting · เอกสาร PO · Architecture+DB+ScheduledJobs+ADR (TL) · Mockups · functional-spec module pages = historical (superseded) · ต้นฉบับ requirement แก้ที่ docs/requirements/erp-v2-ui-first/modules/*.md</footer>
+<!-- ========================= (3) ARCHITECTURE ========================= -->
+<div class="sec"><span class="n">③</span> Architecture (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
+<div class="tocgrid">
+  <a class="mod arch" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + ลิงก์ API ทุก module</div></a>
+  <a class="mod arch" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
+  <a class="mod arch" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗ (J1–J7)</div><div class="md">session 06:00 · inactivity · overdue · potential-delay · outbox · integrity · backup (→ NFR §6)</div></a>
+  <a class="mod arch" href="docs/adrs.html"><div class="mt">ADRs 000–009</div><div class="md">stack · stock-ledger/negative · framework · audit · noti · storage · auth/RUCDAA · gapless · soft-delete</div></a>
+</div>
+
+<!-- ========================= (4) MOCKUPS ========================= -->
+<div class="sec"><span class="n">④</span> Mockups <small>— หน้าจอจริง (spec ภาพ)</small></div>
+<div class="tocgrid">
+  <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">หน้าจอ clickable (theme A teal) — spec ภาพของทุก module · 🟢 หน้าใหม่ · 🔵 หน้าแก้ (Quotation/SO/Supply-Planning/FG/surplus/BOM)</div></a>
+</div>
+
+<!-- ========================= (5) ARCHIVE ========================= -->
+<div class="sec" id="archive"><span class="n">⑤</span> 🗄 Archive / Historical <small>— หน้าเก่าที่ถูกแทน (superseded) · เก็บไว้เป็นประวัติเท่านั้น</small></div>
+<details class="arch">
+<summary>🗄 เปิดดูเอกสารเก่า (superseded) — ปกติไม่ต้องใช้ · ให้ยึด Per-Module Package (หมวด ① / ②)</summary>
+<div class="inner">
+<div class="warnband">⚠ หน้าในหมวดนี้ถูก <b>แทนที่แล้ว</b> ด้วย Per-Module Package — เก็บไว้เพื่อ trace ที่มา. อย่าใช้เป็น spec. map old→new ดู <a href="modules/package-overview.html">package-overview §6</a>.</div>
+
+<div class="grp" style="color:var(--text2)">functional-spec module pages เดิม (US-XxX · absorbed แล้ว)</div>
+<div class="tocgrid">
+  <a class="mod legacy" href="home.html"><div class="mt">Home (legacy)</div><div class="md">US-HOME-01..03 → modules/home</div></a>
+  <a class="mod legacy" href="dashboard.html"><div class="mt">Dashboard (legacy)</div><div class="md">US-DSH-01..04 + 7 dept → modules/dashboard</div></a>
+  <a class="mod legacy" href="platform.html"><div class="mt">Platform (legacy)</div><div class="md">US-PLT-01..05 → modules/platform</div></a>
+  <a class="mod legacy" href="customer.html"><div class="mt">ลูกค้า (legacy)</div><div class="md">US-CUS-01..04 → modules/customer</div></a>
+  <a class="mod legacy" href="po.html"><div class="mt">PO (legacy)</div><div class="md">US-PO-01..07 → modules/po</div></a>
+  <a class="mod legacy" href="production.html"><div class="mt">การผลิต (legacy)</div><div class="md">US-PRD-01..06 → modules/production</div></a>
+  <a class="mod legacy" href="qc.html"><div class="mt">QC (legacy)</div><div class="md">US-QC-01..03 → modules/qc</div></a>
+  <a class="mod legacy" href="stock.html"><div class="mt">คลัง + GR (legacy)</div><div class="md">US-STK-01..06 → modules/stock + goods-receipt</div></a>
+  <a class="mod legacy" href="purchase-request.html"><div class="mt">PR (legacy)</div><div class="md">US-PR-01..03 → modules/pr</div></a>
+  <a class="mod legacy" href="supplier.html"><div class="mt">Supplier (legacy)</div><div class="md">US-SUP-01..03 → modules/supplier</div></a>
+  <a class="mod legacy" href="return.html"><div class="mt">คืนของ (legacy)</div><div class="md">US-RET-01 → modules/return</div></a>
+  <a class="mod legacy" href="bom.html"><div class="mt">BOM (legacy)</div><div class="md">US-BOM-01..02 → modules/bom</div></a>
+  <a class="mod legacy" href="shipping.html"><div class="mt">จัดส่ง (legacy)</div><div class="md">US-SHP-01..03 → modules/shipping</div></a>
+  <a class="mod legacy" href="invoice.html"><div class="mt">Invoice (legacy)</div><div class="md">US-INV-01..04 → modules/invoice</div></a>
+  <a class="mod legacy" href="traceability.html"><div class="mt">Traceability (legacy)</div><div class="md">US-TRC-01..03 → modules/traceability</div></a>
+  <a class="mod legacy" href="settings.html"><div class="mt">Settings (legacy)</div><div class="md">US-SET-01..05 → modules/settings</div></a>
+</div>
+
+<div class="grp" style="color:var(--text2)">cross-cutting / principle เดิมที่ถูก fold แล้ว</div>
+<div class="tocgrid">
+  <a class="mod legacy" href="rbac-deletion.html"><div class="mt">RUCDAA + Deletion (legacy)</div><div class="md">→ folded: modules/deletion-policy + settings + permission-matrix</div></a>
+  <a class="mod legacy" href="docs/deletion-policy.html"><div class="mt">Deletion Policy — root (legacy)</div><div class="md">→ folded/updated: modules/deletion-policy</div></a>
+  <a class="mod legacy" href="docs/po-reviews.html"><div class="mt">ผลตรวจ PO (historical)</div><div class="md">Stage-2 Review + Spec Depth Audit + Mockup Review r4 (artifact)</div></a>
+</div>
+</div>
+</details>
+
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows + reference) · ② Non-Functional (NFR + Deletion) · ③ Architecture · ④ Mockups · ⑤ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/② ไม่ลิงก์ออกหน้าเก่า</footer>
 </div></body></html>
