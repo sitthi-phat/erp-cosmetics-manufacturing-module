@@ -1,10 +1,10 @@
 # Permission Matrix — Capability → Module → Action (consolidated)
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: **D14** (RBAC generic, permission-per-module/capability, ไม่ fix role) · **D17** · scope §7.1 (ต่อยอด) · **★ Settings module review 2026-07-29 (VAT/Company/Audit = Admin only; role disable/soft-delete; user password/Google-link)**
+กฎอ้างอิง: **D14** (RBAC generic, permission-per-module/capability, ไม่ fix role) · **D17** · scope §7.1 (ต่อยอด) · **★ Settings module review 2026-07-29 (VAT/Company/Audit = Admin only; role disable/soft-delete; user password/Google-link)** · **★ Sale delete → customers unassigned/blank (ปอนด์ 2026-07-29, resolve US-SET-02)**
 
 ## สรุปภาษาไทย
-RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module** ในแพ็กเกจ (customer/quotation/po/so/stock/bom/production/supply-planning) เข้ากับ permission bit ที่ต้องมี. เพิ่ม 3 module ใหม่ในตาราง RUCDAA ของ Settings: **Quotation, SO, Supply Planning**. **★ Settings review 2026-07-29:** VAT/ข้อมูลบริษัท/Audit-log = **Admin bit เท่านั้น** · role disable/enable/soft-delete/restore/remove-user + user password/Google-link = **Admin**.
+RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module** ในแพ็กเกจ (customer/quotation/po/so/stock/bom/production/supply-planning) เข้ากับ permission bit ที่ต้องมี. เพิ่ม 3 module ใหม่ในตาราง RUCDAA ของ Settings: **Quotation, SO, Supply Planning**. **★ Settings review 2026-07-29:** VAT/ข้อมูลบริษัท/Audit-log = **Admin bit เท่านั้น** · role disable/enable/soft-delete/restore/remove-user + user password/Google-link = **Admin**. **★ ลบ user (Sale) = Settings.D → ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง)" อัตโนมัติ (ไม่ต้อง bulk-reassign); มอบหมายภายหลัง = Customer.Approve.**
 
 ---
 
@@ -27,7 +27,7 @@ Customer · **Quotation (ใหม่)** · PO · **SO (ใหม่)** · **Sup
 | **Customer** | ดู list/detail/history · modal detail | Customer.R |
 | | สร้างลูกค้า | Customer.C |
 | | แก้ (TYPE/credit term/ผู้ติดต่อ) · เปลี่ยนสถานะปกติ | Customer.U |
-| | ตั้ง Disabled/Blacklist · reassign Sale | Customer.A |
+| | ตั้ง Disabled/Blacklist · **reassign/มอบหมาย/ล้าง Sale ที่ดูแล (รวมมอบหมายลูกค้าที่ unassigned)** | Customer.A |
 | | soft-delete | Customer.D |
 | | undelete | Customer.Admin |
 | **Quotation** | ดู list/detail/print-ready · material check | Quotation.R |
@@ -64,7 +64,7 @@ Customer · **Quotation (ใหม่)** · PO · **SO (ใหม่)** · **Sup
 | | **★ Disable/Enable role · Restore role · ถอด user ออกจาก role** | Settings.**Admin** |
 | | **★ Soft-delete role** (+ เหตุผล) | Settings.**D** |
 | | จัดการ user (create/edit/สลับ Active/เปลี่ยน role) · **★ ตั้ง/รีเซ็ตรหัส + password mode · ผูก/ยกเลิก Google link** | Settings.**Admin** |
-| | ลบ user (+ bulk reassign ลูกค้าก่อน) | Settings.**D** |
+| | **★ ลบ user (→ ลูกค้าที่ดูแลกลายเป็น Sale ว่าง/unassigned อัตโนมัติ; ไม่ bulk-reassign)** | Settings.**D** |
 | | undelete/restore user/role | Settings.**Admin** |
 | | **★ ดู/แก้ VAT** | Settings.**Admin only** *(เดิม U)* |
 | | **★ ดู/แก้ ข้อมูลบริษัท** | Settings.**Admin only** *(เดิม U)* |
@@ -74,9 +74,10 @@ Customer · **Quotation (ใหม่)** · PO · **SO (ใหม่)** · **Sup
 - **surplus (D13)** = auto ตอน "พร้อมส่ง" + remark → **ไม่มี permission แยก** (ไม่ใช่ approval).
 - **★ Quotation (2026-07-29):** ไม่มีสถานะ "ส่งแล้ว (Sent)" — การส่งใบเสนอราคา = print/share (Quotation.R/U) ไม่เปลี่ยนสถานะ · Convert-to-PO ตั้ง QT = ยืนยัน (Confirmed) ทันที.
 - **★ Settings (2026-07-29 — Settings review):** **VAT / ข้อมูลบริษัท / Audit-log = Admin bit เท่านั้น** (ข้อมูลไวต่อความปลอดภัย/การเงิน; เดิม VAT/Company=U, Audit=R) · **effective permission = union ของ role ที่ Active เท่านั้น** (role Disabled/Deleted ไม่ grant; settings.md §4b) · **role disable/soft-delete ทำได้แม้มีสมาชิก** (member เสีย permission โดยกลไก — deletion-policy §2.14).
+- **★ ลบ Sale/User (2026-07-29 — resolve US-SET-02):** ลบ user = **Settings.D** → **ลูกค้าที่ Sale คนนั้นดูแลถูกล้าง assigned-Sale เป็นว่าง (unassigned) อัตโนมัติ** — **ไม่ต้อง bulk-reassign, ไม่มีหน้า bulk-reassign** (supersede กฎเดิม); **มอบหมาย Sale ใหม่ภายหลัง = Customer.Approve** (customer.md §4.3/§8 · deletion-policy §2.15).
 - แต่ละ capability **grant แยกได้อิสระ**; role ใด ๆ ที่ถือ permission ตรงก็ทำได้ (เช่น AR/Sale เปิด PO/Quotation ได้ถ้ามีสิทธิ์).
 - Cross-module actions (Convert to PO = Quotation.U + PO.C; สั่งผลิต = Supply Planning.C → SO/Production.C) ต้องถือ **ทั้งสอง** permission.
 - `settings.html` เพิ่มแถว RUCDAA ของ **Quotation, SO, Supply Planning**.
 
 ## 5. Cross-links
-ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning §Actions & Permissions · deletion-policy §3 (สิทธิ์ลบ) · **settings.md §6/§4b (Settings actions + role lifecycle)** · non-functional §2 (A6/A7/A8 auth/Google/Admin-gate) · scope §7.1.
+ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning §Actions & Permissions · deletion-policy §3 (สิทธิ์ลบ) · **deletion-policy §2.15 (ลบ Sale → ลูกค้า unassigned)** · **settings.md §6/§4b/§4c (Settings actions + role lifecycle + delete-Sale→unassign)** · **customer.md §4.3/§8 (assigned Sale nullable + reassign)** · non-functional §2 (A6/A7/A8 auth/Google/Admin-gate) · scope §7.1.

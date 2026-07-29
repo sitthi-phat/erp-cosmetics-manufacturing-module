@@ -4,7 +4,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** (existing-good absorb + delta ใหม่) · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29)
 
 ## สรุปภาษาไทย
-เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** (จัดตามแถบเมนูแอป) · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md` = พื้นผิว trace/audit governance**) · **③ Reference** (เอกสารหลักการที่ยังใช้ได้) · ④ Architecture · ⑤ Mockups · **⑥ Archive (หน้าเก่า superseded, collapsed)**. **★ ปอนด์เคาะ 4 ข้อ (2026-07-29):** traceability → Non-Functional · Reference เป็นหมวดของตัวเอง · Supply Planning แจ้งเตือน Low เชิงรุก · Quotation ยกเลิกได้ทุกสถานะ. **★ Customer/Quotation/PO/Stock/Supplier/BOM/Settings module reviews (2026-07-29 — settled).** **★★ Production (การผลิต / คิวงานผลิต) module review (2026-07-29 — settled, no open Q):** **คิวผลิต 2 แท็บ** — **"รอรับงาน"** (search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ ทุกสถานะ · filter PO/SO · **default "พร้อมรับงาน"** · PO/SO detail = **modal** + ลิงก์เต็ม) และ **"คิวงานที่รับแล้ว"** (search + **PRD** · default รับงานแล้ว/Hold/กำลังผลิต/QC/พร้อมส่งมอบ · **ordering รับงานแล้ว→กำลังผลิต→QC→พร้อมส่งมอบ→Hold**) · **★ 1 PO/SO : หลาย PRD = CONFIRMED (1 line = 1 PRD, locked model) → คิว "รับแล้ว" group ตาม PO/SO → PRD ซ้อนใต้** · **หน้าจัดการ:** **actual qty ≥ ordered เสมอ** (under-production = **แก้ PO ให้จำนวนสั่ง = ผลิตจริงก่อน** → raise ⚑ follow-up ลูกค้า + audit ละเอียด) · over-production → surplus→FG ตอน "พร้อมส่ง" (D13) · **"✓ พร้อมส่ง (ส่ง XX·เข้าคลัง XX)" QC-gated** (ไม่ผ่าน = disabled + popup "QC ต้องผ่านก่อน") → PRD Ready to Ship, ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง · **lot consume/loss = เลือกเฉพาะ lot ที่มี stock; หลาย lot = FIFO** · **ปุ่ม Loss มีบนหน้า (confirm popup ทุกครั้ง, เหตุผลบังคับ, D15)** · **"ไปหน้า QC ›" เปิดเฉพาะสถานะ QC → deep-link ตรง Batch (qc แท็บ "ตรวจแบตช์")** · **confirm popup ทุก status change** · **edit-PO ในบริบทการผลิต → follow-up + audit**. **★ Stock delta (Production review):** **Adjust (ปรับยอด +) ตอนนี้ต้องอ้าง Lot — เลือก lot ที่มี stock หรือเลือก "FIFO"** (เดิม RM-only). อัปเดต `production.md` (primary) · `stock.md` §5.1/§6/§9/§10 · `po.md` §5.2 · `customer.md` §4.1 · `qc.md` §4b/§9 · `traceability.md` §3/§4 · `non-functional.md` AU1/AU3 · `entity-status-map.md` (r9) · README.
+เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** (จัดตามแถบเมนูแอป) · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md` = พื้นผิว trace/audit governance**) · **③ Reference** (เอกสารหลักการที่ยังใช้ได้) · ④ Architecture · ⑤ Mockups · **⑥ Archive (หน้าเก่า superseded, collapsed)**. **★ ปอนด์เคาะ 4 ข้อ (2026-07-29):** traceability → Non-Functional · Reference เป็นหมวดของตัวเอง · Supply Planning แจ้งเตือน Low เชิงรุก · Quotation ยกเลิกได้ทุกสถานะ. **★ Customer/Quotation/PO/Stock/Supplier/BOM/Settings module reviews (2026-07-29 — settled).** **★★ Production (การผลิต / คิวงานผลิต) module review (2026-07-29 — settled, no open Q):** **คิวผลิต 2 แท็บ** — **"รอรับงาน"** (search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ ทุกสถานะ · filter PO/SO · **default "พร้อมรับงาน"** · PO/SO detail = **modal** + ลิงก์เต็ม) และ **"คิวงานที่รับแล้ว"** (search + **PRD** · default รับงานแล้ว/Hold/กำลังผลิต/QC/พร้อมส่งมอบ · **ordering รับงานแล้ว→กำลังผลิต→QC→พร้อมส่งมอบ→Hold**) · **★ 1 PO/SO : หลาย PRD = CONFIRMED (1 line = 1 PRD, locked model) → คิว "รับแล้ว" group ตาม PO/SO → PRD ซ้อนใต้** · **หน้าจัดการ:** **actual qty ≥ ordered เสมอ** (under-production = **แก้ PO ให้จำนวนสั่ง = ผลิตจริงก่อน** → raise ⚑ follow-up ลูกค้า + audit ละเอียด) · over-production → surplus→FG ตอน "พร้อมส่ง" (D13) · **"✓ พร้อมส่ง (ส่ง XX·เข้าคลัง XX)" QC-gated** (ไม่ผ่าน = disabled + popup "QC ต้องผ่านก่อน") → PRD Ready to Ship, ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง · **lot consume/loss = เลือกเฉพาะ lot ที่มี stock; หลาย lot = FIFO** · **ปุ่ม Loss มีบนหน้า (confirm popup ทุกครั้ง, เหตุผลบังคับ, D15)** · **"ไปหน้า QC ›" เปิดเฉพาะสถานะ QC → deep-link ตรง Batch (qc แท็บ "ตรวจแบตช์")** · **confirm popup ทุก status change** · **edit-PO ในบริบทการผลิต → follow-up + audit**. **★ Stock delta (Production review):** **Adjust (ปรับยอด +) ตอนนี้ต้องอ้าง Lot — เลือก lot ที่มี stock หรือเลือก "FIFO"** (เดิม RM-only). **★ Sale delete → customers unassigned (ปอนด์ 2026-07-29, resolve US-SET-02):** ลบ Sale → ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง)" อัตโนมัติ, **ไม่บังคับ bulk-reassign, หน้า bulk-reassign = ยกเลิก**; reassign ภายหลังด้วยมือ. อัปเดต `production.md` (primary) · `stock.md` §5.1/§6/§9/§10 · `po.md` §5.2 · `customer.md` §4.1 · `qc.md` §4b/§9 · `traceability.md` §3/§4 · `non-functional.md` AU1/AU3 · `entity-status-map.md` (r9) · **`deletion-policy.md` §2.15 · `settings.md` §4c · `permission-matrix.md` §3** · README.
 
 ---
 
@@ -13,12 +13,12 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 ```
 docs/requirements/erp-v2-ui-first/modules/
   README.md                  ← ไฟล์นี้ (index + D-rule spine + changelog + source-of-truth + old→new map + global rules)
-  permission-matrix.md       ← capability → module → action/button (รวมทุก module, +3 module ใหม่, ★ Settings Admin-gate)
+  permission-matrix.md       ← capability → module → action/button (รวมทุก module, +3 module ใหม่, ★ Settings Admin-gate, ★ delete-Sale→unassign)
   comment-convention.md      ← ★ กติกากลาง comment + change-history (CC1–CC7) · object list 12 ตัว · อ้างโดยทุก module ธุรกรรม
 
   # System-wide / Governance (Non-Functional bucket ใน Hub)
   non-functional.md          ← NFR รวม: perf/auth-session/audit (★ +production action/PO edit audit)/backup-infra/data-format/jobs J1–J8/noti/search/responsive/soft-delete/reliability
-  deletion-policy.md         ← soft-delete/void baseline + entity เดิม + entity ใหม่
+  deletion-policy.md         ← soft-delete/void baseline + entity เดิม + entity ใหม่ (★ +§2.15 Sale delete→customers unassigned)
   traceability.md            ← trace/audit governance ข้าม module · ★ +production action/actual-qty/PO edit/lot-consume/adjust-Lot-FIFO audited
 
   # Platform & Navigation (Functional · ระบบ)
@@ -26,7 +26,7 @@ docs/requirements/erp-v2-ui-first/modules/
   home.md · dashboard.md
 
   # Sales & Customer (Functional · งานขาย/Order)
-  customer.md                ← financial summary · follow-up flag (★ +raise จาก PO edit) · hard block Disabled/Blacklist · Edit = all fields
+  customer.md                ← financial summary · follow-up flag (★ +raise จาก PO edit) · hard block Disabled/Blacklist · Edit = all fields · ★ assigned Sale nullable + auto-clear on Sale delete
   quotation.md · po.md (★ +§5.2 edit-PO→follow-up+audit) · so.md
 
   # Supply Planning & Production (Functional · ผลิต&คุณภาพ)
@@ -41,7 +41,7 @@ docs/requirements/erp-v2-ui-first/modules/
   shipping.md · invoice.md
 
   # System (Functional · ระบบ)
-  settings.md
+  settings.md                ← ★ role disable/soft-delete · user password/Google · Admin-only VAT/Company/Audit · ★ delete-Sale→customers unassigned (US-SET-02 simplified, ไม่ bulk-reassign)
 
   flows/
     oem-flow.md · ownbrand-flow.md
@@ -100,10 +100,11 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 | **★ Comment convention** | **12 object** ธุรกรรม มีช่อง comment เดียว แก้ในที่ + เก็บประวัติครบ + โผล่ trace | `comment-convention.md` |
 | **★ Customer Edit = all fields** | หน้า edit แก้ได้ครบทุกฟิลด์เท่ากับ create (financial summary read-only) | `customer.md` §2b |
 | **★ Customer Follow-up = flag แยก (ถอดจาก enum)** | 5 สถานะ + flag ⚑ แยก · **★ raise เพิ่มเมื่อ PO ถูกแก้ (Production review)** | `customer.md` §4/§12 · `entity-status-map.md` §1.1 |
+| **★ Delete Sale → customers unassigned (blank)** | ลบ Sale → assigned-Sale ของลูกค้าที่ดูแล = **ว่าง (unassigned) อัตโนมัติ** · **ไม่บังคับ bulk-reassign, ไม่มีหน้า bulk-reassign** (supersede กฎเดิม) · Sale ว่าง = valid state (ไม่บล็อกงานขาย) · reassign ภายหลังด้วยมือ (Customer.Approve) · audit-logged | `settings.md` §4c/§5 US-SET-02 · `customer.md` §4.3 · `deletion-policy.md` §2.15 · `permission-matrix.md` §3 |
 | **★ Stock — RM code / Loss-Adjust / BOM=FG** | RM code = ผู้ใช้ตั้ง+UNIQUE+ล็อก · Loss(−)/Adjust(+) 2 action · **★ Adjust อ้าง Lot/FIFO** · "บันทึก (คงคลัง)" · search dropdown · audit ทุก movement | `stock.md` · `bom.md` · `traceability.md` · `non-functional.md` |
 | **★★ Supplier — RM search dropdown + audit** | price-matrix search dropdown (G7) · create/edit/active↔inactive/price-matrix = audit + trace | `supplier.md` §3/§5/§10 |
 | **★★ BOM — code lock + ราคาซื้อแก้มือ + Active/Inactive + audit** | รหัส BOM/FG user-entered + unique + create-only-lock (D11 v2, RM ก็ด้วย) · ราคาซื้อแก้มือ · Inactive บล็อก QT/PO/SO + กันออก Supply Planning · audit | `bom.md` · `stock.md` §3b · `deletion-policy.md` §2.4 · `quotation.md`/`po.md`/`so.md` · `supply-planning.md` |
-| **★★ Settings — role disable/soft-delete · user password/Google · Admin-only** | Role search/filter/user-list/remove-user/disable+soft-delete (ไม่ต้องย้าย user ก่อน) · user password mode/Google link · VAT/Company/Audit = Admin bit · audit ทุกการเปลี่ยน | `settings.md` §4b/§5/§6 · `platform.md` §2/§4 · `deletion-policy.md` §2.14 · `permission-matrix.md` §3 · `non-functional.md` A6/A7/A8/AU1 |
+| **★★ Settings — role disable/soft-delete · user password/Google · Admin-only · ★ delete-Sale→unassign** | Role search/filter/user-list/remove-user/disable+soft-delete (ไม่ต้องย้าย user ก่อน) · user password mode/Google link · VAT/Company/Audit = Admin bit · **★ ลบ Sale → ลูกค้า unassigned (ไม่ bulk-reassign)** · audit ทุกการเปลี่ยน | `settings.md` §4b/§4c/§5/§6 · `platform.md` §2/§4 · `deletion-policy.md` §2.14/§2.15 · `customer.md` §4.3 · `permission-matrix.md` §3 · `non-functional.md` A6/A7/A8/AU1 |
 | **★★ Production — คิว 2 แท็บ / 1PO-หลาย PRD / actual≥ordered / QC-gate พร้อมส่ง / lot-FIFO / loss / ไปหน้า QC / edit-PO→follow-up** | **① รอรับงาน** (search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ · filter PO/SO · **default "พร้อมรับงาน"** · PO/SO modal+ลิงก์) · **② คิวรับแล้ว** (search + PRD · default+ordering กำหนด · **group PO/SO → PRD ซ้อนใต้ = 1 line=1 PRD CONFIRMED**) · **หน้าจัดการ:** actual≥ordered (under-prod=แก้ PO ลง→follow-up+audit) · surplus→FG @ พร้อมส่ง (D13) · **"✓ พร้อมส่ง" QC-gated + popup "QC ต้องผ่านก่อน"** → roll-up PO/SO · **lot มี stock+FIFO** · **ปุ่ม Loss + confirm popup** · **"ไปหน้า QC" เฉพาะสถานะ QC → deep-link ตรง Batch (ตรวจแบตช์)** · **confirm popup ทุก status change** · **edit-PO→follow-up+audit** | `production.md` (primary) · `stock.md` §5.1/§6 (Adjust Lot/FIFO) · `po.md` §5.2 · `customer.md` §4.1 · `qc.md` §4b/§9 · `traceability.md` §3/§4 · `non-functional.md` AU1/AU3 · `entity-status-map.md` r9 |
 
 **หมายเหตุ:** Quotation ทำ material check (create + edit) แต่ **ไม่ auto-open PR**.
@@ -129,7 +130,7 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 | `list-conventions.html` (US-LST-01) | **G1–G3 (README §3)** + Pagination/Search ทุก module | มาตรฐาน list |
 | `continuity.html` (cascade + noti matrix) | **platform.md** (noti) + cross-links | cascade reference |
 | **`brief.md` · ADR-000..009 · `scheduled-jobs.html` · entity-status-map §1.6 · stock-reservation** | **non-functional.md** (J8 · A6/A7/A8) | NFR รวม+อัปเดต |
-| **root `deletion-policy.md` · `rbac-deletion.html`** | **deletion-policy.md** + **settings.md** / **permission-matrix.md** | fold + entity ใหม่ |
+| **root `deletion-policy.md` · `rbac-deletion.html`** | **deletion-policy.md** + **settings.md** / **permission-matrix.md** | fold + entity ใหม่ · **★ Sale delete→unassign supersede rbac-deletion bulk-reassign rule** |
 | `functional-spec/traceability.html` (US-TRC) | **traceability.md** — Hub ② Non-Functional | classification เปลี่ยน |
 
 > **Archive (Hub ⑥):** functional-spec module pages (16), `rbac-deletion.html`, root `docs/deletion-policy.html`, `docs/po-reviews.html` — collapsed, superseded.
@@ -151,6 +152,7 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 | **★★ Supplier module review** | **DECIDED 2026-07-29 · settled** | price-matrix search dropdown · audit |
 | **★★ BOM module review** | **DECIDED 2026-07-29 · settled** | code lock · ราคาซื้อแก้มือ · Active/Inactive · audit |
 | **★★ Settings module review** | **DECIDED 2026-07-29 · settled** | role disable/soft-delete · user password/Google · Admin-only |
+| **★ Delete Sale → customers unassigned (blank) · US-SET-02 simplified** | **DECIDED 2026-07-29 (ปอนด์, resolve US-SET-02 flag) · settled** | ลบ Sale → assigned-Sale ของลูกค้าที่ดูแล = **ว่าง (unassigned) อัตโนมัติ**; **★ SUPERSEDE กฎเดิม "Sale delete → bulk-reassign required" + ถอดสเต็ป/หน้า bulk-reassign** (US-SET-02 simplified); Sale ว่าง = valid state (ไม่บล็อกงานขาย); reassign ภายหลังด้วยมือ (Customer.Approve); audit-logged. อัปเดต `deletion-policy.md` §1.8/§2.1-2.8/§2.15/§3/changelog · `settings.md` §2/§4c/§5 US-SET-02/§6/§7/§9/changelog · `customer.md` §3/§4.3/§others/changelog · `permission-matrix.md` §3/§4. **UX follow-up "delete-user bulk-reassign screen" = CANCELLED (ไม่ต้องทำ — แค่ยืนยัน "ลูกค้าจะไม่มีผู้ดูแล (Sale ว่าง)").** |
 | **★★ Production (การผลิต / คิวงานผลิต) module review** | **DECIDED 2026-07-29 (Production review, ปอนด์) · settled (no open Q)** | **(1) คิว 2 แท็บ** — "รอรับงาน" (search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ ทุกสถานะ · filter PO/SO · **default "พร้อมรับงาน"** · PO/SO **modal** + ลิงก์เต็ม) · "คิวงานที่รับแล้ว" (search + **PRD** · default รับงานแล้ว/Hold/กำลังผลิต/QC/พร้อมส่งมอบ · **ordering รับงานแล้ว→กำลังผลิต→QC→พร้อมส่งมอบ→Hold**). **(2) ★ 1 PO/SO : หลาย PRD = CONFIRMED** (1 line = 1 PRD, locked model) → คิว "รับแล้ว" **group PO/SO → PRD ซ้อนใต้**. **(3) หน้าจัดการ:** **actual qty ≥ ordered เสมอ** (under-production = **แก้ PO ให้จำนวนสั่ง = ผลิตจริงก่อน** → raise ⚑ follow-up + audit) · over-production → surplus→FG ตอน "พร้อมส่ง" (D13) · **"✓ พร้อมส่ง (ส่ง XX·เข้าคลัง XX)" QC-gated** (ไม่ผ่าน = disabled + popup "QC ต้องผ่านก่อน") → PRD Ready to Ship; **ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง** · **lot consume/loss เลือกเฉพาะ lot ที่มี stock; หลาย lot = FIFO** · **ปุ่ม Loss มีบนหน้า + confirm popup ทุกครั้ง** (เหตุผลบังคับ, D15) · **"ไปหน้า QC ›" เปิดเฉพาะสถานะ QC → deep-link ตรง Batch (qc แท็บ "ตรวจแบตช์")** · **confirm popup ทุก status change** · **edit-PO ในบริบทการผลิต → follow-up + audit**. **(4) ★ Stock delta:** **Adjust (ปรับยอด +) ต้องอ้าง Lot — เลือก lot มี stock หรือ "FIFO"** (เดิม RM-only). อัปเดต `production.md` (primary rewrite §2/§4/§5/§6/§7) · `stock.md` §5.1/§6/§9/§10 · `po.md` §5.2 · `customer.md` §4.1 · `qc.md` §4b/§9 · `traceability.md` §3/§4 · `non-functional.md` AU1/AU3 · `entity-status-map.md` r9 · README |
 | `scope-…` D8/credit · U4 · stock-reservation Q1 | คงตามรอบก่อน | D8 v2 · credit 60 · Option A |
 
@@ -161,6 +163,8 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 **punch-list เดิม + delta รอบก่อน:** customer · quotation · po/so · stock/GR/return · bom · production · supply-planning · dashboard/home/platform · qc/shipping/invoice/traceability/settings · pagination/search + customer dropdown component. (ดูรายละเอียดรอบก่อนใน commit history — คงไว้)
 
 > **★ รอบก่อน (Comment control · Customer Edit · Quotation REVERT Sent · Stock · Supplier/BOM · Settings SET-1..9)** — คงตามรอบก่อน (commit history).
+
+> **★ CANCELLED UX follow-up (2026-07-29 — ปอนด์, resolve US-SET-02):** งาน UX/UI ที่เคยตั้งไว้ว่า **"หน้าจอ delete-user bulk-reassign (ให้เลือก Sale ปลายทางรับลูกค้าครบก่อนลบ)" = ยกเลิก (CANCELLED — ไม่ต้องทำ)**. แทนที่ด้วย: หน้า delete-user แค่แสดง **confirm popup ที่ยืนยันว่า "ลูกค้าจะไม่มีผู้ดูแล (Sale ว่าง)"** (จำนวน N ราย, มอบหมายภายหลังได้) — ไม่มี step เลือก Sale ปลายทาง. ประกอบกับ: หน้ารายชื่อ/แก้ไขลูกค้าเพิ่ม **filter "ไม่มีผู้ดูแล (unassigned)" + reassign action** (มีใน 3 requirement docs อยู่แล้ว). ยึด `settings.md` §4c/§5 US-SET-02 · `customer.md` §4.3.
 
 > **★★ Production module review — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2026-07-29 · `production.html` + `stock.html` + `qc.html`):**
 > - **(PROD-1) แท็บ "รอรับงาน" — search:** ช่องค้น **เลข PO และ SO (ทุกสถานะ) · ชื่อลูกค้า · ข้อมูลผู้ติดต่อ (ชื่อ/เบอร์) · ช่วงวันที่สร้าง PO/SO · ช่วงวันที่ต้องการรับของ**.
@@ -186,7 +190,7 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 ## 9. Open questions
 **ไม่มี open question ค้าง — ปิดครบทั้งหมด (2026-07-29).**
 
-**คำถามที่ปิดแล้ว (2026-07-29):** Supply Planning proactive alert · Quotation abandon/review/REVERT Sent · Traceability/Reference · Customer financial summary / follow-up enum / hard block / Edit=all fields · Comment convention (12 objects) · Stock module 4 · Supplier · BOM · Settings · **★ Production (การผลิต / คิวงานผลิต) module review → DECIDED (settled, no open Q)**.
+**คำถามที่ปิดแล้ว (2026-07-29):** Supply Planning proactive alert · Quotation abandon/review/REVERT Sent · Traceability/Reference · Customer financial summary / follow-up enum / hard block / Edit=all fields · Comment convention (12 objects) · Stock module 4 · Supplier · BOM · Settings · **★ Production (การผลิต / คิวงานผลิต) module review → DECIDED (settled, no open Q)** · **★ Delete Sale → customers unassigned (US-SET-02) → DECIDED (settled)**.
 
 > **การตัดสินสมเหตุผลของ PO (ไม่ถือเป็น open question):**
 > - **★ 1 PO/SO : หลาย PRD = CONFIRMED โดย locked model** (1 line = 1 PRD — entity-status-map §1.4 · scope D-rule) → settle ทันที (ไม่ถามปอนด์) → คิว "รับแล้ว" group PO/SO → PRD ซ้อนใต้.
@@ -195,4 +199,4 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 > - **★ Stock Adjust อ้าง Lot/FIFO** — ตีความ "Adjust ต้องอ้าง Lot; ไม่มี/จำไม่ได้ = FIFO" ให้สมมาตรกับ Loss (คง genealogy ราย lot); D15 ledger append-only ไม่กระทบ.
 > ถ้าปอนด์เห็นต่างข้อใด — แจ้งปรับได้ แต่ default ปัจจุบันตามด้านบน.
 
-> **สรุปสถานะ:** ทุกรายการ **settled → READY_FOR_UX_UI**. รอบนี้ = Production module review (คิว 2 แท็บ + management page) + Stock Adjust Lot/FIFO delta.
+> **สรุปสถานะ:** ทุกรายการ **settled → READY_FOR_UX_UI**. รอบนี้ = Production module review (คิว 2 แท็บ + management page) + Stock Adjust Lot/FIFO delta + **Sale delete → customers unassigned (US-SET-02 simplified, bulk-reassign screen CANCELLED)**.

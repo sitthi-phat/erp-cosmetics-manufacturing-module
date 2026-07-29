@@ -1,11 +1,11 @@
 # Deletion Policy (Folded + Updated) — ESSENCE Hub System
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE deletion policy** (folds root `deletion-policy.md` + updates ให้ครอบ entity ใหม่ของ scope OEM/Own-Brand/Supply-Planning)
-ที่มา (locked): root `deletion-policy.md` (7 กติกา ปอนด์ล็อก) · `entity-status-map.md` · scope D1–D18 · `non-functional.md` §10 · `permission-matrix.md` · **QT cancel decision (ปอนด์ 2026-07-29)** · **BOM inactivate decision (ปอนด์ 2026-07-29)** · **★ Role disable+soft-delete decision (ปอนด์ 2026-07-29 Settings review)**
+ที่มา (locked): root `deletion-policy.md` (7 กติกา ปอนด์ล็อก) · `entity-status-map.md` · scope D1–D18 · `non-functional.md` §10 · `permission-matrix.md` · **QT cancel decision (ปอนด์ 2026-07-29)** · **BOM inactivate decision (ปอนด์ 2026-07-29)** · **★ Role disable+soft-delete decision (ปอนด์ 2026-07-29 Settings review)** · **★ Sale delete → customers unassigned/blank decision (ปอนด์ 2026-07-29)**
 > **Source of truth:** ไฟล์นี้เป็นฉบับ **authoritative ปัจจุบัน** สำหรับนโยบายการลบ. root `deletion-policy.md` = historical reference — ถ้าขัดกันให้ยึดไฟล์นี้.
 
 ## สรุปภาษาไทย
-ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **★ QT status list = Draft / Confirmed / Rejected (+ Cancelled) — ถอด "Sent" ออกแล้ว (ปอนด์ revert 2026-07-29).** **★ BOM (DECIDED 2026-07-29):** **ลบถาวรไม่ได้ → ใช้ Active/Inactive (inactivate) แทน** · **Inactive = บล็อกการเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** (คนละเรื่องกับ block ลูกค้า) **แต่ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** + กันออกจาก Supply Planning. **★ Role (DECIDED 2026-07-29 Settings review):** role มี 3 สถานะ **Active / Disabled / Deleted(soft)** — **Disabled = พักชั่วคราว (reversible), Deleted = soft-delete (recoverable)**; ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น**; **ไม่ต้องย้าย user ออกก่อน (supersede กฎเดิม "block until users moved")**. **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
+ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **★ QT status list = Draft / Confirmed / Rejected (+ Cancelled) — ถอด "Sent" ออกแล้ว (ปอนด์ revert 2026-07-29).** **★ BOM (DECIDED 2026-07-29):** **ลบถาวรไม่ได้ → ใช้ Active/Inactive (inactivate) แทน** · **Inactive = บล็อกการเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** (คนละเรื่องกับ block ลูกค้า) **แต่ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** + กันออกจาก Supply Planning. **★ Role (DECIDED 2026-07-29 Settings review):** role มี 3 สถานะ **Active / Disabled / Deleted(soft)** — **Disabled = พักชั่วคราว (reversible), Deleted = soft-delete (recoverable)**; ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น**; **ไม่ต้องย้าย user ออกก่อน (supersede กฎเดิม "block until users moved")**. **★ Sale/User (DECIDED 2026-07-29 — ปอนด์):** ลบ Sale (soft-delete) → **ลูกค้าที่ Sale คนนั้นดูแลจะกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง / unassigned)" อัตโนมัติ** — **ไม่บังคับ bulk-reassign, ไม่มีหน้า bulk-reassign** (supersede กฎเดิม "Sale delete → bulk reassign required"); Sale ว่าง = สถานะที่ถูกต้อง, reassign ภายหลังด้วยมือผ่านหน้าแก้ไขลูกค้า; ทุกการเปลี่ยนถูก audit-log. **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
 
 ---
 
@@ -17,18 +17,18 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 5. **Audit บังคับ** — ใคร/เมื่อ/**เหตุผล (comment บังคับ)**.
 6. **RUCDAA:** ลบ = **D** · undelete/restore = **Admin** · บาง entity ต้อง Approve/Manager.
 7. **เอกสารการค้า/กฎหมาย = ไม่มี delete** — ใช้ **"ยกเลิก (Cancelled/Void)"** (gapless ห้ามหาย).
-8. **Blocked delete → เสนอทางเลือก** (Disabled/Blacklist, bulk reassign, ย้าย user).
+8. **Blocked delete → เสนอทางเลือก** (Disabled/Blacklist, ปล่อยลูกค้าเป็น unassigned, ย้าย user). **★ (2026-07-29) การลบ Sale ไม่ถือเป็น blocked delete อีกต่อไป** — ทำได้ทันที, ลูกค้าที่ดูแลกลายเป็น Sale ว่าง (§2.15).
 9. **COGS out of scope** — ต้นทุนใช้ **BOM snapshot** — การลบ master ไม่กระทบต้นทุนย้อนหลัง.
 
 ---
 
 ## 2. กติกาต่อ Entity
 
-### 2.1–2.8 (คงเดิม — ปอนด์ล็อก, absorb จาก root deletion-policy · BOM + Role = ★ อัปเดต 2026-07-29)
+### 2.1–2.8 (คงเดิม — ปอนด์ล็อก, absorb จาก root deletion-policy · BOM + Role + Sale = ★ อัปเดต 2026-07-29)
 | Entity | วิธี "ลบ" | เงื่อนไขหลัก (ล็อก) | สิทธิ์ | กู้คืน |
 |---|---|---|---|---|
 | **Customer** | soft delete (flag) | flag ได้เสมอ; PO เดิมเดินต่อ, ห้าม PO/QT/SO ใหม่; แนะนำ Disabled/Blacklist แทน | D + Approve(Sale Mgr) | Admin |
-| **Sale/User** | soft delete + ปิด login | **bulk reassign ลูกค้าทั้งหมดก่อน** (ไม่มี force) | Admin | Admin |
+| **Sale/User** | soft delete + ปิด login | **★ ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง)" อัตโนมัติ — ไม่บังคับ reassign, ไม่มีหน้า bulk-reassign** (§2.15); reassign ภายหลังด้วยมือ; ลบได้ทันที | Admin | Admin |
 | **Material (RM)** | soft delete | ห้าม PO/BOM/PR/GR ใหม่ที่เกี่ยว; **Lot เดิมใช้จนหมด**; **รหัส RM แก้ไม่ได้ (create-only-lock)** | D | Admin |
 | **BOM** | **★ inactivate (Active/Inactive) — ไม่มี hard/soft-delete-flag แยก** | **ดู §2.4 (ขยาย):** Inactive → **บล็อกเปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** + กันออกจาก Supply Planning; **PO/SO/QT/PRD/Batch/FG stock ที่วิ่งอยู่แล้วเดินต่อจนจบ**; snapshot ต่อได้; **รหัส BOM/FG แก้ไม่ได้ (create-only-lock)** | D (inactivate) / U (reactivate) + เหตุผล | Reactivate (U) |
 | **Supplier** | inactive/soft delete | ห้ามซื้อใหม่; Lot เดิมใช้ได้; snapshot ราคาคงอยู่; **create/edit/active-inactive/price-matrix = audit** | D | Admin |
@@ -104,13 +104,25 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | ใครมีสิทธิ์ | Disable/Enable/Restore/remove-user-from-role = **Settings.Admin** · Soft-delete = **Settings.D** · ทุก action audit + trace |
 > authoritative = `settings.md` §4b/§5 US-SET-01. **แทน** ถ้อยคำเดิม (root rbac-deletion) "Role soft delete · ห้ามลบจนย้าย user ออกหมด".
 
+### 2.15 ★ Sale/User delete → customers become unassigned (blank) (DECIDED 2026-07-29 — ปอนด์)
+| ประเด็น | กติกา |
+|---|---|
+| ประเภท | master ผู้ใช้ (Sale ที่ดูแลลูกค้า) · **ไม่มี hard delete** → soft-delete + ปิด login |
+| **★ ผลต่อลูกค้าที่ดูแล** | เมื่อลบ Sale → **ฟิลด์ "Sale ที่ดูแล (assigned Sale)" ของลูกค้าทุกรายที่ Sale คนนั้นดูแล จะกลายเป็น BLANK (ไม่มีผู้ดูแล / unassigned) อัตโนมัติ** |
+| **★ ไม่บังคับ bulk-reassign — SUPERSEDE** | **แทนกฎเดิม "ลบ Sale ต้อง bulk-reassign ลูกค้าทั้งหมดก่อน"** — **ลบได้ทันที ไม่ต้องเลือก Sale ปลายทาง, ไม่มีหน้า/สเต็ป bulk-reassign** |
+| **Sale ว่าง = สถานะที่ถูกต้อง** | ลูกค้าที่ไม่มีผู้ดูแลเป็น state ที่ valid — ยังทำงานได้ตามปกติ (ไม่บล็อกงานขาย); **reassign ภายหลังด้วยมือ** ผ่านหน้าแก้ไขลูกค้า (customer.md §2b/§5) หรือ reassign action (Customer.Approve) |
+| **ของเดิมวิ่งต่อ** | PO/QT/SO เดิมของลูกค้าเดินต่อได้; Sale ที่ถูกลบยังปรากฏใน trace ประวัติเดิม (read-only) — หลักการ §1.4 |
+| **audit** | การลบ Sale + การ set ลูกค้าเป็น unassigned ถูก **audit-log** (ใคร/เมื่อ/เหตุผลลบ; ลูกค้าแต่ละรายลง management-history ว่า "Sale ที่ดูแลถูกล้างเป็นว่างเพราะลบผู้ใช้ …") |
+| ใครมีสิทธิ์ | ลบ Sale/User = **Settings.Admin** · reassign ภายหลัง = **Customer.Approve** (customer.md §8) |
+> authoritative = `settings.md` §5 US-SET-02 + `customer.md` §3/§5. **แทน** ถ้อยคำเดิม "Sale delete → bulk reassign required" (rbac-deletion / เดิม §2.2). **หน้าจอ bulk-reassign ที่เคยเป็น UX follow-up = ยกเลิก (ไม่ต้องทำ)** — แสดงแค่ยืนยันว่า "ลูกค้าจะไม่มีผู้ดูแล (Sale ว่าง)" ตอนลบ.
+
 ---
 
 ## 3. Matrix รวม (updated — เพิ่ม entity ใหม่)
 | Entity | วิธี "ลบ" | เงื่อนไขหลัก | สิทธิ์ | กู้คืน |
 |---|---|---|---|---|
 | Customer | soft delete | PO/QT/SO เดิมเดินต่อ, ห้ามเปิดใหม่ | D+Approve | Admin |
-| Sale/User | soft delete + ปิด login | bulk reassign ก่อน | Admin | Admin |
+| **Sale/User** | soft delete + ปิด login | **★ ลูกค้าที่ดูแลกลายเป็น Sale ว่าง (unassigned) อัตโนมัติ — ไม่บังคับ reassign, ไม่มีหน้า bulk-reassign; reassign ภายหลัง** | Admin | Admin |
 | Material | soft delete | ห้ามของใหม่; Lot เดิมใช้จนหมด; รหัสแก้ไม่ได้ | D | Admin |
 | **BOM** | **★ inactivate (Active/Inactive)** | **Inactive บล็อกเปิด QT/PO/SO ใหม่ + กันออก Supply Planning**; งานที่วิ่งอยู่/FG stock เดินต่อ; snapshot ต่อได้; รหัสแก้ไม่ได้ | D (inactivate)/U (reactivate) | Reactivate |
 | Supplier | inactive/soft delete | ห้ามซื้อใหม่; audit ทุกการเปลี่ยน + price-matrix | D | Admin |
@@ -127,10 +139,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 ---
 
 ## 4. อ้างอิงจาก module docs (ให้ module ชี้มาที่นี่)
-- `customer.md` §soft-delete · `quotation.md` §4/§8 (cancel-anytime) · `so.md` §cancel · **`bom.md` §2b/§5c (inactivate + inactive blocks sales)** · `supplier.md`/`stock.md` (FG adjust/loss) · **`settings.md` §4b/§5 (ลบ Sale/Role disable+soft-delete, bit D/Admin)** · `pr.md`/`goods-receipt.md`/`invoice.md`/`shipping.md` (void เอกสารการค้า) · `non-functional.md` §10 (soft-delete + reference-guard baseline).
+- `customer.md` §soft-delete + §3/§5 (Sale ว่าง = nullable) · `quotation.md` §4/§8 (cancel-anytime) · `so.md` §cancel · **`bom.md` §2b/§5c (inactivate + inactive blocks sales)** · `supplier.md`/`stock.md` (FG adjust/loss) · **`settings.md` §4b/§5 (ลบ Sale→ลูกค้า unassigned/Role disable+soft-delete, bit D/Admin)** · `pr.md`/`goods-receipt.md`/`invoice.md`/`shipping.md` (void เอกสารการค้า) · `non-functional.md` §10 (soft-delete + reference-guard baseline).
 
 ## 5. Open questions
-**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง "QT abandon = void-only?" = **ปิดแล้ว** (§2.9). **BOM = inactivate + inactive บล็อก QT/PO/SO** = ปิดแล้ว (§2.4). **★ Role disable+soft-delete + supersede "move users first"** = ปอนด์ตัดสินแล้ว (§2.14) — Disable/Soft-delete ได้ทันทีแม้มีสมาชิก, สมาชิกเสีย permission โดยกลไก. กติกา entity ที่เหลือ derive จากหลักการที่ล็อก.
+**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง "QT abandon = void-only?" = **ปิดแล้ว** (§2.9). **BOM = inactivate + inactive บล็อก QT/PO/SO** = ปิดแล้ว (§2.4). **★ Role disable+soft-delete + supersede "move users first"** = ปอนด์ตัดสินแล้ว (§2.14). **★ Sale delete → ลูกค้า unassigned (blank), ไม่บังคับ bulk-reassign** = ปอนด์ตัดสินแล้ว (§2.15). กติกา entity ที่เหลือ derive จากหลักการที่ล็อก.
 
 ## 6. Module changelog
 - **Folded:** root `deletion-policy.md` (หลักการ 7 ข้อ + entity 2.1–2.8) verbatim ในความหมาย.
@@ -140,3 +152,4 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 - **★ REVERTED (2026-07-29 — Pond):** ถอดสถานะ **"ส่งแล้ว (Sent)"** ออกจาก QT lifecycle ทั้งหมด → รายการสถานะที่ยกเลิกได้ = **Draft / Confirmed / Rejected** (§2.9, matrix).
 - **★ DECIDED (2026-07-29 — BOM module review, ปอนด์) — §2.4:** **BOM ลบถาวรไม่ได้ → inactivate (Active/Inactive)** · **Inactive บล็อกเปิด QT/PO/SO ใหม่ + กันออกจาก Supply Planning** · **ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** · แยกจาก block ลูกค้า.
 - **★ DECIDED (2026-07-29 — Settings module review, ปอนด์) — §2.14 (Role):** role มี 3 สถานะ **Active/Disabled/Deleted** · **Disable = พักชั่วคราว (reversible)**, **Soft-delete = recoverable** · ทั้งสองแบบ **สมาชิกเสีย permission ของ role นั้น** · **★ SUPERSEDE กฎเดิม "ห้ามลบ role จนย้าย user ออกหมด"** → ทำได้ทันทีแม้มีสมาชิก (member เสีย permission โดยกลไก); ถอด user ราย ๆ = optional · membership คงอยู่เพื่อ restore · ค้นหา+filter สถานะ. อัปเดต Role row (§2.1-2.8 + matrix §3), เพิ่ม §2.14 dedicated, cross-ref `settings.md` §4b/§5.
+- **★ DECIDED (2026-07-29 — ปอนด์, resolve US-SET-02 flag) — §2.15 (Sale/User):** **ลบ Sale → ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง / unassigned)" อัตโนมัติ** · **★ SUPERSEDE กฎเดิม "Sale delete → bulk reassign required"** → ลบได้ทันที, **ไม่มีหน้า/สเต็ป bulk-reassign**; Sale ว่าง = state ที่ valid; reassign ภายหลังด้วยมือ (Customer.Approve); audit-log. อัปเดต Sale/User row (§2.1-2.8 + matrix §3), principle §1.8, เพิ่ม §2.15 dedicated, cross-ref `settings.md` §5 US-SET-02 + `customer.md` §3/§5. **หน้า UX bulk-reassign follow-up = ยกเลิก (ไม่ต้องทำ).**
