@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "BLOCKED_NEED_INPUT",
+      "current_agent": "ux-ui",
+      "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3090,7 +3090,7 @@
                 "(A) [แนะนำ] ถอด Follow-up ออกจากสถานะ -> เหลือ 5: ผู้สนใจ/ลูกค้าประจำ/ห่างหาย/ปิดใช้งาน/บัญชีดำ + flag ต้องติดตามแยก",
                 "(B) คง Follow-up เป็นสถานะที่ 6 + มี flag ต้องติดตามซ้อนอีกชั้น"
               ],
-              "answer": null
+              "answer": "(A) ถอด Follow-up ออกจากสถานะ -> เหลือ 5 สถานะ (Lead/Active/Inactive/Disabled/Blacklist) + flag 'ต้องติดตาม' แยก"
             }
           ],
           "summary": "Customer module per Pond feedback: (1) financial summary computed from invoices+payments; (2) 'ต้องติดตาม' = independent flag orthogonal to status; (3) hard block QT/PO/SO for Disabled/Blacklist. Rippled to quotation/po/so.md + entity-status-map r6 + README. UX/UI change list C1-C4 ready. 1 open Q: retire Follow-up status (A, recommended) vs keep (B).",
@@ -3100,5 +3100,5 @@
       ]
     }
   },
-  "generated_at": "2026-07-29T17:05:00+07:00"
+  "generated_at": "2026-07-29T17:30:00+07:00"
 }
