@@ -21,9 +21,11 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}.lead{color:var(--text2);f
 .tocgrid a.flow{border-left-color:#B8873B}
 .tocgrid a.meta{border-left-color:var(--info)}
 .tocgrid a.nfr{border-left-color:#7A4E9E}
-.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
+.tocgrid a.ref{border-left-color:#9AA5B1;background:#FbFcFd}
+.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid a.ref .mt{color:var(--text2)}.tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
 .hero{border:1px solid #Bfe3e0;background:linear-gradient(135deg,#F2FAF9,#E6F4F3);border-radius:12px;padding:13px 15px;margin:12px 0}
 .hero b{color:#0B5D5C}
+.refnote{background:#F4F6F8;border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:7px;margin:6px 0 8px;font-size:12.5px}
 .srcnote{background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:12.5px}
 .srcnote code{background:#fff;border:1px solid #F1D6A6;padding:1px 5px;border-radius:4px}
 footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text3);font-size:12px}
@@ -33,9 +35,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Per-Module Requirement Package — SINGLE SOURCE OF TRUTH</h1>
-<p class="lead">slug <code>erp-v2-ui-first</code> · แบ่ง 2 ก้อน: <b>① Functional</b> (จัดตามแถบเมนูของแอป) · <b>② Non-Functional</b> · render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code></p>
+<p class="lead">slug <code>erp-v2-ui-first</code> · IA: <b>① Functional</b> (จัดตามแถบเมนูแอป) · <b>② Non-Functional</b> · <b>③ Reference</b> · render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code></p>
 
-<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง.</b> ทุกลิงก์ในหน้านี้อยู่ในแพ็กเกจเดียวกัน ไม่เด้งออกไปหน้าเก่า · เอกสารเก่า (superseded) อยู่ในหมวด Archive ของ <a href="../index.html#archive">Document Hub</a> · เปิดผ่าน HTTP เพื่อ render เต็ม · เริ่มที่ <a href="package-overview.html"><b>ภาพรวม + changelog + old→new map</b></a></div>
+<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง.</b> ทุกลิงก์ในหน้านี้อยู่ในแพ็กเกจ + เอกสารอ้างอิงที่ยังใช้ได้ ไม่เด้งออกไปหน้าเก่า · เอกสารเก่า (superseded) อยู่ในหมวด Archive ของ <a href="../index.html#archive">Document Hub</a> · เริ่มที่ <a href="package-overview.html"><b>ภาพรวม + changelog + old→new map</b></a></div>
 
 <!-- ===== (1) FUNCTIONAL ===== -->
 <div class="sec"><span class="n">①</span> FUNCTIONAL Requirements <small>— สิ่งที่ระบบทำ · จัดกลุ่มตามแถบเมนูของแอป</small></div>
@@ -52,7 +54,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="grp"><span class="dot"></span> งานขาย / Order</div>
 <div class="tocgrid">
   <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · management-history · QT/PO history</div></a>
-  <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO</div></a>
+  <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO · ยกเลิกได้ทุกสถานะ</div></a>
   <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · 2 ราง</div></a>
   <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
 </div>
@@ -70,7 +72,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="mod" href="production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus(D13) · PRD ไม่ผูกลูกค้า</div></a>
   <a class="mod" href="qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain</div></a>
-  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA SUMMARY · สั่งผลิต(D8 v2)</div></a>
+  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA · ★แจ้งเตือน Low (real-time+J8)</div></a>
   <a class="mod" href="bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit(D9)+รวม · TYPE OEM/FG · planning config</div></a>
 </div>
 
@@ -85,19 +87,35 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="home.html"><div class="mt">Home / งานที่รอ</div><div class="md">task inbox ตามสิทธิ์ · quick actions · onboarding</div></a>
   <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill · ใกล้หมด=Available</div></a>
   <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
-  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit · global search · shell</div></a>
-  <a class="mod" href="traceability.html"><div class="mt">Traceability + Audit</div><div class="md">entity/field search · genealogy · field-audit · QT head-of-chain</div></a>
+  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit (+FG→Low) · global search · shell</div></a>
   <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
 </div>
 
 <!-- ===== (2) NON-FUNCTIONAL ===== -->
 <div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
 <div class="tocgrid">
-  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-/jobs J1–J7/notification/global search/responsive/reliability</div></a>
-  <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) + matrix</div></a>
+  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-/jobs J1–J8 (+J8 Low digest)/notification (+FG→Low)/global search/responsive/reliability</div></a>
+  <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
+  <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission) · ② Non-Functional (NFR + Deletion) · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ทำต่อ parallel)</footer>
+<!-- ===== (3) REFERENCE ===== -->
+<div class="sec"><span class="n">③</span> Reference <small>— เอกสารอ้างอิงเชิงลึก (ยังใช้ได้ ไม่ถูกแทน · ไม่ใช่ spec แข่ง)</small></div>
+<div class="refnote">📎 per-module docs (หมวด ①/②) <b>อ้างอิง</b> เอกสารหลักการเหล่านี้ (ไม่ทำสำเนาซ้ำ) — authoritative reference, ไม่ใช่หน้าเก่าที่ถูกแทน.</div>
+<div class="tocgrid">
+  <a class="ref mod" href="../docs/entity-status-map.html"><div class="mt">Entity Status Map ★ (ref)</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation</div></a>
+  <a class="ref mod" href="../docs/status-journeys.html"><div class="mt">Status Journeys (ref)</div><div class="md">state machine ทุกสาย + RUCDAA + noti/deep-link</div></a>
+  <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/stock-reservation.md"><div class="mt">Stock Reservation (ref)</div><div class="md">Option A: ยืนยัน=จอง / เริ่มผลิต=ตัดจริง FIFO</div></a>
+  <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><div class="mt">Scope D1–D18 (ref)</div><div class="md">rule spine OEM/Own-Brand/Supply-Planning</div></a>
+  <a class="ref mod" href="../docs/mock-data-spec.html"><div class="mt">Mock Data Spec (ref)</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
+  <a class="ref mod" href="../docs/brief.html"><div class="mt">Product Brief (ref)</div><div class="md">Business Key Value + scope + DoD + Gate 1</div></a>
+  <a class="ref mod" href="../rtm.html"><div class="mt">RTM (ref)</div><div class="md">Story↔mockup↔journey↔UC</div></a>
+  <a class="ref mod" href="../glossary.html"><div class="mt">Glossary (ref)</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร · Lot vs Batch</div></a>
+  <a class="ref mod" href="../continuity.html"><div class="mt">Cascade + Notification (ref)</div><div class="md">20 แถว cascade (+C20) + noti matrix</div></a>
+  <a class="ref mod" href="../list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3</div></a>
+</div>
+
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ทำต่อ parallel)</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>

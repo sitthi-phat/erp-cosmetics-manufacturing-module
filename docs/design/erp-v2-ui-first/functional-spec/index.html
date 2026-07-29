@@ -29,7 +29,7 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
 .hero{border:1px solid #Bfe3e0;background:linear-gradient(135deg,#F2FAF9,#E6F4F3);border-radius:12px;padding:14px 16px;margin:14px 0}
 .hero b{color:#0B5D5C}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
-.refnote{background:#F4F6F8;border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:7px;margin:14px 0 4px;font-size:12.5px}
+.refnote{background:#F4F6F8;border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:7px;margin:6px 0 8px;font-size:12.5px}
 details.arch{margin:14px 0 0;border:1px dashed var(--border);border-radius:10px;background:#FAFAFB}
 details.arch>summary{cursor:pointer;padding:12px 15px;font-weight:600;color:var(--text2);font-size:14px}
 details.arch>summary::marker{color:var(--text3)}
@@ -43,9 +43,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="wrap">
 
 <h1>Document Hub — ESSENCE Hub System</h1>
-<p class="lead">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · โครงสร้าง 2 ก้อนหลัก: <b>Functional</b> (ระบบทำอะไร) และ <b>Non-Functional</b> (ระบบต้องทำงานอย่างไร) · ตามด้วย Architecture · Mockups · Archive</p>
+<p class="lead">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · IA: <b>① Functional</b> · <b>② Non-Functional</b> · <b>③ Reference</b> · ④ Architecture · ⑤ Mockups · ⑥ Archive</p>
 
-<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง (Single Source of Truth).</b> ทุกลิงก์ในหมวด ① และ ② พาอยู่ใน <b>Per-Module Package</b> ที่ render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code> เท่านั้น ไม่เด้งออกไปหน้าเก่า. เอกสารเก่า/ซ้ำถูกย้ายไป <a href="#archive"><b>หมวด ⑤ Archive</b></a> ด้านล่าง (เก็บไว้เป็นประวัติ). เปิดผ่าน HTTP (docs-site) เพื่อ render เต็ม.</div>
+<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง (Single Source of Truth).</b> ทุกลิงก์ในหมวด ①/②/③ พาอยู่ใน <b>Per-Module Package</b> + เอกสารอ้างอิงที่ยังใช้ได้ (render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code>) ไม่เด้งออกไปหน้าเก่า. เอกสารเก่า/ซ้ำถูกย้ายไป <a href="#archive"><b>หมวด ⑥ Archive</b></a> ด้านล่าง. เปิดผ่าน HTTP (docs-site) เพื่อ render เต็ม.</div>
 
 <!-- ========================= (1) FUNCTIONAL ========================= -->
 <div class="sec"><span class="n">①</span> FUNCTIONAL Requirements <small>— สิ่งที่ระบบทำ · จัดกลุ่มตามแถบเมนูของแอป</small></div>
@@ -65,7 +65,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="grp"><span class="dot"></span> งานขาย / Order</div>
 <div class="tocgrid">
   <a class="mod" href="modules/customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · management-history · QT/PO history</div></a>
-  <a class="mod" href="modules/quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO</div></a>
+  <a class="mod" href="modules/quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO · ยกเลิกได้ทุกสถานะ</div></a>
   <a class="mod" href="modules/po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume · surplus(D13) · 2 ราง</div></a>
   <a class="mod" href="modules/so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
 </div>
@@ -83,7 +83,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="mod" href="modules/production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus · PRD ไม่ผูกลูกค้า</div></a>
   <a class="mod" href="modules/qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain</div></a>
-  <a class="mod" href="modules/supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA SUMMARY · สั่งผลิต(D8 v2)</div></a>
+  <a class="mod" href="modules/supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA · ★แจ้งเตือน Low (real-time+J8)</div></a>
   <a class="mod" href="modules/bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit + รวม · TYPE OEM/FG · planning config</div></a>
 </div>
 
@@ -98,12 +98,22 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="modules/home.html"><div class="mt">Home / งานที่รอ</div><div class="md">task inbox ตามสิทธิ์ · quick actions · onboarding · source เดียวกับ dashboard/noti</div></a>
   <a class="mod" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill+deep link · ใกล้หมด=Available</div></a>
   <a class="mod" href="modules/settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
-  <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit · global search · shell/นำทาง</div></a>
-  <a class="mod" href="modules/traceability.html"><div class="mt">Traceability + Audit</div><div class="md">entity/field search · genealogy Lot→Batch→FG · field-audit · QT head-of-chain</div></a>
+  <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit (+FG→Low) · global search · shell/นำทาง</div></a>
   <a class="mod" href="modules/permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
 </div>
 
-<div class="refnote">📎 <b>อ้างอิงเชิงลึก (reference — ยังใช้ได้ ไม่ใช่ spec แข่ง):</b> per-module docs อ้างอิงเอกสารหลักการเหล่านี้ (ไม่ทำสำเนากติกาซ้ำ) — ไม่ใช่หน้าเก่าที่ถูกแทน.</div>
+<!-- ========================= (2) NON-FUNCTIONAL ========================= -->
+<div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
+<p class="lead">ข้อกำหนดคุณภาพระดับระบบ + วงจรชีวิตข้อมูล + พื้นผิว trace/audit ข้าม module — ฉบับจริงในแพ็กเกจเดียวกัน.</p>
+<div class="tocgrid">
+  <a class="mod nfr" href="modules/non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf &lt;2s/50 concurrent/200 PO+50 GR·วัน · auth 24h+เตะออก 06:00 · audit 1yr · GCP Cloud Run+Cloud SQL+backup · Bangkok/พ.ศ./UTC · gapless QT-/SO- · jobs J1–J8 (+J8 Low digest) · notification (+FG→Low)/global search/responsive/reliability</div></a>
+  <a class="mod nfr" href="modules/deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
+  <a class="mod nfr" href="modules/traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy Lot→Batch→FG · field-audit · QT head-of-chain · archive Super User</div></a>
+</div>
+
+<!-- ========================= (3) REFERENCE ========================= -->
+<div class="sec"><span class="n">③</span> Reference <small>— เอกสารอ้างอิงเชิงลึก (ยังใช้ได้ ไม่ถูกแทน · ไม่ใช่ spec แข่ง)</small></div>
+<div class="refnote">📎 per-module docs (หมวด ①/②) <b>อ้างอิง</b> เอกสารหลักการเหล่านี้ (ไม่ทำสำเนากติกาซ้ำ) เพื่อไม่ให้มี "2 ความจริง" — เป็น authoritative reference, ไม่ใช่หน้าเก่าที่ถูกแทน.</div>
 <div class="tocgrid">
   <a class="mod ref" href="docs/entity-status-map.html"><div class="mt">Entity Status Map ★ (ref)</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation</div></a>
   <a class="mod ref" href="docs/status-journeys.html"><div class="mt">Status Journeys (ref)</div><div class="md">state machine ทุกสาย + RUCDAA + noti/deep-link</div></a>
@@ -117,33 +127,25 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod ref" href="list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3 ในทุก module</div></a>
 </div>
 
-<!-- ========================= (2) NON-FUNCTIONAL ========================= -->
-<div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
-<p class="lead">ข้อกำหนดคุณภาพระดับระบบ + วงจรชีวิตข้อมูล — เป็นฉบับจริงในแพ็กเกจเดียวกัน.</p>
-<div class="tocgrid">
-  <a class="mod nfr" href="modules/non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf &lt;2s/50 concurrent/200 PO+50 GR·วัน · auth 24h+เตะออก 06:00 · audit 1yr · GCP Cloud Run+Cloud SQL+backup · Bangkok/พ.ศ./UTC · gapless QT-/SO- · jobs J1–J7 · notification/global search/responsive/reliability</div></a>
-  <a class="mod nfr" href="modules/deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ (Quotation/SO/FG Batch/OEM surplus/cost snapshot) + matrix</div></a>
-</div>
-
-<!-- ========================= (3) ARCHITECTURE ========================= -->
-<div class="sec"><span class="n">③</span> Architecture (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
+<!-- ========================= (4) ARCHITECTURE ========================= -->
+<div class="sec"><span class="n">④</span> Architecture (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
 <div class="tocgrid">
   <a class="mod arch" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + ลิงก์ API ทุก module</div></a>
   <a class="mod arch" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
-  <a class="mod arch" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗ (J1–J7)</div><div class="md">session 06:00 · inactivity · overdue · potential-delay · outbox · integrity · backup (→ NFR §6)</div></a>
+  <a class="mod arch" href="../architecture/scheduled-jobs.html" target="_blank"><div class="mt">Scheduled Jobs ↗ (J1–J8)</div><div class="md">session 06:00 · inactivity · overdue · potential-delay · outbox · integrity · backup · ★J8 Low digest (→ NFR §6)</div></a>
   <a class="mod arch" href="docs/adrs.html"><div class="mt">ADRs 000–009</div><div class="md">stack · stock-ledger/negative · framework · audit · noti · storage · auth/RUCDAA · gapless · soft-delete</div></a>
 </div>
 
-<!-- ========================= (4) MOCKUPS ========================= -->
-<div class="sec"><span class="n">④</span> Mockups <small>— หน้าจอจริง (spec ภาพ)</small></div>
+<!-- ========================= (5) MOCKUPS ========================= -->
+<div class="sec"><span class="n">⑤</span> Mockups <small>— หน้าจอจริง (spec ภาพ)</small></div>
 <div class="tocgrid">
   <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">หน้าจอ clickable (theme A teal) — spec ภาพของทุก module · 🟢 หน้าใหม่ · 🔵 หน้าแก้ (Quotation/SO/Supply-Planning/FG/surplus/BOM)</div></a>
 </div>
 
-<!-- ========================= (5) ARCHIVE ========================= -->
-<div class="sec" id="archive"><span class="n">⑤</span> 🗄 Archive / Historical <small>— หน้าเก่าที่ถูกแทน (superseded) · เก็บไว้เป็นประวัติเท่านั้น</small></div>
+<!-- ========================= (6) ARCHIVE ========================= -->
+<div class="sec" id="archive"><span class="n">⑥</span> 🗄 Archive / Historical <small>— หน้าเก่าที่ถูกแทน (superseded) · เก็บไว้เป็นประวัติเท่านั้น</small></div>
 <details class="arch">
-<summary>🗄 เปิดดูเอกสารเก่า (superseded) — ปกติไม่ต้องใช้ · ให้ยึด Per-Module Package (หมวด ① / ②)</summary>
+<summary>🗄 เปิดดูเอกสารเก่า (superseded) — ปกติไม่ต้องใช้ · ให้ยึด Per-Module Package (หมวด ① / ② / ③)</summary>
 <div class="inner">
 <div class="warnband">⚠ หน้าในหมวดนี้ถูก <b>แทนที่แล้ว</b> ด้วย Per-Module Package — เก็บไว้เพื่อ trace ที่มา. อย่าใช้เป็น spec. map old→new ดู <a href="modules/package-overview.html">package-overview §6</a>.</div>
 
@@ -176,5 +178,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 </details>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows + reference) · ② Non-Functional (NFR + Deletion) · ③ Architecture · ④ Mockups · ⑤ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/② ไม่ลิงก์ออกหน้าเก่า</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า</footer>
 </div></body></html>
