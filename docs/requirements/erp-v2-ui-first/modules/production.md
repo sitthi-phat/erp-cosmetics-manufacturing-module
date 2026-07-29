@@ -1,84 +1,166 @@
-# Module — Production (การผลิต · PRD/Batch)
+# Module — Production (การผลิต · คิวงานผลิต · PRD/Batch)
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/production.html` · `mockups/qc.html`
-กฎอ้างอิง: entity-status-map §1.4/§1.5 (PRD/Batch) · stock-reservation (ตัดจริง Option A) · **D3** (RM-direct) · **D8 v2** (produce-to-stock PRD ไม่ผูกลูกค้า) · **D13** (actual qty + surplus) · **D15** (loss) · README §3 · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: entity-status-map §1.4/§1.5 (PRD/Batch) · stock-reservation (ตัดจริง Option A) · **D3** (RM-direct) · **D8 v2** (produce-to-stock PRD ไม่ผูกลูกค้า) · **D13** (actual qty + surplus @ พร้อมส่ง) · **D15** (loss + ledger) · README §3 (G1–G3) · **`comment-convention.md` (comment + change-history)** · **`customer.md` §4.1 (follow-up flag reuse)** · **`po.md` §5.2 (edit-PO audit)** · **`qc.md` §4b/§9 (QC gate + deep-link target)** · **`stock.md` §5/§6 (loss + FIFO consume)**
 
 ## สรุปภาษาไทย
-คิวงานผลิต + PRD/Batch. Queue "คิวงานผลิต" **ค้นด้วย customer / PO / Own-Brand production order เลข หรือช่วงวันที่สร้าง** (G2), 20/หน้า (G1), **filter PO(OEM) vs Own-Brand production order**. รองรับ PRD ผูกลูกค้า (OEM) + PRD **ไม่ผูกลูกค้า** (produce-to-stock, D8 v2). ฝ่ายผลิตกรอก **จำนวนผลิตจริง (actual qty)** (D13); ตอน "พร้อมส่ง" ส่วนเกิน → FG stock (remark). loss = เหตุผลบังคับ ไม่อนุมัติ (D15). ตัดจริงตอน "เริ่มผลิต" (Option A, FIFO, ติดลบได้). **★ ทั้ง PRD และ Batch มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+คิวงานผลิต + PRD/Batch แบ่งเป็น **2 แท็บ**: **(1) "รอรับงาน"** (งานที่ PO/SO ยืนยันแล้ว รอฝ่ายผลิตกดรับ) และ **(2) "คิวงานที่รับแล้ว"** (งานที่รับแล้ว → กำลังผลิต → QC → พร้อมส่งมอบ). ทั้งสองแท็บ **ค้นด้วยเลข PO และ SO (ทุกสถานะ) · ชื่อลูกค้า · ข้อมูลผู้ติดต่อ · ช่วงวันที่สร้าง (PO/SO) · ช่วงวันที่ต้องการรับของ**; แท็บ "รับแล้ว" ค้น **เลข PRD** ได้เพิ่ม. filter ตามสถานะ PO/SO (มี default + ลำดับผลลัพธ์กำหนด), 20/หน้า (G1), **ดูรายละเอียด PO/SO แบบ modal + ลิงก์ไปหน้าเต็ม**. **คิว "รับแล้ว" จัดกลุ่มตาม PO/SO** โดย **PRD ซ้อนอยู่ใต้ PO/SO** (1 order line = 1 PRD → PO/SO หลาย line = หลาย PRD — CONFIRMED ตาม locked model). **หน้าจัดการ (management page):** ฝ่ายผลิตกรอก **จำนวนผลิตจริง (actual qty ≥ จำนวนสั่ง เสมอ)**; ผลิตน้อยกว่าสั่งต้อง **แก้ PO ให้จำนวนสั่ง = ผลิตจริงก่อน** (→ raise ⚑ follow-up ลูกค้า + audit ละเอียด); กด **"✓ พร้อมส่ง (ส่ง XX · เข้าคลัง XX)"** ได้ **ต่อเมื่อ QC ผ่าน** (ไม่ผ่าน = ปุ่ม disabled + popup "QC ต้องผ่านก่อน") → PRD = พร้อมส่ง (Ready to Ship) + ส่วนเกิน → FG stock; **ทุก PRD ของ PO/SO = พร้อมส่ง → PO/SO = พร้อมส่ง (จบ)**. **เลือก Lot ตัดวัตถุดิบเฉพาะ lot ที่มี stock; หลาย lot → FIFO (เก่าสุดก่อน)**. **ปุ่มบันทึก Loss มีบนหน้านี้ (confirm popup ทุกครั้ง, เหตุผลบังคับ, ตัด stock ตาม D15)**. **ปุ่ม "ไปหน้า QC ›" เปิดได้เฉพาะสถานะ ส่งตรวจคุณภาพ (QC)** → deep-link ไป qc "ตรวจแบตช์" ที่ Batch นั้นตรง ๆ. **ทุกการเปลี่ยนสถานะมี confirm popup**. **ทั้ง PRD และ Batch มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
 ## 1. Purpose
-รับงานจากคิว → สร้าง PRD (1/line) → เริ่มผลิต (gen Batch + ตัด RM) → ส่ง QC → พร้อมส่งมอบ; รองรับทั้ง OEM (ผูก PO/ลูกค้า) และ Own-Brand produce-to-stock (ไม่ผูกลูกค้า).
+รับงานจากคิว → สร้าง PRD (1/line) → เริ่มผลิต (gen Batch + ตัด RM FIFO) → ส่ง QC → พร้อมส่ง (Ready to Ship, capture surplus D13); รองรับทั้ง OEM (ผูก PO/ลูกค้า) และ Own-Brand produce-to-stock (ไม่ผูกลูกค้า). เป็น "หน้าจัดการงานผลิต" ที่ฝ่ายผลิตทำงานจริง: รับงาน, กรอกจำนวนผลิตจริง, ตัด lot, บันทึก loss, ส่ง QC, พร้อมส่ง.
 
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `production.html` | คิวงานผลิต (รอรับงาน/รับงาน/กำลังผลิต/รอ QC/พร้อมส่งมอบ/Hold/Rework) + actual qty + surplus + loss + **comment ต่อ PRD และต่อ Batch (+ "ประวัติการแก้ไข comment")** |
-| `qc.html` | ตรวจ Batch (ผ่าน/ไม่ผ่าน+feedback) — รวม Batch produce-to-stock ไม่ผูกลูกค้า (U1) |
+| `production.html` แท็บ **① รอรับงาน (Awaiting Acceptance)** | งานที่ PO/SO ยืนยันแล้ว รอฝ่ายผลิต **กด "รับงาน"** — search/filter §6.1 · ดู PO/SO detail (modal) · ปุ่ม "รับงาน" (gen PRD) |
+| `production.html` แท็บ **② คิวงานที่รับแล้ว (Accepted queue)** | งานที่รับแล้ว **จัดกลุ่มตาม PO/SO → PRD ซ้อนใต้** — search/filter §6.2 · เข้า **หน้าจัดการ (§7)** ต่อ PRD/Batch |
+| `production.html` **หน้าจัดการ (management page)** ต่อ PRD/Batch | actual qty (≥ ordered) · เลือก lot (มี stock, FIFO) · loss (+popup) · ส่ง QC · **"ไปหน้า QC ›"** (gate) · **"✓ พร้อมส่ง"** (QC-gated) · edit-PO (→follow-up+audit) · **comment ต่อ PRD และ Batch** · confirm popup ทุก status change |
+| `qc.html` | ตรวจ Batch (ผ่าน/ไม่ผ่าน+feedback) — รวม Batch produce-to-stock ไม่ผูกลูกค้า (U1); เป็นปลายทาง deep-link "ไปหน้า QC" (§7.4) |
 
 ## 3. Entities / Fields
 | ฟิลด์ | ชนิด | หมายเหตุ |
 |---|---|---|
-| PRD `PRD-{YYYYMM}-{NNNNNN}` | computed | 1/line, ออกตอน "รับงาน" · ผูก PO(OEM) **หรือ** SO produce-to-stock (ไม่ผูกลูกค้า) |
+| PRD `PRD-{YYYYMM}-{NNNNNN}` | computed | **1/line** (1 order line = 1 PRD — locked model, §5a), ออกตอน "รับงาน" · ผูก PO(OEM) **หรือ** SO produce-to-stock (ไม่ผูกลูกค้า) |
 | Batch `B-{PO}-{line}-{run}` | computed | ออกตอน "เริ่มผลิต", +run เมื่อ rework |
-| **จำนวนผลิตจริง (actual produced qty)** | units, editable | D13 · อาจเกินจำนวนสั่ง |
-| ส่วนเกิน (surplus) | units, computed | = actual − ordered (OEM) → FG stock ตอน "พร้อมส่ง" |
-| loss | units + เหตุผล(บังคับ) | ตัด on_hand, ไม่อนุมัติ (D15) |
+| **จำนวนสั่ง (ordered qty)** | units, จาก PO/SO line | read-only ที่หน้าผลิต · แก้ได้เฉพาะผ่าน edit-PO (§5c) |
+| **จำนวนผลิตจริง (actual produced qty)** | units, editable | D13 · **ต้อง ≥ จำนวนสั่งเสมอ (validation §8)** · อาจเกิน (over-production → surplus) |
+| ส่วนเกิน (surplus) | units, computed | = actual − ordered → FG stock ตอน "พร้อมส่ง" (D13) |
+| loss | units + เหตุผล(บังคับ) | ตัด on_hand, ไม่อนุมัติ (D15) · **ปุ่ม + confirm popup บนหน้าจัดการ (§7.5)** |
+| Lot ที่ตัด (consume) | ref Lot | **เลือกเฉพาะ lot ที่มี stock; หลาย lot → FIFO (§5d)** |
 | แหล่งงาน | enum {PO(OEM), Own-Brand produce-to-stock} | ใช้ filter |
-| **★ หมายเหตุ PRD (comment)** | free-text (ช่องเดียว/PRD), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** |
-| **★ หมายเหตุ Batch (comment)** | free-text (ช่องเดียว/Batch run), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ + โผล่ trace — `comment-convention.md`** · คนละฟิลด์กับ QC feedback / loss reason / surplus remark |
+| **★ หมายเหตุ PRD (comment)** | free-text (ช่องเดียว/PRD), editable | **แก้ในที่ + เก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md`** |
+| **★ หมายเหตุ Batch (comment)** | free-text (ช่องเดียว/Batch run), editable | **แก้ในที่ + เก็บประวัติ + โผล่ trace — `comment-convention.md`** · คนละฟิลด์กับ QC feedback / loss reason / surplus remark / Hold comment |
 
 ## 4. Statuses / lifecycle (entity-status-map §1.4/§1.5)
-รอรับงาน → **รับงาน** (gen PRD) → **กำลังผลิต** (gen Batch + **ตัดจริง FIFO**, ติดลบได้ — Option A) → **รอ QC** → (QC ผ่าน) **พร้อมส่งมอบ** / (ไม่ผ่าน+feedback) **Rework** (gen Batch run+1) · **Hold** (บังคับ comment).
-- **produce-to-stock PRD (ไม่ผูกลูกค้า):** QC ผ่าน → **FG เข้าคลัง per-Batch** (D12) แทนการส่งลูกค้า.
+รอรับงาน → **รับงาน** (gen PRD) → **กำลังผลิต** (gen Batch + **ตัดจริง FIFO**, ติดลบได้ — Option A) → **ส่งตรวจคุณภาพ / รอ QC** → (QC ผ่าน) **พร้อมส่งมอบ (eligible)** → **[กด "✓ พร้อมส่ง"]** → **พร้อมส่ง (Ready to Ship)** / (QC ไม่ผ่าน+feedback) **Rework** (gen Batch run+1) · **Hold** (บังคับ comment).
+- **★ QC = precondition ของ "พร้อมส่ง" (ไม่ใช่ trigger อัตโนมัติ):** Batch QC ผ่าน → PRD line **มีสิทธิ์ (eligible)** ให้กด "พร้อมส่ง"; **ปุ่ม "✓ พร้อมส่ง" เปิดได้เฉพาะเมื่อ QC ผ่าน** (ไม่ผ่าน = disabled + popup, §7.3). การกด "พร้อมส่ง" (confirm popup) = **capture surplus (D13) + ตั้ง PRD = พร้อมส่ง (Ready to Ship)**.
+- **★ Roll-up:** เมื่อ **ทุก PRD ของ PO/SO = พร้อมส่ง (Ready to Ship)** → **PO/SO = พร้อมส่ง/พร้อมจัดส่ง (done)** อัตโนมัติ → โผล่คิวจัดส่ง.
+- **produce-to-stock PRD (ไม่ผูกลูกค้า):** QC ผ่าน → กด "พร้อมส่ง" → **FG เข้าคลัง per-Batch เต็มจำนวนผลิตจริง** (D12 — ไม่มีลูกค้าให้ส่ง; ส่ง 0 · เข้าคลัง = actual).
 - **RM-direct (D3):** line วัตถุดิบตรงยังเดินผ่าน production flow (แปรรูปจริง optional).
-> **หมายเหตุ:** "Hold (บังคับ comment)" = เหตุผลของการเปลี่ยนสถานะ (คนละฟิลด์กับ comment หมายเหตุทั่วไป §3/§5b).
+> **หมายเหตุ:** "Hold (บังคับ comment)" = เหตุผลของการเปลี่ยนสถานะ (คนละฟิลด์กับ comment หมายเหตุทั่วไป §3/§5e). **Rework** = "กลับกำลังผลิต" (สีฟ้า processing) → ในแท็บ "รับแล้ว" ถือเป็นส่วนของกลุ่ม **กำลังผลิต** เพื่อการจัดลำดับ (§6.2).
 
-## 5. ★ Actual qty + Surplus (D13)
-- ระหว่างผลิต ฝ่ายผลิตกรอก **actual produced qty** (อาจ > สั่ง).
-- ตอน transition → **"พร้อมส่ง (Ready to Ship)"**: ระบบยืนยัน จำนวนสั่ง → ส่งลูกค้า · ส่วนเกิน → **เพิ่ม FG stock อัตโนมัติ (per-Batch, คง Batch identity ผูก OEM Batch/PRD/PO)** + **remark** ("สต็อกเพิ่มจากการผลิตเกิน") — **ไม่ใช่ approval gate**.
+## 5. ★ Actual qty + Surplus + Under/Over production (D13)
 
-## 5b. ★ Comment + change-history (PRD & Batch — ยึด `comment-convention.md`)
-- **PRD มีช่อง comment เดียว** และ **Batch (แต่ละ run) มีช่อง comment เดียว** — แต่ละ object แยกช่องกัน · แก้ในที่ (overwrite) จากหน้า production.
+### 5a. 1 PO/SO : หลาย PRD — CONFIRMED (grouping)
+- **ยืนยันตาม locked model:** **1 order line = 1 PRD** (entity-status-map §1.4 · scope §1.1 D-rule spine) → **PO/SO ที่มีหลาย line = หลาย PRD**. คำถามปอนด์ "1 PO มีหลาย PRD ถูกต้องไหม?" → **ถูกต้อง (settled โดยกฎที่ล็อกแล้ว — ไม่ใช่ open question).**
+- ผลต่อ UI: **แท็บ "คิวงานที่รับแล้ว" จัดกลุ่มตาม PO/SO** (header = PO/SO + ลูกค้า) → **PRD (ต่อ line) ซ้อนอยู่ใต้** เพื่อให้ฝ่ายผลิตเข้าใจ grouping + จัดลำดับผลิตได้. status ของ PO/SO = roll-up จาก PRD ใต้กลุ่ม (§4).
+
+### 5b. Over-production (reinforce D13)
+- ผลิตตามปกติ → ฝ่ายผลิต **แก้ "จำนวนผลิตจริง"** เป็นจำนวนที่มากกว่าจำนวนสั่งได้ → กด **"✓ พร้อมส่ง (ส่ง XX · เข้าคลัง XX)"** (confirm popup) → **PRD = พร้อมส่ง (Ready to Ship)**; **ส่งลูกค้า = จำนวนสั่ง · ส่วนเกิน (actual − ordered) → เพิ่ม FG stock อัตโนมัติ** (per-Batch, คง Batch identity ผูก OEM Batch/PRD/PO) + **remark** ("สต็อกเพิ่มจากการผลิตเกิน") — **ไม่ใช่ approval gate**.
+- ทุก PRD ของ PO/SO = พร้อมส่ง → PO/SO = พร้อมส่ง (done, §4 roll-up).
+
+### 5c. ★ Under-production — จำนวนผลิตจริงต้อง ≥ จำนวนสั่งเสมอ
+- **กติกา:** **จำนวนผลิตจริง (actual) ต้อง ≥ จำนวนสั่ง (PO/SO ordered qty) เสมอ** — ระบบ **ห้ามตั้ง actual < ordered** (validation §8, บล็อกจริง).
+- **จะส่งน้อยกว่าที่สั่งต้องแก้ PO ก่อน:** ถ้าผลิตได้จริงน้อยกว่าที่สั่ง → ฝ่ายผลิตต้อง **แก้ PO/SO ให้จำนวนสั่ง = จำนวนผลิตจริง (ลดจำนวนสั่งลงมา)** ก่อน แล้วจึงกด "พร้อมส่ง" (ตอนนั้น actual = ordered, ไม่มี surplus).
+- **การแก้ PO ในบริบทการผลิต (§7.6) → ผลลัพธ์บังคับ:** **(1) raise ⚑ "ต้องติดตาม (follow-up)" ที่ลูกค้า** (reuse Customer follow-up flag — `customer.md` §4.1) ให้ Sale เห็นว่า PO ถูกแก้ · **(2) audit ละเอียดระดับ field (ใคร/เมื่อ/เดิม→ใหม่)** ทุกฟิลด์ที่แก้ (`po.md` §5.2 · `traceability.md` §4).
+- loss ที่ทำให้ได้ของไม่ครบตามสั่ง → **ไม่ auto re-produce** (คนกด "ผลิตซ้ำ" เอง, D15) · การ "ส่งน้อยกว่าสั่ง" ยังต้องผ่านการแก้ PO ข้างต้นเสมอ (ไม่มีทางลัดตั้ง actual < ordered).
+
+### 5d. ★ Lot selection (consume RM) — เฉพาะ lot ที่มี stock + FIFO
+- ตอนตัดวัตถุดิบ (เริ่มผลิต / rework) → **เลือกได้เฉพาะ lot ที่ยังมี stock (on_hand > 0)** ผ่าน search dropdown (`stock.md` §10, ค้นชื่อ+รหัส).
+- **ถ้ามีหลาย lot ที่มี stock → ระบบตัดแบบ FIFO (lot เก่าสุดก่อน)** — สอดคล้อง Option A (stock-reservation) + GMP genealogy. ไม่แสดง/เลือก lot ที่ stock = 0.
+- คง negative-stock rule: ถ้ารวมทุก lot ยังไม่พอ → ตัดติดลบได้ (เตือนไม่บล็อก) แล้ว GR ชดเชย + FIFO retro-link ภายหลัง (entity-status-map §1.6).
+
+### 5e. ★ Comment + change-history (PRD & Batch — ยึด `comment-convention.md`)
+- **PRD มีช่อง comment เดียว** และ **Batch (แต่ละ run) มีช่อง comment เดียว** — แต่ละ object แยกช่องกัน · แก้ในที่ (overwrite) จากหน้าจัดการ/production.
 - ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; หน้า production/detail แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"** ต่อ PRD/Batch.
-- การแก้ = activity-log event + **โผล่บน trace** (entity=PRD หรือ Batch, field=`comment`) — ต่อจาก genealogy GMP เดิม. กติกาเต็ม = `comment-convention.md` (CC1–CC7).
+- การแก้ = activity-log event + **โผล่บน trace** (entity=PRD หรือ Batch, field=`comment`). กติกาเต็ม = `comment-convention.md` (CC1–CC7).
 - **แยกจากฟิลด์เดิม:** QC feedback (qc.md), loss reason, surplus remark, Hold comment — คนละฟิลด์กับ comment หมายเหตุทั่วไปนี้.
 
-## 6. ★ Production Queue — search/filter (delta)
-- "คิวงานผลิต" **ค้นด้วย:** เลข customer / PO / Own-Brand production order **หรือ** ช่วงวันที่สร้าง (G2).
-- **paginate 20/หน้า** (G1).
-- **filter:** PO (OEM) **vs** Own-Brand production order.
+## 6. ★ Production Queue — 2 tabs (search / filter / default / ordering + PO/SO detail modal)
 
-## 7. Actions & Permissions (D14)
-| ปุ่ม/action | Permission required (Production module) |
-|---|---|
-| ดูคิว/PRD/Batch + **ดูประวัติ comment** | Production.**Read (R)** |
-| รับงาน (gen PRD) | Production.**Update (U)** (หรือ Create @ PRD) |
-| เริ่มผลิต (gen Batch + ตัด RM) | Production.**Update (U)** |
-| กรอก actual qty / กด "พร้อมส่ง" | Production.**Update (U)** |
-| **แก้ไข comment PRD/Batch (แก้ในที่)** | Production.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
-| บันทึก loss | Production.**Update (U)** + เหตุผล |
-| ผลิตซ้ำ (rework) | Production.**Update (U)** |
-| Hold | Production.**Update (U)** + comment |
-| ตัดสิน QC (ผ่าน/ไม่ผ่าน) | **QC.Update (U)** (หน้า qc เท่านั้น) |
-> surplus = auto (ไม่มี permission แยก).
+### 6.1 แท็บ ① "รอรับงาน (Awaiting Acceptance)"
+- **Search (ครอบทุกสถานะ):**
+  - เลข **PO** และ เลข **SO** (ทุกสถานะ)
+  - **ชื่อลูกค้า (customer name)**
+  - **ข้อมูลผู้ติดต่อ (contact information)** — ชื่อ/เบอร์ผู้ติดต่อ
+  - **ช่วงวันที่สร้าง PO/SO (created-date range)**
+  - **ช่วงวันที่ต้องการรับของ (required delivery-date range)**
+- **Filter:** ตาม **สถานะ PO และ SO** · **default filter = "พร้อมรับงาน (ready to accept)"** — เปิดแท็บมาเห็นเฉพาะงานที่รอรับก่อน (ลด noise).
+- **Action:** ปุ่ม **"รับงาน"** ต่อ line → gen PRD (§4) — confirm popup (§7.7).
+- **ดู PO/SO detail:** คลิกได้ → **modal dialog** (ไม่สลับหน้า) แสดงข้อมูล PO/SO ให้ฝ่ายผลิตเห็นรายละเอียด + **ลิงก์ "เปิดหน้า PO/SO เต็ม"** (ไป po-detail/so-detail) สำหรับรายละเอียดครบ. กลับมาไม่เสีย state (G3).
+- 20/หน้า (G1).
+
+### 6.2 แท็บ ② "คิวงานที่รับแล้ว (Accepted queue)"
+- **Search (ครอบทุกสถานะ):** เลข **PO**, **SO**, **และ PRD** · **ชื่อลูกค้า** · **ข้อมูลผู้ติดต่อ** · **ช่วงวันที่สร้าง** · **ช่วงวันที่ต้องการรับของ**.
+- **Filter:** ตามสถานะ PO/SO · **default filter = รับงานแล้ว · Hold · กำลังผลิต · QC (ส่งตรวจคุณภาพ) · พร้อมส่งมอบ**.
+- **★ Ordering ของผลลัพธ์:** **รับงานแล้ว → กำลังผลิต → QC → พร้อมส่งมอบ → Hold** (Rework แสดงในกลุ่ม "กำลังผลิต" — §4).
+- **Grouping:** จัดกลุ่มตาม **PO/SO → PRD ซ้อนใต้** (§5a). สถานะกลุ่ม = roll-up.
+- **ดู PO/SO detail:** modal + ลิงก์หน้าเต็ม (เหมือน §6.1).
+- **เข้าหน้าจัดการ (§7):** คลิก PRD/Batch → หน้าจัดการงานผลิต.
+- 20/หน้า (G1).
+
+## 7. ★ Management page — actions (หน้าจัดการงานผลิต)
+
+### 7.1 กรอกจำนวนผลิตจริง (actual qty)
+- ฟิลด์ **"จำนวนผลิตจริง"** editable · **validation actual ≥ ordered** (§8) · แสดง preview "ส่ง XX · เข้าคลัง XX" (surplus = actual − ordered).
+
+### 7.2 เลือก Lot ตัดวัตถุดิบ (FIFO)
+- เลือกเฉพาะ lot ที่มี stock · หลาย lot → FIFO (§5d).
+
+### 7.3 "✓ พร้อมส่ง (ส่ง XX · เข้าคลัง XX)" — QC-gated
+- **เปิดได้เฉพาะเมื่อ Batch/PRD ผ่าน QC แล้ว** · **ถ้ายังไม่ผ่าน QC → ปุ่ม disabled + popup "QC ต้องผ่านก่อน"** (กดไม่ได้).
+- เมื่อกด (QC ผ่าน) → **confirm popup** ยืนยัน "ส่ง XX · เข้าคลัง XX" → ตั้ง PRD = พร้อมส่ง (Ready to Ship) + capture surplus → FG (D13, §5b). Roll-up PO/SO (§4).
+
+### 7.4 "ไปหน้า QC ›" — deep-link (gate)
+- **เปิดได้เฉพาะเมื่อสถานะ = ส่งตรวจคุณภาพ (QC / รอ QC)** · สถานะอื่น = disabled.
+- คลิก → **navigate ตรงไปหน้า qc → แท็บ "ตรวจแบตช์" → Batch นั้นโดยตรง** (deep-link ไป `qc.html` batch tab ของ Batch นั้น — `qc.md` §9). ไม่ให้ตัดสิน QC ที่หน้าผลิต (คงกฎ: ตัดสินที่หน้า QC เท่านั้น).
+
+### 7.5 บันทึก Loss — ปุ่มต้องมีบนหน้านี้
+- **ปุ่ม "บันทึก Loss" มีอยู่บนหน้าจัดการ** (ปอนด์แจ้งว่าหาไม่เจอ → เพิ่มให้ชัด).
+- **confirm popup ทุกครั้ง** · **เหตุผลบังคับ (mandatory reason)** · **ตัด on_hand อย่างเดียว, ไม่อนุมัติ** · เป็น ledger movement (reason+source=Batch/PRD) ตาม D15 (`stock.md` §5/§6). loss ทำให้ได้ไม่ครบ → ไม่ auto re-produce (§5c).
+
+### 7.6 แก้ PO ในบริบทการผลิต (edit-PO) → follow-up + audit
+- ฝ่ายผลิตแก้ PO (เช่น ลดจำนวนสั่งลงเพื่อ under-production §5c, หรือแก้รายละเอียด) จากบริบทการผลิต → **บันทึกผ่าน PO module** (`po.md` §5.2):
+  - **raise ⚑ "ต้องติดตาม" ที่ลูกค้า** (reuse Customer follow-up flag, `customer.md` §4.1) — Sale เห็นว่า PO ถูกแก้.
+  - **audit ละเอียดระดับ field** (ใคร/เมื่อ/เดิม→ใหม่ ทุกฟิลด์ที่แก้ — `traceability.md` §4 · `non-functional.md` AU1).
+- confirm popup (เป็น status/data change §7.7).
+
+### 7.7 ★ Confirm popup ทุกการเปลี่ยนสถานะ
+- **ทุก action ที่เปลี่ยนสถานะ** (รับงาน, เริ่มผลิต, ส่งตรวจ QC, พร้อมส่ง, Hold, ผลิตซ้ำ/rework, loss, edit-PO) → **มี confirm popup ก่อนดำเนินการเสมอ**. Hold/loss/edit-PO/ยกเลิก = บังคับเหตุผลตามเดิม.
 
 ## 8. Validations
-- actual qty ≥ 0; surplus < 0 (ผลิตขาด) → ไม่ auto re-produce (คนกด "ผลิตซ้ำ", D15).
-- loss = เหตุผลบังคับ.
-- QC ไม่ผ่าน = feedback บังคับ.
-- production ไม่มีปุ่มตัดสิน QC (เห็นผลเท่านั้น).
+- **★ actual qty ≥ ordered qty เสมอ** — ตั้ง actual < ordered = **บล็อก** (ต้องแก้ PO ลงก่อน §5c). actual ≥ 0.
+- **★ "✓ พร้อมส่ง" ต้อง QC ผ่านก่อน** — ไม่ผ่าน = disabled + popup "QC ต้องผ่านก่อน" (§7.3).
+- **★ "ไปหน้า QC" เปิดเฉพาะสถานะ ส่งตรวจคุณภาพ (QC)** (§7.4).
+- **★ Lot consume: เลือกได้เฉพาะ lot ที่มี stock; หลาย lot = FIFO** (§5d).
+- **★ ทุกการเปลี่ยนสถานะ = confirm popup** (§7.7).
+- loss = เหตุผลบังคับ + confirm popup (§7.5).
+- QC ไม่ผ่าน = feedback บังคับ (ที่หน้า QC).
+- production ไม่มีปุ่มตัดสิน QC (เห็นผลเท่านั้น; ตัดสินที่หน้า QC).
 - **★ comment PRD/Batch (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
 
-## 9. Pagination / Search
-- คิวงานผลิต: 20/หน้า (G1) · search เลข (customer/PO/Own-Brand order) หรือช่วงวันที่ (G2) · filter OEM vs Own-Brand.
+## 9. Actions & Permissions (D14)
+| ปุ่ม/action | Permission required |
+|---|---|
+| ดูคิว 2 แท็บ/PRD/Batch + **ดูประวัติ comment** + ดู PO/SO modal | Production.**Read (R)** (+ Customer.R สำหรับ modal ลูกค้า) |
+| รับงาน (gen PRD) | Production.**Update (U)** (หรือ Create @ PRD) |
+| เริ่มผลิต (gen Batch + ตัด RM FIFO) | Production.**Update (U)** |
+| กรอก actual qty / เลือก lot / กด "✓ พร้อมส่ง" | Production.**Update (U)** |
+| บันทึก Loss (บนหน้าจัดการ) | Production.**Update (U)** + เหตุผล |
+| **แก้ PO ในบริบทการผลิต (edit-PO)** | **PO.Update (U)** (+ raise follow-up + audit — `po.md` §5.2) |
+| **แก้ไข comment PRD/Batch (แก้ในที่)** | Production.**Update (U)** (เก็บประวัติ auto) |
+| ผลิตซ้ำ (rework) / Hold | Production.**Update (U)** (Hold + comment) |
+| **"ไปหน้า QC ›" (navigate)** | Production.**Read (R)** (นำทาง) · ตัดสิน = **QC.Update/Approve** ที่หน้า QC |
+> surplus = auto (ไม่มี permission แยก).
 
-## 10. Cross-links
-- FG-in/surplus → `stock.md` · produce-to-stock ที่มา → `so.md` §6 + `supply-planning.md` (D8 v2) · reservation/consume → stock-reservation · QC Batch → qc (U1).
-- **Comment + change-history → `comment-convention.md` · field-audit/genealogy → `traceability.md` §4.**
+## 10. Pagination / Search
+- ทั้ง 2 แท็บ: 20/หน้า (G1).
+- **แท็บ รอรับงาน:** search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ · filter สถานะ PO/SO (default "พร้อมรับงาน").
+- **แท็บ รับแล้ว:** search **+ PRD** · filter สถานะ (default รับงานแล้ว/Hold/กำลังผลิต/QC/พร้อมส่งมอบ) · ordering รับงานแล้ว→กำลังผลิต→QC→พร้อมส่งมอบ→Hold · grouping PO/SO.
 
-## 11. Module changelog
-- **เพิ่ม:** queue search (เลข/ช่วงวันที่) + filter OEM vs Own-Brand · (คงเดิม) actual qty/surplus (D13), PRD ไม่ผูกลูกค้า (D8 v2), loss (D15).
-- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** ทั้งบน **PRD และ Batch (แต่ละ run)** — ยึด `comment-convention.md` (§3 fields, §5b, §7 permission). คนละฟิลด์กับ QC feedback/loss reason/surplus remark/Hold comment.
+## 11. Cross-links
+- FG-in/surplus/loss/lot-FIFO → `stock.md` §5/§6 · produce-to-stock ที่มา → `so.md` §6 + `supply-planning.md` (D8 v2) · reservation/consume → stock-reservation · **QC gate + deep-link "ตรวจแบตช์" → `qc.md` §4b/§9**.
+- **edit-PO (จากการผลิต) → follow-up + field audit → `po.md` §5.2 · follow-up flag → `customer.md` §4.1.**
+- **Comment + change-history → `comment-convention.md` · field-audit/genealogy/status-change audit → `traceability.md` §4 · `non-functional.md` AU1.**
+
+## 12. Module changelog
+- **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):**
+  1. **คิวผลิต 2 แท็บ:** "รอรับงาน" (search PO/SO/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ ทุกสถานะ · filter PO/SO · **default "พร้อมรับงาน"** · ดู PO/SO modal + ลิงก์เต็ม) และ **"คิวงานที่รับแล้ว"** (search + **PRD** · default รับงานแล้ว/Hold/กำลังผลิต/QC/พร้อมส่งมอบ · **ordering รับงานแล้ว→กำลังผลิต→QC→พร้อมส่งมอบ→Hold**) — §2/§6/§10.
+  2. **★ CONFIRMED 1 PO/SO : หลาย PRD** (1 line = 1 PRD) → คิว "รับแล้ว" **จัดกลุ่มตาม PO/SO → PRD ซ้อนใต้** (§5a) — settled โดย locked model (ไม่ใช่ open question).
+  3. **หน้าจัดการ:** **actual qty ≥ ordered เสมอ** (§5c validation) · **over-production → surplus→FG ตอนพร้อมส่ง** (reinforce D13, §5b) · **under-production → แก้ PO ลงก่อน (→follow-up+audit)** (§5c/§7.6) · **lot consume เฉพาะ lot มี stock + FIFO** (§5d) · **"✓ พร้อมส่ง" QC-gated + popup "QC ต้องผ่านก่อน"** (§7.3) · **ปุ่ม Loss มีบนหน้า + confirm popup ทุกครั้ง** (§7.5) · **"ไปหน้า QC" เปิดเฉพาะสถานะ QC → deep-link ตรง Batch** (§7.4) · **confirm popup ทุก status change** (§7.7).
+  4. **edit-PO ในบริบทการผลิต → raise ⚑ follow-up + audit ละเอียด** (§7.6, ref `po.md` §5.2/`customer.md` §4.1).
+- **★ Reconcile lifecycle:** QC pass = **precondition** ของ "พร้อมส่ง" (ไม่ auto), การกด "พร้อมส่ง" = capture surplus + Ready to Ship; ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง (§4) — sync entity-status-map §1.4.
+- **คงเดิม (รอบก่อน):** actual qty/surplus (D13), PRD ไม่ผูกลูกค้า (D8 v2), loss (D15), comment PRD/Batch (comment-convention.md).
