@@ -164,23 +164,31 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <!-- ===== ปรับสถานะ (status change) — จัดการคำขอนี้ · หมายเหตุ (comment) ย้ายเข้ามาอยู่ในนี้ · comment-convention CC1–CC7 · แยกจาก "เหตุผลยกเลิก" (บังคับ) ===== -->
     <div class="statusbox" style="border:1px solid var(--border2);border-radius:var(--radius);background:#FAFBFC;padding:14px 16px;margin-top:4px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px"><h3 style="font-size:14px">⚙️ ปรับสถานะคำขอ (status change)</h3><span class="tiny">จัดการคำขอนี้ · เปลี่ยนสถานะ + บันทึกหมายเหตุ</span></div>
-      <!-- หมายเหตุ (comment) control — reusable per comment-convention CC1–CC7 · edit-in-place/overwrite + non-deletable change history -->
-      <div class="cmt">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px"><label style="font-size:13px;font-weight:500">📝 หมายเหตุ (comment) <span class="tiny">— บันทึกทั่วไป, ไม่บังคับ · ช่องเดียว แก้ทับได้</span></label><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div>
-        <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">เร่งด่วน — สายผลิตรอแอลกอฮอล์ล็อตนี้ ขอ supplier ส่งภายใน 2 วัน</textarea>
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
-          <span class="tiny">แก้ล่าสุด: <b>วิภา</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับ "เหตุผลยกเลิกคำขอ" (บังคับ)</b></span>
-          <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
-        <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
-          <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
-          <div style="font-size:13px">
-            <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · วิภา &nbsp;<span class="muted">เดิม:</span> "รอ supplier ยืนยัน" <span class="muted">→ ใหม่:</span> "เร่งด่วน — สายผลิตรอแอลกอฮอล์ล็อตนี้ ขอ supplier ส่งภายใน 2 วัน"</div>
-            <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · วิภา &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รอ supplier ยืนยัน"</div></div>
-          <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+      <!-- ── BLOCK 1 (TOP): status ACTION buttons — primary purpose of this section ── -->
+      <div class="sub-block">
+        <div class="tiny" style="font-weight:600;margin-bottom:10px">1) เปลี่ยนสถานะคำขอ <span class="muted" style="font-weight:400">— การกระทำหลักของส่วนนี้</span></div>
+        <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap"><button class="btn btn-danger">ยกเลิกคำขอ</button><button class="btn btn-primary">ปิดคำขอ (รับตามจริง 200)</button></div>
+        <div class="tiny" style="margin-top:8px">ℹ️ การกด <b>ยกเลิกคำขอ</b> ต้องกรอก <b>"เหตุผลยกเลิก" (บังคับ)</b> — เป็นคนละช่องกับหมายเหตุด้านล่าง</div>
       </div>
-      <!-- status action buttons (each PR's ปรับสถานะ controls) -->
-      <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:14px;border-top:1px solid var(--border2);padding-top:14px"><button class="btn btn-danger">ยกเลิกคำขอ</button><button class="btn btn-primary">ปิดคำขอ (รับตามจริง 200)</button></div>
-      <div class="tiny" style="margin-top:8px">ℹ️ การกด <b>ยกเลิกคำขอ</b> ต้องกรอก <b>"เหตุผลยกเลิก" (บังคับ)</b> — เป็นคนละช่องกับหมายเหตุด้านบน</div>
+      <!-- ── divider between status actions (top) and note/comment (bottom) ── -->
+      <div style="border-top:1px solid var(--border2);margin:16px 0"></div>
+      <!-- ── BLOCK 2 (BOTTOM): หมายเหตุ (comment) control — reusable per comment-convention CC1–CC7 · edit-in-place/overwrite + non-deletable change history ── -->
+      <div class="sub-block">
+        <div class="tiny" style="font-weight:600;margin-bottom:10px">2) หมายเหตุ (comment) <span class="muted" style="font-weight:400">— บันทึกทั่วไป, ไม่บังคับ · แยกจากการเปลี่ยนสถานะ</span></div>
+        <div class="cmt">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px"><label style="font-size:13px;font-weight:500">📝 หมายเหตุ (comment) <span class="tiny">— ช่องเดียว แก้ทับได้</span></label><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div>
+          <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">เร่งด่วน — สายผลิตรอแอลกอฮอล์ล็อตนี้ ขอ supplier ส่งภายใน 2 วัน</textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+            <span class="tiny">แก้ล่าสุด: <b>วิภา</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับ "เหตุผลยกเลิกคำขอ" (บังคับ)</b></span>
+            <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+          <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+            <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
+            <div style="font-size:13px">
+              <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · วิภา &nbsp;<span class="muted">เดิม:</span> "รอ supplier ยืนยัน" <span class="muted">→ ใหม่:</span> "เร่งด่วน — สายผลิตรอแอลกอฮอล์ล็อตนี้ ขอ supplier ส่งภายใน 2 วัน"</div>
+              <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · วิภา &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รอ supplier ยืนยัน"</div></div>
+            <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+        </div>
+      </div>
     </div>
   </div></div>
  </div>
