@@ -192,7 +192,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    document.getElementById('cust-a').style.display=m==='a'?'block':'none';
    document.getElementById('cust-b').style.display=m==='b'?'block':'none';
    document.getElementById('pane-a').style.display=m==='a'?'block':'none';
-   document.getElementById('pane-b').style.display=m==='b'?'block':'none';}
+   document.getElementById('pane-b').style.display=m==='b'?'block':'none';
+   document.getElementById('soConfirmBtn').textContent=m==='a'?'ยืนยันใบสั่งขาย (จอง FG) (U)':'ยืนยันผลิตเก็บสต็อก (สร้าง PRD) (C)';}
  </script>
  <div class="pagehead"><div><h1>สร้างใบสั่งขาย (Own-Brand)</h1><div class="sub">สาย <b>Own-Brand</b> · <span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600">🧾 เลขที่: (ระบบออกให้เมื่อบันทึก)</span> · <b>ไม่มีใบเสนอราคา (Quotation)</b> · เลือกโหมดตาม D2 — (ก) ขายจากสต็อก = <b>ต้องเลือกลูกค้า</b> / (ข) ผลิตเก็บสต็อก = <b>ไม่ต้องเลือกลูกค้า</b></div></div><a class="btn btn-ghost" href="so-list.html">← ย้อนกลับ</a></div>
  <div class="card"><div class="card-b" style="padding-bottom:14px">
@@ -260,7 +261,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
        <div style="font-size:13px;color:var(--text2)">ยังไม่มีประวัติ — นี่คือการตั้งค่าครั้งแรก (เมื่อบันทึกแล้วแก้ในภายหลังจะเก็บ เดิม→ใหม่ ที่นี่)</div>
        <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
    </div></div>
-   <div class="footerbar" style="position:static;margin:0;border:1px solid var(--border2);border-radius:var(--radius-lg);background:#fff"><button class="btn">บันทึกร่าง (C)</button><button class="btn">ยกเลิก</button><button class="btn btn-primary" onclick="openSave()">ยืนยันใบสั่งขาย (จอง FG) (U)</button></div>
+   <div class="footerbar" style="position:static;margin:0;border:1px solid var(--border2);border-radius:var(--radius-lg);background:#fff"><button class="btn">บันทึกร่าง (C)</button><button class="btn">ยกเลิก</button><button class="btn btn-primary" id="soConfirmBtn" onclick="openSave()">ยืนยันใบสั่งขาย (จอง FG) (U)</button></div>
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>FG ใช้ได้ (ราย Batch · FIFO)</h3><span class="tiny">D16</span></div><div class="card-b">
