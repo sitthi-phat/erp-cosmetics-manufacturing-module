@@ -3096,9 +3096,47 @@
           "summary": "Customer module per Pond feedback: (1) financial summary computed from invoices+payments; (2) 'ต้องติดตาม' = independent flag orthogonal to status; (3) hard block QT/PO/SO for Disabled/Blacklist. Rippled to quotation/po/so.md + entity-status-map r6 + README. UX/UI change list C1-C4 ready. 1 open Q: retire Follow-up status (A, recommended) vs keep (B).",
           "overridden_by": null,
           "updated_at": "2026-07-29T17:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "customer-screens",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "C1 financial summary card (3 THB totals, link to invoices)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C2 follow-up flag separate badge + 5-status set (Follow-up removed) + set/clear reason",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C3 customers list follow-up filter + 5-status chips + status+flag combos",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C4 Disabled/Blacklist hard-block in G4 dropdown on QT/PO/SO(ก) + Convert-to-PO block note",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/customer-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/mockups/quotation-create.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/so-create.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "CUSTOMER MODULE DONE (spec+screens): financial summary, follow-up flag separate from 5-status enum, list filter, Disabled/Blacklist hard-block on sales. PO now working Quotation module spec in parallel.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T18:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T17:45:00+07:00"
+  "generated_at": "2026-07-29T18:05:00+07:00"
 }
