@@ -164,6 +164,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .cmodal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
 .cmodal-b{padding:20px}
 .cmodal-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px}
+/* ===== G8/NS-B reusable "number-on-save" confirmation popup — lift into ONE component (only number(s)+summary vary per screen) ===== */
+.svm-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:80;overflow:auto;padding:32px 16px}
+.svm-bg.open{display:block}
+.svm{max-width:520px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.svm-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.svm-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+.svm-b{padding:20px}
+.svm-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.svm-num{display:flex;align-items:center;gap:12px;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:14px 16px}
+.svm-num .ic{font-size:22px}.svm-num .lb{font-size:12px;color:#0B5754}
+.svm-num .no{font-size:22px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1.25}
+.svm-list{margin-top:12px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.svm-list .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);font-size:13px}
+.svm-list .r:last-child{border-bottom:none}.svm-list .r b{font-variant-numeric:tabular-nums}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class="active"><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="quotation-list.html">ใบเสนอราคา</a> › <b>สร้างใหม่</b></div></div>
@@ -174,7 +188,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย OEM</div></div></div></div></div>
   <div class="content">
 
- <div class="pagehead"><div><h1>สร้างใบเสนอราคา (OEM)</h1><div class="sub">เลขอัตโนมัติ <b>QT-202607-000013</b> · line เป็น <b>สินค้า BOM หรือวัตถุดิบตรง</b> + จำนวน + ราคา/หน่วย (แก้ได้ · default จากราคาขาย BOM) · THB VAT 7% · <b>ไม่มีวันหมดอายุ</b></div></div><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a></div>
+ <div class="pagehead"><div><h1>สร้างใบเสนอราคา (OEM)</h1><div class="sub"><span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600">🧾 เลขที่: (ระบบออกให้เมื่อบันทึก)</span> · line เป็น <b>สินค้า BOM หรือวัตถุดิบตรง</b> + จำนวน + ราคา/หน่วย (แก้ได้ · default จากราคาขาย BOM) · THB VAT 7% · <b>ไม่มีวันหมดอายุ</b></div></div><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a></div>
  <div class="split">
   <div>
    <div class="card"><div class="card-h"><h3>1. ข้อมูลใบเสนอราคา</h3></div><div class="card-b"><div class="grid2">
@@ -236,12 +250,12 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
        <div style="font-size:13px;color:var(--text2)">ยังไม่มีประวัติ — นี่คือการตั้งค่าครั้งแรก (เมื่อบันทึกแล้วแก้ในภายหลังจะเก็บ เดิม→ใหม่ ที่นี่)</div>
        <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
    </div></div>
-   <div class="footerbar" style="position:static;margin:0;border:1px solid var(--border2);border-radius:var(--radius-lg);background:#fff"><button class="btn">บันทึกร่าง (Draft)</button><button class="btn">ยกเลิก</button><a class="btn btn-primary" href="quotation-print.html">บันทึก</a></div>
-   <div class="notify" style="margin-top:10px">🖨 กด <b>"บันทึก"</b> → ออกเลข QT + เปิด <b>มุมมองพร้อมพิมพ์ (print-ready)</b> ทันที เพื่อพิมพ์/ส่งให้ลูกค้า · การส่งใบเสนอราคา = พิมพ์/แชร์ ไม่ใช่การเปลี่ยนสถานะ</div>
+   <div class="footerbar" style="position:static;margin:0;border:1px solid var(--border2);border-radius:var(--radius-lg);background:#fff"><button class="btn">บันทึกร่าง (Draft)</button><button class="btn">ยกเลิก</button><button class="btn btn-primary" onclick="openSave()">บันทึก</button></div>
+   <div class="notify" style="margin-top:10px">🖨 กด <b>"บันทึก"</b> → ออกเลข QT + เด้ง <b>popup ยืนยัน (เลข + สรุป)</b> พร้อมลิงก์เปิด <b>มุมมองพร้อมพิมพ์ (print-ready)</b> เพื่อพิมพ์/ส่งให้ลูกค้า · การส่งใบเสนอราคา = พิมพ์/แชร์ ไม่ใช่การเปลี่ยนสถานะ</div>
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>เวอร์ชัน & ขั้นตอนถัดไป</h3></div><div class="card-b">
-     <div class="alert alert-info" style="font-size:13px"><span class="ai">🧾</span><div><b>เลข QT-202607-000013</b> ออกอัตโนมัติเมื่อบันทึก (gapless ต่อเดือน) · <b>แก้ทุกครั้งหลังบันทึก = เวอร์ชัน/เลขใหม่</b> เก็บประวัติ (immutable เมื่อออกไปแล้ว) — D18-4</div></div>
+     <div class="alert alert-info" style="font-size:13px"><span class="ai">🧾</span><div><b>เลขเอกสารออกตอนบันทึก (G8):</b> ยังไม่แสดงเลขก่อนบันทึก — กด <b>"บันทึก"</b> ระบบจึงออกเลข QT (gapless ต่อเดือน) + เด้ง popup ยืนยัน เลข+สรุป · <b>ร่างที่ไม่บันทึกไม่กินเลข</b> · แก้/เวอร์ชันใหม่หลังบันทึก = <b>ใช้เลขเดิม</b> (NS-D · D18-4)</div></div>
      <div class="flow" style="margin:8px 0 6px"><div class="s cur"><span class="n">1</span>ร่าง</div><div class="line"></div><div class="s"><span class="n">2</span>ยืนยัน</div><div class="line"></div><div class="s"><span class="n">3</span>ออก PO</div></div>
      <div class="notify" style="margin-top:12px">➡️ กด <b>"Convert to PO"</b> ที่หน้ารายละเอียด → popup ยืนยัน → QT = <b>ยืนยัน (Confirmed)</b> ทันที (immutable) แล้วเลือกออก <b>PO เลขใหม่</b> เดี๋ยวนี้ (prefill) หรือทีหลัง + เก็บลิงก์ QT↔PO (D18) → เข้าสาย OEM เดิม</div>
      <div class="notify" style="margin-top:8px">✎ <b>หน้านี้ใช้ตอนแก้ (เวอร์ชันใหม่) ด้วย</b> — มี <b>"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"</b> ครบเช่นเดียวกับตอนสร้าง (Q3)</div>
@@ -258,9 +272,21 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div>
   <div class="cmodal-f"><a class="btn" href="customer-detail.html">เปิดหน้าเต็ม</a><button class="btn btn-primary" onclick="closeCust()">← กลับไปกรอกฟอร์ม</button></div>
 </div></div>
+<!-- ===== G8/NS-B confirmation popup (QT) — same reusable block on every create screen ===== -->
+<div class="svm-bg" id="saveModal" onclick="if(event.target===this)closeSave()"><div class="svm">
+  <div class="svm-h"><h3>✅ บันทึกสำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeSave()" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="svm-num"><span class="ic">🧾</span><div><div class="lb">เลขที่ระบบออกให้ (gapless ต่อเดือน · ออกตอนบันทึก)</div><div class="no">QT-202607-000013</div></div></div>
+    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>ลูกค้า</dt><dd>บริษัท บิวตี้ เอเชีย จำกัด</dd><dt>จำนวนรายการ</dt><dd>2 รายการ</dd><dt>ยอดรวม (รวม VAT)</dt><dd class="tnum">51,360.00 บาท</dd></dl>
+    <div class="notify" style="margin-top:12px">ℹ️ ร่างที่ไม่บันทึกจะไม่กินเลข (gapless) · แก้ไข/เวอร์ชันใหม่/ยกเลิก = <b>ใช้เลขเดิม</b> (NS-D)</div>
+  </div>
+  <div class="svm-f"><a class="btn" href="quotation-detail.html">👁 ดูรายละเอียด</a><a class="btn" href="quotation-print.html">🖨 พิมพ์</a><button class="btn btn-primary" onclick="closeSave()">เสร็จสิ้น</button></div>
+</div></div>
 <script>
 function cddTog(){document.getElementById('custdd').classList.toggle('open')}
 function openCust(){document.getElementById('custModal').classList.add('open')}
 function closeCust(){document.getElementById('custModal').classList.remove('open')}
+function openSave(){document.getElementById('saveModal').classList.add('open')}
+function closeSave(){document.getElementById('saveModal').classList.remove('open')}
 </script>
 <nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

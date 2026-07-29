@@ -139,6 +139,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+/* ===== G8/NS-B reusable "number-on-save" confirmation popup — lift into ONE component (only number(s)+summary vary per screen) ===== */
+.svm-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:80;overflow:auto;padding:32px 16px}
+.svm-bg.open{display:block}
+.svm{max-width:520px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.svm-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.svm-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+.svm-b{padding:20px}
+.svm-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.svm-num{display:flex;align-items:center;gap:12px;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:14px 16px}
+.svm-num .ic{font-size:22px}.svm-num .lb{font-size:12px;color:#0B5754}
+.svm-num .no{font-size:22px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1.25}
+.svm-list{margin-top:12px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.svm-list .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);font-size:13px}
+.svm-list .r:last-child{border-bottom:none}.svm-list .r b{font-variant-numeric:tabular-nums}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class="active"><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="stock.html">สต็อกวัตถุดิบ</a> › <b>รับเข้าคลัง</b></div></div>
@@ -152,7 +166,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="alert alert-info" style="font-size:13px"><span class="ai">🛡️</span><div><b>บันทึกแล้ว → สร้างใบรับ GR (สถานะ "QC ตรวจสอบ") + Lot รายบรรทัด (สถานะ "รอตรวจ") · ยังไม่ credit เข้ายอดคงคลัง</b> — RM จะ <b>เข้าสต็อกก็ต่อเมื่อ QC ตรวจรับ Lot นั้น "ผ่าน"</b> (ตอนนั้นจึงเกิด <code>GR (+)</code> + ชดเชยยอดติดลบ + retro-FIFO) · ตรวจที่หน้า <a href="qc.html">QC › ตรวจรับวัตถุดิบ</a> · warehouse ติดตาม/จัดการทุกใบที่ <a href="stock.html">สต็อก › แท็บ Good Receipt (RM)</a></div></div>
  <div class="split">
   <div class="card"><div class="card-h"><h3>ข้อมูลใบรับ (Header) — 1 supplier / 1 ใบรับ</h3></div><div class="card-b">
-    <div class="grid2"><div class="field"><label>Supplier <span class="req">*</span> <span class="tiny">(ค้นหาได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" value="เคมีภัณฑ์ ไทยเทค" placeholder="ค้น/เลือก supplier…"></div><div class="help">Lot ของทุกบรรทัดจะ gen จาก prefix ของ supplier นี้ (L-TT-) · ใบรับนี้ = GR-20260708-008</div></div>
+    <div class="grid2"><div class="field"><label>Supplier <span class="req">*</span> <span class="tiny">(ค้นหาได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" value="เคมีภัณฑ์ ไทยเทค" placeholder="ค้น/เลือก supplier…"></div><div class="help">Lot ของทุกบรรทัดจะ gen จาก prefix ของ supplier นี้ (L-TT-) · <span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600">🧾 เลข GR: (ระบบออกให้เมื่อบันทึก)</span></div></div>
      <div class="field"><label>เลขใบรับจาก Supplier <span class="req">*</span></label><input class="inp" placeholder="เช่น TT-INV-8842" value="TT-INV-8842"></div></div>
     <div class="grid2"><div class="field"><label>วันที่รับเข้า</label><input class="inp" type="date" value="2026-07-08"></div>
      <div class="field"><label>แนบเอกสารใบรับ</label><div class="uprow">📎 <span><a href="#">เลือกไฟล์</a> (PDF/รูป) · แนบ delivery-order.pdf แล้ว</span></div></div></div>
@@ -165,7 +179,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="alert alert-ok" style="margin-top:14px;font-size:13px"><span class="ai">✓</span><div><b>1 ใบรับอ้างได้หลาย PR / บรรทัดที่ไม่มี PR ก็ได้:</b> บรรทัดแอลกอฮอล์อ้าง <b>PR-000028</b> (แอลกอฮอล์ 250 ล.) · บรรทัดสารกันเสียไม่อ้าง PR (สั่งเพิ่มเอง) — <b>เมื่อ QC ตรวจรับ "ผ่าน" ครบจำนวน</b> ระบบปิด PR เป็น <b>"ของเข้าครบ"</b> อัตโนมัติ พร้อมผูก Lot ที่รับ (สถานะ PR คิดจากปริมาณที่ QC ผ่าน ไม่ใช่ปริมาณที่บันทึกรับ · C4)</div></div>
     <div class="alert alert-warn" style="margin-top:10px;font-size:13px"><span class="ai">📋</span><div><b>รับไม่ครบ:</b> PR-000028 ขอ 250 ล. รับจริง <b>200 ล. (ขาด 50)</b> → หลัง QC ผ่าน PR-000028 = <b>"รับบางส่วน"</b> · ระบบเปิด <b>กล่องยืนยัน "สร้าง PR ใหม่ (PR-000032) สำหรับแอลกอฮอล์ 50 ล. ที่ขาด?"</b> ให้กดยืนยันก่อน (ไม่สร้างเงียบ ๆ) — ตามกติกาที่ปอนด์กำหนด</div></div>
     <div class="alert alert-warn" style="margin-top:10px;font-size:13px"><span class="ai">⏳</span><div><b>ยอดติดลบจะถูกชดเชย "เมื่อ QC ผ่าน" — ยังไม่ชดเชยตอนนี้:</b> แอลกอฮอล์ในคลังติดลบ <b>−30 ล.</b> (ผลิต PO-185 ก่อนของเข้า) · การรับครั้งนี้ <b>ยังไม่เข้าสต็อก</b> จนกว่า QC ตรวจรับ Lot <b>L-TT-ALC-2607</b> "ผ่าน" → ตอน QC ผ่านระบบจึง <b>บวกกลับชดเชย 30 ล. + ผูก retro-FIFO + นำส่วนที่เหลือ 170 ล. เข้า stock</b> · <b>ถ้า QC ไม่ผ่าน = ไม่เข้าสต็อก ยอดคง −30</b> (รอ Lot ที่ผ่านใบถัดไปมาชดเชย) · <a href="qc.html">ไปตรวจที่หน้า QC ›</a></div></div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกรับเข้า → สร้าง GR + Lot รอตรวจ (ยังไม่เข้าสต็อก)</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary" onclick="openSave()">บันทึกรับเข้า → สร้าง GR + Lot รอตรวจ (ยังไม่เข้าสต็อก)</button></div>
   </div></div>
   <div>
    <div class="card"><div class="card-h"><h3>รับเข้าล่าสุด</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><tbody>
@@ -189,4 +203,22 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
        <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · วิภา &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "ตรวจนับตรงบิล"</div></div>
      <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
  </div></div>
-</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+</div></div></div>
+<!-- ===== G8/NS-B + NS7 confirmation popup (GR + ทุก Lot) — same reusable block ===== -->
+<div class="svm-bg" id="saveModal" onclick="if(event.target===this)closeSave()"><div class="svm">
+  <div class="svm-h"><h3>✅ บันทึกรับเข้าสำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeSave()" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="svm-num"><span class="ic">🧾</span><div><div class="lb">เลขใบรับ (GR) · gapless ต่อวัน · ออกตอนบันทึก</div><div class="no">GR-20260708-008</div></div></div>
+    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>Supplier</dt><dd>เคมีภัณฑ์ ไทยเทค</dd><dt>จำนวนบรรทัด</dt><dd>2 รายการ → 2 Lot</dd></dl>
+    <div class="tiny" style="margin:14px 0 6px;font-weight:600">Lot ที่ระบบสร้าง (2) — <b style="color:var(--warning)">ยังไม่เข้าสต็อก · รอ QC ตรวจรับ</b> (NS7)</div>
+    <div class="svm-list">
+      <div class="r"><span><b>L-TT-ALC-2607</b> · แอลกอฮอล์ 200 ล.</span><span class="badge b-warning plain" style="height:22px">ยังไม่เข้าสต็อก · รอ QC</span></div>
+      <div class="r"><span><b>L-TT-PHE-2607</b> · สารกันเสีย 50 กก.</span><span class="badge b-warning plain" style="height:22px">ยังไม่เข้าสต็อก · รอ QC</span></div>
+    </div>
+    <div class="notify" style="margin-top:12px">ℹ️ ร่างที่ไม่บันทึกจะไม่กินเลข (gapless) · RM จะเข้าสต็อกเมื่อ QC ตรวจรับ Lot นั้น "ผ่าน"</div>
+  </div>
+  <div class="svm-f"><a class="btn" href="stock.html">👁 เปิด GR เต็ม</a><a class="btn" href="qc.html">🛡️ ไปหน้า QC ตรวจรับ</a><button class="btn btn-primary" onclick="closeSave()">เสร็จสิ้น</button></div>
+</div></div>
+<script>function openSave(){document.getElementById('saveModal').classList.add('open')}
+function closeSave(){document.getElementById('saveModal').classList.remove('open')}</script>
+<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

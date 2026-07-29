@@ -139,6 +139,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+/* ===== G8/NS-B reusable "number-on-save" confirmation popup — lift into ONE component (only number(s)+summary vary per screen) ===== */
+.svm-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:80;overflow:auto;padding:32px 16px}
+.svm-bg.open{display:block}
+.svm{max-width:520px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.svm-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.svm-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+.svm-b{padding:20px}
+.svm-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.svm-num{display:flex;align-items:center;gap:12px;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:14px 16px}
+.svm-num .ic{font-size:22px}.svm-num .lb{font-size:12px;color:#0B5754}
+.svm-num .no{font-size:22px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1.25}
+.svm-list{margin-top:12px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.svm-list .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);font-size:13px}
+.svm-list .r:last-child{border-bottom:none}.svm-list .r b{font-variant-numeric:tabular-nums}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class="active"><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="purchase-request.html">คำขอสั่งซื้อ (PR)</a> › <b>สร้างคำขอใหม่</b></div></div>
@@ -148,7 +162,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-item"><span class="di">🔒</span><div><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · แจ้ง Stock</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · จาก PO ยืนยัน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🔁</span><div><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · จาก GR-008 รับไม่ครบ</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000170 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">↩️</span><div><a href="po-detail.html">DN-123 (PO-175) ถูกปฏิเสธ → raise Sale (ติดต่อลูกค้า)</a><div class="tm">วันนี้ 11:40 · จัดส่ง</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">คลังสินค้า</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>สร้างคำขอใหม่</h1><div class="sub">สร้างคำขอสั่งซื้อวัตถุดิบด้วยตนเอง (นอกจากที่ระบบสร้างอัตโนมัติเมื่อ PO วัตถุดิบขาด) · เพิ่มได้หลายรายการต่อ 1 คำขอ · เลข PR ออกให้อัตโนมัติเมื่อบันทึก</div></div><a class="btn btn-ghost" href="purchase-request.html">← ย้อนกลับ</a></div>
+ <div class="pagehead"><div><h1>สร้างคำขอใหม่</h1><div class="sub">สร้างคำขอสั่งซื้อวัตถุดิบด้วยตนเอง (นอกจากที่ระบบสร้างอัตโนมัติเมื่อ PO วัตถุดิบขาด) · เพิ่มได้หลายรายการต่อ 1 คำขอ · <span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600">🧾 เลข PR: (ระบบออกให้เมื่อบันทึก)</span></div></div><a class="btn btn-ghost" href="purchase-request.html">← ย้อนกลับ</a></div>
  <div style="max-width:960px">
   <div class="card"><div class="card-h"><h3>ข้อมูลคำขอ</h3></div><div class="card-b">
     <div class="grid2"><div class="field"><label>ผู้ขอ</label><input class="inp" value="สมชาย ใจดี (คลังสินค้า)" disabled></div>
@@ -165,5 +179,22 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="field" style="margin-top:14px"><label>หมายเหตุ</label><textarea class="inp" rows="2" placeholder="เช่น ด่วน ต้องใช้ผลิต PO-188"></textarea></div>
     <div class="notify" style="margin-top:4px">📤 บันทึกแล้วคำขอสถานะ <b>"เปิดคำขอ"</b> ส่งไปคลัง + โผล่ Dashboard · "ของเข้าครบ" เปลี่ยนอัตโนมัติเมื่อ <a href="goods-receipt.html">รับเข้าคลัง</a> อ้างเลข PR นี้ครบ (C4)</div>
   </div></div>
-  <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="purchase-request.html">ยกเลิก</a><button class="btn btn-primary">สร้างคำขอสั่งซื้อ</button></div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+  <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="purchase-request.html">ยกเลิก</a><button class="btn btn-primary" onclick="openSave()">สร้างคำขอสั่งซื้อ</button></div>
+ </div></div></div></div>
+<!-- ===== G8/NS-B confirmation popup (PR) — same reusable block ===== -->
+<div class="svm-bg" id="saveModal" onclick="if(event.target===this)closeSave()"><div class="svm">
+  <div class="svm-h"><h3>✅ บันทึกสำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeSave()" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="svm-num"><span class="ic">🧾</span><div><div class="lb">เลขคำขอสั่งซื้อ (PR) · gapless · ออกตอนบันทึก</div><div class="no">PR-000032</div></div></div>
+    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>จำนวนรายการ</dt><dd>2 รายการ</dd><dt>สถานะ</dt><dd><span class="badge b-processing" style="height:20px">เปิดคำขอ</span> ส่งไปคลัง</dd></dl>
+    <div class="svm-list">
+      <div class="r"><span>กลีเซอรีน</span><span><b>6</b> กก.</span></div>
+      <div class="r"><span>วิตามินอี</span><span><b>3</b> กก.</span></div>
+    </div>
+    <div class="notify" style="margin-top:12px">ℹ️ ร่างที่ไม่บันทึกจะไม่กินเลข (gapless) · แก้ไข/ยกเลิก = <b>ใช้เลขเดิม</b> (NS-D) · "ของเข้าครบ" เปลี่ยนอัตโนมัติเมื่อรับเข้าคลังอ้าง PR นี้ครบ</div>
+  </div>
+  <div class="svm-f"><a class="btn" href="purchase-request.html">👁 ดูคำขอ (PR)</a><button class="btn btn-primary" onclick="closeSave()">เสร็จสิ้น</button></div>
+</div></div>
+<script>function openSave(){document.getElementById('saveModal').classList.add('open')}
+function closeSave(){document.getElementById('saveModal').classList.remove('open')}</script>
+<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
