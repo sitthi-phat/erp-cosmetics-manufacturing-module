@@ -139,6 +139,23 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+.ssdd{position:relative}
+.ssdd-tg{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;background:#fff;cursor:pointer;font-size:14px}
+.ssdd-tg:hover{border-color:var(--primary)}
+.ssdd-tg .cur{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.ssdd-pan{display:none;position:absolute;left:0;right:0;top:44px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:40;overflow:hidden}
+.ssdd.open .ssdd-pan{display:block}
+.ssdd-sr{padding:10px;border-bottom:1px solid var(--border2);position:relative}
+.ssdd-sr .si{position:absolute;left:22px;top:20px;color:var(--text3)}
+.ssdd-sr .inp{padding-left:34px}
+.ssdd-ls{max-height:260px;overflow:auto}
+.ssdd-op{padding:9px 14px;border-bottom:1px solid var(--border2);cursor:pointer}
+.ssdd-op:last-child{border-bottom:none}
+.ssdd-op:hover,.ssdd-op.sel{background:var(--primary-bg)}
+.ssdd-op.dis{opacity:.5;cursor:not-allowed}.ssdd-op.dis:hover{background:#fff}
+.ssdd-op .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ssdd-op .code{font-size:12px;color:var(--primary);font-weight:600;background:var(--primary-bg);border-radius:5px;padding:1px 7px}
+.ssdd-none{padding:14px;text-align:center;color:var(--text3);font-size:13px}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class="active"><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="bom.html">สูตรการผลิต (BOM)</a> › <b>สร้างสูตรใหม่</b></div></div>
@@ -150,11 +167,20 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="content">
  <div class="pagehead"><div><h1>สร้างสูตรใหม่</h1><div class="sub">สร้างสูตร BOM ของสินค้าใหม่ (ฟอร์มว่าง · คนละหน้ากับแก้ไขสูตรเดิม) · เลือกวัตถุดิบเข้าสูตร → ระบบคำนวณราคาทุน · ราคาขายบังคับกรอก</div></div><a class="btn btn-ghost" href="bom.html">← ย้อนกลับ</a></div>
  <div style="max-width:960px">
-  <div class="card"><div class="card-h"><h3>ข้อมูลสินค้า</h3></div><div class="card-b">
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:12px 16px;margin-bottom:18px">
-      <div><div class="tiny" style="color:#0B5754;text-transform:uppercase;letter-spacing:.04em">รหัส BOM / FG (auto)</div>
-        <div style="font-size:20px;font-weight:700;color:#0B5754;font-variant-numeric:tabular-nums">FG-233 <span class="badge b-neutral plain" style="height:20px;background:#fff">🔒 สร้างอัตโนมัติ</span></div></div>
-      <div class="tiny" style="color:#0B5754;flex:1;min-width:200px">1 BOM = 1 FG (1:1 · แชร์รหัสเดียว · D11) · ระบบสร้างให้ <b>อัตโนมัติเมื่อบันทึก · แก้ไม่ได้</b> (ต่างจากรหัส RM ที่ผู้ใช้ตั้งเอง) · FG <b>ค้นได้ทั้งชื่อและรหัส</b>ในคลัง</div>
+  <div class="card"><div class="card-h"><h3>ข้อมูลสินค้า</h3>
+    <div style="display:flex;align-items:center;gap:10px"><span id="bomStatusBadge" class="badge b-success">Active (ใช้งาน)</span><span class="tiny">ปิดใช้งาน</span><span class="switch" id="bomActive" onclick="bomToggleActive()"></span><span class="tiny">เปิดใช้งาน</span></div></div><div class="card-b">
+    <div id="bomInactiveNote" class="alert alert-warn" style="display:none;font-size:13px"><span class="ai">⚠️</span><div><b>สูตรนี้ถูกตั้งเป็น Inactive (ปิดใช้งาน)</b> — จะถูกกันออกจากการเปิด QT/PO/SO ใหม่ + Supply Planning · ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว · <b>ลบถาวรไม่ได้</b> (ใช้ Inactive แทน)<div class="field" style="margin:10px 0 0"><label style="font-size:12px">เหตุผลที่ปิดใช้งาน <span class="req">*</span> (บังคับ · บันทึก audit)</label><input class="inp" style="height:34px" placeholder="เช่น เปลี่ยนสูตรใหม่ / เลิกผลิตสินค้านี้"></div></div></div>
+    <div style="background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:14px 16px;margin-bottom:18px">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:0 0 240px;max-width:100%">
+          <label style="display:block;font-size:11px;font-weight:600;color:#0B5754;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">รหัส BOM / FG <span class="req">*</span> <span style="font-weight:500;text-transform:none;letter-spacing:0">— ตั้งเองตอนสร้าง</span></label>
+          <input class="inp tnum" id="bomCode" placeholder="เช่น FG-233" oninput="bomCodeCheck()" style="font-size:18px;font-weight:700;color:#0B5754;background:#fff" value="">
+          <div class="help" id="bomCodeHelp" style="color:#0B5754">พิมพ์รหัสเอง · ต้องไม่ซ้ำ (unique) · จะถูก <b>ล็อกถาวรหลังบันทึก</b> (แก้ไม่ได้)</div>
+          <div class="help err" id="bomCodeErr" style="display:none">⛔ รหัสนี้ถูกใช้แล้ว — กรุณาใช้รหัสอื่น</div>
+          <div class="help" id="bomCodeOk" style="display:none;color:var(--success)">✓ รหัสนี้ใช้ได้ (ยังไม่มีในระบบ)</div>
+        </div>
+        <div class="tiny" style="color:#0B5754;flex:1;min-width:200px;padding-top:2px">1 BOM = 1 FG (1:1 · <b>แชร์รหัสเดียวกัน</b> · D11 v2) · รหัส = <b>ผู้ใช้พิมพ์เองตอนสร้าง + ต้องไม่ซ้ำ</b> · <b>ล็อกหลังสร้าง (create-only-lock) แก้ไม่ได้</b> เพื่อคง reference (FG stock/PO/SO/QT/Batch/trace) ไม่แตก · กติกาเดียวกับรหัส RM · FG <b>ค้นได้ทั้งชื่อและรหัส</b>ในคลัง</div>
+      </div>
     </div>
     <div class="grid3"><div class="field"><label>ชื่อสินค้า <span class="req">*</span></label><input class="inp" placeholder="เช่น เซรั่มไฮยาลูรอน"></div>
      <div class="field"><label>ขนาด/บรรจุ (ต่อ 1 หน่วย) <span class="req">*</span></label><input class="inp" placeholder="เช่น ขวด 30ml"></div>
@@ -163,15 +189,29 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip" onclick="bomType('oem',this)">🏭 OEM — รับจ้างผลิต (made-to-order)</span><span class="chip on" onclick="bomType('fg',this)">🧴 FG — แบรนด์ตัวเอง (เก็บสต็อก/วางแผน)</span></div>
       <div class="help">1 BOM = 1 FG (auto · D11) · <b>OEM</b> = ผลิตตามสั่ง ไม่ต้องตั้งค่าวางแผน · <b>FG</b> = Own-Brand ที่เก็บสต็อก → กรอกค่าวางแผน (Supply Planning) ด้านล่าง</div></div>
   </div></div>
-  <div class="card"><div class="card-h"><div><h3>ส่วนผสมในสูตร (ต่อ 1 หน่วย)</h3><div class="tiny">ไม่ต้องมีสต็อกก็สร้างสูตรได้ แต่โชว์สต็อก + supplier ให้เห็น</div></div></div><div class="card-b">
-    <div class="searchbox" style="max-width:none;margin-bottom:12px"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาวัตถุดิบเพื่อเพิ่มเข้าสูตร เช่น 'ไฮยาลูรอน' (ค้นหาได้)"></div>
-    <div class="tblwrap"><table class="tbl" style="min-width:660px"><thead><tr><th>วัตถุดิบ</th><th class="num">ปริมาณ/หน่วย</th><th>UOM</th><th class="num">ราคาซื้อ (max active)</th><th>Supplier active</th><th></th></tr></thead><tbody>
-     <tr><td><b>โซเดียมไฮยาลูโรเนต</b></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.010"></td><td>กก.</td><td class="num tnum">4,200</td><td><span class="badge b-success" style="height:20px">มี · เคมีสยาม</span></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
-     <tr><td><b>กลีเซอรีน</b></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.050"></td><td>กก.</td><td class="num tnum">45</td><td><span class="badge b-success" style="height:20px">มี · กลีเซอรีนไทย</span></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
-     <tr style="background:#FFF7F7"><td><b>สารสกัดใบบัวบก</b></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.008"></td><td>กก.</td><td class="num"><input class="inp tnum" style="height:32px;width:100px;text-align:right;border-color:#F2C2C2" placeholder="กรอกราคาทุน"></td><td><span class="badge b-error" style="height:20px">ไม่มี supplier active</span></td><td class="num"><button class="btn-link" style="color:var(--error)">ลบ</button></td></tr>
+  <div class="card"><div class="card-h"><div><h3>ส่วนผสมในสูตร (ต่อ 1 หน่วย)</h3><div class="tiny">ไม่ต้องมีสต็อกก็สร้างสูตรได้ · เลือกวัตถุดิบด้วยการค้นชื่อหรือรหัส (G7) · ราคาซื้อแก้เองได้ทุกบรรทัด</div></div></div><div class="card-b">
+    <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px">เพิ่มวัตถุดิบเข้าสูตร <span class="tiny" style="font-weight:400">— ค้นได้ทั้งชื่อและรหัส (G7)</span></label>
+    <div class="ssdd" id="ssdd-bomrm" style="margin-bottom:6px">
+      <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><span class="muted">— เลือกวัตถุดิบ (ค้นชื่อหรือรหัส) —</span></span><span style="color:var(--text3)">▾</span></div>
+      <div class="ssdd-pan">
+        <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นชื่อ หรือ รหัส เช่น 'ไฮยาลูรอน' หรือ 'RM-005'" oninput="ssFilter(this)"></div>
+        <div class="ssdd-ls">
+          <div class="ssdd-op" data-s="โซเดียมไฮยาลูโรเนต RM-045" onclick="bomAddRM('โซเดียมไฮยาลูโรเนต','RM-045','กก.','4,200','มี · เคมีสยาม',1)"><div class="nm"><b>โซเดียมไฮยาลูโรเนต</b> <span class="code">RM-045</span></div><div class="tiny">default max-active 4,200 · เคมีสยาม</div></div>
+          <div class="ssdd-op" data-s="กลีเซอรีน RM-005" onclick="bomAddRM('กลีเซอรีน','RM-005','กก.','45','มี · กลีเซอรีนไทย',1)"><div class="nm"><b>กลีเซอรีน</b> <span class="code">RM-005</span></div><div class="tiny">default max-active 45 · กลีเซอรีนไทย</div></div>
+          <div class="ssdd-op" data-s="สารสกัดใบบัวบก RM-071" onclick="bomAddRM('สารสกัดใบบัวบก','RM-071','กก.','','',0)"><div class="nm"><b>สารสกัดใบบัวบก</b> <span class="code">RM-071</span></div><div class="tiny">ไม่มีราคาจาก supplier — กรอกเอง</div></div>
+          <div class="ssdd-op" data-s="วิตามินอี RM-018" onclick="bomAddRM('วิตามินอี','RM-018','กก.','380','มี · เคมีสยาม',1)"><div class="nm"><b>วิตามินอี</b> <span class="code">RM-018</span></div><div class="tiny">default max-active 380 · เคมีสยาม</div></div>
+          <div class="ssdd-none" style="display:none">ไม่พบวัตถุดิบที่ตรงกับคำค้น</div>
+        </div>
+      </div>
+    </div>
+    <div class="help err" id="bomRmDupErr" style="display:none;margin-bottom:10px">⛔ วัตถุดิบนี้อยู่ในสูตรแล้ว — แก้ที่บรรทัดเดิมได้เลย</div>
+    <div style="height:8px"></div>
+    <div class="tblwrap"><table class="tbl" style="min-width:720px"><thead><tr><th>วัตถุดิบ</th><th class="num">ปริมาณ/หน่วย</th><th>UOM</th><th class="num">ราคาซื้อ (บาท/หน่วย)</th><th>ที่มาราคา (default = max active)</th><th></th></tr></thead><tbody id="bomRmBody">
+     <tr data-code="RM-045"><td><b>โซเดียมไฮยาลูโรเนต</b> <span class="code" style="font-size:11px;color:var(--primary);background:var(--primary-bg);border-radius:5px;padding:1px 7px">RM-045</span></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.010"></td><td>กก.</td><td class="num"><input class="inp tnum" style="height:32px;width:100px;text-align:right" value="4200"></td><td><span class="badge b-success" style="height:20px">มี · เคมีสยาม</span> <span class="tiny">default 4,200 · แก้ได้</span></td><td class="num"><button class="btn-link" style="color:var(--error)" onclick="this.closest('tr').remove()">ลบ</button></td></tr>
+     <tr data-code="RM-005"><td><b>กลีเซอรีน</b> <span class="code" style="font-size:11px;color:var(--primary);background:var(--primary-bg);border-radius:5px;padding:1px 7px">RM-005</span></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.050"></td><td>กก.</td><td class="num"><input class="inp tnum" style="height:32px;width:100px;text-align:right" value="45"></td><td><span class="badge b-success" style="height:20px">มี · กลีเซอรีนไทย</span> <span class="tiny">default 45 · แก้ได้</span></td><td class="num"><button class="btn-link" style="color:var(--error)" onclick="this.closest('tr').remove()">ลบ</button></td></tr>
+     <tr data-code="RM-071"><td><b>สารสกัดใบบัวบก</b> <span class="code" style="font-size:11px;color:var(--primary);background:var(--primary-bg);border-radius:5px;padding:1px 7px">RM-071</span></td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.008"></td><td>กก.</td><td class="num"><input class="inp tnum" style="height:32px;width:100px;text-align:right" placeholder="กรอกราคา" value=""></td><td><span class="badge b-neutral" style="height:20px">ไม่มี supplier active</span> <span class="tiny">ไม่มีราคาจาก supplier — กรอกเอง</span></td><td class="num"><button class="btn-link" style="color:var(--error)" onclick="this.closest('tr').remove()">ลบ</button></td></tr>
     </tbody></table></div>
-    <button class="btn btn-sm" style="margin-top:12px;color:var(--primary)">➕ เพิ่มวัตถุดิบเข้าสูตร</button>
-    <div class="alert alert-err" style="margin-top:14px;font-size:13px"><span class="ai">⛔</span><div><b>บันทึกไม่ได้:</b> "สารสกัดใบบัวบก" <b>ไม่มี supplier ที่ active</b> — ต้องกรอกราคาทุนของบรรทัดนี้เอง (override) ก่อน จึงจะบันทึกสูตรได้ (ตามกติกาที่ปอนด์กำหนด)</div></div>
+    <div class="alert alert-info" style="margin-top:14px;font-size:13px"><span class="ai">💡</span><div><b>ราคาซื้อแก้ด้วยมือได้ทุกบรรทัด</b> — ค่าเริ่มต้น = ราคาสูงสุดของ supplier ที่ Active (override ได้) · <b>ถ้าไม่มี supplier active ก็กรอกเองได้ ไม่บล็อกการบันทึก</b> · ราคานี้เข้าสูตรต้นทุนรวม + snapshot ตอนขาย (D10)</div></div>
   </div></div>
   <div class="card"><div class="card-h"><div><h3>ต้นทุนอื่น (ต่อหน่วย)</h3><div class="tiny">เพิ่มหมวดต้นทุนเองได้อิสระ (ค่าแรง/โสหุ้ย/บรรจุภัณฑ์/อื่น ๆ — ไม่ตายตัว) · ต่อหน่วย (D9)</div></div></div><div class="card-b">
     <div class="tblwrap"><table class="tbl" style="min-width:520px"><thead><tr><th>หมวดต้นทุน</th><th class="num">มูลค่า/หน่วย (บาท)</th><th></th></tr></thead><tbody>
@@ -200,5 +240,26 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="bom.html">ยกเลิก</a><button class="btn btn-primary">บันทึกสูตรใหม่</button></div>
  <script>
  function bomType(t,el){var chips=el.parentNode.querySelectorAll('.chip');chips.forEach(function(c){c.classList.remove('on')});el.classList.add('on');document.getElementById('planningCard').style.display=(t==='fg')?'':'none';}
+ var bomUsedCodes=['FG-101','FG-118','FG-150','FG-202','FG-204','RM-005'];
+ function bomCodeCheck(){var v=document.getElementById('bomCode').value.trim().toUpperCase();var err=document.getElementById('bomCodeErr'),ok=document.getElementById('bomCodeOk'),help=document.getElementById('bomCodeHelp'),inp=document.getElementById('bomCode');
+   if(!v){err.style.display='none';ok.style.display='none';help.style.display='block';inp.style.borderColor='';return;}
+   help.style.display='none';
+   if(bomUsedCodes.indexOf(v)>-1){err.style.display='block';ok.style.display='none';inp.style.borderColor='var(--error)';}
+   else{err.style.display='none';ok.style.display='block';inp.style.borderColor='var(--success)';}}
+ function bomToggleActive(){var sw=document.getElementById('bomActive');sw.classList.toggle('off');var inactive=sw.classList.contains('off');
+   document.getElementById('bomInactiveNote').style.display=inactive?'flex':'none';
+   var b=document.getElementById('bomStatusBadge');b.className=inactive?'badge b-neutral':'badge b-success';b.textContent=inactive?'Inactive (ปิดใช้งาน)':'Active (ใช้งาน)';}
+ function ssTog(tg){var dd=tg.closest('.ssdd');var wasOpen=dd.classList.contains('open');document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});if(!wasOpen){dd.classList.add('open');var sr=dd.querySelector('.ssdd-sr .inp');if(sr){sr.value='';ssFilter(sr);setTimeout(function(){sr.focus()},0);}}}
+ function ssFilter(inp){var q=inp.value.trim().toLowerCase();var ls=inp.closest('.ssdd-pan').querySelector('.ssdd-ls');var n=0;ls.querySelectorAll('.ssdd-op').forEach(function(op){var hit=(op.getAttribute('data-s')||'').toLowerCase().indexOf(q)>-1;op.style.display=hit?'block':'none';if(hit)n++;});var none=ls.querySelector('.ssdd-none');if(none)none.style.display=n?'none':'block';}
+ function bomAddRM(name,code,unit,price,supTxt,hasSup){var dd=document.getElementById('ssdd-bomrm');var err=document.getElementById('bomRmDupErr');
+   var exists=document.querySelector('#bomRmBody tr[data-code="'+code+'"]');
+   if(exists){err.style.display='block';dd.classList.remove('open');exists.style.background='#FCEAEA';setTimeout(function(){exists.style.background=''},1500);return;}
+   err.style.display='none';var tb=document.getElementById('bomRmBody');var tr=document.createElement('tr');tr.setAttribute('data-code',code);
+   var codeChip='<span class="code" style="font-size:11px;color:var(--primary);background:var(--primary-bg);border-radius:5px;padding:1px 7px">'+code+'</span>';
+   var priceCell='<td class="num"><input class="inp tnum" style="height:32px;width:100px;text-align:right" value="'+(hasSup?price.replace(/,/g,''):'')+'" placeholder="'+(hasSup?'':'กรอกราคา')+'"></td>';
+   var srcCell=hasSup?('<td><span class="badge b-success" style="height:20px">'+supTxt+'</span> <span class="tiny">default '+price+' · แก้ได้</span></td>'):('<td><span class="badge b-neutral" style="height:20px">ไม่มี supplier active</span> <span class="tiny">ไม่มีราคาจาก supplier — กรอกเอง</span></td>');
+   tr.innerHTML='<td><b>'+name+'</b> '+codeChip+'</td><td class="num"><input class="inp tnum" style="height:32px;width:90px;text-align:right" value="0.000"></td><td>'+unit+'</td>'+priceCell+srcCell+'<td class="num"><button class="btn-link" style="color:var(--error)" onclick="this.closest(\'tr\').remove()">ลบ</button></td>';
+   tb.appendChild(tr);dd.classList.remove('open');dd.querySelector('.ssdd-tg .cur').innerHTML='<span class="muted">— เลือกวัตถุดิบ (ค้นชื่อหรือรหัส) —</span>';}
+ document.addEventListener('click',function(e){if(!e.target.closest('.ssdd'))document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});});
  </script>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
