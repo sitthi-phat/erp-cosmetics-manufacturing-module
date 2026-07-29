@@ -139,7 +139,30 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
-.mobonly-brand{display:none}@media(max-width:760px){.loginwrap{grid-template-columns:1fr}.loginwrap>div:first-child{display:none}.mobonly-brand{display:flex!important}}</style></head><body>
+.mobonly-brand{display:none}
+.pwrap{position:relative}.pwrap .inp{padding-right:42px}
+.pweye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:6px;line-height:1}.pweye:hover{color:var(--primary)}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.gbtn:hover{border-color:var(--primary);background:#FAFCFC}.gbtn .gi{width:18px;height:18px}
+.ordiv{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text3);font-size:12px}
+.ordiv::before,.ordiv::after{content:"";flex:1;height:1px;background:var(--border2)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
+.modal-bg.open{display:block}
+.modal{max-width:420px;margin:60px auto;background:#fff;border-radius:var(--radius-lg);box-shadow:0 12px 40px rgba(16,25,40,.28);overflow:hidden}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;padding:4px}
+.modal-b{padding:20px}.inp.err-b{border-color:var(--error)}
+@media(max-width:760px){.loginwrap{grid-template-columns:1fr}.loginwrap>div:first-child{display:none}.mobonly-brand{display:flex!important}}</style></head><body>
+<!-- First-login "must change password" step (SET-8) -->
+<div id="fl" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน</h3><button class="modal-x" onclick="document.getElementById('fl').classList.remove('open')">✕</button></div>
+  <div class="modal-b">
+    <div class="alert alert-info" style="font-size:13px"><span class="ai">🔑</span><div>บัญชีนี้ถูกตั้งให้ <b>ต้องเปลี่ยนรหัสผ่านเมื่อเข้าครั้งแรก</b> — กรุณาตั้งรหัสใหม่เพื่อดำเนินการต่อ</div></div>
+    <div class="field"><label>รหัสผ่านใหม่ <span class="req">*</span></label><div class="pwrap"><input class="inp" id="np1" type="password" placeholder="ตั้งรหัสผ่านใหม่" oninput="flCheck()"><button type="button" class="pweye" onclick="pwToggle('np1',this)" title="แสดง/ซ่อนรหัส">👁</button></div></div>
+    <div class="field"><label>ยืนยันรหัสผ่านใหม่ <span class="req">*</span></label><div class="pwrap"><input class="inp" id="np2" type="password" placeholder="กรอกรหัสผ่านอีกครั้ง" oninput="flCheck()"><button type="button" class="pweye" onclick="pwToggle('np2',this)" title="แสดง/ซ่อนรหัส">👁</button></div><div class="help err" id="npErr" style="display:none">รหัสผ่านยืนยันไม่ตรงกัน</div></div>
+    <a class="btn btn-primary" href="home.html" style="width:100%;justify-content:center;margin-top:4px">ตั้งรหัสผ่านและเข้าใช้งาน</a>
+  </div>
+</div></div>
 <div style="min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr" class="loginwrap">
  <div style="background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between">
    <div style="display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub System<div style="font-size:12px;opacity:.6;font-weight:400">ระบบบริหารโรงงานเครื่องสำอาง</div></div></div>
@@ -151,11 +174,21 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div style="width:100%;max-width:360px">
      <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px" class="mobonly-brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><b>ESSENCE Hub System</b></div>
      <h2 style="margin-bottom:4px">เข้าสู่ระบบ</h2><p class="muted" style="margin-bottom:24px">ยินดีต้อนรับ กรุณาลงชื่อเข้าใช้</p>
+     <div id="gErr" class="alert alert-err" style="display:none;font-size:13px"><span class="ai">⚠️</span><div>บัญชี Google นี้ยังไม่ได้ผูกกับผู้ใช้ในระบบ</div></div>
      <div class="field"><label>ชื่อผู้ใช้</label><input class="inp" placeholder="เช่น somchai.j"></div>
-     <div class="field"><label>รหัสผ่าน</label><input class="inp" type="password" placeholder="กรอกรหัสผ่าน"></div>
-     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><label class="tiny" style="display:flex;gap:6px;align-items:center"><input type="checkbox"> จดจำฉันไว้</label><a class="tiny">ลืมรหัสผ่าน?</a></div>
+     <div class="field"><label>รหัสผ่าน</label><div class="pwrap"><input class="inp" id="lp" type="password" placeholder="กรอกรหัสผ่าน"><button type="button" class="pweye" onclick="pwToggle('lp',this)" title="แสดง/ซ่อนรหัส">👁</button></div></div>
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><label class="tiny" style="display:flex;gap:6px;align-items:center"><input type="checkbox"> จดจำฉันไว้</label><a class="tiny">ลืมรหัสผ่าน?</a></div>
      <a class="btn btn-primary" href="home.html" style="width:100%;justify-content:center">เข้าสู่ระบบ</a>
-     <p class="tiny" style="text-align:center;margin-top:20px">มีปัญหาการเข้าใช้งาน? ติดต่อผู้ดูแลระบบ</p>
+     <div class="ordiv">หรือ</div>
+     <button class="gbtn" onclick="document.getElementById('gErr').style.display='none';window.location.href='home.html'"><svg class="gi" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.5l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.3 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.1 5.3-4.6 7l7.1 5.5c4.1-3.8 6.5-9.4 6.5-16z"/><path fill="#FBBC05" d="M10.5 28.3a14.5 14.5 0 0 1 0-8.6l-7.9-6.1a24 24 0 0 0 0 20.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.1-5.5c-2 1.3-4.6 2.1-8.8 2.1-6.3 0-11.6-3.8-13.5-9.3l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>เข้าสู่ระบบด้วย Google</button>
+     <p class="tiny muted" style="text-align:center;margin-top:14px">ปุ่ม Google ใช้ได้เฉพาะบัญชีที่ผู้ดูแลผูกไว้แล้ว</p>
+     <div style="border-top:1px dashed var(--border2);margin-top:18px;padding-top:14px;text-align:center"><span class="tiny" style="color:var(--text3)">รีวิว: </span><a class="tiny" onclick="document.getElementById('fl').classList.add('open')">ขั้นตอนตั้งรหัสใหม่ (first login)</a> <span class="tiny" style="color:var(--text3)">·</span> <a class="tiny" onclick="document.getElementById('gErr').style.display='flex'">Google ยังไม่ผูก</a></div>
+     <p class="tiny" style="text-align:center;margin-top:14px">มีปัญหาการเข้าใช้งาน? ติดต่อผู้ดูแลระบบ</p>
    </div>
  </div>
-</div></body></html>
+</div>
+<script>
+function pwToggle(id,btn){var i=document.getElementById(id);if(i.type==='password'){i.type='text';btn.textContent='🙈';}else{i.type='password';btn.textContent='👁';}}
+function flCheck(){var a=document.getElementById('np1'),b=document.getElementById('np2'),e=document.getElementById('npErr');var bad=b.value.length>0&&a.value!==b.value;e.style.display=bad?'block':'none';b.classList.toggle('err-b',bad);}
+</script>
+</body></html>
