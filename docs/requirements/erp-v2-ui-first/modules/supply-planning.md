@@ -2,15 +2,15 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/supply-planning.html`
-กฎอ้างอิง: **D4** (FG on-hand read-only, in-production นับจาก Batch) · **D5** (badge thresholds) · **D6** (suggested + batch rounding) · **D7** (rate conversion) · **D8 v2** (ปุ่มสั่งผลิต → prefill SO produce-to-stock) · **D16** (config on FG master) · README §2.1/§3 · `non-functional.md` §6 (J8) + §7 (noti)
+กฎอ้างอิง: **D4** (FG on-hand read-only, in-production นับจาก Batch) · **D5** (badge thresholds) · **D6** (suggested + batch rounding) · **D7** (rate conversion) · **D8 v2** (ปุ่มสั่งผลิต → prefill SO produce-to-stock) · **D16** (config on FG master) · **`bom.md` §5c (Inactive BOM/FG ถูกกันออก)** · README §2.1/§3 · `non-functional.md` §6 (J8) + §7 (noti)
 
 ## สรุปภาษาไทย
-เครื่องมือวางแผน demand/cover ของ FG (Own-Brand). อ่าน FG on-hand (read-only) + in-production (นับจาก Batch), คำนวณ cover/safety/reorder/target/suggested production. **ค้น FG ตามชื่อ + filter สถานะ Low/OK/Overstock**. ผู้ใช้ **แก้ Sales Rate/Lead Time/Safety Cover/Target Cover ได้ที่นี่แล้ว save กลับ BOM master**. ปุ่ม **"สั่งผลิต" (D8 v2)** → พาไปหน้า **สร้าง SO ผลิตเก็บสต็อก (ไม่เลือกลูกค้า) แบบ prefill** จำนวน = Suggested → ผลิต → FG เข้าคลัง. **★ แจ้งเตือนเชิงรุก (DECIDED):** เมื่อ FG เข้าสถานะ **Low (cover < Target)** ระบบ **ยิงแจ้งเตือนทันที (real-time)** + มี **สรุปรายวันเช้า ~06:00 (งาน J8)** ที่ลิสต์ FG Low ทั้งหมด — ทุกการแจ้งเตือน **แนบจำนวนที่ควรผลิต (Suggested, ceil-to-batch)** + deep-link มาหน้านี้/หน้า SO produce-to-stock. **§6 = สรุปสูตรทั้งหมดให้ปอนด์รีวิว**.
+เครื่องมือวางแผน demand/cover ของ FG (Own-Brand). อ่าน FG on-hand (read-only) + in-production (นับจาก Batch), คำนวณ cover/safety/reorder/target/suggested production. **ค้น FG ตามชื่อ + filter สถานะ Low/OK/Overstock**. **★ FG/BOM ที่ถูกตั้ง Inactive จะถูกกันออกจากการวางแผน** (ไม่คำนวณ Suggested / ไม่มีปุ่มสั่งผลิต / ไม่ยิงแจ้งเตือน Low) เพราะผลิตเติมสูตรที่ปิดไปแล้วไม่ได้ (`bom.md` §5c). ผู้ใช้ **แก้ Sales Rate/Lead Time/Safety Cover/Target Cover ได้ที่นี่แล้ว save กลับ BOM master**. ปุ่ม **"สั่งผลิต" (D8 v2)** → พาไปหน้า **สร้าง SO ผลิตเก็บสต็อก (ไม่เลือกลูกค้า) แบบ prefill** จำนวน = Suggested → ผลิต → FG เข้าคลัง. **★ แจ้งเตือนเชิงรุก (DECIDED):** เมื่อ FG (Active) เข้าสถานะ **Low (cover < Target)** ระบบ **ยิงแจ้งเตือนทันที (real-time)** + มี **สรุปรายวันเช้า ~06:00 (งาน J8)** ที่ลิสต์ FG Low ทั้งหมด — ทุกการแจ้งเตือน **แนบจำนวนที่ควรผลิต (Suggested, ceil-to-batch)** + deep-link มาหน้านี้/หน้า SO produce-to-stock. **§6 = สรุปสูตรทั้งหมดให้ปอนด์รีวิว**.
 
 ---
 
 ## 1. Purpose
-มองเห็นว่า FG ตัวไหนกำลังจะขาด (Low), แนะนำจำนวนที่ควรผลิตเติม (ปัดเป็นทวีคูณ Batch), แจ้งเตือนเชิงรุกเมื่อเข้า Low, และเปิดทางสั่งผลิตเก็บสต็อกจากที่นี่.
+มองเห็นว่า FG ตัวไหนกำลังจะขาด (Low), แนะนำจำนวนที่ควรผลิตเติม (ปัดเป็นทวีคูณ Batch), แจ้งเตือนเชิงรุกเมื่อเข้า Low, และเปิดทางสั่งผลิตเก็บสต็อกจากที่นี่ — เฉพาะ FG ที่ยัง **Active**.
 
 ## 2. Screen layout (scope §3.1)
 - Header: "SUPPLY PLANNING / Demand & Production Cover".
@@ -27,9 +27,10 @@ Mockups: `mockups/supply-planning.html`
 | Lead Time / Safety Cover / Target Cover | days | editable · **save back to BOM** |
 | Batch Size | units | (จาก BOM master, D16) |
 
-## 4. ★ Search + Filter (delta)
+## 4. ★ Search + Filter + Scope (delta)
 - **ค้น FG ตามชื่อ**.
 - **filter สถานะ Low / OK / Overstock** (D5).
+- **★ ขอบเขต (scope): แสดง/คำนวณเฉพาะ FG ที่ BOM/FG = Active** — **FG ที่ถูกตั้ง Inactive (ปิดใช้งาน) ถูกกันออก** (ไม่โผล่ในการ์ด/tiles, ไม่คำนวณ Suggested, ไม่มีปุ่มสั่งผลิต, ไม่ยิงแจ้งเตือน Low). สอดคล้องกับการที่ Inactive บล็อกการเปิด SO ผลิตเก็บสต็อก (`bom.md` §5c, `so.md` §6). — **PO ตัดสินสมเหตุผล 2026-07-29 (ไม่ถือเป็นคำถามค้าง)**.
 - 20/หน้า (G1) ถ้าเป็น list/มีจำนวนมาก.
 
 ## 5. ★ ปุ่ม "สั่งผลิต" (D8 v2 — UPDATED)
@@ -37,14 +38,16 @@ Mockups: `mockups/supply-planning.html`
   - **พาไปหน้า "สร้างใบสั่งขาย (Own-Brand) → (ข) ผลิตเก็บสต็อก (ไม่เลือกลูกค้า)" แบบ PRE-FILL** (FG ตัวนั้น + จำนวน = Suggested).
   - ผู้ใช้ทวน/ยืนยัน → เข้าสาย production ปกติ (BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → ผลิต → QC ผ่าน → **FG เข้าคลัง**).
 - **เปลี่ยนจาก D8 v1** (เดิมสร้าง PRD ทันทีเงียบ ๆ) — ตอนนี้ prefill หน้า SO produce-to-stock (ที่มา produce-to-stock = เดียว). ดู `so.md` §6, README §2.1.
+- **★ ปุ่มสั่งผลิตโผล่เฉพาะ FG Active** (Inactive ไม่เข้าข่าย — §4).
 
 ## 5.1 ★★ Proactive Low-stock Alerting (DECIDED 2026-07-29 — real-time + daily digest)
 > เดิมเป็น on-read เท่านั้น (ไม่ยิงแจ้งเตือน). ปอนด์ตัดสินให้ **แจ้งเตือนเชิงรุก** — ปิดคำถามที่เคยค้าง.
 
-- **Trigger:** FG เข้าสถานะ **Low = cover today < Target** (badge Low, §6.3). ทุกการแจ้งเตือน **ต้องแนบ Suggested production** ของ FG นั้น (ceil-to-batch, §6.2) เสมอ.
+- **Trigger:** FG (Active) เข้าสถานะ **Low = cover today < Target** (badge Low, §6.3). ทุกการแจ้งเตือน **ต้องแนบ Suggested production** ของ FG นั้น (ceil-to-batch, §6.2) เสมอ.
 - **Cadence = ทั้งสองแบบ:**
   - **(a) Real-time:** เมื่อ **stock/production event** ทำให้ FG พลิกเข้า Low (เช่น ขาย/ส่งของ (FG ลด), loss, จอง (reservation)) → **ยิงแจ้งเตือนทันที** สำหรับ FG ตัวนั้น (พร้อม Suggested).
   - **(b) Daily morning summary:** งานตั้งเวลา **J8 — Supply Planning low-stock daily digest** (~06:00, จัดคู่กับ J1) → ลิสต์ **FG ที่ Low อยู่ ณ ตอนนั้นทั้งหมด + Suggested production** เป็น 1 แจ้งเตือนสรุป (`non-functional.md` §6 J8).
+- **★ ไม่ยิงสำหรับ FG Inactive** (ถูกกันออกตั้งแต่ scope — §4).
 - **Delivery:** ผ่าน **notification outbox + per-user read-bit** เดิม (แสดงใน noti panel) · **ผู้รับ = ผู้ที่มีสิทธิ์ Read** ของ Supply Planning (ตามโมเดล notification-by-Read — **ไม่ hardcode role**).
 - **Deep-link:** แจ้งเตือน real-time/digest → หน้า **Supply Planning** (การ์ด FG ตัวนั้น) และ (เมื่อเหมาะสม) → หน้า **สร้าง SO produce-to-stock ที่ prefill Suggested** (ต่อ D8 v2).
 - **กันสแปม (idempotent):** ยิง real-time เมื่อ **พลิกจาก non-Low → Low** (edge transition) — ไม่ยิงซ้ำทุก event ระหว่างที่ยังคง Low; J8 เป็น snapshot รายวัน (idempotent, ดู `non-functional.md` §6).
@@ -97,8 +100,8 @@ Cover today · Cover after production · Risk line (Lead+Safety) · Target.
 Overstock (Suggested=0): คงประโยค "...Produce 0 units...".
 
 ### 6.6 3 stat tiles
-- ITEMS BELOW TARGET = count(FG ที่ cover < Target) "X of N".
-- SUGGESTED PRODUCTION = Σ Suggested production ทุก FG.
+- ITEMS BELOW TARGET = count(FG Active ที่ cover < Target) "X of N".
+- SUGGESTED PRODUCTION = Σ Suggested production ทุก FG (Active).
 - SHORTEST COVER = min(Cover today) วัน.
 
 > **จุดที่ปอนด์ควรเคาะ (ถ้าไม่เห็นด้วย):** (a) In Production นับจาก Batch สถานะใด (กำลังผลิต+รอ QC? รวม QC ผ่านที่ยังไม่เข้าคลัง?) — ปัจจุบันยึด "Batch ของ FG นั้นที่ยังไม่เข้าคลัง" (D4). (b) ปัดขึ้นเป็นทวีคูณ Batch เสมอ (D6). ทั้งคู่ตรง D4/D6 ที่ล็อกแล้ว — ไม่ถือเป็นคำถามค้าง.
@@ -113,12 +116,14 @@ Overstock (Suggested=0): คงประโยค "...Produce 0 units...".
 
 ## 8. Validations
 - Sales Rate/Batch Size > 0 เพื่อคำนวณ; ถ้าขาด → การ์ดเตือน (FG type ต้องมี config — bom.md §7).
+- **★ FG/BOM ต้อง Active จึงจะโผล่/คำนวณ/แจ้งเตือน** (Inactive ถูกกันออก — §4, `bom.md` §5c).
 - suggested = 0 เมื่อ Available ≥ Target.
 - แจ้งเตือน real-time ยิงเมื่อ transition non-Low → Low เท่านั้น (ไม่ยิงซ้ำระหว่างคง Low); Suggested แนบเสมอ.
 
 ## 9. Cross-links
-- config source/save-back → `bom.md` §5 · ปุ่มสั่งผลิต → `so.md` §6 (produce-to-stock) · In Production/FG on-hand → `stock.md`/`production.md` · **alerting → `non-functional.md` §6 (J8) + §7 (noti) · `platform.md` §9 (FG→Low notification event)** · D8 delta → README §2.1.
+- config source/save-back → `bom.md` §5 · **Inactive exclusion → `bom.md` §5c · `deletion-policy.md` §2.4** · ปุ่มสั่งผลิต → `so.md` §6 (produce-to-stock) · In Production/FG on-hand → `stock.md`/`production.md` · **alerting → `non-functional.md` §6 (J8) + §7 (noti) · `platform.md` §9 (FG→Low notification event)** · D8 delta → README §2.1.
 
 ## 10. Module changelog
 - **เพิ่ม:** search FG by name + filter Low/OK/Overstock · edit rates + save back to BOM · **formula summary (§6) สำหรับปอนด์รีวิว** · **★ proactive Low alerting (§5.1) — real-time + J8 daily digest, แนบ Suggested, ผ่าน noti outbox by Read (DECIDED 2026-07-29)**.
 - **แก้:** D8 ปุ่มสั่งผลิต → prefill SO produce-to-stock (D8 v2) แทนสร้าง PRD ทันที · **on-read-only → เพิ่ม proactive alerting** (ปิดคำถามที่เคยค้าง).
+- **★ เพิ่ม (2026-07-29 — BOM module review, ปอนด์):** **FG/BOM ที่ Inactive ถูกกันออกจากการวางแผน** (ไม่โผล่/ไม่คำนวณ Suggested/ไม่มีปุ่มสั่งผลิต/ไม่ยิง Low alert) — §4/§5/§5.1/§6.6/§8/§9. สอดคล้อง `bom.md` §5c + `so.md` §6 (Inactive บล็อกผลิตเก็บสต็อก). **PO ตัดสินสมเหตุผล (ไม่ใช่ open question).**

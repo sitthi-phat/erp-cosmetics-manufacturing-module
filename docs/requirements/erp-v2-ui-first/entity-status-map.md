@@ -1,6 +1,6 @@
 # Entity Status Map — ESSENCE Hub System (แผนที่สถานะฉบับเดียวจบ)
 
-เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก (DECIDED: ถอด Follow-up จาก enum — ปอนด์ยืนยัน 2026-07-29; ดู `modules/customer.md` §4/§12)** · **r7 (2026-07-29): เพิ่ม §1.1b Quotation (QT) lifecycle — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" ตั้งโดย Convert-to-PO + cancel ทุกสถานะ; authoritative spec = `modules/quotation.md`** · **r7.1 (2026-07-29): REVERT — ถอดสถานะ "ส่งแล้ว (Sent)" + ฟิลด์ sent-date ออกทั้งหมด (ปอนด์)**
+เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก (DECIDED: ถอด Follow-up จาก enum — ปอนด์ยืนยัน 2026-07-29; ดู `modules/customer.md` §4/§12)** · **r7 (2026-07-29): เพิ่ม §1.1b Quotation (QT) lifecycle — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" ตั้งโดย Convert-to-PO + cancel ทุกสถานะ; authoritative spec = `modules/quotation.md`** · **r7.1 (2026-07-29): REVERT — ถอดสถานะ "ส่งแล้ว (Sent)" + ฟิลด์ sent-date ออกทั้งหมด (ปอนด์)** · **r8 (2026-07-29): เพิ่ม §1.1c BOM lifecycle (Active/Inactive) + RM/BOM/FG code = user-entered ตอนสร้าง + unique + create-only-lock; authoritative = `modules/bom.md`/`modules/stock.md`**
 เป็น **ความจริงหลัก** เรื่อง entity/สถานะ/ใครเปลี่ยน/cascade · `status-journeys.md` อ้างอิงเอกสารนี้ (sync แล้ว ไม่ให้มี 2 ความจริง)
 
 ## สรุปภาษาไทย
@@ -8,6 +8,7 @@
 **★ r5 Stock Reservation (ปอนด์ถาม 2026-07-10):** **PO Confirmed → จอง (Reserve) วัตถุดิบ = ΣBOM×qty ต่อ line** (ยังไม่ตัดจริง) → เกิดยอด **ใช้ได้ (Available) = คงคลัง − จองแล้ว** · **ตัดจริง (Consume)** ตอนไหน = คำถามหลัก (PO เสนอ "เริ่มผลิต" ราย Batch) · **Cancel PO = คืน (Release) ที่จองอัตโนมัติ** · จองเกิน available ได้+เตือน · **ดู `stock-reservation.md` (ความจริงหลักเรื่อง reservation)**
 **★ r6 Customer (ปอนด์ 2026-07-29):** สถานะลูกค้า **6 → 5** (Lead/Active/Inactive/Disabled/Blacklist) · **"ต้องติดตาม (Follow-up)" ไม่เป็นสถานะอีกต่อไป → เป็น flag แยกอิสระ** (boolean + เหตุผล + ใคร/เมื่อ) ที่ **ควบคู่ได้ทุกสถานะ** (Blacklist+ติดเงิน, Active+PO มีปัญหา) · **Disabled/Blacklist = HARD block เปิดงานขาย QT/PO/SO** · **★ DECIDED (ปอนด์ยืนยัน 2026-07-29): ถอด Follow-up ออกจาก enum** (`modules/customer.md` §12).
 **★ r7 Quotation (ปอนด์ 2026-07-29 — Quotation review):** เพิ่ม lifecycle QT ที่ยังไม่เคยมีในแผนที่นี้ (§1.1b) · สถานะ **ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **"ยืนยัน (Confirmed)" reseat จาก D18-4 "ตกลง (Agreed)"** — ตั้งโดยการกด **"Convert to PO"** (popup, ทันที, immutable) โดยการสร้าง PO เป็นขั้นอิสระ · **ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ, activity-log) · **PO = loose reference → no cascade**. authoritative = `modules/quotation.md`. **★ r7.1 REVERTED (2026-07-29 — ปอนด์):** ถอดสถานะ **"ส่งแล้ว (Sent)"** + ฟิลด์ **sent-date** ออกทั้งหมด — การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ; list ค้นด้วย **created-date แกนเดียว**.
+**★ r8 BOM (ปอนด์ 2026-07-29 — BOM review):** BOM ได้ **lifecycle Active/Inactive** (§1.1c) — **ลบถาวรไม่ได้ → inactivate แทน** · **Inactive = HARD block เปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น + กันออกจาก Supply Planning** แต่ **ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม** · **รหัส BOM = รหัส FG (1:1, shared) = ผู้ใช้ตั้งเองตอนสร้าง + unique + ★ ล็อกหลังสร้าง (create-only-lock)** · **รหัส RM ก็เช่นเดียวกัน (user-entered ตอนสร้าง + unique + ล็อก — "RM ก็ด้วย")**. authoritative = `modules/bom.md`/`modules/stock.md`.
 
 ---
 
@@ -59,10 +60,23 @@
 - **★ ไม่มีสถานะ "ส่งแล้ว (Sent)" และไม่มีฟิลด์ sent-date** — การส่งใบเสนอราคาให้ลูกค้า = print/share (พิมพ์/ส่งไฟล์) ไม่ใช่สถานะ (revert 2026-07-29).
 - **แก้ = เวอร์ชันใหม่เสมอ** (immutable เมื่อออกไปแล้ว) · **ไม่มี Expired** (D18-4).
 - **ฟิลด์วันที่:** created-date (ออกเลข) — เป็น **แกนค้นหาวันที่เดียว** ใน quotation-list (`modules/quotation.md` §9).
-- **Convert to PO:** กดได้เมื่อ QT = **Draft** + ลูกค้าไม่ใช่ Disabled/Blacklist → ตั้ง Confirmed ทันที → เลือก "สร้าง PO เดี๋ยวนี้ (prefill)/ไว้ทีหลัง" · ถ้า Confirmed แต่ยังไม่มี PO → banner ถาวรบน detail "ไปสร้าง PO ด้วยข้อมูลนี้".
+- **Convert to PO:** กดได้เมื่อ QT = **Draft** + ลูกค้าไม่ใช่ Disabled/Blacklist + **BOM/FG ที่อ้างไม่ Inactive (r8)** → ตั้ง Confirmed ทันที → เลือก "สร้าง PO เดี๋ยวนี้ (prefill)/ไว้ทีหลัง" · ถ้า Confirmed แต่ยังไม่มี PO → banner ถาวรบน detail "ไปสร้าง PO ด้วยข้อมูลนี้".
 - **ผูก PO = loose reference** ("created from QT-…") → **ยกเลิก QT ไม่ cascade ไป PO และในทางกลับกัน** (deletion-policy §2.9).
 - **activity-log:** ทุก action (create/edit→version/convert→Confirmed/reject/cancel) เข้า field-audit + trace (QT = head-of-chain สาย OEM · `traceability.md` §4).
-- **Hard block Disabled/Blacklist:** เปิด/convert QT ให้ลูกค้า Disabled/Blacklist ไม่ได้ (`modules/customer.md` §4.2).
+- **Hard block Disabled/Blacklist:** เปิด/convert QT ให้ลูกค้า Disabled/Blacklist ไม่ได้ (`modules/customer.md` §4.2). **Hard block Inactive BOM/FG (r8):** เปิด QT ที่อ้าง BOM/FG Inactive ไม่ได้ (`modules/bom.md` §5c).
+
+### 1.1c ★ BOM (สูตร/FG master) · รหัส = รหัส FG (user-entered, shared, 1:1) · หน้า: bom / bom-create · **r8 (2026-07-29)**
+**authoritative = `modules/bom.md` §2b/§5/§5c** (เดิมแผนที่นี้มอง BOM เป็น master soft-delete เฉย ๆ — เพิ่ม lifecycle Active/Inactive + code rule ตามคำสั่งปอนด์).
+
+| สถานะ BOM | ใครเปลี่ยน | เกิดตอน / ผล |
+|---|---|---|
+| **Active (ใช้งาน)** | default ตอนสร้าง | เปิด QT/PO/SO ที่อ้าง BOM/FG นี้ได้ · โผล่ Supply Planning (ถ้า TYPE=FG) |
+| **Inactive (ปิดใช้งาน)** | BOM.**Delete** (inactivate, บังคับเหตุผล + audit) · reactivate = BOM.**Update** | **HARD block เปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG** (หายจาก dropdown งานใหม่) + **กันออกจาก Supply Planning** (ไม่แนะนำผลิต/ไม่ยิง Low) · **★ ไม่กระทบ:** PRD/Batch ที่กำลังผลิต, QT/PO/SO ที่เปิด/ยืนยันไปแล้ว, FG stock ที่มีอยู่ (เดินต่อจนจบ) |
+
+- **★ รหัส BOM = รหัส FG (1 BOM = 1 FG, 1:1, shared code):** **ผู้ใช้พิมพ์เองตอนสร้าง (user-entered on create) + ต้องไม่ซ้ำ (unique) + ★ ล็อกหลังสร้าง (create-only-lock — แก้ไม่ได้)** — เปลี่ยนที่มาจากถ้อยคำ D11 เดิม "auto"; 1:1 + shared คงเดิม; ล็อกเพื่อ reference (FG stock/PO/SO/QT/PRD/Batch/trace) ไม่แตก. `modules/bom.md` §5.
+- **★ รหัส RM ก็กติกาเดียวกัน** (user-entered ตอนสร้าง + unique + ล็อก — "RM ก็ด้วย", `modules/stock.md` §3b).
+- **ไม่มี hard delete** — "ลบ" BOM = **Inactivate** (deletion-policy §2.4); Inactive แล้วยังดู/ค้น/trace ได้ (read-only + badge).
+- **Hard block Inactive แยกจาก block ลูกค้า** (สินค้า vs ลูกค้า) — ข้อความ error แยก (`modules/quotation.md`/`po.md`/`so.md` §validations).
 
 ### 1.2 PO — ราง Fulfilment (การผลิต/จัดส่ง) · `PO-{YYYYMM}-{NNNNNN}` · หน้า: po-create / po-detail / po-list
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
@@ -75,7 +89,7 @@
 | ส่งถึงแล้ว (Delivered) | auto (DN Delivered) | ลูกค้าเซ็นรับ |
 | ยกเลิก (Cancelled) → เปิดใหม่เป็น ร่าง | Sale/Admin (บังคับ comment) · reopen คงเลข PO เดิม | ทุกขั้น |
 > force override (ข้ามลำดับ) = เฉพาะสิทธิ์ **Admin** + เหตุผล + trace (ที่การ์ด "เปลี่ยนสถานะ PO" หน้า po-detail)
-> **Create-time gate (r6):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** (HARD block — `modules/customer.md` §4.2)
+> **Create-time gate (r6):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** (HARD block — `modules/customer.md` §4.2) · **(r8) เปิด/ยืนยัน PO ที่ line อ้าง BOM/FG Inactive ไม่ได้** (HARD block — `modules/bom.md` §5c)
 > **หมายเหตุ vs QT (r7):** "PO Confirmed" (ราง fulfilment นี้) ≠ "QT Confirmed (ยืนยัน)". เมื่อสร้าง PO จาก QT ที่ Confirmed → PO เริ่มที่ **ร่าง (Draft)** ตามปกติ (`modules/po.md` §4).
 
 ### 1.3 PO — ราง Billing (วางบิล/ชำระ) · หน้า: invoices / invoice-detail / po-detail
@@ -103,6 +117,7 @@
 > overlay: **เสี่ยงล่าช้า (Potential Delay)** = auto (เกณฑ์ 2 วันผลิต + 1 วันส่ง)
 > **วัตถุดิบขาดไม่บล็อก:** รับงาน/เริ่มผลิตได้แม้ stock ไม่พอ — แสดง badge/เตือน "วัตถุดิบอาจไม่พร้อม" (ดู §1.6 negative stock)
 > **สีป้าย Rework (r5 · PO ตัดสิน 2026-07-14):** PRD ที่ถูกตีกลับกลับสู่สถานะ **"กำลังผลิต · Rework" = สีฟ้า (processing)** — เป็นงานที่กลับมาผลิตอีกครั้ง ไม่ใช่สถานะ error · สัญญาณ "ตก/ต้องแก้" สีแดงอยู่ที่ **Batch "QC ไม่ผ่าน"** (ตัว run ที่ fail) + noti เท่านั้น ไม่ซ้ำที่ระดับ PRD
+> **หมายเหตุ r8:** BOM ถูก Inactivate ระหว่าง PRD/Batch กำลังผลิต → **PRD/Batch เดินต่อจนจบได้** (Inactive กระทบเฉพาะการเปิด QT/PO/SO ใหม่, ไม่กระทบงานที่วิ่งอยู่ — `modules/bom.md` §5c).
 
 ### 1.5 ★ Batch — รุ่นการผลิต · `B-{PO}-{line}-{run}` · หน้า: production / qc / trace
 **นิยาม:** รุ่นผลิตจริง 1 รอบของ PRD · gen ตอน "เริ่มผลิต" · run เพิ่มทีละ 1 เมื่อ rework · ผูก PO/line/Lot วัตถุดิบที่ใช้
@@ -115,6 +130,8 @@
 > หน้า production **ไม่มีปุ่มตัดสิน QC** — เห็นผล + รับงานกลับเท่านั้น
 
 ### 1.6 Lot วัตถุดิบ + Stock (+ Reservation r5) · `{supplier prefix}{YYMM}` (เช่น L-GLY-2607) · หน้า: stock / goods-receipt / qc / trace
+> **★ r8: รหัส RM (master) = ผู้ใช้ตั้งเองตอนสร้าง + unique + ล็อกหลังสร้าง (create-only-lock)** — เลข Lot ยังคง gen อัตโนมัติจาก supplier prefix ตอน GR (`modules/stock.md` §3b).
+
 | สถานะ Lot | ใครเปลี่ยน | เกิดตอน |
 |---|---|---|
 | รอตรวจรับ (รอ QC ขาเข้า) | auto (gen ตอน Goods Receipt) | บันทึกรับเข้า |
@@ -197,6 +214,7 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 | 20 | **★ Reservation (r5)** — Confirm=จอง / Cancel-แก้ลด=คืน / เริ่มผลิต=ตัดจริง | Reserved/Available เปลี่ยน (ดู `stock-reservation.md`) | stock (3 ยอด), po-detail | Stock (ถ้า available ติดลบ) |
 | 21 | **★ Customer → Disabled/Blacklist (r6)** (Sale Manager/Admin) | **HARD block เปิดงานขายใหม่ (QT/PO/SO) ของลูกค้ารายนั้น** (ดู `modules/customer.md` §4.2); PO/QT/SO เดิมเดินต่อ (no cascade) | customers, quotation/po/so-create (dropdown บล็อก) | Sale |
 | 22 | **★ QT ยกเลิก (Cancelled) — ทุกสถานะ (r7)** (Quotation D/Approve) | QT=ยกเลิก + activity-log + เหตุผล; เลข gapless คงอยู่; **PO ที่ผูก = loose ref → ไม่ cascade (PO เดินต่อ)** | quotation-detail, trace | — |
+| 23 | **★ BOM → Inactive (r8)** (BOM D, บังคับเหตุผล) | **HARD block เปิด QT/PO/SO ใหม่ที่อ้าง BOM/FG นั้น** (หายจาก dropdown งานใหม่) + **กันออกจาก Supply Planning** (ไม่แนะนำผลิต/ไม่ยิง Low); **QT/PO/SO/PRD/Batch/FG stock ที่วิ่งอยู่แล้วเดินต่อ (no cascade)** · reactivate = กลับ Active | bom, quotation/po/so-create (dropdown บล็อก), supply-planning | — |
 
 ---
 
@@ -250,6 +268,7 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 **หมายเหตุ reservation (r5):** Confirmed=จอง (Available ลด) · เริ่มผลิต=ตัดจริง (Option A) · Cancel=คืนจอง · ดู `stock-reservation.md`
 **หมายเหตุ customer r6:** ก่อนเปิด PO/QT/SO → เช็คสถานะลูกค้า; **Disabled/Blacklist = บล็อก (hard)**; flag ⚑ "ต้องติดตาม" = ป้ายเตือน ไม่บล็อก
 **หมายเหตุ QT r7:** "Convert to PO" ตั้ง QT=ยืนยัน (Confirmed) ทันที (immutable) — การไปสร้าง PO เป็นขั้นอิสระ (banner ถาวรถ้ายังไม่สร้าง); loose ref → ยกเลิก QT ไม่กระทบ PO · **การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (ไม่มี Sent/sent-date — r7.1)**
+**หมายเหตุ BOM r8:** ก่อนเปิด QT/PO/SO → เช็คสถานะ BOM/FG; **Inactive = บล็อก (hard, คนละแหล่งกับลูกค้า)** + กันออก Supply Planning; งานที่วิ่งอยู่/FG stock เดิมเดินต่อ · **รหัส BOM/FG/RM = ผู้ใช้ตั้งเองตอนสร้าง + unique + ล็อกหลังสร้าง**
 
 ---
 
@@ -257,6 +276,7 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 | จุด | สถานะ | รายการแก้ (ให้ UX/UI) |
 |---|---|---|
 | **★ Quotation lifecycle r7/r7.1 (Confirmed/activity · ถอด Sent/sent-date)** | ⚠ ต้องแก้ | quotation-list: badge/filter ครบชุด = **ร่าง/ยืนยัน/ปฏิเสธ/ยกเลิก** (★ ถอด "ส่งแล้ว (Sent)" chip/badge) + ค้น **ช่วงวันที่สร้างแกนเดียว** (★ ถอดคอลัมน์ + ช่วงค้น sent-date) · quotation-detail: **Convert-to-PO popup → ยืนยัน (Confirmed) + เลือกสร้าง PO ตอนนี้/ทีหลัง** + **banner ถาวร "ยืนยันแล้ว · ไปสร้าง PO"** เมื่อ Confirmed-ยังไม่มี PO + **activity-log แสดงในหน้า** · quotation-edit: **material check** เหมือน create (ดู `modules/quotation.md`) |
+| **★ BOM Active/Inactive + code create-only-lock (r8)** | ⚠ ต้องแก้ | bom-create: **ช่องรหัส BOM/FG พิมพ์เองตอนสร้าง (unique validation) · read-only เมื่อแก้** · RM component **search dropdown ค้นชื่อ+รหัส** · **ราคาซื้อแก้มือได้ (ทั้งมี/ไม่มี supplier — ไม่บล็อก)** · **toggle Active/Inactive** (บังคับเหตุผล) · bom list: **filter สถานะ + badge "ปิดใช้งาน"** · quotation/po/so-create: **Inactive BOM/FG เลือกไม่ได้ + affordance บล็อก** (ดู `modules/bom.md`/`quotation.md`/`po.md`/`so.md`) |
 | **★ Customer status 6→5 + follow-up flag (r6)** | ⚠ ต้องแก้ | customers/customer-detail: ถอด "Follow-up" จาก status badge → เพิ่ม **flag ⚑ "ต้องติดตาม" แยก badge + เหตุผล** · list filter ⚑ · financial summary card · block affordance บน QT/PO/SO create (DECIDED ถอด — §12) |
 | **PRD manual accept (รอรับงาน → รับงาน)** | ⚠ ต้องแก้ | **เดิม mockup ทำ PRD auto ตอน Confirm** — ต้องเพิ่ม **คิว "รอรับงาน" + ปุ่ม "รับงาน"** ในหน้า production; เลข PRD ออกตอนกดรับงาน (ก่อนกด = ยังไม่มีเลข PRD) |
 | **Negative stock display** | ⚠ ต้องเพิ่ม | stock.html: ยอดติดลบ = **สีแดง + badge "ติดลบ (รอรับเข้า)"**; production: เตือน "จะตัด stock ติดลบ X หน่วย" ตอนรับงาน/เริ่มผลิต |
@@ -276,3 +296,4 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 - **★ r5 Stock Reservation: มี 5 คำถามค้าง (จุดตัดจริงสำคัญสุด)** — ดู `stock-reservation.md` §8: (1) ตัดจริงตอนไหน [PO แนะนำ เริ่มผลิต] (2) เกณฑ์ใกล้หมด available/on_hand (3) จองเกิน available (4) rework material (5) มูลค่าสต็อก on_hand เท่านั้น
 - **★ r6 Customer (2026-07-29): DECIDED ✅** — **ถอด "Follow-up" ออกจาก status enum** (เหลือ 5 สถานะ + flag แยก) — ปอนด์ยืนยันแล้ว (`modules/customer.md` §12). ไม่มีคำถามค้าง.
 - **★ r7 Quotation (2026-07-29): ไม่มีคำถามค้าง** — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" ตั้งโดย Convert-to-PO + cancel ทุกสถานะ **settled** (ปอนด์กำหนดโมเดลชัด) · **r7.1: ถอด "ส่งแล้ว (Sent)" + sent-date (ปอนด์ revert 2026-07-29)**. authoritative = `modules/quotation.md`.
+- **★ r8 BOM (2026-07-29): ไม่มีคำถามค้าง** — **Active/Inactive (ลบถาวรไม่ได้) + Inactive บล็อก QT/PO/SO + กันออก Supply Planning** · **รหัส BOM/FG/RM = user-entered ตอนสร้าง + unique + create-only-lock** (reconcile D11 → D11 v2). authoritative = `modules/bom.md`/`modules/stock.md`.

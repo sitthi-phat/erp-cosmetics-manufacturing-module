@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detail.html`
-กฎอ้างอิง: entity-status-map §1.2/§1.3 (2 ราง) · stock-reservation (จอง→ตัดจริง Option A) · D3 · D13 · D18 · README §3 · **`customer.md` §4.2 (hard block Disabled/Blacklist)** · **`quotation.md` §6 (Convert-to-PO → QT=Confirmed, prefill 2 ทาง)** · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: entity-status-map §1.2/§1.3 (2 ราง) · stock-reservation (จอง→ตัดจริง Option A) · D3 · D13 · D18 · README §3 · **`customer.md` §4.2 (hard block Disabled/Blacklist)** · **`bom.md` §5c (inactive-BOM block)** · **`quotation.md` §6 (Convert-to-PO → QT=Confirmed, prefill 2 ทาง)** · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-ใบสั่งซื้อ OEM (รับจ้างผลิต, made-to-order). Create ("เปิดใบสั่งซื้อใหม่") เพิ่ม **customer search dropdown** (โชว์สถานะ+credit term, ดู detail แบบ modal แล้วกลับไม่เสีย state). **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน PO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนบันทึก/ยืนยัน (ต่างจาก TYPE mismatch/RM ขาด ที่เตือนไม่บล็อก). line = BOM/วัตถุดิบตรง (RM-direct ยังผ่านขั้นผลิต D3). ยืนยัน PO = จองวัตถุดิบ (Reserve); ขาด → เตือน + auto PR (ไม่บล็อก). รองรับ **origin ref "created from QT-…"** — มาจาก QT ที่ **ยืนยัน (Confirmed)** แล้ว, prefill ได้ **2 ทาง** (popup ตอน Convert หรือ banner "ไปสร้าง PO ด้วยข้อมูลนี้" บน QT); **loose reference → ไม่มี cascade** สองทาง. ผลิตเกิน → surplus เข้า FG ตอน "พร้อมส่ง" (D13). 2 ราง: fulfilment + billing (credit term 30/60/90 default 60). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบสั่งซื้อ OEM (รับจ้างผลิต, made-to-order). Create ("เปิดใบสั่งซื้อใหม่") เพิ่ม **customer search dropdown** (โชว์สถานะ+credit term, ดู detail แบบ modal แล้วกลับไม่เสีย state). **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน PO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนบันทึก/ยืนยัน (ต่างจาก TYPE mismatch/RM ขาด ที่เตือนไม่บล็อก). **★ BOM/FG ที่ถูกตั้ง Inactive = เปิด PO ไม่ได้ (HARD block, คนละแหล่งกับลูกค้า — `bom.md` §5c)**. line = BOM/วัตถุดิบตรง (RM-direct ยังผ่านขั้นผลิต D3). ยืนยัน PO = จองวัตถุดิบ (Reserve); ขาด → เตือน + auto PR (ไม่บล็อก). รองรับ **origin ref "created from QT-…"** — มาจาก QT ที่ **ยืนยัน (Confirmed)** แล้ว, prefill ได้ **2 ทาง** (popup ตอน Convert หรือ banner "ไปสร้าง PO ด้วยข้อมูลนี้" บน QT); **loose reference → ไม่มี cascade** สองทาง. ผลิตเกิน → surplus เข้า FG ตอน "พร้อมส่ง" (D13). 2 ราง: fulfilment + billing (credit term 30/60/90 default 60). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -25,7 +25,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 | เลข `PO-{YYYYMM}-{NNNNNN}` | string | computed (gapless) | reopen คงเลขเดิม |
 | ลูกค้า | ref customer | editable (dropdown G4) | โชว์สถานะ + credit term · **Disabled/Blacklist เลือกไม่ได้ (§7)** |
 | origin `created from QT-…` | ref QT (optional, loose) | editable/computed | ว่างได้ (สร้างตรง D18-3); auto-fill เมื่อ Convert-to-PO / จาก banner ของ QT ที่ Confirmed · **loose ref: ยกเลิก QT ไม่กระทบ PO** |
-| line items | list {item(BOM/RM), qty, ราคา/หน่วย} | editable | RM-direct ยังผ่านขั้นผลิต (D3) |
+| line items | list {item(BOM/RM), qty, ราคา/หน่วย} | editable | RM-direct ยังผ่านขั้นผลิต (D3) · **BOM/FG ต้อง Active — Inactive เลือกไม่ได้/บล็อก (§7, `bom.md` §5c)** |
 | วันที่ต้องการรับของ | date | editable | กรอกตอน create (รวมกรณี prefill จาก QT) |
 | credit term (rางบิล) | enum {30,60,90} วัน default 60 | editable | default จากลูกค้า, override รายใบแจ้งหนี้ได้ |
 | สถานะ fulfilment | enum (§4) | mostly auto | Draft→Confirmed→In Production→Ready→In Delivery→Delivered→Cancelled |
@@ -47,6 +47,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
    - **★ Prefill มาได้ 2 ทาง (quotation.md §6):** (ก) กด "Convert to PO" บน QT → popup → เลือก "สร้าง PO เดี๋ยวนี้" · (ข) กดปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** จาก **banner ถาวรบน QT ที่ยืนยัน (Confirmed) แล้วแต่ยังไม่มี PO**. ทั้งสองทาง prefill line/qty/ราคา + ตั้ง origin `created from QT-…`.
    - **★ QT ต้นทางถูกตั้ง "ยืนยัน (Confirmed)" ไปแล้วก่อนถึงหน้านี้.** การสร้าง PO นี้ **อิสระ**: ถ้าปิดหน้าก่อนบันทึก → ไม่มี PO เกิด, QT ยังคง Confirmed และ banner บน QT ยังชวนให้กลับมาสร้างได้เสมอ. **loose reference → ยกเลิก QT ไม่กระทบ PO และในทางกลับกัน.**
 3. เพิ่ม line (BOM/RM). RM-direct → alert D3 ("ยังผ่านขั้นผลิต").
+   - **★ Hard block BOM/FG Inactive (`bom.md` §5c):** BOM/FG ที่ถูกตั้ง **Inactive (ปิดใช้งาน)** **หายจาก dropdown เลือกรายการ**; ถ้าหลุดเข้ามา → **บล็อกตอนบันทึก/ยืนยัน** ข้อความ *"สูตร/สินค้านี้ปิดใช้งาน (Inactive) — เปิดใบสั่งซื้อไม่ได้"*. คนละแหล่งกับ block ลูกค้า.
 4. material check เทียบ **Available (on_hand − reserved)** → ขาด = เตือน (ไม่บล็อก) + **auto-สร้าง PR ส่วนขาด** (ต่างจาก Quotation ที่ **ไม่** auto-PR).
 5. (optional) กรอก **หมายเหตุ (comment)** ได้ตั้งแต่ create (ช่องเดียว) — ดู §5.1.
 6. บันทึก (Draft) → ยืนยัน (Confirmed) = จองวัตถุดิบ.
@@ -73,6 +74,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 ## 7. Validations
 - ต้องมีลูกค้า + ≥1 line + ราคา/หน่วย.
 - **★ Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ห้ามเลือก/บันทึก/ยืนยัน PO ให้ลูกค้าสถานะ Disabled/Blacklist — **บล็อกจริง** + ข้อความชัด. (รวมกรณี Convert-to-PO / สร้างจาก banner ที่ลูกค้ากลายเป็น Disabled/Blacklist ภายหลัง.)
+- **★ Hard block BOM/FG Inactive (bom.md §5c):** ห้ามเลือก/บันทึก/ยืนยัน PO ที่ line อ้าง BOM/FG **Inactive (ปิดใช้งาน)** — **บล็อกจริง** + ข้อความ *"สูตร/สินค้าปิดใช้งาน"*. เป็น hard block **คนละแหล่ง**กับลูกค้า. ไม่กระทบ PO เดิมที่อ้าง BOM ก่อนถูก inactivate (เดินต่อจนจบ — deletion-policy §2.4).
 - material ขาด = เตือน ไม่บล็อก (+ auto PR) — **คนละกฎกับ hard block ข้างบน**.
 - ยกเลิก = บังคับ comment; reopen = คงเลข PO เดิม (Draft).
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
@@ -83,6 +85,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 ## 9. Cross-links
 - QT→PO → `quotation.md` §6 (Convert-to-PO → QT=Confirmed, prefill 2 ทาง, banner ถาวร) · reservation → stock-reservation · production/surplus → `production.md` · flow → `flows/oem-flow.md`.
 - **Hard block Disabled/Blacklist → `customer.md` §4.2.**
+- **Inactive BOM/FG block → `bom.md` §5c · `deletion-policy.md` §2.4.**
 - **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4 / `non-functional.md` AU1.**
 
 ## 10. Module changelog
@@ -90,4 +93,5 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/ยืนยัน PO เมื่อลูกค้า Disabled/Blacklist** (§5/§7, ref customer.md §4.2) — คนละกฎกับ TYPE mismatch/RM ขาด (warn).
 - **★ อัปเดต (2026-07-29 — Quotation module review):** origin QT ref มาจาก QT ที่ **ยืนยัน (Confirmed)** (แทนคำเดิม "Agreed"); prefill ได้ **2 ทาง** (popup ตอน Convert / banner "ไปสร้าง PO ด้วยข้อมูลนี้" บน QT ที่ Confirmed-ยังไม่มี PO); การสร้าง PO **อิสระ**จากการตั้ง QT=Confirmed; **loose ref → no cascade สองทาง** (§3/§5).
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** (ใคร/เมื่อ/เดิม→ใหม่) บน po-create/po-detail — ยึด `comment-convention.md` (§3 field, §5.1, §6 permission, §7).
+- **★ เพิ่ม (2026-07-29 — BOM module review, ปอนด์):** **hard block เปิด/ยืนยัน PO เมื่อ BOM/FG ที่อ้างถูกตั้ง Inactive** (§3/§5/§7, ref `bom.md` §5c) — คนละแหล่งกับ block ลูกค้า; PO เดิมที่อ้าง BOM ก่อน inactivate เดินต่อจนจบ.
 - **คงเดิม:** 2 ราง, reserve/consume (Option A), surplus (D13), RM-direct (D3).

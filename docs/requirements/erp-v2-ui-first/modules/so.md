@@ -1,11 +1,11 @@
 # Module — Sales Order (SO, Own-Brand)
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)** · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)** · **`bom.md` §5c (inactive-BOM/FG block — ทั้ง 2 โหมด)** · **`comment-convention.md` (comment + change-history)**
 > โมดูลใหญ่ — sub-files แนะนำ: `so-sell-from-stock.md` (ก) · `so-produce-to-stock.md` (ข). รอบนี้รวมใน so.md.
 
 ## สรุปภาษาไทย
-ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). List ค้นด้วยเลข/ช่วงวันที่. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ลูกค้าไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). **★ ทั้ง 2 โหมด: FG/BOM ที่ถูกตั้ง Inactive = เปิด SO ไม่ได้ (HARD block, คนละแหล่งกับลูกค้า — `bom.md` §5c)**. List ค้นด้วยเลข/ช่วงวันที่. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -25,7 +25,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | เลข `SO-{YYYYMM}-{NNNNNN}` | string | computed (gapless ต่อเดือน) | แยกจาก PO (D1) |
 | โหมด | enum {ขายจากสต็อก(ก), ผลิตเก็บสต็อก(ข)} | editable | (ก) มีลูกค้า / (ข) ไม่มี (D2) |
 | ลูกค้า | ref customer | editable (dropdown G4) | **(ก) บังคับ · (ข) ว่าง** · (ก) **Disabled/Blacklist เลือกไม่ได้ (§8)** |
-| line items | (ก) FG + qty · (ข) FG(BOM) + qty ผลิต | editable | (ก) โชว์ FG Available ราย Batch (D16) |
+| line items | (ก) FG + qty · (ข) FG(BOM) + qty ผลิต | editable | (ก) โชว์ FG Available ราย Batch (D16) · **FG/BOM ต้อง Active — Inactive เลือกไม่ได้/บล็อก ทั้ง 2 โหมด (§8, `bom.md` §5c)** |
 | FG Available (ราย Batch) | units | computed (read-only) | (ก) เท่านั้น — จาก FG stock |
 | สถานะ | enum (§4) | mostly auto | ต่างกันตามโหมด |
 | ราคา/ยอดรวม/VAT | THB | (ก) computed | (ข) ไม่มีลูกค้า/ราคาตอนนี้ |
@@ -49,6 +49,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 1. `so-create` โหมด (ก) → **เลือกลูกค้าผ่าน customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail modal แล้วกลับไม่เสีย state).
    - **★ Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ลูกค้าสถานะ Disabled/Blacklist **ค้นเจอ+เห็นสถานะ แต่เลือกไม่ได้** (disabled option); ถ้าหลุดเข้ามาต้อง **บล็อกตอนยืนยันใบสั่งขาย** พร้อมข้อความ *"ลูกค้าสถานะ {Disabled/Blacklist} — เปิดใบสั่งขายไม่ได้"*. เป็น **HARD block** (ต่างจาก TYPE mismatch/FG ไม่พอ = เตือน).
 2. เลือก FG ที่มีสต็อก → ระบบโชว์ **FG Available ราย Batch (FIFO, D16)**.
+   - **★ Hard block FG Inactive (`bom.md` §5c):** FG ที่ถูกตั้ง **Inactive (ปิดใช้งาน)** **หายจาก dropdown เลือก FG**; ถ้าหลุดเข้ามา → **บล็อกตอนยืนยัน** ข้อความ *"สินค้านี้ปิดใช้งาน (Inactive) — เปิดใบสั่งขายไม่ได้"*. คนละแหล่งกับ block ลูกค้า. (FG stock เดิมที่มีอยู่ยัง trace/ดูได้ แต่เปิด SO ใหม่ขายไม่ได้.)
 3. กด **"ยืนยันใบสั่งขาย (จอง FG)"** — **ความหมายที่ยืนยัน:** ของ **มี/พร้อมในสต็อก** →
    - **จอง FG per-Batch** (มิเรอร์ RM reservation; reserved+, available−).
    - SO เปลี่ยนเป็น **พร้อมส่ง (Ready to Ship)**.
@@ -63,9 +64,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - การแก้ comment = activity-log event ของ SO และ **โผล่บน trace** (entity=SO, field=`comment`). กติกาเต็ม = `comment-convention.md` (CC1–CC7) · คนละฟิลด์กับ "comment ตอนยกเลิก" (§8).
 
 ## 6. ★ (ข) Produce-to-stock — RESOLVED flow (README §4)
-> **ทำตัวเหมือนเปิด PO** (แต่ไม่มีลูกค้า → **hard block Disabled/Blacklist ไม่เกี่ยวกับโหมดนี้**):
+> **ทำตัวเหมือนเปิด PO** (แต่ไม่มีลูกค้า → **hard block Disabled/Blacklist ไม่เกี่ยวกับโหมดนี้** แต่ **hard block FG/BOM Inactive ยังบังคับ**):
 1. `so-create` โหมด (ข) → **ไม่เลือกลูกค้า** → เลือก FG(BOM) + จำนวนที่จะผลิต.
-   - **ที่มาการ prefill:** ถ้ามาจาก Supply Planning ปุ่ม "สั่งผลิต" (D8 v2) → หน้านี้ถูก **prefill** FG + จำนวน = Suggested. ผู้ใช้ทวน/ยืนยัน.
+   - **ที่มาการ prefill:** ถ้ามาจาก Supply Planning ปุ่ม "สั่งผลิต" (D8 v2) → หน้านี้ถูก **prefill** FG + จำนวน = Suggested. ผู้ใช้ทวน/ยืนยัน. *(หมายเหตุ: FG ที่ Inactive จะไม่โผล่ใน Supply Planning ตั้งแต่แรก — `supply-planning.md` §4.)*
+   - **★ Hard block FG/BOM Inactive (`bom.md` §5c):** เลือกได้เฉพาะ FG(BOM) ที่ **Active**; Inactive **หายจาก dropdown**/บล็อกตอนยืนยัน ข้อความ *"สูตร/สินค้าปิดใช้งาน (Inactive) — สั่งผลิตเก็บสต็อกไม่ได้"*.
 2. ยืนยัน → แสดง **BOM raw-material stock check** (เทียบ Available).
 3. ส่งงานเข้า **production** → สร้าง **PRD ไม่ผูกลูกค้า** (customerless).
 4. **ถ้า RM ขาด** → ยังสร้าง production order ได้ (ไม่บล็อก) + **AUTO-open PR ไปคลัง** (ต่างจาก Quotation ที่ไม่ auto-PR; เหมือน PO).
@@ -89,7 +91,8 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ## 8. Validations
 - (ก) บังคับเลือกลูกค้า + FG มี Available พอ (ขาด = เตือน/บล็อกตามนโยบาย FG reserve; มิเรอร์ RM warning-not-block).
 - **★ (ก) Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ห้ามเลือก/ยืนยันใบสั่งขายให้ลูกค้าสถานะ Disabled/Blacklist — **บล็อกจริง** + ข้อความชัด (แยกจาก FG-availability warning).
-- (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต — **hard block Disabled/Blacklist ไม่เกี่ยว** (ไม่มีลูกค้า).
+- **★ Hard block FG/BOM Inactive (bom.md §5c) — ทั้ง 2 โหมด:** ห้ามเลือก/ยืนยัน SO ที่ line อ้าง FG/BOM **Inactive (ปิดใช้งาน)** — **บล็อกจริง** + ข้อความ *"สูตร/สินค้าปิดใช้งาน"*. คนละแหล่งกับ block ลูกค้า. ไม่กระทบ SO เดิม/FG stock เดิม (เดินต่อ/trace ได้ — deletion-policy §2.4).
+- (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต — **hard block Disabled/Blacklist ไม่เกี่ยว** (ไม่มีลูกค้า) · **hard block Inactive ยังบังคับ**.
 - ยกเลิก = บังคับ comment.
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3) · คนละฟิลด์กับ comment ยกเลิก.
 
@@ -99,9 +102,11 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ## 10. Cross-links
 - D8 v2 prefill → `supply-planning.md` · FG stock/FIFO → `stock.md` · DN/Invoice อ้าง SO → delivery-note/invoice (scope §10.1) · flow → `flows/ownbrand-flow.md`.
 - **Hard block Disabled/Blacklist (โหมด ก) → `customer.md` §4.2.**
+- **Inactive FG/BOM block (ทั้ง 2 โหมด) → `bom.md` §5c · `deletion-policy.md` §2.4.**
 - **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **เพิ่ม:** date-range search (list) · customer dropdown (ก) · resolved (ก) Ready-to-Ship→Delivery flow · resolved (ข) auto-PR flow · prefill จาก Supply Planning (D8 v2).
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/ยืนยัน SO โหมด (ก) เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) · โหมด (ข) ไม่เกี่ยว (ไม่มีลูกค้า).
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** บน so-create/so-detail (ทั้งโหมด ก/ข) — ยึด `comment-convention.md` (§3 field, §5b, §7 permission).
+- **★ เพิ่ม (2026-07-29 — BOM module review, ปอนด์):** **hard block เปิด/ยืนยัน SO เมื่อ FG/BOM ที่อ้างถูกตั้ง Inactive — ทั้งโหมด ก และ ข** (§3/§5/§6/§8, ref `bom.md` §5c) — คนละแหล่งกับ block ลูกค้า; SO/FG stock เดิมเดินต่อ. FG Inactive ยังถูกกันออกจาก Supply Planning (ไม่โผล่ prefill โหมด ข).
