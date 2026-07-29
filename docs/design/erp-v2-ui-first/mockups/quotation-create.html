@@ -235,12 +235,12 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
        <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
    </div></div>
    <div class="footerbar" style="position:static;margin:0;border:1px solid var(--border2);border-radius:var(--radius-lg);background:#fff"><button class="btn">บันทึกร่าง (Draft)</button><button class="btn">ยกเลิก</button><a class="btn btn-primary" href="quotation-print.html">บันทึก</a></div>
-   <div class="notify" style="margin-top:10px">🖨 กด <b>"บันทึก"</b> → ออกเลข QT + เปิด <b>มุมมองพร้อมพิมพ์ (print-ready)</b> ทันที เพื่อพิมพ์/ส่งให้ลูกค้า · การตั้งสถานะ "ส่งแล้ว (Sent)" ทำจากหน้ารายละเอียด</div>
+   <div class="notify" style="margin-top:10px">🖨 กด <b>"บันทึก"</b> → ออกเลข QT + เปิด <b>มุมมองพร้อมพิมพ์ (print-ready)</b> ทันที เพื่อพิมพ์/ส่งให้ลูกค้า · การส่งใบเสนอราคา = พิมพ์/แชร์ ไม่ใช่การเปลี่ยนสถานะ</div>
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>เวอร์ชัน & ขั้นตอนถัดไป</h3></div><div class="card-b">
-     <div class="alert alert-info" style="font-size:13px"><span class="ai">🧾</span><div><b>เลข QT-202607-000013</b> ออกอัตโนมัติเมื่อบันทึก (gapless ต่อเดือน) · <b>แก้ทุกครั้งหลังส่ง = เวอร์ชัน/เลขใหม่</b> เก็บประวัติ (immutable เมื่อออกไปแล้ว) — D18-4</div></div>
-     <div class="flow" style="margin:8px 0 6px"><div class="s cur"><span class="n">1</span>ร่าง</div><div class="line"></div><div class="s"><span class="n">2</span>ส่งแล้ว</div><div class="line"></div><div class="s"><span class="n">3</span>ยืนยัน</div><div class="line"></div><div class="s"><span class="n">4</span>ออก PO</div></div>
+     <div class="alert alert-info" style="font-size:13px"><span class="ai">🧾</span><div><b>เลข QT-202607-000013</b> ออกอัตโนมัติเมื่อบันทึก (gapless ต่อเดือน) · <b>แก้ทุกครั้งหลังบันทึก = เวอร์ชัน/เลขใหม่</b> เก็บประวัติ (immutable เมื่อออกไปแล้ว) — D18-4</div></div>
+     <div class="flow" style="margin:8px 0 6px"><div class="s cur"><span class="n">1</span>ร่าง</div><div class="line"></div><div class="s"><span class="n">2</span>ยืนยัน</div><div class="line"></div><div class="s"><span class="n">3</span>ออก PO</div></div>
      <div class="notify" style="margin-top:12px">➡️ กด <b>"Convert to PO"</b> ที่หน้ารายละเอียด → popup ยืนยัน → QT = <b>ยืนยัน (Confirmed)</b> ทันที (immutable) แล้วเลือกออก <b>PO เลขใหม่</b> เดี๋ยวนี้ (prefill) หรือทีหลัง + เก็บลิงก์ QT↔PO (D18) → เข้าสาย OEM เดิม</div>
      <div class="notify" style="margin-top:8px">✎ <b>หน้านี้ใช้ตอนแก้ (เวอร์ชันใหม่) ด้วย</b> — มี <b>"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"</b> ครบเช่นเดียวกับตอนสร้าง (Q3)</div>
      <div class="notify" style="margin-top:8px">↩️ ลูกค้าไม่ตกลง → ตั้งสถานะ <b>ปฏิเสธ (Rejected)</b> จบสาย ไม่เกิด PO (เก็บเป็นประวัติ)</div>

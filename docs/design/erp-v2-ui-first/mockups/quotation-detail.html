@@ -156,10 +156,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย OEM</div></div></div></div></div>
   <div class="content">
 
- <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-processing" id="qtBadge">ส่งแล้ว (Sent)</span></h1><div class="sub" id="qtSub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569 · ส่งลูกค้า 26/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><a class="btn" href="quotation-print.html">🖨 พิมพ์ (print-ready)</a>
+ <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-neutral" id="qtBadge">ร่าง (Draft)</span></h1><div class="sub" id="qtSub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><a class="btn" href="quotation-print.html">🖨 พิมพ์ / ส่งให้ลูกค้า (print-ready)</a>
    <button class="btn btn-primary" id="topConvert" onclick="openConvert()">➡️ Convert to PO</button>
    <a class="btn btn-primary" id="topGoPO" href="po-create.html" style="display:none">📄 ไปสร้าง PO ด้วยข้อมูลนี้</a></div></div>
- <div class="alert alert-info" id="sentBox"><span class="ai">📤</span><div><b>ส่งให้ลูกค้าแล้ว (26/07/2569) — รอการตอบรับ.</b> ถ้าลูกค้าตกลง กด <b>"Convert to PO"</b> → ระบบถามยืนยัน (สถานะจะเปลี่ยนเป็น <b>ยืนยัน/Confirmed</b>) แล้วให้เลือก "สร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง" · ถ้าลูกค้าไม่ตกลง กด <b>ปฏิเสธ</b> (จบสาย)</div></div>
+ <div class="alert alert-info" id="sentBox"><span class="ai">📤</span><div><b>ส่งใบเสนอราคาให้ลูกค้าได้ทันทีจากปุ่ม "🖨 พิมพ์ / ส่งให้ลูกค้า" (print-ready)</b> — การส่งเป็นการพิมพ์/แชร์ ไม่เปลี่ยนสถานะ · ถ้าลูกค้าตกลง กด <b>"Convert to PO"</b> → ระบบถามยืนยัน (สถานะจะเปลี่ยนเป็น <b>ยืนยัน/Confirmed</b>) แล้วให้เลือก "สร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง" · ถ้าลูกค้าไม่ตกลง กด <b>ปฏิเสธ</b> (จบสาย)</div></div>
  <!-- Q5: persistent banner — Confirmed with no PO yet (revealed after Convert-confirm choice ข) -->
  <div class="alert alert-ok" id="confirmedBanner" style="border-color:#B7E0C6;display:none"><span class="ai">✅</span><div><b>ใบเสนอราคานี้ได้รับการยืนยันแล้ว (Confirmed).</b> ยังไม่มี PO ผูกกับใบนี้ — <a href="po-create.html"><b>ไปสร้าง PO ด้วยข้อมูลนี้</b></a> เพื่อออก PO เลขใหม่ (prefill line/จำนวน/ราคา + เก็บลิงก์ QT↔PO) · <b>แบนเนอร์นี้แสดงถาวรจนกว่าจะมี PO</b> — เมื่อมี PO แล้วจะเปลี่ยนเป็นลิงก์ 🔗 PO-… · QT ที่ยืนยันแล้ว = immutable</div></div>
  <div class="split">
@@ -170,7 +170,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     </tbody></table></div><div style="padding:16px 20px;display:flex;justify-content:flex-end"><dl class="kv" style="grid-template-columns:auto auto;gap:6px 24px;text-align:right"><dt class="muted">รวมก่อน VAT</dt><dd class="tnum">21,000.00</dd><dt class="muted">VAT 7%</dt><dd class="tnum">1,470.00</dd><dt style="font-weight:600">จำนวนเงินทั้งสิ้น</dt><dd class="tnum" style="font-weight:600">22,470.00</dd></dl></div>
     <div class="tiny" style="text-align:right;padding:0 20px 16px;color:var(--text2)">(<b>สองหมื่นสองพันสี่ร้อยเจ็ดสิบบาทถ้วน</b>)</div></div></div>
    <div class="card"><div class="card-h"><h3>ประวัติเวอร์ชัน (แก้ทุกครั้ง = เวอร์ชันใหม่)</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เวอร์ชัน</th><th>เหตุผลที่แก้</th><th class="num">ยอด+VAT</th><th>ผู้แก้/เวลา</th><th>สถานะ</th></tr></thead><tbody>
-     <tr><td class="strong">v2 (ปัจจุบัน)</td><td>ลดราคาเซรั่ม 220→200 ตามที่ลูกค้าต่อรอง</td><td class="num tnum">22,470</td><td>สมหญิง · 28/07 09:10</td><td><span class="badge b-processing" id="verBadge">ส่งแล้ว</span></td></tr>
+     <tr><td class="strong">v2 (ปัจจุบัน)</td><td>ลดราคาเซรั่ม 220→200 ตามที่ลูกค้าต่อรอง</td><td class="num tnum">22,470</td><td>สมหญิง · 28/07 09:10</td><td><span class="badge b-neutral" id="verBadge">ร่าง</span></td></tr>
      <tr><td>v1</td><td>เสนอครั้งแรก</td><td class="num tnum">23,540</td><td>สมหญิง · 26/07 14:20</td><td><span class="badge b-neutral">แทนที่แล้ว</span></td></tr>
     </tbody></table></div></div></div>
    <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 ===== -->
@@ -197,17 +197,17 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <div class="notify" style="margin-top:10px">✎ <b>แก้ = เปิดฟอร์มเวอร์ชันใหม่</b> (เหมือนหน้าสร้าง) — มี <b>"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"</b> ครบเช่นเดียวกับตอนสร้าง (Q3) · Confirmed = immutable แก้ไม่ได้</div>
      <div style="border-top:1px dashed var(--border);margin:14px 0 12px"></div>
      <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="openCancel()">🗑 ยกเลิกใบเสนอราคา</button>
-     <div class="notify" style="margin-top:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">ยกเลิกได้ <b>ทุกสถานะ</b> (ร่าง/ส่งแล้ว/ยืนยัน/ปฏิเสธ) · ต้องระบุ <b>เหตุผล (บังคับ)</b> → บันทึกลง activity-log + ตั้ง QT = <b>ยกเลิก</b> · <b>เลข QT คงอยู่ (gapless · ไม่ลบจริง)</b> · <b>ไม่กระทบ PO</b> ที่เคยแปลงไป (loose reference — ไม่มี cascade)</div>
+     <div class="notify" style="margin-top:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">ยกเลิกได้ <b>ทุกสถานะ</b> (ร่าง/ยืนยัน/ปฏิเสธ) · ต้องระบุ <b>เหตุผล (บังคับ)</b> → บันทึกลง activity-log + ตั้ง QT = <b>ยกเลิก</b> · <b>เลข QT คงอยู่ (gapless · ไม่ลบจริง)</b> · <b>ไม่กระทบ PO</b> ที่เคยแปลงไป (loose reference — ไม่มี cascade)</div>
      <div class="notify" style="margin-top:12px" id="poLink">🔗 <b>PO ที่แปลง:</b> ยังไม่มี PO — ใช้ปุ่มด้านบนเพื่อออก PO เลขใหม่ แล้วลิงก์จะปรากฏที่นี่ · ตัวอย่างที่แปลงแล้ว: <a href="po-detail.html">QT-000008 → PO-202607-000181</a></div>
    </div></div>
    <div class="card"><div class="card-h"><h3>Activity log (สืบย้อนกลับ)</h3><a class="tiny" href="trace.html">ดูบนหน้า trace ↗</a></div><div class="card-b"><div class="timeline">
      <div class="t" id="trConfirm" style="display:none"><div class="th">Convert to PO → ยืนยัน (Confirmed)</div><div class="tm">28/07 09:12 · สมหญิง</div><div class="tc">ตั้ง QT = Confirmed (immutable) — ยังไม่สร้าง PO</div></div>
      <div class="t"><div class="th">แก้ไขหมายเหตุ (comment)</div><div class="tm">28/07 10:20 · สมชาย</div><div class="tc">"รอยืนยันสเปก" → "ลูกค้าขอปรับกล่องบรรจุ…" <span class="muted">(field=comment)</span></div></div>
-     <div class="t"><div class="th">แก้เป็น v2 + ส่งลูกค้า (Sent)</div><div class="tm">28/07 09:10 · สมหญิง</div><div class="tc">ลดราคาเซรั่ม (v1 → v2) · ตั้งวันที่ส่ง 28/07</div></div>
-     <div class="t"><div class="th">ส่งให้ลูกค้า (Sent) v1</div><div class="tm">26/07 14:25 · สมหญิง</div></div>
+     <div class="t"><div class="th">แก้เป็น v2 (เวอร์ชันใหม่)</div><div class="tm">28/07 09:10 · สมหญิง</div><div class="tc">ลดราคาเซรั่ม (v1 → v2)</div></div>
+     <div class="t"><div class="th">พิมพ์ / ส่งให้ลูกค้า v1</div><div class="tm">26/07 14:25 · สมหญิง</div><div class="tc">พิมพ์จากมุมมองพร้อมพิมพ์ (print-ready) — ไม่เปลี่ยนสถานะ</div></div>
      <div class="t"><div class="th">สร้างร่าง (Draft)</div><div class="tm">26/07 14:20 · สมหญิง</div></div>
    </div>
-   <div class="tiny" style="margin-top:10px;color:var(--text2)">ทุก action (สร้าง/ส่ง/แก้→เวอร์ชัน/แก้ comment/Convert→Confirmed/ยกเลิก) เขียน activity-log และโผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (QT = หัวสาย OEM) · เมื่อกด "ยกเลิก" ระบบเพิ่ม entry <b>"ยกเลิก (Cancelled) + เหตุผล"</b> บนสุด และป้ายสถานะเปลี่ยนเป็น <span class="badge b-neutral" style="height:20px">ยกเลิก</span></div>
+   <div class="tiny" style="margin-top:10px;color:var(--text2)">ทุก action (สร้าง/พิมพ์-ส่ง/แก้→เวอร์ชัน/แก้ comment/Convert→Confirmed/ยกเลิก) เขียน activity-log และโผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (QT = หัวสาย OEM) · เมื่อกด "ยกเลิก" ระบบเพิ่ม entry <b>"ยกเลิก (Cancelled) + เหตุผล"</b> บนสุด และป้ายสถานะเปลี่ยนเป็น <span class="badge b-neutral" style="height:20px">ยกเลิก</span></div>
    </div></div>
   </div>
  </div>
@@ -224,7 +224,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 </div></div><div class="cmodal-bg" id="cancelModal" onclick="if(event.target===this)closeCancel()"><div class="cmodal">
   <div class="cmodal-h"><h3>ยกเลิกใบเสนอราคา · QT-202607-000010</h3><button class="cmodal-x" onclick="closeCancel()" title="ปิด">✕</button></div>
   <div class="cmodal-b">
-    <div class="alert alert-warn" style="font-size:13px;margin-bottom:14px"><span class="ai">⚠️</span><div>ยกเลิกได้จากทุกสถานะ (ร่าง/ส่งแล้ว/ยืนยัน/ปฏิเสธ) · การกระทำนี้ตั้ง QT = <b>ยกเลิก (Cancelled)</b> แต่ <b>เลข QT ยังคงอยู่</b> (gapless, ไม่ลบจริง) และบันทึกลง activity-log · <b>คนละช่องกับ "หมายเหตุ (comment)"</b></div></div>
+    <div class="alert alert-warn" style="font-size:13px;margin-bottom:14px"><span class="ai">⚠️</span><div>ยกเลิกได้จากทุกสถานะ (ร่าง/ยืนยัน/ปฏิเสธ) · การกระทำนี้ตั้ง QT = <b>ยกเลิก (Cancelled)</b> แต่ <b>เลข QT ยังคงอยู่</b> (gapless, ไม่ลบจริง) และบันทึกลง activity-log · <b>คนละช่องกับ "หมายเหตุ (comment)"</b></div></div>
     <div class="field"><label>เหตุผลการยกเลิก <span class="req">*</span></label><textarea class="inp" rows="3" placeholder="ระบุเหตุผล เช่น ลูกค้ายกเลิกโครงการ / เสนอราคาผิดสเปก / ทำใบใหม่แทน…"></textarea><div class="help">บังคับกรอก — บันทึกลง activity-log (ใคร/เมื่อ/ทำไม)</div></div>
     <div class="alert alert-info" style="font-size:13px;margin-bottom:0"><span class="ai">🔗</span><div><b>ไม่กระทบ PO ที่แปลงไปแล้ว:</b> PO อ้าง QT แบบ loose reference เท่านั้น → <b>ไม่มี cascade</b> · PO ที่เปิดจากใบนี้เดินสายต่อได้ตามปกติ</div></div>
   </div>
@@ -238,7 +238,7 @@ function closeConvert(){document.getElementById('convertModal').classList.remove
 function setConfirmed(){
   var b=document.getElementById('qtBadge');b.className='badge b-success';b.textContent='ยืนยัน (Confirmed)';
   var v=document.getElementById('verBadge');v.className='badge b-success';v.textContent='ยืนยัน';
-  document.getElementById('qtSub').innerHTML='กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569 · ส่งลูกค้า 26/07/2569 · ยืนยัน 28/07/2569';
+  document.getElementById('qtSub').innerHTML='กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569 · ยืนยัน 28/07/2569';
   document.getElementById('sentBox').style.display='none';
   document.getElementById('confirmedBanner').style.display='flex';
   document.getElementById('trConfirm').style.display='block';
