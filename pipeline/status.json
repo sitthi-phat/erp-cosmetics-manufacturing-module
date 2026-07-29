@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "current_agent": "po + ux-ui",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3256,9 +3256,30 @@
           "summary": "MODULES 2 (Quotation) + 3 (comment pattern) screens DONE: quotation Sent status+sent-date search+Convert->Confirmed popup+banner+activity log; reusable comment box + change-history on all 12 objects. Minor note: qc.html has two 'หมายเหตุ' labels (QC-result note + new comment) - legible, could rename QC one later.",
           "overridden_by": null,
           "updated_at": "2026-07-29T20:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "stock-bom-screens",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "S1 add-RM user code + unique validation; S2 Loss(-)/Adjust(+) split; S3 RM/Lot/FG search dropdowns name+code; S4/S6 buttons 'บันทึก (คงคลัง)'; S5 FG search; S7 BOM/FG auto code banner",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/bom-create.html",
+            "docs/design/erp-v2-ui-first/mockups/bom.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "STOCK MODULE DONE (spec+screens): add-RM user-unique code, RM Loss(-, Lot optional)/Adjust(+, RM mandatory) split, search dropdowns name+code, buttons renamed, BOM/FG auto shared code (BOM=FG confirmed 1:1). Minor flag: Loss/Adjust rendered as in-card sub-tabs (spec allows 'two tabs/actions'); can switch to full page tabs if Pond prefers.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T22:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T22:00:00+07:00"
+  "generated_at": "2026-07-29T22:35:00+07:00"
 }
