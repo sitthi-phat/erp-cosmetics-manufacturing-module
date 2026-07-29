@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3192,9 +3192,48 @@
           "summary": "Customer edit = all fields (type/credit/status5/follow-up flag/contacts), financial read-only, entry points on detail+list. CUSTOMER MODULE fully done. PO comment-pattern (module 3) running; Quotation screens queued for UX/UI after comment-pattern edits quotation.md.",
           "overridden_by": null,
           "updated_at": "2026-07-29T19:00:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "comment-convention-crosscutting",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "comment-convention.md (CC1-CC7, Global Rule G6) single source; wired into 10 transactional modules",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "traceability + non-functional audit updated (comment = audited, trace-visible, non-deletable history)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Customer edit = ALL fields spec'd (customer.md §2b)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/comment-convention.md"
+          ],
+          "questions_for_pond": [
+            {
+              "q": "ช่อง comment + ประวัติการแก้ไข ครอบ 10 object ธุรกรรมแล้ว (QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR). อยากให้ Return (ใบคืนสินค้า) + QC record มีด้วยไหม? (non-blocking)",
+              "options": [
+                "(A) ใส่ทั้ง Return + QC [PO แนะนำ]",
+                "(B) เฉพาะ Return",
+                "(C) เฉพาะ 10 ตัวเดิม"
+              ],
+              "answer": null
+            }
+          ],
+          "summary": "Comment+change-history convention (comment-convention.md, G6) applied to 10 transactional objects + traceability/NFR audit; Customer edit=all-fields spec'd. READY_FOR_UX_UI. 1 non-blocking question: also add comment to Return/QC? (default A).",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T19:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T19:05:00+07:00"
+  "generated_at": "2026-07-29T19:35:00+07:00"
 }
