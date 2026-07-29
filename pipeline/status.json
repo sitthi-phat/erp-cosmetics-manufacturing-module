@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "current_agent": "po + ux-ui",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3328,9 +3328,34 @@
           "summary": "PRODUCTION MODULE DONE (spec+screens): 2-tab queue grouped by PO/SO, over/under-prod actual>=ordered, QC-gated พร้อมส่ง, Loss button, confirm popups, lot FIFO, ไปหน้า QC deep-link, PO-edit->follow-up. Stock Adjust lot/FIFO done. delete-Sale->blank applied (bulk-reassign cancelled). Minor optional UX: add 'ลูกค้าจะไม่มีผู้ดูแล (Sale ว่าง)' confirm text on settings delete-user.",
           "overridden_by": null,
           "updated_at": "2026-07-30T02:20:00+07:00"
+        },
+        {
+          "agent": "po + ux-ui",
+          "phase": "supply-planning-module",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "SP-1..10 spec+screen: FG list+tiles, 3-axis search (name/code/RM reverse-lookup), why-calc inline, expand RM+stock, click->modal สั่งผลิต batch-count + live cost/revenue/margin (pre-VAT decision-support), simulate-vs-save-back-to-BOM (audited), Low bell; HTTP-verified",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "sell-price settled = bom.md §3 ราคาขาย (no open Q); recovered cleanly after OAuth agent death",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/supply-planning.html",
+            "docs/requirements/erp-v2-ui-first/modules/supply-planning.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "SUPPLY PLANNING MODULE DONE (spec+screens): restructured cards->FG list with inline why-calc + expandable RM breakdown+stock; 3-axis search incl RM reverse-lookup; click->modal with สั่งผลิต batch-count + live cost/revenue/margin (decision-support, pre-VAT, not COGS) + param simulate-vs-save-back-to-BOM (audited). Recovered from mid-task OAuth agent death with no lost work.",
+          "overridden_by": null,
+          "updated_at": "2026-07-30T04:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-30T03:40:00+07:00"
+  "generated_at": "2026-07-30T04:05:00+07:00"
 }
