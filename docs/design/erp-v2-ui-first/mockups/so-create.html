@@ -200,11 +200,13 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
              <div class="custdd-ls">
                <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>ร้านสวยใส คอสเมติก</b> <span class="badge b-neutral" style="height:20px">ผู้สนใจ</span> <span class="pill">เครดิต 60 วัน</span></div><div class="tiny">CUS-000009 · โทร 081-500-9000 · ผู้ติดต่อ คุณสวย 081-500-9000</div></div>
                <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>บริษัท บิวตี้ เอเชีย จำกัด</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span> <span class="pill">เครดิต 60 วัน</span></div><div class="tiny">CUS-000018 · โทร 02-555-1234 · ผู้ติดต่อ คุณมานี 081-234-5678</div></div>
+               <div class="custdd-op" style="opacity:.7;cursor:not-allowed;background:#FCF3F3" title="ลูกค้าสถานะปิดใช้งาน — เปิดใบสั่งขายไม่ได้"><div class="nm"><b>ร้านปิดกิจการ</b> <span class="badge b-neutral" style="height:20px">ปิดใช้งาน</span> <span class="badge b-neutral" style="height:20px">🚫 เลือกไม่ได้</span></div><div class="tiny">CUS-000007 · <b style="color:#B02A2A">Disabled/Blacklist = เปิดงานขายไม่ได้ (hard block · §4.2)</b></div></div>
              </div>
            </div>
          </div>
          <div class="custdd-picked"><span>✓ <b>ร้านสวยใส คอสเมติก</b> (CUS-000009)</span><span class="sep"></span><span>สถานะ: <b>ผู้สนใจ</b></span><span class="sep"></span><span>เครดิต: <b>60 วัน</b></span><span class="sep"></span><a href="#" onclick="openCust();return false;">👁 ดูข้อมูลลูกค้า</a></div>
-         <div class="help">ขายจากสต็อก — บังคับเลือกลูกค้า (D2-a) · ค้นด้วยเบอร์/บริษัท/ผู้ติดต่อ · modal ไม่ทำให้ฟอร์มหาย (G3/G4)</div></div>
+         <div class="help">ขายจากสต็อก — บังคับเลือกลูกค้า (D2-a) · ค้นด้วยเบอร์/บริษัท/ผู้ติดต่อ · modal ไม่ทำให้ฟอร์มหาย (G3/G4)</div>
+         <div class="alert alert-err" style="font-size:12.5px;margin:8px 0 0"><span class="ai">🚫</span><div><b>HARD block (เฉพาะโหมด ก ที่มีลูกค้า):</b> ลูกค้าสถานะ <b>ปิดใช้งาน (Disabled)</b> หรือ <b>บัญชีดำ (Blacklist)</b> — ค้นเจอ+เห็นสถานะได้ แต่ <b>เลือกไม่ได้</b> · ถ้าหลุดเข้ามา ระบบบล็อกตอนยืนยัน: <i>"ลูกค้าสถานะ Disabled/Blacklist — เปิดใบสั่งขายไม่ได้"</i> · โหมด (ข) ไม่เลือกลูกค้า → ไม่เกี่ยวกับ block นี้</div></div></div>
        <div class="field"><label>วันที่ต้องการรับสินค้า <span class="req">*</span></label><input class="inp" type="date" value="2026-07-31"></div>
      </div>
      <div id="cust-b" style="display:none">

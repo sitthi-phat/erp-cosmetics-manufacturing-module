@@ -174,6 +174,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div class="card"><div class="card-h"><h3>การดำเนินการ</h3></div><div class="card-b">
      <a class="btn btn-primary" href="po-create.html" style="width:100%;justify-content:center;margin-bottom:10px">➡️ Convert to PO (ออก PO เลขใหม่)</a>
      <div class="notify" style="margin-bottom:10px">ยืนยัน → ตั้ง QT = <b>ตกลง (Agreed)</b> (immutable) + เก็บลิงก์ QT↔PO → เปิด <b>po-create ที่ prefill</b> line/จำนวน/ราคา → กรอกวันที่ต้องการรับของ → บันทึก = <b>PO เลขใหม่</b></div>
+     <div class="notify" style="margin-bottom:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">🚫 <b>ถ้าลูกค้ากลายเป็น ปิดใช้งาน/บัญชีดำ (Disabled/Blacklist) ภายหลัง → Convert to PO ถูกบล็อก</b> (hard block · customer.md §4.2) — ปุ่มจะปิดใช้งาน พร้อมข้อความ "ลูกค้าสถานะ Disabled/Blacklist — เปิดใบสั่งซื้อไม่ได้"</div>
      <div style="display:flex;gap:8px"><button class="btn btn-sm" style="flex:1;justify-content:center">✎ แก้ (เวอร์ชันใหม่)</button><button class="btn btn-sm btn-danger" style="flex:1;justify-content:center">ปฏิเสธ</button></div>
      <div style="border-top:1px dashed var(--border);margin:14px 0 12px"></div>
      <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="openCancel()">🗑 ยกเลิกใบเสนอราคา</button>

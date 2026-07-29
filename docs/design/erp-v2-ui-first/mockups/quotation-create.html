@@ -190,6 +190,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
              <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>บริษัท บิวตี้ เอเชีย จำกัด</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span> <span class="pill">เครดิต 60 วัน</span></div><div class="tiny">CUS-000018 · โทร 02-555-1234 · ผู้ติดต่อ คุณมานี 081-234-5678</div></div>
              <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>บริษัท เดอร์มา แคร์ จำกัด</b> <span class="badge b-processing" style="height:20px">ต้องติดตาม</span> <span class="pill">เครดิต 60 วัน</span></div><div class="tiny">CUS-000021 · โทร 02-777-8800 · ผู้ติดต่อ คุณวันเพ็ญ 081-234-5678</div></div>
              <div class="custdd-op" onclick="cddTog()"><div class="nm"><b>ร้านกลอรี่ คอสเมติก</b> <span class="badge b-success" style="height:20px">ลูกค้าประจำ</span> <span class="pill">เครดิต 30 วัน</span></div><div class="tiny">CUS-000025 · โทร 089-111-2233 · ผู้ติดต่อ คุณกลอรี่ 089-111-2233</div></div>
+             <div class="custdd-op" style="opacity:.7;cursor:not-allowed;background:#FCF3F3" title="ลูกค้าสถานะบัญชีดำ — เปิดใบเสนอราคาไม่ได้"><div class="nm"><b>บริษัท เครดิตดำ จำกัด</b> <span class="badge b-error" style="height:20px">บัญชีดำ</span> <span class="badge b-neutral" style="height:20px">🚫 เลือกไม่ได้</span></div><div class="tiny">CUS-000002 · โทร 02-333-9999 · <b style="color:#B02A2A">Disabled/Blacklist = เปิดงานขายไม่ได้ (hard block · §4.2)</b></div></div>
            </div>
          </div>
        </div>
@@ -199,7 +200,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
          <span>เครดิต: <b>60 วัน</b></span><span class="sep"></span>
          <a href="#" onclick="openCust();return false;">👁 ดูข้อมูลลูกค้า</a>
        </div>
-       <div class="help">สาย OEM ผูกลูกค้าเสมอ · ค้นด้วยเบอร์/บริษัท/ผู้ติดต่อ · ดูข้อมูลลูกค้าแบบ modal ได้โดยฟอร์มไม่หาย (G3/G4)</div></div>
+       <div class="help">สาย OEM ผูกลูกค้าเสมอ · ค้นด้วยเบอร์/บริษัท/ผู้ติดต่อ · ดูข้อมูลลูกค้าแบบ modal ได้โดยฟอร์มไม่หาย (G3/G4)</div>
+       <div class="alert alert-err" style="font-size:12.5px;margin:8px 0 0"><span class="ai">🚫</span><div><b>HARD block:</b> ลูกค้าสถานะ <b>ปิดใช้งาน (Disabled)</b> หรือ <b>บัญชีดำ (Blacklist)</b> — ค้นเจอ+เห็นสถานะได้ แต่ <b>เลือกไม่ได้</b> · ถ้าหลุดเข้ามา ระบบบล็อกตอนบันทึก: <i>"ลูกค้าสถานะ Disabled/Blacklist — เปิดใบเสนอราคาไม่ได้"</i> · (คนละกฎกับ TYPE mismatch ที่ <b>เตือนไม่บล็อก</b>)</div></div></div>
      <div class="field"><label>วันที่เสนอราคา</label><input class="inp" type="date" value="2026-07-28"><div class="help">ไม่มีวันหมดอายุ (no Expired) — D18</div></div>
    </div></div></div>
    <div class="card"><div class="card-h"><h3>2. รายการเสนอราคา</h3><span class="tiny">พิมพ์เพื่อ suggest · BOM หรือวัตถุดิบตรง</span></div><div class="card-b">
