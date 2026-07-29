@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "po + ux-ui",
-      "status": "IN_PROGRESS",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3231,9 +3231,34 @@
           "summary": "Comment+change-history convention (comment-convention.md, G6) applied to 10 transactional objects + traceability/NFR audit; Customer edit=all-fields spec'd. READY_FOR_UX_UI. 1 non-blocking question: also add comment to Return/QC? (default A).",
           "overridden_by": null,
           "updated_at": "2026-07-29T19:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "quotation-screens+comment-sweep",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "Quotation screens Q1-Q6 (Sent+sent-date 2-axis search, Convert->Confirmed popup+persistent banner, activity log)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Reusable comment control + change-history on all 12 transactional objects (incl Return+QC); HTTP-verified present",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/quotation-list.html",
+            "docs/design/erp-v2-ui-first/mockups/quotation-detail.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "MODULES 2 (Quotation) + 3 (comment pattern) screens DONE: quotation Sent status+sent-date search+Convert->Confirmed popup+banner+activity log; reusable comment box + change-history on all 12 objects. Minor note: qc.html has two 'หมายเหตุ' labels (QC-result note + new comment) - legible, could rename QC one later.",
+          "overridden_by": null,
+          "updated_at": "2026-07-29T20:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-29T19:50:00+07:00"
+  "generated_at": "2026-07-29T20:35:00+07:00"
 }
