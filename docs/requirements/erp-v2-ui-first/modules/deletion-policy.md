@@ -5,7 +5,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 > **Source of truth:** ไฟล์นี้เป็นฉบับ **authoritative ปัจจุบัน** สำหรับนโยบายการลบ. root `deletion-policy.md` = historical reference — ถ้าขัดกันให้ยึดไฟล์นี้.
 
 ## สรุปภาษาไทย
-ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
+ทั้งระบบ **ไม่มี hard delete** — "ลบ" = soft-delete (flag `deleted`) สำหรับ master (ยัง search/ดูย้อนหลังได้ read-only, ห้ามเป็น reference ของของใหม่, หายจาก dropdown, ของเดิมวิ่งต่อจนจบ) · **เอกสารการค้า = void/ยกเลิกเท่านั้น** (gapless ตามสรรพากร) · ทุกการลบ audit + comment บังคับ · สิทธิ์ RUCDAA (ลบ=D, undelete=Admin). ไฟล์นี้ **fold กติกาเดิม 7 ข้อ** และ **เพิ่ม entity ใหม่:** **Quotation (QT)**, **Sales Order (SO)**, **FG stock / FG Batch**, **OEM surplus**, **cost snapshot**. **★ Quotation (DECIDED 2026-07-29):** ยกเลิกได้ **ทุกสถานะ** — PO อ้าง QT แบบ **loose reference** เท่านั้น, ยกเลิก QT **ไม่ cascade ไป PO**, บันทึก **activity-log**, เลข gapless (ไม่ hard-delete). **★ QT status list = Draft / Confirmed / Rejected (+ Cancelled) — ถอด "Sent" ออกแล้ว (ปอนด์ revert 2026-07-29).** **ไม่มี open question ค้างในไฟล์นี้แล้ว**.
 
 ---
 
@@ -42,12 +42,12 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 |---|---|
 | ประเภท | เอกสารเชิงการค้าก่อน order · เลข **`QT-` gapless** (NFR D-F2) → **ไม่มี hard delete** |
 | แก้ไข | **แก้ = เวอร์ชันใหม่** (เก็บเวอร์ชันเดิม read-only) |
-| **ยืนยัน (Confirmed) — Convert-to-PO** | กด "Convert to PO" → QT = **"ยืนยัน (Confirmed)" immutable ทันที** (แทนคำเดิม "ตกลง/Agreed" — quotation.md §6) + สร้างลิงก์ QT↔PO แบบ **loose reference** ("created from QT-…") เมื่อสร้าง PO จริง · การสร้าง PO **อิสระ**จากการตั้ง Confirmed |
-| **ยกเลิก (Cancel) — ★ ทุกสถานะ** | **กด "ยกเลิก" ได้ไม่ว่า QT อยู่สถานะใด (Draft / Sent / Confirmed / Rejected)** → QT = **ยกเลิก (Cancelled)** + **เหตุผลบังคับ** → บันทึก **activity-log (ใคร/เมื่อ/ทำไม)** · เลข QT คงอยู่ **gapless** (ไม่ hard-delete, ไม่ soft-delete แบบ master) |
+| **ยืนยัน (Confirmed) — Convert-to-PO** | กด "Convert to PO" → QT = **"ยืนยัน (Confirmed)" immutable ทันที** (แทนคำเดิม "ตกลง/Agreed" — quotation.md §6) + สร้างลิงก์ QT↔PO แบบ **loose reference** ("created from QT-…") เมื่อสร้าง PO จริง · การสร้าง PO **อิสระ**จากการตั้ง Confirmed · **กดได้จากสถานะ Draft เท่านั้น** (ไม่มี Sent อีกต่อไป) |
+| **ยกเลิก (Cancel) — ★ ทุกสถานะ** | **กด "ยกเลิก" ได้ไม่ว่า QT อยู่สถานะใด (Draft / Confirmed / Rejected)** → QT = **ยกเลิก (Cancelled)** + **เหตุผลบังคับ** → บันทึก **activity-log (ใคร/เมื่อ/ทำไม)** · เลข QT คงอยู่ **gapless** (ไม่ hard-delete, ไม่ soft-delete แบบ master) |
 | **ผลต่อ PO — ★ ไม่ cascade** | PO อ้าง QT แบบ **loose reference เท่านั้น** (ไม่ใช่ hard dependency) → **ยกเลิก QT = ไม่ทำอะไรกับ PO เลย** (PO ยืนด้วยตัวเอง, เดินต่อปกติ) |
 | ของที่ผูกอยู่ | activity/ประวัติเวอร์ชัน + trace คงอยู่ทั้งหมด (read-only) |
 | ใครมีสิทธิ์ | Quotation bit **D**/Approve (cancel) + comment · undo/undelete = Admin |
-> **แทนที่ default เดิม** ("abandon = void-only" + open question) — **ปิดคำถามแล้ว** (ปอนด์ตัดสิน cancel-anytime + no cascade). **สถานะ "Confirmed" reseat จาก "Agreed" (2026-07-29 Quotation review).**
+> **แทนที่ default เดิม** ("abandon = void-only" + open question) — **ปิดคำถามแล้ว** (ปอนด์ตัดสิน cancel-anytime + no cascade). **สถานะ "Confirmed" reseat จาก "Agreed" (2026-07-29 Quotation review).** **★ สถานะ "ส่งแล้ว (Sent)" ถูกถอดออกทั้งหมด (ปอนด์ revert 2026-07-29) — QT lifecycle = Draft/Confirmed/Rejected/Cancelled; การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ.**
 
 ### 2.10 ★ Sales Order (SO — Own-Brand) — NEW
 | ประเด็น | กติกา (derive — SO = ฝาแฝด Own-Brand ของ PO, ยึดกติกา PO §2.8) |
@@ -92,7 +92,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | Supplier | inactive/soft delete | ห้ามซื้อใหม่ | D | Admin |
 | Contact | soft delete | ห้ามถ้าเป็นหลักคนเดียว | D | Admin |
 | Role | soft delete | ห้ามจนย้าย user ออกหมด | Admin | Admin |
-| **Quotation (QT)** | **★ ยกเลิก (Cancel) ได้ทุกสถานะ** (edit=version, Confirmed=immutable) | gapless; **PO = loose ref → ยกเลิก QT ไม่ cascade**; บันทึก activity-log + เหตุผล | D/Approve | Admin (undo) |
+| **Quotation (QT)** | **★ ยกเลิก (Cancel) ได้ทุกสถานะ** (edit=version, Confirmed=immutable) | gapless; status = Draft/Confirmed/Rejected(+Cancelled) — **ไม่มี Sent**; **PO = loose ref → ยกเลิก QT ไม่ cascade**; บันทึก activity-log + เหตุผล | D/Approve | Admin (undo) |
 | **SO** | **void** | gapless; release FG จอง/ยกเลิก PRD ที่ยังไม่เริ่ม | D/Approve | — |
 | PO/INV/DN/PR/GR/Shipment | **void** | gapless | D/Approve/Admin | — |
 | PRD/Batch | ยกเลิกตาม order | GMP ห้ามหาย | ตาม order | — |
@@ -112,4 +112,5 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 - **Folded:** root `deletion-policy.md` (หลักการ 7 ข้อ + entity 2.1–2.8) verbatim ในความหมาย.
 - **Added (derive):** SO (void=PO twin), FG Batch (ห้ามลบ, ledger adjust/loss), OEM surplus (ledger), cost snapshot (immutable).
 - **★ DECIDED (2026-07-29) — Quotation §2.9:** ยกเลิกได้ **ทุกสถานะ** · PO = **loose reference** · ยกเลิก QT **ไม่ cascade** · **activity-log** + gapless · **แทน default เดิม (void-only) + ปิด open question §5**.
-- **★ อัปเดต (2026-07-29 — Quotation module review):** สถานะ Convert-to-PO **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** (immutable, ตั้งทันทีตอน Convert) · รายการสถานะที่ยกเลิกได้ = Draft/Sent/**Confirmed**/Rejected (§2.9, matrix).
+- **★ อัปเดต (2026-07-29 — Quotation module review):** สถานะ Convert-to-PO **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** (immutable, ตั้งทันทีตอน Convert).
+- **★ REVERTED (2026-07-29 — Pond):** ถอดสถานะ **"ส่งแล้ว (Sent)"** ออกจาก QT lifecycle ทั้งหมด → รายการสถานะที่ยกเลิกได้ = **Draft / Confirmed / Rejected** (§2.9, matrix). การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (sync `quotation.md` §4 + `entity-status-map.md` §1.1b).

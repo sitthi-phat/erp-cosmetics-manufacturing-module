@@ -5,7 +5,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 กฎอ้างอิง: **D18** (OEM Quotation) · D3 (RM-direct ผ่านขั้นผลิต) · README §3 (G1–G5) · §4 (Convert-to-PO resolution) · `deletion-policy.md` §2.9 (cancel-anytime) · **`customer.md` §4.2 (hard block Disabled/Blacklist)** · **`traceability.md` §3/§4 (QT = head-of-chain, activity/field-audit)** · **`non-functional.md` §3 (AU1 audit)** · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-ใบเสนอราคา **เฉพาะสาย OEM** (Own-Brand SO ไม่มี Quotation). เลข `QT-{YYYYMM}-{NNNNNN}`. สถานะ: **ร่าง (Draft) / ส่งแล้ว (Sent) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **แก้ทุกครั้ง = เวอร์ชันใหม่เสมอ (immutable)** · ไม่มีวันหมดอายุ. Create + Edit: **customer search dropdown**, มี **"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"** ทั้งหน้า create และ edit. **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน QT ไม่ได้ (HARD block)**. ปุ่มหลัก = **"บันทึก"** แล้วโชว์ **print-ready view**. **★ เพิ่มฟิลด์ "วันที่ส่งลูกค้า (sent-date)"** — ตั้งค่าเมื่อกด "ส่งลูกค้า" · list ค้นได้ **2 แกนวันที่: ช่วงวันที่สร้าง + ช่วงวันที่ส่งลูกค้า** และ filter/badge ครบทุกสถานะ **รวม "ส่งแล้ว (Sent)"**. **★ Convert to PO (2026-07-29 — DECIDED):** กด "Convert to PO (ออก PO เลขใหม่)" → **popup ยืนยัน "สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"** → ตั้ง QT = **ยืนยัน (Confirmed) ทันที** (immutable) ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ → ให้ผู้ใช้ **เลือก "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"**. ถ้า QT = Confirmed แต่ **ยังไม่มี PO** → detail โชว์ banner ถาวร *"ใบเสนอราคานี้ได้รับการยืนยันแล้ว"* + ปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** (ไม่ใช่ครั้งเดียว). PO อ้าง QT แบบ **loose reference → ไม่มี cascade**. **★ ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ). **★ ทุก action (create/send/edit→version/convert→Confirmed/cancel) เขียน activity-log + โผล่หน้า traceability** (QT = หัวสาย OEM: QT→PO→PRD→Batch→…). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบเสนอราคา **เฉพาะสาย OEM** (Own-Brand SO ไม่มี Quotation). เลข `QT-{YYYYMM}-{NNNNNN}`. สถานะ: **ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **แก้ทุกครั้ง = เวอร์ชันใหม่เสมอ (immutable)** · ไม่มีวันหมดอายุ. **★ การส่งใบเสนอราคาให้ลูกค้า = แค่ print/share (พิมพ์/ส่งไฟล์) — ไม่ใช่สถานะ และไม่มีฟิลด์ "วันที่ส่งลูกค้า"**. Create + Edit: **customer search dropdown**, มี **"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"** ทั้งหน้า create และ edit. **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน QT ไม่ได้ (HARD block)**. ปุ่มหลัก = **"บันทึก"** แล้วโชว์ **print-ready view**. list ค้นได้ **แกนวันที่เดียว = ช่วงวันที่สร้าง (created-date)** + filter/badge ครบทุกสถานะ (ร่าง/ยืนยัน/ปฏิเสธ/ยกเลิก). **★ Convert to PO (2026-07-29 — DECIDED):** กด "Convert to PO (ออก PO เลขใหม่)" → **popup ยืนยัน "สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"** → ตั้ง QT = **ยืนยัน (Confirmed) ทันที** (immutable) ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ → ให้ผู้ใช้ **เลือก "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"**. ถ้า QT = Confirmed แต่ **ยังไม่มี PO** → detail โชว์ banner ถาวร *"ใบเสนอราคานี้ได้รับการยืนยันแล้ว"* + ปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** (ไม่ใช่ครั้งเดียว). PO อ้าง QT แบบ **loose reference → ไม่มี cascade**. **★ ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ). **★ ทุก action (create/edit→version/convert→Confirmed/cancel) เขียน activity-log + โผล่หน้า traceability** (QT = หัวสาย OEM: QT→PO→PRD→Batch→…). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -15,9 +15,9 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `quotation-list.html` | list QT + **filter สถานะครบชุด: ร่าง / ส่งแล้ว / ยืนยัน / ปฏิเสธ / ยกเลิก** (badge ครบทุกสถานะ) + **search เลข QT / ช่วงวันที่สร้าง / ★ ช่วงวันที่ส่งลูกค้า** (G2 ขยาย 2 แกนวันที่) + 20/หน้า (G1) |
+| `quotation-list.html` | list QT + **filter สถานะครบชุด: ร่าง / ยืนยัน / ปฏิเสธ / ยกเลิก** (badge ครบทุกสถานะ) + **search เลข QT / ช่วงวันที่สร้าง (created-date range)** (G2) + 20/หน้า (G1) |
 | `quotation-create.html` | สร้าง QT ใหม่ (customer dropdown, line, **material check เหมือน Page PO — ไม่สร้าง/ส่ง PR**, **ช่อง comment**) |
-| `quotation-detail.html` | ดูรายละเอียด + ประวัติเวอร์ชัน + **activity-log (แสดงในหน้า)** + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** + ปุ่ม **Convert to PO** (popup → Confirmed) + **banner "ยืนยันแล้ว · ไปสร้าง PO ด้วยข้อมูลนี้" (ถาวร เมื่อ Confirmed-แต่ยังไม่มี PO)** + **ปุ่มยกเลิก** + **print-ready view** |
+| `quotation-detail.html` | ดูรายละเอียด + ประวัติเวอร์ชัน + **activity-log (แสดงในหน้า)** + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** + ปุ่ม **Convert to PO** (popup → Confirmed) + **banner "ยืนยันแล้ว · ไปสร้าง PO ด้วยข้อมูลนี้" (ถาวร เมื่อ Confirmed-แต่ยังไม่มี PO)** + **ปุ่มยกเลิก** + **print-ready view (พิมพ์/ส่งให้ลูกค้า)** |
 | edit = สร้างเวอร์ชันใหม่จาก detail (immutable) | **มี material check เหมือนหน้า create** (ไม่สร้าง/ส่ง PR) |
 
 ## 3. Fields
@@ -26,28 +26,30 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 | เลข `QT-{YYYYMM}-{NNNNNN}` | string | computed (auto, gapless ต่อเดือน) | ออกตอนบันทึกครั้งแรก · ยกเลิกแล้วเลขคงอยู่ (gapless) |
 | เวอร์ชัน | int | computed | แก้ = +1, เก็บเวอร์ชันเก่า (immutable) |
 | ลูกค้า | ref customer | editable (via dropdown G4) | แสดง สถานะ + credit term เมื่อเลือก · **Disabled/Blacklist เลือกไม่ได้ (§8)** |
-| **★ วันที่ส่งลูกค้า (sent-date)** | date | **computed (ตั้งเมื่อกด "ส่งลูกค้า" → Sent)** | บันทึก activity-log ตอนส่ง · ใช้เป็นแกนค้นหาใน list (§9) · ว่างได้ถ้ายังไม่ส่ง (เช่น Draft→Confirmed ตรง) |
-| วันที่สร้าง (created-date) | date | computed | ออกตอนบันทึกครั้งแรก · แกนค้นหาที่ 2 |
+| วันที่สร้าง (created-date) | date | computed | ออกตอนบันทึกครั้งแรก · **แกนค้นหาวันที่เดียวของ list (§9)** |
 | line items | list {item(BOM/RM), qty, ราคา/หน่วย} | editable | mirror PO line · RM-direct = เตือน "ผ่านขั้นผลิตเมื่อเป็น PO" (D3) |
 | ยอดรวม + VAT | THB | computed | THB เท่านั้น |
 | ลิงก์ PO (ถ้าสร้าง PO แล้ว) | ref PO (loose) | computed | เก็บ QT↔PO (D18-1) · **loose reference: ยกเลิก QT ไม่กระทบ PO** · **ว่างได้แม้ QT=Confirmed** (Confirmed ตั้งทันทีตอน Convert, PO อาจยังไม่ถูกสร้าง — ดู §6) |
 | เหตุผลยกเลิก | text | editable | บันทึกใน activity-log ตอนยกเลิก |
 | **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · คนละฟิลด์กับ "เหตุผลยกเลิก" |
+> **★ ไม่มีฟิลด์ "วันที่ส่งลูกค้า (sent-date)"** — การส่งใบเสนอราคาให้ลูกค้าเป็นแค่ print/share ไม่บันทึกเป็นฟิลด์/สถานะ/แกนค้นหา (revert 2026-07-29 — ดู §12).
 
-## 4. Statuses / lifecycle (D18-4 reseated + cancel-anytime)
+## 4. Statuses / lifecycle (D18-4 reseated + cancel-anytime · Sent reverted 2026-07-29)
 ```
-ร่าง (Draft) ── กด "ส่งลูกค้า" (ตั้ง sent-date) ──► ส่งแล้ว (Sent)
-   │                                                   │
-   │  แก้ → เวอร์ชันใหม่เสมอ                            ├── ลูกค้าตกลง → กด "Convert to PO" (popup) ──► ยืนยัน (Confirmed)
-   │  (immutable, เก็บประวัติ)                          │        └─ (ตั้งทันที ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ · immutable)
-   │                                                   │        └─ เลือก: "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"
-   │                                                   └── ลูกค้าปฏิเสธ ─► ปฏิเสธ (Rejected) (จบสาย, เก็บประวัติ, ไม่เกิด PO)
+ร่าง (Draft) ──┬── แก้ → เวอร์ชันใหม่เสมอ (immutable, เก็บประวัติ)
+   │           │
+   │           ├── ลูกค้าตกลง → กด "Convert to PO" (popup) ──► ยืนยัน (Confirmed)
+   │           │        └─ (ตั้งทันที ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ · immutable)
+   │           │        └─ เลือก: "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"
+   │           │
+   │           └── ลูกค้าปฏิเสธ ─► ปฏิเสธ (Rejected) (จบสาย, เก็บประวัติ, ไม่เกิด PO)
 
- ★ ยกเลิก (Cancelled): กดได้จากทุกสถานะข้างบน (Draft/Sent/Confirmed/Rejected)
+ ★ ยกเลิก (Cancelled): กดได้จากทุกสถานะข้างบน (Draft/Confirmed/Rejected)
    → QT=ยกเลิก + activity-log (ใคร/เมื่อ/เหตุผล) + เลข gapless คงอยู่ (ไม่ hard-delete)
    → ถ้าเคยสร้าง PO แล้ว: PO อ้าง QT แบบ loose reference → ★ ไม่มี cascade, PO ไม่กระทบ
 ```
-- **"Convert to PO" กดได้เมื่อ QT ∈ {ร่าง, ส่งแล้ว}** (ยังไม่ถูก Reject/Cancel/Confirm) → ตั้ง **ยืนยัน (Confirmed) ทันที**.
+- **การส่งใบเสนอราคาให้ลูกค้า = print/share (พิมพ์หรือส่งไฟล์) — ไม่ใช่สถานะ** (ไม่มี "ส่งแล้ว/Sent", ไม่บันทึกวันที่ส่ง). forward path เดียว = Draft → Confirmed (ผ่าน Convert-to-PO).
+- **"Convert to PO" กดได้เมื่อ QT = ร่าง (Draft)** (ยังไม่ถูก Reject/Cancel/Confirm) → ตั้ง **ยืนยัน (Confirmed) ทันที**.
 - **แก้ = เวอร์ชันใหม่เสมอ** (เมื่อ QT ออกไปแล้ว immutable). QT = Confirmed → immutable.
 - **ไม่มีวันหมดอายุ** (ไม่มีสถานะ Expired).
 - **★ ยกเลิกได้ทุกสถานะ** — ดูรายละเอียดกติกา `deletion-policy.md` §2.9.
@@ -60,7 +62,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 3. **"เช็ควัตถุดิบตามสูตร"** — เช็ค RM ตาม BOM เหมือน PO **แต่:** อนุญาตสร้าง Quotation ได้เสมอ (ไม่บล็อกแม้ RM ขาด) · **ไม่ auto-สร้าง/ส่ง PR ไปคลัง** (Quotation ยังไม่ผูกพันการผลิต/จัดซื้อ).
 4. (optional) กรอก **หมายเหตุ (comment)** ได้ (ช่องเดียว) — ดู §5c.
 5. กด **"บันทึก"** → บันทึก QT (Draft) + **เขียน activity-log "สร้าง QT"** → **แสดง print-ready view ทันที**.
-> การเปลี่ยนสถานะเป็น "ส่งแล้ว (Sent)" ทำจาก detail (ปุ่ม "ส่งลูกค้า") → **ตั้ง sent-date + เขียน activity-log "ส่งให้ลูกค้า"**. primary action ตอนสร้าง = "บันทึก".
+> การส่งใบเสนอราคาให้ลูกค้า = **print/share** จาก print-ready view (พิมพ์/ส่งไฟล์) — **ไม่ใช่การเปลี่ยนสถานะ** และไม่บันทึกวันที่ส่ง. primary action ตอนสร้าง = "บันทึก".
 
 ## 5b. ★ Edit flow (delta — NEW confirm 2026-07-29)
 - แก้ QT ที่ออกไปแล้ว = **สร้างเวอร์ชันใหม่เสมอ** (immutable, เก็บประวัติ) → เขียน activity-log "แก้ไข → เวอร์ชันใหม่ v{n}".
@@ -73,7 +75,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 - การแก้ comment = activity-log event ของ QT และ **โผล่บน trace** (entity=QT, field=`comment`) — เป็น subset ของ field-audit เดียวกัน (§10). กติกาเต็ม = `comment-convention.md` (CC1–CC7).
 
 ## 6. ★ Convert to PO (RESOLVED — README §4 · reseat D18-4 "Agreed" → "Confirmed")
-**เงื่อนไข:** ปุ่ม "Convert to PO (ออก PO เลขใหม่)" เปิดเมื่อ QT ∈ {ร่าง, ส่งแล้ว} (ลูกค้าไม่ใช่ Disabled/Blacklist). **การกระทำ:**
+**เงื่อนไข:** ปุ่ม "Convert to PO (ออก PO เลขใหม่)" เปิดเมื่อ QT = **ร่าง (Draft)** (ลูกค้าไม่ใช่ Disabled/Blacklist). **การกระทำ:**
 1. กด **"Convert to PO (ออก PO เลขใหม่)"** → **popup ยืนยัน:** *"สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"* พร้อม 2 ทางเลือก:
    - **(ก) ยืนยัน + ไปสร้าง PO เดี๋ยวนี้ (prefill)** — ตั้ง QT = Confirmed แล้วเปิด `po-create` ที่ PRE-FILL.
    - **(ข) ยืนยันเฉย ๆ (ไว้สร้าง PO ทีหลัง)** — ตั้ง QT = Confirmed แล้วกลับหน้า detail (ยังไม่มี PO).
@@ -91,7 +93,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 | สร้าง QT / แก้ (เวอร์ชันใหม่) | Quotation.**Create/Update (C/U)** |
 | **แก้ไข comment (แก้ในที่)** | Quotation.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | เช็ควัตถุดิบตามสูตร (create + edit) | Quotation.**Read (R)** |
-| **ส่งลูกค้า (→ Sent, ตั้ง sent-date)** | Quotation.**Update (U)** |
+| พิมพ์/ส่งใบเสนอราคาให้ลูกค้า (print/share, ไม่เปลี่ยนสถานะ) | Quotation.**Read (R)** |
 | ตั้งสถานะ ปฏิเสธ (Rejected) | Quotation.**Update (U)** |
 | **Convert to PO (→ Confirmed)** | Quotation.**Update (U)** **+ PO.Create (C)** (การสร้าง PO จริงต้องมี PO.Create) |
 | **ยกเลิก QT (ทุกสถานะ)** | Quotation.**Delete (D)** / Approve + **เหตุผลบังคับ** (บันทึก activity-log; ไม่กระทบ PO) |
@@ -100,16 +102,16 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 ## 8. Validations
 - ต้องเลือกลูกค้า + อย่างน้อย 1 line + ราคา/หน่วย (THB).
 - **★ Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ห้ามเลือก/บันทึก QT ให้ลูกค้าสถานะ Disabled/Blacklist — **บล็อกจริง** + ข้อความชัด. Convert to PO / สร้าง PO จาก banner ก็บล็อกถ้าลูกค้าเป็น Disabled/Blacklist.
-- แก้ QT ที่ Sent/Confirmed → บังคับสร้างเวอร์ชันใหม่ (ห้ามแก้ทับ); Confirmed = immutable. **(comment ยกเว้น — แก้ทับได้ ไม่สร้างเวอร์ชัน §5c).**
-- Convert to PO ทำได้เมื่อ QT ∈ {ร่าง, ส่งแล้ว} (ไม่ใช่ Confirmed/Rejected/Cancelled) **และลูกค้าไม่ใช่ Disabled/Blacklist**.
+- แก้ QT ที่ออกไปแล้ว → บังคับสร้างเวอร์ชันใหม่ (ห้ามแก้ทับ); Confirmed = immutable. **(comment ยกเว้น — แก้ทับได้ ไม่สร้างเวอร์ชัน §5c).**
+- Convert to PO ทำได้เมื่อ QT = **ร่าง (Draft)** (ไม่ใช่ Confirmed/Rejected/Cancelled) **และลูกค้าไม่ใช่ Disabled/Blacklist**.
 - material check = เตือนเท่านั้น (ไม่บล็อก, ไม่ auto-PR) — **คนละกฎกับ hard block ข้างบน** — มีทั้งหน้า create และ edit.
 - **★ ยกเลิก QT:** ทำได้ทุกสถานะ · **เหตุผลบังคับ** (comment ยกเลิก) → บันทึก activity-log · เลข QT คงอยู่ gapless (ไม่ hard-delete) · **ไม่ทำอะไรกับ PO ที่ผูก** (loose ref, no cascade).
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
 
-## 9. Pagination / Search (G1/G2 ขยาย)
+## 9. Pagination / Search (G1/G2)
 - quotation-list: 20/หน้า (G1).
-- **★ 2 แกนค้นหาวันที่:** ค้นได้ด้วย **เลข QT** และ/หรือ **ช่วงวันที่สร้าง (created-date range)** และ/หรือ **ช่วงวันที่ส่งลูกค้า (sent-date range)** — ระบุแยกกันได้ทั้งสองแกน (G2 ขยาย).
-- **★ filter สถานะครบชุด:** ร่าง / **ส่งแล้ว (Sent)** / ยืนยัน (Confirmed) / ปฏิเสธ / ยกเลิก — badge แสดงครบทุกสถานะในรายการ.
+- **★ แกนค้นหาวันที่เดียว:** ค้นได้ด้วย **เลข QT** และ/หรือ **ช่วงวันที่สร้าง (created-date range)** (G2). **★ ไม่มีแกน "ช่วงวันที่ส่งลูกค้า" อีกต่อไป** (revert 2026-07-29).
+- **★ filter สถานะครบชุด:** ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) / ยกเลิก (Cancelled) — badge แสดงครบทุกสถานะในรายการ. **★ ไม่มี badge/filter "ส่งแล้ว (Sent)"**.
 - QT history ยังโผล่บน customer-detail (customer.md §6).
 
 ## 10. ★ Activity log & Traceability (NEW explicit — 2026-07-29)
@@ -117,12 +119,12 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 | action | บันทึก activity-log | ปรากฏบน trace |
 |---|---|---|
 | สร้าง QT (Draft) | ✓ ใคร/เมื่อ + เลข QT | ✓ QT = head-of-chain |
-| **ส่งลูกค้า (→ Sent)** | ✓ + **ตั้ง sent-date** | ✓ |
 | แก้ไข → เวอร์ชันใหม่ | ✓ v{n-1}→v{n} + diff field | ✓ (ประวัติเวอร์ชัน) |
 | **★ แก้ไข comment (แก้ในที่)** | ✓ ใคร/เมื่อ + เดิม→ใหม่ (comment-convention.md) | ✓ (entity=QT, field=`comment`) |
 | **Convert to PO (→ Confirmed)** | ✓ + ผูก loose ref QT↔PO (เมื่อสร้าง PO) | ✓ QT→PO→PRD→Batch→… |
 | ปฏิเสธ (Rejected) | ✓ + เหตุผล | ✓ (จบสาย, เก็บประวัติ) |
 | **ยกเลิก (Cancelled) — ทุกสถานะ** | ✓ + **เหตุผลบังคับ** ใคร/เมื่อ | ✓ (gapless, read-only) |
+> **หมายเหตุ:** การพิมพ์/ส่งใบเสนอราคาให้ลูกค้า (print/share) เป็น action เชิงเอกสาร — อาจบันทึกเป็น activity-log ได้ แต่ **ไม่เปลี่ยนสถานะ และไม่ตั้งฟิลด์วันที่ส่งใด ๆ**.
 - **QT = head-of-chain สาย OEM** (traceability.md §3/§4): trace `QT → PO → PRD/Batch → DN → Invoice`.
 - activity-log **แสดงบน `quotation-detail`** (มุมมองรายเอกสาร) และเป็น subset ของ field-audit เดียวกันใน `traceability.md`/Settings Audit-log (source เดียว, ไม่ซ้ำซ้อน — AU1).
 
@@ -138,13 +140,17 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 - **เพิ่ม:** customer search dropdown; material check (no auto-PR); print-ready view หลังบันทึก; Convert-to-PO prefill flow (resolved).
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/convert QT เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) — คนละกฎกับ TYPE mismatch (warn).
 - **★ DECIDED (2026-07-29) — Cancel:** QT ยกเลิกได้ **ทุกสถานะ** (เพิ่มสถานะ "ยกเลิก") · PO เก็บแค่ **loose reference** · ยกเลิก QT = **ไม่ cascade ไป PO** · บันทึก **activity-log** + เลข gapless.
-- **★ DECIDED (2026-07-29 — Quotation module review, Pond) — reseat status + sent-date + activity:**
-  - **สถานะ "ตกลง (Agreed)" ของ D18-4 → เปลี่ยนชื่อ/นิยามเป็น "ยืนยัน (Confirmed)"** ตั้งโดย **การกด Convert to PO** (รวมสองสเต็ปเดิมเป็นสเต็ปเดียว). enum ใหม่: ร่าง/ส่งแล้ว/**ยืนยัน**/ปฏิเสธ + ยกเลิก. loose ref + no cascade + cancel-anytime **คงเดิม**. (ดู `entity-status-map.md` §1.1b · README §4/§7.)
+- **★ DECIDED (2026-07-29 — Quotation module review, Pond) — reseat status + activity:**
+  - **สถานะ "ตกลง (Agreed)" ของ D18-4 → เปลี่ยนชื่อ/นิยามเป็น "ยืนยัน (Confirmed)"** ตั้งโดย **การกด Convert to PO** (รวมสองสเต็ปเดิมเป็นสเต็ปเดียว). enum = ร่าง/**ยืนยัน**/ปฏิเสธ + ยกเลิก. loose ref + no cascade + cancel-anytime **คงเดิม**. (ดู `entity-status-map.md` §1.1b · README §4/§7.)
   - **Convert to PO = popup "สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"** → ตั้ง Confirmed **ทันที** (immutable) ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ + ให้เลือก "สร้าง PO เดี๋ยวนี้ (prefill) / ไว้ทีหลัง" (§6).
   - **Confirmed-แต่ยังไม่มี PO = banner ถาวร** "ยืนยันแล้ว · ไปสร้าง PO ด้วยข้อมูลนี้" บน detail (§6.4).
-  - **เพิ่มฟิลด์ "วันที่ส่งลูกค้า (sent-date)"** (ตั้งตอน → Sent) + **list ค้นได้ 2 แกนวันที่ (created + sent)** (§3/§9).
-  - **list แสดง/กรอง สถานะ "ส่งแล้ว (Sent)" ครบชุด badge** (§2/§9).
   - **material check เพิ่มบนหน้า edit** เหมือน create (§5b).
   - **activity-log ครบทุก action + โผล่ traceability** (§10, cross-ref traceability.md/non-functional.md).
+- **★ REVERTED (2026-07-29 — Pond decided) — ถอด "ส่งแล้ว (Sent)" + "วันที่ส่งลูกค้า (sent-date)" ออกทั้งหมด:**
+  - **ถอดสถานะ "ส่งแล้ว (Sent)" ออกจาก lifecycle** — enum QT = ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) / ยกเลิก (Cancelled). การส่งใบเสนอราคาให้ลูกค้า = แค่ print/share ไม่ใช่สถานะ.
+  - **ถอดฟิลด์ "วันที่ส่งลูกค้า (sent-date)" ออกทั้งหมด** — ฟิลด์, คอลัมน์ใน list, และ **แกนค้นหา sent-date range**. list กลับไป **ค้นด้วยช่วงวันที่สร้าง (created-date) แกนเดียว**.
+  - **ถอด Sent badge/filter chip** ออกจาก quotation-list. Convert-to-PO กดได้จาก **ร่าง (Draft)** เท่านั้น.
+  - เหตุผล: dispatcher over-added Sent status + sent-date รอบก่อน — ปอนด์ยืนยันให้ REMOVE ทั้งหมด. (ทุกอย่างอื่นจากรีวิว Quotation คงเดิม.)
+  - อัปเดตควบคู่: `entity-status-map.md` §1.1b · `deletion-policy.md` §2.9/matrix · README §7/changelog. UX/UI ต้องถอด Sent chip/badge + sent-date column/search จาก quotation-list ทีหลัง (ดู README §8).
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** (ใคร/เมื่อ/เดิม→ใหม่) บน quotation-create/detail — ยึด `comment-convention.md` (§3 field, §5c, §7 permission, §10 activity row). คนละฟิลด์กับ "เหตุผลยกเลิก".
 - **แก้:** primary action "บันทึก+ส่งให้ลูกค้า (Sent)" → **"บันทึก"** (แล้วโชว์ print-ready).

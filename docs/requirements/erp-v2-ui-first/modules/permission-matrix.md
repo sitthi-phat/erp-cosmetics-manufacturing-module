@@ -31,8 +31,9 @@ Customer · **Quotation (ใหม่)** · PO · **SO (ใหม่)** · **Sup
 | | soft-delete | Customer.D |
 | | undelete | Customer.Admin |
 | **Quotation** | ดู list/detail/print-ready · material check | Quotation.R |
-| | สร้าง/แก้ (เวอร์ชันใหม่) · ตั้งสถานะ Sent/Agreed/Rejected | Quotation.C / Quotation.U |
-| | **Convert to PO** | Quotation.U **+ PO.C** |
+| | สร้าง/แก้ (เวอร์ชันใหม่) · ตั้งสถานะ ปฏิเสธ (Rejected) · พิมพ์/ส่งลูกค้า (print/share, ไม่เปลี่ยนสถานะ) | Quotation.C / Quotation.U |
+| | **Convert to PO (→ Confirmed)** | Quotation.U **+ PO.C** |
+| | ยกเลิก QT (ทุกสถานะ) + เหตุผลบังคับ | Quotation.D / Quotation.A |
 | **PO** | ดู list/detail | PO.R |
 | | เปิด PO ใหม่ / แก้ (Draft/Hold) | PO.C / PO.U |
 | | ยืนยัน PO (จองวัตถุดิบ) | PO.U |
@@ -62,6 +63,7 @@ Customer · **Quotation (ใหม่)** · PO · **SO (ใหม่)** · **Sup
 
 ## 4. หมายเหตุ (D14)
 - **surplus (D13)** = auto ตอน "พร้อมส่ง" + remark → **ไม่มี permission แยก** (ไม่ใช่ approval).
+- **★ Quotation (2026-07-29):** ไม่มีสถานะ "ส่งแล้ว (Sent)" — การส่งใบเสนอราคา = print/share (Quotation.R/U) ไม่เปลี่ยนสถานะ · Convert-to-PO ตั้ง QT = ยืนยัน (Confirmed) ทันที.
 - แต่ละ capability **grant แยกได้อิสระ**; role ใด ๆ ที่ถือ permission ตรงก็ทำได้ (เช่น AR/Sale เปิด PO/Quotation ได้ถ้ามีสิทธิ์).
 - Cross-module actions (Convert to PO = Quotation.U + PO.C; สั่งผลิต = Supply Planning.C → SO/Production.C) ต้องถือ **ทั้งสอง** permission.
 - `settings.html` เพิ่มแถว RUCDAA ของ **Quotation, SO, Supply Planning**.

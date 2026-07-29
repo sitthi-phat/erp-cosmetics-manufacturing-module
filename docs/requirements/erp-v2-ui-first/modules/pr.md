@@ -5,7 +5,7 @@ Mockups: `mockups/purchase-request.html` · `mockups/pr-create.html`
 กฎอ้างอิง: `po.md`/`so.md` (auto-open PR ส่วนขาด) · `goods-receipt.md` (GR→PR auto status) · deletion-policy (เอกสารการค้า void) · README §3 · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-คำขอสั่งซื้อวัตถุดิบ เกิด 2 ทาง: **auto จาก PO/SO-produce-to-stock ที่วัตถุดิบขาด (เฉพาะส่วนที่ขาด)** หรือ **ฝ่ายคลังสร้างตรง**. สถานะ: เปิดคำขอ → รับทราบ (manual) → รับบางส่วน (auto GR) → ของเข้าครบ (auto GR) → ปิดคำขอ (manual) · ยกเลิก (comment บังคับ). **แต่ละครั้งที่ขาดสร้าง PR ใบใหม่แยก ไม่รวมกับใบเดิม** (คำตอบปอนด์). รับบางส่วนจาก GR → **เสนอสร้าง PR ใหม่ส่วนที่ขาด (รอ user review)**. เลข `PR-{NNNNNN}`. ลบไม่ได้ — void เท่านั้น. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+คำขอสั่งซื้อวัตถุดิบ เกิด 2 ทาง: **auto จาก PO/SO-produce-to-stock ที่วัตถุดิบขาด (เฉพาะส่วนที่ขาด)** หรือ **ฝ่ายคลังสร้างตรง**. สถานะ: เปิดคำขอ → รับทราบ (manual) → รับบางส่วน (auto GR) → ของเข้าครบ (auto GR) → ปิดคำขอ (manual) · ยกเลิก (comment บังคับ). **แต่ละครั้งที่ขาดสร้าง PR ใบใหม่แยก ไม่รวมกับใบเดิม** (คำตอบปอนด์). รับบางส่วนจาก GR → **เสนอสร้าง PR ใหม่ส่วนที่ขาด (รอ user review)**. เลข `PR-{NNNNNN}`. ลบไม่ได้ — void เท่านั้น. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md) — วางไว้ในส่วน "ปรับสถานะ" ของ purchase-request (per Pond).**
 
 ---
 
@@ -15,7 +15,7 @@ Mockups: `mockups/purchase-request.html` · `mockups/pr-create.html`
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `purchase-request.html` | รายการ PR + filter สถานะ + search + เปลี่ยนสถานะ (รับทราบ/ปิด/ยกเลิก) + **comment ต่อ PR (+ "ประวัติการแก้ไข comment")** |
+| `purchase-request.html` | รายการ PR + filter สถานะ + search + เปลี่ยนสถานะ (รับทราบ/ปิด/ยกเลิก) + **comment ต่อ PR (+ "ประวัติการแก้ไข comment") — วางในส่วน "ปรับสถานะ"** |
 | `pr-create.html` | สร้าง PR ตรง (วัตถุดิบ + จำนวน) + **ช่อง comment** |
 
 ## 3. Fields
@@ -28,7 +28,7 @@ Mockups: `mockups/purchase-request.html` · `mockups/pr-create.html`
 | ผูก PO/SO | ref (optional) | computed | เมื่อ auto |
 | สถานะ | enum (§4) | mixed (auto/manual) | |
 | comment (ยกเลิก) | text | editable | บังคับเมื่อยกเลิก |
-| **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · **คนละฟิลด์กับ "comment (ยกเลิก)"** ข้างบน |
+| **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · **คนละฟิลด์กับ "comment (ยกเลิก)"** ข้างบน · **UI วางในส่วน "ปรับสถานะ" (§4b)** |
 
 ## 4. Statuses / lifecycle
 เปิดคำขอ → **รับทราบ (manual)** → **รับบางส่วน (auto GR) / ของเข้าครบ (auto GR)** → **ปิดคำขอ (manual)** · **ยกเลิก (comment บังคับ)**. ปิด/ยกเลิก = final. เอกสารการค้า → void เท่านั้น (ไม่ hard delete).
@@ -36,6 +36,7 @@ Mockups: `mockups/purchase-request.html` · `mockups/pr-create.html`
 
 ## 4b. ★ Comment + change-history (ยึด `comment-convention.md`)
 - **1 ช่อง comment free-text ต่อ PR** · แก้ในที่ (overwrite) จาก pr-create (ตั้งค่าแรก) และ purchase-request (แก้).
+- **★ UI placement (per Pond):** comment control บน purchase-request วางไว้ **ในส่วน "ปรับสถานะ" (status-change section)** ของหน้า — ยังเป็น **คนละฟิลด์กับ "comment (ยกเลิก)"** ที่บังคับเหตุผลตอนยกเลิก; audit/trace ครบตามเดิม (UX/UI สร้าง UI นี้แล้ว — สะท้อนใน spec).
 - ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; หน้า PR แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"**.
 - การแก้ = activity-log event + **โผล่บน trace** (entity=PR, field=`comment`). กติกาเต็ม = `comment-convention.md` (CC1–CC7) · **คนละฟิลด์** กับ "comment (ยกเลิก)" ที่บังคับเหตุผลตอนยกเลิก.
 
@@ -74,4 +75,5 @@ Mockups: `mockups/purchase-request.html` · `mockups/pr-create.html`
 ## 11. Module changelog
 - **Absorbed:** functional-spec `purchase-request.html` US-PR-01..03 (9 AC) verbatim ในความหมาย.
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** ต่อ PR — ยึด `comment-convention.md` (§3 field, §4b, §6 permission). คนละฟิลด์กับ "comment (ยกเลิก)".
+- **★ บันทึก (2026-07-29 — UI placement, per Pond):** comment control บน purchase-request วางไว้ **ในส่วน "ปรับสถานะ" (status-change section)** — ยังเป็นคนละฟิลด์กับ cancel-reason ที่บังคับ; audit/trace ครบ (UX/UI สร้างแล้ว — reflect ใน spec §2/§3/§4b).
 - **คงเดิม:** สร้างใบใหม่ทุกครั้ง (ไม่รวมใบเดิม) · partial→เสนอ PR ใหม่รอ review · ยกเลิก comment บังคับ · void ไม่ delete.

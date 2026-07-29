@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/customer-create.html` · `mockups/contact-create.html`
-กฎอ้างอิง: entity-status-map §1.1 (**status enum r2 = 5 สถานะ + follow-up flag แยก** — pending ปอนด์ยืนยัน) · deletion-policy §2.1/§2.6 · README §3 (G1–G5) · README §2.2 (credit term) · `invoice.md` (financial roll-up)
+กฎอ้างอิง: entity-status-map §1.1 (**status enum r2 = 5 สถานะ + follow-up flag แยก** — ★ DECIDED ปอนด์ยืนยัน 2026-07-29: ถอด "Follow-up") · deletion-policy §2.1/§2.6 · README §3 (G1–G5) · README §2.2 (credit term) · `invoice.md` (financial roll-up)
 
 ## สรุปภาษาไทย
-โมดูลลูกค้า: เพิ่ม **TYPE = OEM และ/หรือ Own-Brand** (เป็นได้ทั้งคู่) · **Credit term ระดับลูกค้า 30/60/90 default 60** (override รายใบได้). **★ 3 เรื่องใหม่ (ปอนด์ 2026-07-29):** (1) หน้า detail โชว์ **สรุปการเงินลูกค้า** = ยอดซื้อรวม / จ่ายมาแล้ว / ยังไม่จ่าย(ค้างชำระ) — คำนวณจากใบแจ้งหนี้+การรับชำระ, THB, read-only. (2) **"ต้องติดตาม (needs follow-up)" แยกเป็น flag อิสระ** (boolean + เหตุผล + ใคร/เมื่อ) **ควบคู่ได้กับทุกสถานะ** (Blacklist ที่ติดเงินก็ต้องติดตามได้, Active ที่ PO มีปัญหาก็ได้) — **default: ถอด "Follow-up" ออกจาก status enum** เหลือ Lead/Active/Inactive/Disabled/Blacklist (★ รอปอนด์ยืนยันการถอด — ดู §12). (3) **Disabled/Blacklist = บล็อกการเปิดงานขายทั้งหมด (QT/PO/SO) แบบ HARD block** (ต่างจาก TYPE mismatch ที่เตือนไม่บล็อก). **★ 1 เรื่องใหม่ (ปอนด์ 2026-07-29, Customer add-on):** **หน้า EDIT ลูกค้าต้องแก้ได้ครบทุกฟิลด์ = ชุดเดียวกับตอน Create** (ข้อมูลบริษัท/ธุรกิจ, TYPE OEM/Own-Brand, credit term, ภาษี/ที่อยู่, สถานะ 5-status, ⚑ flag ต้องติดตาม, ผู้ติดต่อ) — **ไม่ใช่แค่ข้อมูลผู้ติดต่อ**; financial summary ยัง read-only; ทุกการแก้ลง audit (management-history). รวม "เปลี่ยนสถานะ/มอบหมาย + ประวัติการจัดการ + Sale reassign" เป็น **section เดียว (management-history)** · หน้า detail โชว์ **QT history + PO history** (ค้นเลข/ช่วงวันที่, 20/หน้า, drill-back ไม่เสีย state).
+โมดูลลูกค้า: เพิ่ม **TYPE = OEM และ/หรือ Own-Brand** (เป็นได้ทั้งคู่) · **Credit term ระดับลูกค้า 30/60/90 default 60** (override รายใบได้). **★ 3 เรื่องใหม่ (ปอนด์ 2026-07-29):** (1) หน้า detail โชว์ **สรุปการเงินลูกค้า** = ยอดซื้อรวม / จ่ายมาแล้ว / ยังไม่จ่าย(ค้างชำระ) — คำนวณจากใบแจ้งหนี้+การรับชำระ, THB, read-only. (2) **"ต้องติดตาม (needs follow-up)" แยกเป็น flag อิสระ** (boolean + เหตุผล + ใคร/เมื่อ) **ควบคู่ได้กับทุกสถานะ** (Blacklist ที่ติดเงินก็ต้องติดตามได้, Active ที่ PO มีปัญหาก็ได้) — **★ DECIDED (ปอนด์ยืนยัน 2026-07-29 · ตัวเลือก A): ถอด "Follow-up" ออกจาก status enum** เหลือ Lead/Active/Inactive/Disabled/Blacklist (ปิดคำถามค้างแล้ว — ดู §12). (3) **Disabled/Blacklist = บล็อกการเปิดงานขายทั้งหมด (QT/PO/SO) แบบ HARD block** (ต่างจาก TYPE mismatch ที่เตือนไม่บล็อก). **★ 1 เรื่องใหม่ (ปอนด์ 2026-07-29, Customer add-on):** **หน้า EDIT ลูกค้าต้องแก้ได้ครบทุกฟิลด์ = ชุดเดียวกับตอน Create** (ข้อมูลบริษัท/ธุรกิจ, TYPE OEM/Own-Brand, credit term, ภาษี/ที่อยู่, สถานะ 5-status, ⚑ flag ต้องติดตาม, ผู้ติดต่อ) — **ไม่ใช่แค่ข้อมูลผู้ติดต่อ**; financial summary ยัง read-only; ทุกการแก้ลง audit (management-history). รวม "เปลี่ยนสถานะ/มอบหมาย + ประวัติการจัดการ + Sale reassign" เป็น **section เดียว (management-history)** · หน้า detail โชว์ **QT history + PO history** (ค้นเลข/ช่วงวันที่, 20/หน้า, drill-back ไม่เสีย state).
 
 ---
 
@@ -42,7 +42,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 | รหัสลูกค้า `CUS-{NNNNNN}` | string | computed (auto) | gapless · **แก้ไม่ได้** |
 | ชื่อบริษัท | text | editable (create + **edit**) | ใช้ค้นใน customer dropdown (G4) |
 | **TYPE** | multi-select {OEM, Own-Brand} | editable (create + **edit**) | **เลือกได้ทั้งคู่** · ใช้ report + filter/เตือนตอนเปิด order · **mismatch = เตือนไม่บล็อก** |
-| สถานะ | enum **5 สถานะ** | editable (create + **edit**; บาง state auto/ต้อง Approve) | **Lead/Active/Inactive/Disabled/Blacklist** (entity-status-map §1.1 r2) · **★ ถอด "Follow-up" ออกจาก enum → เป็น flag แยก (รอปอนด์ยืนยัน §12)** |
+| สถานะ | enum **5 สถานะ** | editable (create + **edit**; บาง state auto/ต้อง Approve) | **Lead/Active/Inactive/Disabled/Blacklist** (entity-status-map §1.1 r2) · **★ DECIDED (ปอนด์ยืนยัน 2026-07-29): ถอด "Follow-up" ออกจาก enum → เป็น flag แยก (§12)** |
 | **⚑ ต้องติดตาม (follow-up flag)** | boolean | editable (create + **edit**) | **แยกอิสระจาก status — co-exist กับทุกสถานะ** · เปิด flag = **บังคับกรอกเหตุผล** · เก็บ ใคร/เมื่อ (audit) · ปิด flag = บังคับ comment เหตุผลที่เคลียร์ |
 | เหตุผลต้องติดตาม (follow-up reason) | text | editable (เมื่อ flag=true) | เช่น "ติดเงิน/ค้างชำระ", "PO-xxx มีปัญหา" · แสดงบน badge/tooltip |
 | **Credit term (ระดับลูกค้า)** | enum {30, 60, 90} วัน | editable (create + **edit**) | **DEFAULT = 60** · override รายใบแจ้งหนี้ยังได้ (README §2.2) |
@@ -56,7 +56,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 
 ## 4. Statuses / lifecycle (r2 — 5 สถานะ + follow-up flag แยก)
 **สถานะหลัก 5 สถานะ (source: entity-status-map §1.1 r2):** **ผู้สนใจ (Lead)** → **ลูกค้าประจำ (Active)** (auto เมื่อยืนยัน order ใบแรก) → **ห่างหาย (Inactive)** (auto scheduler ไม่มี order เกินรอบ default 3 ด.) · **ปิดใช้งาน (Disabled)/บัญชีดำ (Blacklist)** (Sale Manager/Admin, บังคับ comment).
-- **★ "Follow-up" ไม่เป็นสถานะอีกต่อไป** (default นี้ รอปอนด์ยืนยัน §12) → แทนด้วย **flag "ต้องติดตาม"** ที่ **ควบคู่ได้กับทุกสถานะ** (§4.1).
+- **★ "Follow-up" ไม่เป็นสถานะอีกต่อไป (DECIDED ปอนด์ยืนยัน 2026-07-29 · §12)** → แทนด้วย **flag "ต้องติดตาม"** ที่ **ควบคู่ได้กับทุกสถานะ** (§4.1).
 - **Soft-delete** ได้เสมอ (deletion-policy §2.1) — PO เดิมเดินต่อ, **ห้ามเปิด order ใหม่**, หายจาก dropdown.
 
 ### 4.1 ★ Follow-up flag (attribute แยกจาก status)
@@ -138,9 +138,9 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 - **Status enum r2 + follow-up flag → `entity-status-map.md` §1.1** (status source-of-truth reference — บันทึกการเปลี่ยน enum + flag ที่นั่น).
 - Deletion → deletion-policy §2.1/§2.6 · RBAC → `permission-matrix.md`.
 
-## 12. ★ Open question ถึงปอนด์ (1 ข้อ — status enum disposition)
-**การถอด "Follow-up" ออกจาก status enum:** default ที่ spec นี้ใช้ = **ถอด** ("Follow-up" ไม่เป็นสถานะ, เหลือ 5 สถานะ + flag แยก) เพราะตรงกับ "แยกออกมาจาก status ปกติ". **ต้องให้ปอนด์ยืนยัน** ว่าจะถอดจริง หรือคงคำว่า "Follow-up" ไว้เป็นสถานะด้วย (ดูตัวเลือกใน status.json / คำถาม Thai). เมื่อยืนยันแล้ว → sync `entity-status-map.md` §1.1 + dashboard tile/filter ที่อ้าง 6 สถานะเดิม.
-> **หมายเหตุ:** "Edit = all fields" (§2b) **ไม่ใช่ open question** — settled, UX/UI ทำได้ทันที.
+## 12. ★ Status enum disposition — DECIDED (ปอนด์ยืนยัน 2026-07-29)
+**การถอด "Follow-up" ออกจาก status enum: ★ DECIDED — ปอนด์ยืนยันตัวเลือก A (2026-07-29):** ถอด "Follow-up" ออกจาก status enum จริง → **เหลือ 5 สถานะ (Lead/Active/Inactive/Disabled/Blacklist) + flag ⚑ "ต้องติดตาม" แยกอิสระ**. spec นี้ทั้งไฟล์สะท้อนคำตัดสินนี้แล้ว (5 สถานะ + flag). sync `entity-status-map.md` §1.1 (r6) + dashboard tile/filter ที่เคยอ้าง 6 สถานะเดิม → ปรับเป็น 5 สถานะ + ตัวกรอง ⚑ แยก.
+> **ไม่มี open question ค้างในโมดูลนี้แล้ว.** "Edit = all fields" (§2b) = settled เช่นกัน. UX/UI ทำได้ทันที (status badge/filter = 5 สถานะ + flag ⚑ แยก).
 
 ## 13. Module changelog
 - **★ เพิ่ม (2026-07-29 — ปอนด์ Customer feedback):**
@@ -148,5 +148,5 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
   - **Follow-up flag** เป็น attribute อิสระ (boolean + reason + who/when) ควบคู่ได้ทุกสถานะ · badge แยกจาก status · list/history filter ได้ (§4.1/§10).
   - **Hard block** เปิดงานขาย (QT/PO/SO) เมื่อ Disabled/Blacklist (§4.2/§9) — คนละกฎกับ TYPE mismatch (warn).
 - **★ เพิ่ม (2026-07-29 — Customer add-on, PO module 3 review):** **Edit = ALL fields** — หน้าแก้ไขลูกค้าเปิดให้แก้ได้ครบทุกฟิลด์เท่ากับ Create (บริษัท/ธุรกิจ, TYPE, credit term, ภาษี/ที่อยู่, สถานะ 5-status, ⚑ flag, ผู้ติดต่อ) **ไม่ใช่แค่ผู้ติดต่อ** · financial summary + รหัส CUS ยัง read-only · ทุกการแก้ลง audit/management-history · สิทธิ์ราย action คงเดิม (Update/Approve) (§2b/§3/§8/§9). **settled — ไม่ใช่ open question.**
-- **★ แก้:** status enum **6 → 5** (ถอด "Follow-up" · default, รอปอนด์ยืนยัน §12) → sync entity-status-map §1.1.
+- **★ DECIDED (2026-07-29 — ปอนด์ยืนยันตัวเลือก A):** status enum **6 → 5** (ถอด "Follow-up" ออกจาก enum → flag ⚑ แยก) → sync entity-status-map §1.1 · **ปิดคำถามค้าง §12** (เดิม default+รอยืนยัน → ปอนด์ยืนยันแล้ว).
 - **คงเดิม:** TYPE (OEM/Own-Brand, both) · credit term preset 30/60/90 default 60 · management-history รวม section · QT/PO history · customer search dropdown (G4).
