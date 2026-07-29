@@ -1,11 +1,11 @@
 # Module — Sales Order (SO, Own-Brand)
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)**
+กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)** · **`comment-convention.md` (comment + change-history)**
 > โมดูลใหญ่ — sub-files แนะนำ: `so-sell-from-stock.md` (ก) · `so-produce-to-stock.md` (ข). รอบนี้รวมใน so.md.
 
 ## สรุปภาษาไทย
-ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). List ค้นด้วยเลข/ช่วงวันที่.
+ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). List ค้นด้วยเลข/ช่วงวันที่. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -16,8 +16,8 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | หน้าจอ | บทบาท |
 |---|---|
 | `so-list.html` | list SO + filter (สถานะ, โหมด ก/ข) + **search เลข SO / ช่วงวันที่สร้าง** (G2) + 20/หน้า (G1) |
-| `so-create.html` | สร้าง SO — สลับโหมด (ก) เลือกลูกค้า+FG / (ข) ไม่เลือกลูกค้า+ผลิต |
-| `so-detail.html` | รายละเอียด + lifecycle ตามโหมด |
+| `so-create.html` | สร้าง SO — สลับโหมด (ก) เลือกลูกค้า+FG / (ข) ไม่เลือกลูกค้า+ผลิต + **ช่อง comment** |
+| `so-detail.html` | รายละเอียด + lifecycle ตามโหมด + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
@@ -29,6 +29,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | FG Available (ราย Batch) | units | computed (read-only) | (ก) เท่านั้น — จาก FG stock |
 | สถานะ | enum (§4) | mostly auto | ต่างกันตามโหมด |
 | ราคา/ยอดรวม/VAT | THB | (ก) computed | (ข) ไม่มีลูกค้า/ราคาตอนนี้ |
+| **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · ใช้ได้ทั้งโหมด ก/ข |
 
 ## 4. Statuses / lifecycle
 ### (ก) Sell-from-stock
@@ -56,6 +57,11 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 5. ออก **Invoice อ้าง SO** (+ cost snapshot ที่ line, D10) → รับชำระ.
 6. **ยกเลิก SO** ก่อน dispatch = **คืนจอง FG** (release).
 
+## 5b. ★ Comment + change-history (ยึด `comment-convention.md`)
+- **1 ช่อง comment free-text ต่อ SO** (ทั้งโหมด ก/ข) · แก้ได้จาก so-create (ตั้งค่าแรก) และ so-detail (แก้ทับ/overwrite).
+- ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; so-detail แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"** (popover/timeline).
+- การแก้ comment = activity-log event ของ SO และ **โผล่บน trace** (entity=SO, field=`comment`). กติกาเต็ม = `comment-convention.md` (CC1–CC7) · คนละฟิลด์กับ "comment ตอนยกเลิก" (§8).
+
 ## 6. ★ (ข) Produce-to-stock — RESOLVED flow (README §4)
 > **ทำตัวเหมือนเปิด PO** (แต่ไม่มีลูกค้า → **hard block Disabled/Blacklist ไม่เกี่ยวกับโหมดนี้**):
 1. `so-create` โหมด (ข) → **ไม่เลือกลูกค้า** → เลือก FG(BOM) + จำนวนที่จะผลิต.
@@ -70,8 +76,9 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ## 7. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required (SO module) |
 |---|---|
-| ดู list/detail | SO.**Read (R)** |
+| ดู list/detail + **ดูประวัติ comment** | SO.**Read (R)** |
 | สร้าง/แก้ SO (ก/ข) | SO.**Create/Update (C/U)** |
+| **แก้ไข comment (แก้ในที่)** | SO.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | **ยืนยันใบสั่งขาย (จอง FG)** [ก] | SO.**Update (U)** |
 | ยืนยันผลิตเก็บสต็อก (→ PRD) [ข] | SO.**Create (C)** (สร้าง produce-to-stock PRD) |
 | ยกเลิก SO (คืนจอง) | SO.**Delete/Approve (D/A)** + comment |
@@ -84,6 +91,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - **★ (ก) Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ห้ามเลือก/ยืนยันใบสั่งขายให้ลูกค้าสถานะ Disabled/Blacklist — **บล็อกจริง** + ข้อความชัด (แยกจาก FG-availability warning).
 - (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต — **hard block Disabled/Blacklist ไม่เกี่ยว** (ไม่มีลูกค้า).
 - ยกเลิก = บังคับ comment.
+- **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3) · คนละฟิลด์กับ comment ยกเลิก.
 
 ## 9. Pagination / Search
 - so-list: 20/หน้า (G1) · search เลข SO **หรือ** ช่วงวันที่สร้าง (G2) · filter สถานะ + โหมด ก/ข.
@@ -91,7 +99,9 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ## 10. Cross-links
 - D8 v2 prefill → `supply-planning.md` · FG stock/FIFO → `stock.md` · DN/Invoice อ้าง SO → delivery-note/invoice (scope §10.1) · flow → `flows/ownbrand-flow.md`.
 - **Hard block Disabled/Blacklist (โหมด ก) → `customer.md` §4.2.**
+- **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **เพิ่ม:** date-range search (list) · customer dropdown (ก) · resolved (ก) Ready-to-Ship→Delivery flow · resolved (ข) auto-PR flow · prefill จาก Supply Planning (D8 v2).
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/ยืนยัน SO โหมด (ก) เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) · โหมด (ข) ไม่เกี่ยว (ไม่มีลูกค้า).
+- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** บน so-create/so-detail (ทั้งโหมด ก/ข) — ยึด `comment-convention.md` (§3 field, §5b, §7 permission).

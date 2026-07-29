@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs functional-spec `shipping.html` US-SHP-01..03)
 Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
-กฎอ้างอิง: entity-status-map §1.9/§1.10 (Shipment/DN) · `po.md`/`so.md` (พร้อมจัดส่ง→ตัด FG/dispatch) · `invoice.md` (Delivered→เริ่มนับเครดิต) · stock (FG FIFO ตอน dispatch, D16) · README §3
+กฎอ้างอิง: entity-status-map §1.9/§1.10 (Shipment/DN) · `po.md`/`so.md` (พร้อมจัดส่ง→ตัด FG/dispatch) · `invoice.md` (Delivered→เริ่มนับเครดิต) · stock (FG FIFO ตอน dispatch, D16) · README §3 · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-จัดส่งเป็น **2 ชั้น**: **Shipment (รอบจัดส่ง)** รวมหลาย DN + คนขับ/เบอร์/route/ประเภทรถ · **DN = 1 ใบต่อ 1 PO/SO เสมอ** (ลูกค้าเซ็นรายใบ). สร้างรอบ = เลือก order "พร้อมจัดส่ง" (ค้นด้วย PO/SO ID หรือข้อมูลลูกค้า) → ระบบ gen DN ราย order → รวมเป็นรอบ. DN: กำลังนำส่ง → **ส่งถึงแล้ว** (PO ส่งถึง + เริ่มนับ overdue + noti Finance/Sale) / **ถูกปฏิเสธ** (PO กลับพร้อมจัดส่ง + raise Sale) / **เลื่อนส่ง** (PO พร้อมจัดส่ง + flag+วันที่ ค้างคิว). รอบ = จบรอบ (Closed) auto เมื่อ DN ทุกใบถึงสถานะสุดท้าย; ระหว่างนั้น = "ส่งบางส่วน (Partially)" + breakdown. FG ตัด FIFO ราย Batch ตอน dispatch (D16). เลข `SHP-{YYYYMMDD}-{NNNN}` / `DN-{YYYYMMDD}-{NNNNN}`.
+จัดส่งเป็น **2 ชั้น**: **Shipment (รอบจัดส่ง)** รวมหลาย DN + คนขับ/เบอร์/route/ประเภทรถ · **DN = 1 ใบต่อ 1 PO/SO เสมอ** (ลูกค้าเซ็นรายใบ). สร้างรอบ = เลือก order "พร้อมจัดส่ง" (ค้นด้วย PO/SO ID หรือข้อมูลลูกค้า) → ระบบ gen DN ราย order → รวมเป็นรอบ. DN: กำลังนำส่ง → **ส่งถึงแล้ว** (PO ส่งถึง + เริ่มนับ overdue + noti Finance/Sale) / **ถูกปฏิเสธ** (PO กลับพร้อมจัดส่ง + raise Sale) / **เลื่อนส่ง** (PO พร้อมจัดส่ง + flag+วันที่ ค้างคิว). รอบ = จบรอบ (Closed) auto เมื่อ DN ทุกใบถึงสถานะสุดท้าย; ระหว่างนั้น = "ส่งบางส่วน (Partially)" + breakdown. FG ตัด FIFO ราย Batch ตอน dispatch (D16). เลข `SHP-{YYYYMMDD}-{NNNN}` / `DN-{YYYYMMDD}-{NNNNN}`. **★ ทั้ง Shipment (รอบ) และ DN มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -15,8 +15,8 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `shipping.html` | คิว order "พร้อมจัดส่ง" (รวม Postpone) · สร้างรอบ · search by PO/SO/ลูกค้า · กรอกคนขับ/เบอร์/route/ประเภทรถ |
-| `delivery-note.html` | DN ราย order · print · สถานะราย DN · reconcile รอบ Partially |
+| `shipping.html` | คิว order "พร้อมจัดส่ง" (รวม Postpone) · สร้างรอบ · search by PO/SO/ลูกค้า · กรอกคนขับ/เบอร์/route/ประเภทรถ · **comment ต่อรอบ (Shipment) + "ประวัติการแก้ไข comment"** |
+| `delivery-note.html` | DN ราย order · print · สถานะราย DN · reconcile รอบ Partially · **comment ต่อ DN + "ประวัติการแก้ไข comment"** |
 
 ## 3. Fields
 | ฟิลด์ | ชนิด | editable/computed | หมายเหตุ |
@@ -27,6 +27,8 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 | สถานะรอบ | enum {รับเข้ารอบ, กำลังนำส่ง, จบรอบ, ส่งบางส่วน} | computed | reconcile จาก DN |
 | สถานะ DN | enum {กำลังนำส่ง, ส่งถึงแล้ว, ถูกปฏิเสธ, เลื่อนส่ง} | editable | |
 | postpone date | date | editable | เมื่อเลื่อนส่ง |
+| **★ หมายเหตุรอบ (Shipment comment)** | free-text (ช่องเดียว/รอบ), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** |
+| **★ หมายเหตุ DN (DN comment)** | free-text (ช่องเดียว/DN), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ + โผล่ trace — `comment-convention.md`** · คนละฟิลด์กับ postpone/reject note |
 
 ## 4. Statuses / lifecycle (entity-status-map §1.9/§1.10)
 - **Shipment (รอบ):** รับเข้ารอบ → กำลังนำส่ง → **จบรอบ (Closed) auto** เมื่อ DN ทุกใบถึงสถานะสุดท้าย · ระหว่างทาง = "ส่งบางส่วน (Partially)".
@@ -34,6 +36,11 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
   - **ส่งถึงแล้ว:** PO/SO=ส่งถึงแล้ว; เริ่มนับ overdue; noti Finance+Sale (C10). ตัด FG FIFO ราย Batch.
   - **ถูกปฏิเสธ:** PO→พร้อมจัดส่ง (กลับคิว) + raise Sale; รอสร้าง DN รอบใหม่ (C11).
   - **เลื่อนส่ง:** PO→พร้อมจัดส่ง + flag "Postpone <date>" ค้างคิว; noti Shipping (C12).
+
+## 4b. ★ Comment + change-history (Shipment & DN — ยึด `comment-convention.md`)
+- **Shipment (รอบ) มีช่อง comment เดียว** และ **DN มีช่อง comment เดียว** — แต่ละ object แยกช่องกัน · แก้ในที่ (overwrite).
+- ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; หน้า shipping/delivery-note แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"** ต่อรอบ/ต่อ DN.
+- การแก้ = activity-log event + **โผล่บน trace** (entity=Shipment หรือ DN, field=`comment`). กติกาเต็ม = `comment-convention.md` (CC1–CC7) · **คนละฟิลด์** กับ postpone date / reject note.
 
 ## 5. User Stories (absorbed) + AC สรุป
 - **US-SHP-01 (Must) — สร้างรอบ + DN ราย order:** PO-176 "พร้อมจัดส่ง" → สร้าง SHP-…-0044 + คนขับ/เบอร์/route/ประเภทรถ → gen DN-…-00119 (=PO-176); รอบ=รับเข้ารอบ→In-Route; PO→กำลังจัดส่ง (C9). **Edge:** ค้นด้วยชื่อบริษัท/เบอร์ contact → เลือกหลาย PO เข้ารอบเดียว → **1 DN ต่อ 1 PO** (หลาย DN ในรอบ). **Error:** เลือก PO ที่ยังผลิตอยู่ → เลือกไม่ได้ (เฉพาะ "พร้อมจัดส่ง") + แจ้งเหตุผล.
@@ -43,9 +50,10 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 ## 6. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required |
 |---|---|
-| ดูคิว/รอบ/DN | Shipping.**Read (R)** |
+| ดูคิว/รอบ/DN + **ดูประวัติ comment** | Shipping.**Read (R)** |
 | สร้างรอบ/DN (อ้าง PO หรือ SO) | Shipping.**Create (C)** |
 | อัปเดตผล DN (Delivered/Rejected/Postponed) | Shipping.**Update (U)** |
+| **แก้ไข comment รอบ/DN (แก้ในที่)** | Shipping.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | print DN | Shipping.**Read (R)** |
 
 ## 7. Validations
@@ -53,6 +61,7 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 - 1 DN = 1 PO/SO (ห้ามรวมหลาย order ใน DN เดียว).
 - print DN ต้องมี DN แล้ว.
 - เลื่อนส่ง = ระบุวันที่.
+- **★ comment รอบ/DN (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
 
 ## 8. Pagination / Search
 - คิว/รอบ/DN: 20/หน้า (G1) · ค้น PO/SO ID / ข้อมูลลูกค้า / เลข SHP/DN / ช่วงวันที่ (G2).
@@ -63,8 +72,10 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 
 ## 10. Cross-links
 - order พร้อมจัดส่ง (C9) → `po.md`/`so.md`. Delivered→เริ่มนับเครดิต (C10) → `invoice.md`. Reject (C11)/Postpone (C12) → continuity. FG dispatch FIFO → `stock.md`.
+- **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **Absorbed:** functional-spec `shipping.html` US-SHP-01..03 (9 AC) verbatim ในความหมาย.
 - **เพิ่ม (delta):** DN รองรับ **SO (Own-Brand)** ไม่ใช่แค่ PO — สอดคล้อง scope ใหม่ (sell-from-stock → Ready to Ship → Delivery).
+- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** ทั้งบน **Shipment (รอบ) และ DN** — ยึด `comment-convention.md` (§3 fields, §4b, §6 permission). คนละฟิลด์กับ postpone date/reject note.
 - **คงเดิม:** 2 ชั้น Shipment/DN · 1 DN=1 order · reconcile Partially/Closed · Reject/Postpone behavior.

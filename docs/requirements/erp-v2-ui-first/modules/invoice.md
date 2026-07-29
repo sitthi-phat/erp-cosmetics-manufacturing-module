@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs functional-spec `invoice.html` US-INV-01..04 + credit-term reconcile)
 Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/invoice-print.html`
-กฎอ้างอิง: entity-status-map §1.3 (billing) · `settings.md` (VAT effective date + ข้อมูลบริษัท) · `customer.md`/README §2.2 (credit term 30/60/90 default 60) · `shipping.md` (Delivered→เริ่มนับเครดิต) · deletion-policy §2.8 (void) · README §3
+กฎอ้างอิง: entity-status-map §1.3 (billing) · `settings.md` (VAT effective date + ข้อมูลบริษัท) · `customer.md`/README §2.2 (credit term 30/60/90 default 60) · `shipping.md` (Delivered→เริ่มนับเครดิต) · deletion-policy §2.8 (void) · README §3 · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-ออกใบแจ้งหนี้/ใบกำกับภาษีไทย ได้ตั้งแต่ **PO=Confirmed** (แต่ต้องแสดง stage จริงของ PO เสมอ). ใบกำกับภาษีครบฟิลด์ (logo, ผู้ออก+เลขภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/**VAT ตาม effective date ยึด invoice date**/grand total/**ตัวหนังสือไทย**/ลายเซ็น 2 ช่อง). **Overdue = ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย** (เครดิตระดับลูกค้า **30/60/90 default 60**, override รายใบได้). แก้/ยกเลิกแบบ **versioning + void (ไม่ hard delete, เลข gapless)**. เลข `INV-{YYYY}-{NNNNNN}`.
+ออกใบแจ้งหนี้/ใบกำกับภาษีไทย ได้ตั้งแต่ **PO=Confirmed** (แต่ต้องแสดง stage จริงของ PO เสมอ). ใบกำกับภาษีครบฟิลด์ (logo, ผู้ออก+เลขภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/**VAT ตาม effective date ยึด invoice date**/grand total/**ตัวหนังสือไทย**/ลายเซ็น 2 ช่อง). **Overdue = ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย** (เครดิตระดับลูกค้า **30/60/90 default 60**, override รายใบได้). แก้/ยกเลิกแบบ **versioning + void (ไม่ hard delete, เลข gapless)**. เลข `INV-{YYYY}-{NNNNNN}`. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 > **หมายเหตุ reconcile:** functional-spec เดิมยกตัวอย่างเครดิต "30 วัน"; แหล่งความจริงล่าสุด = **preset 30/60/90 default 60** (README §2.2 / `customer.md`). ใช้ค่านี้ — override รายใบยังทำได้เหมือนเดิม.
 
@@ -18,7 +18,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 | หน้าจอ | บทบาท |
 |---|---|
 | `invoices.html` | รายการ + overdue alert + PO stage |
-| `invoice-detail.html` | รายละเอียด + versioning + สถานะ PO |
+| `invoice-detail.html` | รายละเอียด + versioning + สถานะ PO + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
 | `invoice-print.html` | ใบกำกับภาษีไทยเต็มรูป (พิมพ์) |
 
 ## 3. Fields
@@ -34,9 +34,11 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 | grand total + ตัวหนังสือไทย | THB/text | computed | |
 | ข้อมูลผู้ออก (logo/ชื่อ/เลขภาษี 13 หลัก) | จาก settings | computed | บังคับครบก่อนพิมพ์ |
 | billing status | enum (§4) | mixed | |
+| **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · **ไม่พิมพ์ลงใบกำกับภาษี** (เป็นหมายเหตุภายใน) · คนละฟิลด์กับเหตุผล void |
 
 ## 4. Statuses / lifecycle (entity-status-map §1.3)
 รอชำระ (Invoiced) → ชำระแล้ว (Paid) / **เกินกำหนด (Overdue)**. **Overdue** = ส่งของแล้ว (PO Delivered) + เลยเครดิต + ยังไม่จ่าย (scheduler ประเมินรายวัน). void = ยกเลิกใบ (เลขคงอยู่ gapless, ออกใหม่แทนได้).
+> **★ comment แก้ได้ทุกสถานะรวม void** (metadata ภายใน ไม่กระทบ business state — comment-convention.md §3).
 
 ## 5. User Stories (absorbed) + AC สรุป
 - **US-INV-01 (Must) — ออกตั้งแต่ Confirmed + เห็น stage จริง:** PO-176 "ส่งถึงแล้ว" → gen INV-2026-000135 "รอชำระ"; ราง billing PO="วางบิลแล้ว"; แสดง fulfilment="ส่งถึงแล้ว"; เครดิตจากระดับลูกค้า (C13). **Edge:** PO เพิ่งยืนยัน (ยังไม่ส่ง) → ออกได้ + ป้ายเตือน "ยืนยันแล้ว (ยังไม่ส่ง)". **Error:** PO ร่าง/ยกเลิก → บล็อก "ออกใบแจ้งหนี้ได้ตั้งแต่ PO ยืนยันแล้วเท่านั้น".
@@ -44,12 +46,18 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 - **US-INV-03 (Should) — Overdue/ติดตามหนี้:** ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย → scheduler → billing "เกินกำหนด" + จำนวนวันค้าง; noti Finance+Sale (C14). **Edge:** ออกใบแล้วแต่ PO ยังไม่ "ส่งถึงแล้ว" → **ยังไม่ overdue** แม้เลยวันเครดิต. **Error:** บันทึกรับชำระเกินยอดใบ → error "ยอดรับชำระเกินยอดค้าง" — ไม่บันทึก.
 - **US-INV-04 (Should) — Versioning / void:** แก้ใบ → เก็บเวอร์ชันใหม่ + ประวัติ; เลขเดิมคงอยู่. **Edge:** void + เหตุผล → ใบ=void (ไม่ลบ), เลข gapless, ออกใหม่แทนได้ (deletion §2.8). **Error:** ไม่มีปุ่ม "ลบ" ถาวร — มีเฉพาะ void (เอกสารการค้าห้าม hard delete).
 
+## 5b. ★ Comment + change-history (ยึด `comment-convention.md`)
+- **1 ช่อง comment free-text ต่อ Invoice** (หมายเหตุภายใน) · แก้ในที่ (overwrite) จาก invoice-detail.
+- ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; invoice-detail แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"** (popover/timeline).
+- การแก้ = activity-log event + **โผล่บน trace** (entity=Invoice, field=`comment`). **ไม่แสดงบน invoice-print** (หมายเหตุภายใน). กติกาเต็ม = `comment-convention.md` (CC1–CC7) · คนละฟิลด์กับเหตุผล void.
+
 ## 6. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required |
 |---|---|
-| ดู list/detail/print | Invoice.**Read (R)** |
+| ดู list/detail/print + **ดูประวัติ comment** | Invoice.**Read (R)** |
 | ออกใบแจ้งหนี้ (อ้าง PO/SO) | Invoice.**Create (C)** |
 | บันทึกรับชำระ / แก้ (เวอร์ชันใหม่) | Invoice.**Update (U)** |
+| **แก้ไข comment (แก้ในที่)** | Invoice.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | void ใบ | Invoice.**Delete (D)** + เหตุผล |
 > ไม่มี hard delete.
 
@@ -60,6 +68,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 - รับชำระ ≤ ยอดค้าง.
 - พิมพ์ใบกำกับต้องมีข้อมูลผู้ออกครบ (จาก settings) + เลขภาษี 13 หลัก.
 - void ไม่ลบ (gapless).
+- **★ comment (หมายเหตุภายใน) = ไม่บังคับ** · แก้ได้ทุกสถานะรวม void · ทุกการแก้ถูก audit · ไม่พิมพ์ลงใบ (comment-convention.md CC2/CC3).
 
 ## 8. Pagination / Search
 - invoice list: 20/หน้า (G1) · filter สถานะ billing/overdue · ค้นเลข INV/ลูกค้า/ช่วงวันที่ (G2).
@@ -71,8 +80,10 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 
 ## 10. Cross-links
 - Delivered→เริ่มนับเครดิต (C10) → `shipping.md`. VAT/ข้อมูลบริษัท → `settings.md`. credit term → `customer.md`/README §2.2. billing state → entity-status-map §1.3.
+- **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **Absorbed:** functional-spec `invoice.html` US-INV-01..04 (12 AC) verbatim ในความหมาย.
 - **แก้ (reconcile, ไม่ re-open):** ตัวอย่างเครดิต "30 วัน" → ใช้ค่าจริงล่าสุด **preset 30/60/90 default 60** (README §2.2) — กติกา overdue/effective คงเดิม.
 - **เพิ่ม (delta):** ออก invoice อ้าง **SO (Own-Brand)** ได้ด้วย (ไม่ใช่แค่ PO).
+- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** บน invoice-detail (หมายเหตุภายใน, ไม่พิมพ์ลงใบกำกับ) — ยึด `comment-convention.md` (§3 field, §5b, §6 permission). คนละฟิลด์กับเหตุผล void.

@@ -1,10 +1,10 @@
 # Non-Functional Requirements (NFR) — ESSENCE Hub System
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE NFR SPEC** (consolidates + updates ทุก NFR ที่ล็อกแล้ว, adapt สู่ scope OEM/Own-Brand/Supply-Planning/Quotation)
-ที่มา (locked, ไม่ประดิษฐ์ตัวเลข): `brief.md` §5/§8 · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · architecture `index.html`/`db-schema.html` · `entity-status-map.md` §1.6 (negative stock) · `stock-reservation.md` (Option A) · `deletion-policy.md` · scope D1–D18 · README §2/§3 · **`supply-planning.md` §5.1 (Low alerting — J8)**
+ที่มา (locked, ไม่ประดิษฐ์ตัวเลข): `brief.md` §5/§8 · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · architecture `index.html`/`db-schema.html` · `entity-status-map.md` §1.6 (negative stock) · `stock-reservation.md` (Option A) · `deletion-policy.md` · scope D1–D18 · README §2/§3 · **`supply-planning.md` §5.1 (Low alerting — J8)** · **`comment-convention.md` (comment field = audited)**
 
 ## สรุปภาษาไทย
-รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว และอัปเดตให้ครอบ scope ใหม่ (OEM Quotation / Own-Brand SO / Supply Planning / FG). ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + เพิ่ม QT/SO/Supply-Planning เข้า load profile), **Auth/Session** (local+Google, 24h + เตะออก 06:00 ทุกวัน ไม่มีกะดึก, RBAC generic RUCDAA+Admin bit — D14), **Audit** (field-level, retention 1 ปี แล้ว manual purge; ทุก stock movement มี reason+source — D15; **ทุก action ของ QT ก็ถูก audit เต็ม**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL, backup รายวัน, storage abstraction GCS-ready), **Data/Format** (Asia/Bangkok, พ.ศ. display / UTC store, gapless numbering ต่อปี/เดือนทุกชนิดเอกสารรวม QT-/SO-/PRD/Batch/DN/INV, THB, VAT ตาม invoice date), **Scheduled Jobs J1–J8** (เพิ่ม **J8 = Supply Planning low-stock daily digest ~06:00**), **Notification outbox+read-bit** (รวม event ใหม่ **FG→Low** เชิงรุก), **global search**, **responsive**, **soft-delete + reference-guard**, **reliability/integrity**. ทุกข้อ derive จากคำตอบที่ปอนด์ล็อกแล้ว — ไม่มีการเดา.
+รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว และอัปเดตให้ครอบ scope ใหม่ (OEM Quotation / Own-Brand SO / Supply Planning / FG). ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + เพิ่ม QT/SO/Supply-Planning เข้า load profile), **Auth/Session** (local+Google, 24h + เตะออก 06:00 ทุกวัน ไม่มีกะดึก, RBAC generic RUCDAA+Admin bit — D14), **Audit** (field-level, retention 1 ปี แล้ว manual purge; ทุก stock movement มี reason+source — D15; **ทุก action ของ QT ก็ถูก audit เต็ม**; **★ ช่อง `comment` ทุก object ธุรกรรมก็เป็น field ที่ถูก audit เต็ม — แก้ทับได้แต่เก็บประวัติ**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL, backup รายวัน, storage abstraction GCS-ready), **Data/Format** (Asia/Bangkok, พ.ศ. display / UTC store, gapless numbering ต่อปี/เดือนทุกชนิดเอกสารรวม QT-/SO-/PRD/Batch/DN/INV, THB, VAT ตาม invoice date), **Scheduled Jobs J1–J8** (เพิ่ม **J8 = Supply Planning low-stock daily digest ~06:00**), **Notification outbox+read-bit** (รวม event ใหม่ **FG→Low** เชิงรุก), **global search**, **responsive**, **soft-delete + reference-guard**, **reliability/integrity**. ทุกข้อ derive จากคำตอบที่ปอนด์ล็อกแล้ว — ไม่มีการเดา.
 
 ---
 
@@ -31,8 +31,8 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 ## 3. Audit & Traceability (NFR ระดับระบบ)
 | # | NFR | รายละเอียด (locked) |
 |---|---|---|
-| AU1 | Field-level audit | ทุก action ทุก module เก็บ เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล (traceability.md) · **★ รวมทุก action ของ Quotation: create / send (ตั้ง sent-date) / edit→เวอร์ชันใหม่ / Convert-to-PO→ยืนยัน (Confirmed) / cancel (ทุกสถานะ, เหตุผลบังคับ)** — บันทึกครบ + แสดงบน trace (quotation.md §10, traceability.md §4) |
-| AU2 | Retention | **online 1 ปี** แล้ว **Super User manual purge/archive** — **ไม่มี auto-purge** (ADR-003) |
+| AU1 | Field-level audit | ทุก action ทุก module เก็บ เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล (traceability.md) · **★ รวมทุก action ของ Quotation: create / send (ตั้ง sent-date) / edit→เวอร์ชันใหม่ / Convert-to-PO→ยืนยัน (Confirmed) / cancel (ทุกสถานะ, เหตุผลบังคับ)** — บันทึกครบ + แสดงบน trace (quotation.md §10, traceability.md §4) · **★ รวมการแก้ช่อง `comment` ของทุก object ธุรกรรม (QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR): แก้ทับ (overwrite) แต่เก็บประวัติครบ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — เหตุผลไม่บังคับ** (comment-convention.md CC3/CC6, traceability.md §4) |
+| AU2 | Retention | **online 1 ปี** แล้ว **Super User manual purge/archive** — **ไม่มี auto-purge** (ADR-003) · **ประวัติ comment ลบไม่ได้** (อยู่ใน audit เดียวกัน — CC7) |
 | AU3 | Stock ledger | ทุก movement เป็น **append-only ledger + reason + source ref บังคับ** (D15) |
 | AU4 | GMP chain | Lot→Batch→line→PO(หรือ SO)→ลูกค้า→DN/INV · Batch `B-{PO}-{line}-{run}` · QT = head-of-chain สาย OEM, FG per-Batch (traceability.md) |
 | AU5 | Archive | text file · Super User เท่านั้น · ยืนยันก่อน export |
@@ -82,6 +82,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 - **Transactional outbox + read-bit ราย user** (J5/ADR-005): ผู้รับ = ผู้มี **Read ของ module ปลายทาง** (fan-out) · deep link + ack/read ราย user + mark all read + "ดูทั้งหมด" (list 20/หน้า) + empty state + badge cap "9+" (platform.md).
 - **Notification events รวม (ตัวอย่างหลัก):** cross-module status changes (PO Confirmed→Production, QC pass/fail, DN Delivered/Rejected/Postponed, PR auto, Overdue, Inactivity) **+ ★ FG→Low (Supply Planning, real-time + J8 digest, แนบ Suggested)** — event ใหม่ที่เพิ่มรอบนี้.
 - ตัวเลข noti = source เดียวกับ Home task inbox + Dashboard badge ของ user เดียวกัน.
+> **หมายเหตุ:** การแก้ `comment` = audit event (AU1) แต่ **ไม่ยิง notification** (เป็นการบันทึกภายใน ไม่ใช่ event ข้าม module) เว้นแต่ปอนด์ระบุเพิ่ม.
 
 ## 8. Global Search (NFR)
 - ค้นข้าม entity (PO/QT/SO/ลูกค้า/วัตถุดิบ-Lot/PR-GR/DN-Invoice) จาก header · **จำกัดตามสิทธิ์ Read** · **≥ 2 ตัวอักษร** · ผลจัดกลุ่ม + คลิก = deep link (platform.md US-PLT-04).
@@ -102,13 +103,14 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | R5 | Transactional outbox | noti event (รวม FG→Low) เขียนใน tx เดียวกับการเปลี่ยนสถานะ/ledger (กันหลุด) — J5/ADR-005 |
 
 ## 12. Open question (NFR)
-**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง Supply Planning proactive alert = **ปิดแล้ว (ปอนด์ตัดสิน real-time + J8 digest — §6.1)**. NFR อื่นทั้งหมด derive จากค่าที่ล็อกแล้ว.
+**ไม่มี open question ค้าง.** คำถามเดิมเรื่อง Supply Planning proactive alert = **ปิดแล้ว (ปอนด์ตัดสิน real-time + J8 digest — §6.1)**. NFR อื่นทั้งหมด derive จากค่าที่ล็อกแล้ว. (comment field audit = ใช้กลไก field-audit เดิม — ไม่มี NFR ใหม่ที่ต้องถาม.)
 
 ## 13. Cross-links
-- Auth/session/RBAC → `settings.md`/`platform.md` · Audit → `traceability.md` · ledger reason/source → `stock.md` §6 · negative stock/retro → `goods-receipt.md`/entity-status-map §1.6 · reservation → `so.md`/`po.md`/stock-reservation · soft-delete/void → `deletion-policy.md` · **Low alerting → `supply-planning.md` §5.1 + `platform.md` §7/§9** · **QT activity/audit → `quotation.md` §10 + `traceability.md` §4** · jobs → architecture scheduled-jobs (TL).
+- Auth/session/RBAC → `settings.md`/`platform.md` · Audit → `traceability.md` · ledger reason/source → `stock.md` §6 · negative stock/retro → `goods-receipt.md`/entity-status-map §1.6 · reservation → `so.md`/`po.md`/stock-reservation · soft-delete/void → `deletion-policy.md` · **Low alerting → `supply-planning.md` §5.1 + `platform.md` §7/§9** · **QT activity/audit → `quotation.md` §10 + `traceability.md` §4** · **comment field audit → `comment-convention.md` + `traceability.md` §4** · jobs → architecture scheduled-jobs (TL).
 
 ## 14. Module changelog
 - **Consolidated + updated:** NFR ทั้งหมดจาก brief/ADR/scheduled-jobs/entity-status-map/stock-reservation/deletion-policy → NFR module เดียว, adapt สู่ scope OEM/Own-Brand/Supply-Planning/Quotation.
 - **★ DECIDED (2026-07-29):** Supply Planning **proactive Low alerting** — real-time (transition non-Low→Low) + **J8 daily digest ~06:00** (แนบ Suggested, fan-out by Read Supply Planning). เพิ่ม J8 เข้า J-table (§6) + event FG→Low เข้า notification (§7) + reconcile §6.1 (จาก "on-read no job") + ปิด open question (§12).
 - **★ เพิ่ม (2026-07-29 — Quotation module review):** AU1 ระบุชัดว่า **ทุก action ของ Quotation (create/send+sent-date/edit→version/convert→Confirmed/cancel) ถูก audit + แสดง trace** (§3, cross-ref quotation.md §10 / traceability.md §4).
+- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** AU1/AU2 ระบุชัดว่า **การแก้ช่อง `comment` ของทุก object ธุรกรรมถูก field-audit เต็ม** (แก้ทับแต่เก็บประวัติ, เหตุผลไม่บังคับ, ลบประวัติไม่ได้, ไม่ยิง noti) — ใช้กลไก audit เดิม, ไม่มีตาราง/NFR ใหม่. cross-ref `comment-convention.md`.
 - **ไม่มีตัวเลขประดิษฐ์:** ค่าทั้งหมดอ้างแหล่ง locked.

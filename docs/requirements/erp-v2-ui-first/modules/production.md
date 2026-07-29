@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/production.html` · `mockups/qc.html`
-กฎอ้างอิง: entity-status-map §1.4/§1.5 (PRD/Batch) · stock-reservation (ตัดจริง Option A) · **D3** (RM-direct) · **D8 v2** (produce-to-stock PRD ไม่ผูกลูกค้า) · **D13** (actual qty + surplus) · **D15** (loss) · README §3
+กฎอ้างอิง: entity-status-map §1.4/§1.5 (PRD/Batch) · stock-reservation (ตัดจริง Option A) · **D3** (RM-direct) · **D8 v2** (produce-to-stock PRD ไม่ผูกลูกค้า) · **D13** (actual qty + surplus) · **D15** (loss) · README §3 · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-คิวงานผลิต + PRD/Batch. Queue "คิวงานผลิต" **ค้นด้วย customer / PO / Own-Brand production order เลข หรือช่วงวันที่สร้าง** (G2), 20/หน้า (G1), **filter PO(OEM) vs Own-Brand production order**. รองรับ PRD ผูกลูกค้า (OEM) + PRD **ไม่ผูกลูกค้า** (produce-to-stock, D8 v2). ฝ่ายผลิตกรอก **จำนวนผลิตจริง (actual qty)** (D13); ตอน "พร้อมส่ง" ส่วนเกิน → FG stock (remark). loss = เหตุผลบังคับ ไม่อนุมัติ (D15). ตัดจริงตอน "เริ่มผลิต" (Option A, FIFO, ติดลบได้).
+คิวงานผลิต + PRD/Batch. Queue "คิวงานผลิต" **ค้นด้วย customer / PO / Own-Brand production order เลข หรือช่วงวันที่สร้าง** (G2), 20/หน้า (G1), **filter PO(OEM) vs Own-Brand production order**. รองรับ PRD ผูกลูกค้า (OEM) + PRD **ไม่ผูกลูกค้า** (produce-to-stock, D8 v2). ฝ่ายผลิตกรอก **จำนวนผลิตจริง (actual qty)** (D13); ตอน "พร้อมส่ง" ส่วนเกิน → FG stock (remark). loss = เหตุผลบังคับ ไม่อนุมัติ (D15). ตัดจริงตอน "เริ่มผลิต" (Option A, FIFO, ติดลบได้). **★ ทั้ง PRD และ Batch มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -15,7 +15,7 @@ Mockups: `mockups/production.html` · `mockups/qc.html`
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `production.html` | คิวงานผลิต (รอรับงาน/รับงาน/กำลังผลิต/รอ QC/พร้อมส่งมอบ/Hold/Rework) + actual qty + surplus + loss |
+| `production.html` | คิวงานผลิต (รอรับงาน/รับงาน/กำลังผลิต/รอ QC/พร้อมส่งมอบ/Hold/Rework) + actual qty + surplus + loss + **comment ต่อ PRD และต่อ Batch (+ "ประวัติการแก้ไข comment")** |
 | `qc.html` | ตรวจ Batch (ผ่าน/ไม่ผ่าน+feedback) — รวม Batch produce-to-stock ไม่ผูกลูกค้า (U1) |
 
 ## 3. Entities / Fields
@@ -27,15 +27,24 @@ Mockups: `mockups/production.html` · `mockups/qc.html`
 | ส่วนเกิน (surplus) | units, computed | = actual − ordered (OEM) → FG stock ตอน "พร้อมส่ง" |
 | loss | units + เหตุผล(บังคับ) | ตัด on_hand, ไม่อนุมัติ (D15) |
 | แหล่งงาน | enum {PO(OEM), Own-Brand produce-to-stock} | ใช้ filter |
+| **★ หมายเหตุ PRD (comment)** | free-text (ช่องเดียว/PRD), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** |
+| **★ หมายเหตุ Batch (comment)** | free-text (ช่องเดียว/Batch run), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ + โผล่ trace — `comment-convention.md`** · คนละฟิลด์กับ QC feedback / loss reason / surplus remark |
 
 ## 4. Statuses / lifecycle (entity-status-map §1.4/§1.5)
 รอรับงาน → **รับงาน** (gen PRD) → **กำลังผลิต** (gen Batch + **ตัดจริง FIFO**, ติดลบได้ — Option A) → **รอ QC** → (QC ผ่าน) **พร้อมส่งมอบ** / (ไม่ผ่าน+feedback) **Rework** (gen Batch run+1) · **Hold** (บังคับ comment).
 - **produce-to-stock PRD (ไม่ผูกลูกค้า):** QC ผ่าน → **FG เข้าคลัง per-Batch** (D12) แทนการส่งลูกค้า.
 - **RM-direct (D3):** line วัตถุดิบตรงยังเดินผ่าน production flow (แปรรูปจริง optional).
+> **หมายเหตุ:** "Hold (บังคับ comment)" = เหตุผลของการเปลี่ยนสถานะ (คนละฟิลด์กับ comment หมายเหตุทั่วไป §3/§5b).
 
 ## 5. ★ Actual qty + Surplus (D13)
 - ระหว่างผลิต ฝ่ายผลิตกรอก **actual produced qty** (อาจ > สั่ง).
 - ตอน transition → **"พร้อมส่ง (Ready to Ship)"**: ระบบยืนยัน จำนวนสั่ง → ส่งลูกค้า · ส่วนเกิน → **เพิ่ม FG stock อัตโนมัติ (per-Batch, คง Batch identity ผูก OEM Batch/PRD/PO)** + **remark** ("สต็อกเพิ่มจากการผลิตเกิน") — **ไม่ใช่ approval gate**.
+
+## 5b. ★ Comment + change-history (PRD & Batch — ยึด `comment-convention.md`)
+- **PRD มีช่อง comment เดียว** และ **Batch (แต่ละ run) มีช่อง comment เดียว** — แต่ละ object แยกช่องกัน · แก้ในที่ (overwrite) จากหน้า production.
+- ทุกครั้งที่แก้ → เก็บ **ใคร/เมื่อ/ค่าเดิม→ค่าใหม่** ผ่าน field-audit เดิม; หน้า production/detail แสดง **ค่าปัจจุบัน + affordance "ประวัติการแก้ไข comment"** ต่อ PRD/Batch.
+- การแก้ = activity-log event + **โผล่บน trace** (entity=PRD หรือ Batch, field=`comment`) — ต่อจาก genealogy GMP เดิม. กติกาเต็ม = `comment-convention.md` (CC1–CC7).
+- **แยกจากฟิลด์เดิม:** QC feedback (qc.md), loss reason, surplus remark, Hold comment — คนละฟิลด์กับ comment หมายเหตุทั่วไปนี้.
 
 ## 6. ★ Production Queue — search/filter (delta)
 - "คิวงานผลิต" **ค้นด้วย:** เลข customer / PO / Own-Brand production order **หรือ** ช่วงวันที่สร้าง (G2).
@@ -45,10 +54,11 @@ Mockups: `mockups/production.html` · `mockups/qc.html`
 ## 7. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required (Production module) |
 |---|---|
-| ดูคิว/PRD/Batch | Production.**Read (R)** |
+| ดูคิว/PRD/Batch + **ดูประวัติ comment** | Production.**Read (R)** |
 | รับงาน (gen PRD) | Production.**Update (U)** (หรือ Create @ PRD) |
 | เริ่มผลิต (gen Batch + ตัด RM) | Production.**Update (U)** |
 | กรอก actual qty / กด "พร้อมส่ง" | Production.**Update (U)** |
+| **แก้ไข comment PRD/Batch (แก้ในที่)** | Production.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | บันทึก loss | Production.**Update (U)** + เหตุผล |
 | ผลิตซ้ำ (rework) | Production.**Update (U)** |
 | Hold | Production.**Update (U)** + comment |
@@ -60,12 +70,15 @@ Mockups: `mockups/production.html` · `mockups/qc.html`
 - loss = เหตุผลบังคับ.
 - QC ไม่ผ่าน = feedback บังคับ.
 - production ไม่มีปุ่มตัดสิน QC (เห็นผลเท่านั้น).
+- **★ comment PRD/Batch (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
 
 ## 9. Pagination / Search
 - คิวงานผลิต: 20/หน้า (G1) · search เลข (customer/PO/Own-Brand order) หรือช่วงวันที่ (G2) · filter OEM vs Own-Brand.
 
 ## 10. Cross-links
 - FG-in/surplus → `stock.md` · produce-to-stock ที่มา → `so.md` §6 + `supply-planning.md` (D8 v2) · reservation/consume → stock-reservation · QC Batch → qc (U1).
+- **Comment + change-history → `comment-convention.md` · field-audit/genealogy → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **เพิ่ม:** queue search (เลข/ช่วงวันที่) + filter OEM vs Own-Brand · (คงเดิม) actual qty/surplus (D13), PRD ไม่ผูกลูกค้า (D8 v2), loss (D15).
+- **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** ทั้งบน **PRD และ Batch (แต่ละ run)** — ยึด `comment-convention.md` (§3 fields, §5b, §7 permission). คนละฟิลด์กับ QC feedback/loss reason/surplus remark/Hold comment.
