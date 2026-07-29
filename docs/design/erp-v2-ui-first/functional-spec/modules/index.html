@@ -44,7 +44,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp"><span class="dot"></span> ภาพรวม &amp; การไหลของงาน</div>
 <div class="tocgrid">
-  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit 60) · global rules G1–G5 · changelog · old→new map · source-of-truth</div></a>
+  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit 60) · global rules G1–G9 · changelog · old→new map · source-of-truth</div></a>
   <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger</div></a>
   <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
   <a class="flow mod" href="../scenario-walkthrough.html"><div class="mt">Scenario Walkthrough 🆕</div><div class="md">S1–S5 + B1–B4 · เดินเรื่อง mock data + ledger before→after</div></a>
@@ -88,7 +88,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill · ใกล้หมด=Available</div></a>
   <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
   <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit (+FG→Low) · global search · shell</div></a>
-  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
+</div>
+
+<div class="grp"><span class="dot"></span> Global Rules &amp; Conventions (cross-cutting · governance)</div>
+<div class="refnote">📎 กติกากลาง cross-cutting — <b>นิยามครั้งเดียว</b> ที่นี่ แล้วอ้างจากทุก module ที่เกี่ยวข้อง (ไม่เขียนซ้ำ) · authority ให้ UX/UI ไป apply.</div>
+<div class="tocgrid">
+  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9)</div></a>
+  <a class="meta mod" href="comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
+  <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/SHP·Invoice·PRD·Batch)</div></a>
 </div>
 
 <!-- ===== (2) NON-FUNCTIONAL ===== -->
@@ -115,7 +122,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="ref mod" href="../list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ทำต่อ parallel)</footer>
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-29 · READY_FOR_UX_UI (mockups ทำต่อ parallel)</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>

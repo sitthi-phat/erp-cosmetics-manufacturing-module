@@ -22,6 +22,7 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
 .tocgrid a.flow{border-left-color:#B8873B}
 .tocgrid a.nfr{border-left-color:#7A4E9E}
 .tocgrid a.arch{border-left-color:var(--info)}
+.tocgrid a.meta{border-left-color:var(--info)}
 .tocgrid a.ref{border-left-color:#9AA5B1;background:#FbFcFd}
 .tocgrid a.legacy{border-left-color:#B9C0C8;background:#FAFAFB}
 .tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid a.ref .mt,.tocgrid a.legacy .mt{color:var(--text2)}
@@ -53,7 +54,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp"><span class="dot"></span> ภาพรวม &amp; การไหลของงาน (how it flows)</div>
 <div class="tocgrid">
-  <a class="mod" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">สารบัญฉบับจริง — ทุก module + flow + permission + NFR + deletion</div></a>
+  <a class="mod" href="modules/index.html"><div class="mt">📦 Per-Module Package (index)</div><div class="md">สารบัญฉบับจริง — ทุก module + flow + permission + convention + NFR + deletion</div></a>
   <a class="mod" href="modules/package-overview.html"><div class="mt">ภาพรวม + Source-of-Truth + Map</div><div class="md">file tree · D-rule spine · changelog · old→new map</div></a>
   <a class="mod flow" href="modules/oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger</div></a>
   <a class="mod flow" href="modules/ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
@@ -99,7 +100,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="mod" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill+deep link · ใกล้หมด=Available</div></a>
   <a class="mod" href="modules/settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
   <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit (+FG→Low) · global search · shell/นำทาง</div></a>
-  <a class="mod" href="modules/permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14)</div></a>
+</div>
+
+<div class="grp"><span class="dot"></span> Global Rules &amp; Conventions (cross-cutting · governance)</div>
+<div class="refnote">📎 กติกากลาง cross-cutting — นิยามครั้งเดียวในแพ็กเกจ แล้วอ้างจากทุก module ที่เกี่ยวข้อง (authority ให้ UX/UI ไป apply).</div>
+<div class="tocgrid">
+  <a class="mod meta" href="modules/permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9)</div></a>
+  <a class="mod meta" href="modules/comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
+  <a class="mod meta" href="modules/numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/SHP·Invoice·PRD·Batch)</div></a>
 </div>
 
 <!-- ========================= (2) NON-FUNCTIONAL ========================= -->
@@ -178,5 +186,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 </details>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า</footer>
 </div></body></html>

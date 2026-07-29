@@ -22,7 +22,9 @@
       'return.md': 'return.html', 'invoice.md': 'invoice.html',
       'traceability.md': 'traceability.html', 'settings.md': 'settings.html',
       'platform.md': 'platform.html', 'non-functional.md': 'non-functional.html',
-      'deletion-policy.md': 'deletion-policy.html'
+      'deletion-policy.md': 'deletion-policy.html',
+      'comment-convention.md': 'comment-convention.html',
+      'numbering-on-save.md': 'numbering-on-save.html'
     };
     if (mods[base] && !/requirements\//.test(u)) return mods[base] + hash;
     // PO principle docs already published as hub views
