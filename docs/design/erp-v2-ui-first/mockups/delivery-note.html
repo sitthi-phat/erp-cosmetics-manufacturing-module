@@ -162,5 +162,18 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div style="padding:12px 16px"><div class="notify" style="margin-bottom:8px">↩️ DN ที่ <b>ถูกปฏิเสธ</b> → ออเดอร์กลับเป็น "พร้อมจัดส่ง" + <b>raise Sale ให้ตัดสินใจ</b> (ติดต่อลูกค้า / ยกเลิก) (C10)</div>
     <div class="notify">📦 DN ที่ <b>เลื่อนส่ง</b> → ออเดอร์ = "พร้อมจัดส่ง" + flag Postpone(+วันที่) <b>ค้างในคิวจัดส่ง</b> ให้สร้างรอบใหม่ได้ (C10b)</div>
     <div class="notify" style="margin-top:8px">🧴 <b>DN อ้าง SO ได้</b> (Own-Brand ขายจากสต็อก) เช่นเดียวกับ PO — พิมพ์/reconcile/trace เหมือนกัน · DN-125 ในรอบนี้อ้าง <a href="so-detail.html">SO-202607-000030</a></div></div></div></div>
+  <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 · ต่อรอบจัดส่ง (DN/รอบ) ===== -->
+  <div class="card cmt"><div class="card-h"><h3>📝 หมายเหตุ (comment) — รอบจัดส่งนี้</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
+    <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">รถออกสาย 09:30 เพราะรอโหลด DN-125 — แจ้งลูกค้าทุกเจ้าแล้ว</textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <span class="tiny">แก้ล่าสุด: <b>ประเสริฐ</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
+      <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+    <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+      <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
+      <div style="font-size:13px">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · ประเสริฐ &nbsp;<span class="muted">เดิม:</span> "รถพร้อมออก 09:00" <span class="muted">→ ใหม่:</span> "รถออกสาย 09:30 เพราะรอโหลด DN-125 — แจ้งลูกค้าทุกเจ้าแล้ว"</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · ประเสริฐ &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รถพร้อมออก 09:00"</div></div>
+      <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+  </div></div>
   <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">DN-124 (PO-178) เลื่อนส่ง (Postponed)</div><div class="tm">08/07 12:10 · ประเสริฐ</div><div class="tc">ลูกค้าไม่พร้อมรับ ขอเลื่อน 10/07 · PO-178 flag Postpone ค้างคิว</div></div><div class="t"><div class="th">DN-123 (PO-175) ถูกปฏิเสธ (Rejected)</div><div class="tm">08/07 11:40 · ประเสริฐ</div><div class="tc">สินค้าผิดสเปก · PO-175 กลับ "พร้อมจัดส่ง" + raise Sale สมหญิง</div></div><div class="t"><div class="th">DN-122 (PO-174) ส่งถึงแล้ว</div><div class="tm">08/07 11:00 · ประเสริฐ</div><div class="tc">ลูกค้าเซ็นรับ · PO-174 = Delivered เริ่มนับเครดิต</div></div><div class="t"><div class="th">เริ่มรอบนำส่ง (รับจากผลิต→กำลังนำส่ง)</div><div class="tm">08/07 09:30 · ประเสริฐ</div><div class="tc">ออก DN 3 ใบ (1/ออเดอร์)</div></div></div></div></div>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

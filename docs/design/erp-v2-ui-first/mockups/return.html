@@ -164,4 +164,18 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div>นี่คือการปรับสต็อกโดยไม่มี PO (การ return) — ต้องมีเหตุผลเสมอ และบันทึก trace ผูก Lot↔Supplier (C13)</div></div>
     <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">ยืนยันคืน + ตัดสต็อก</button></div>
   </div></div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ </div>
+ <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 · distinct from mandatory return reason ===== -->
+ <div class="card cmt"><div class="card-h"><h3>📝 หมายเหตุ (comment)</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
+   <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">ล็อตนี้เคยมีปัญหากลิ่นมาก่อน — แจ้งจัดซื้อให้เฝ้าระวัง supplier รายนี้</textarea>
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+     <span class="tiny">แก้ล่าสุด: <b>วิภา</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับ "เหตุผลการคืน (บังคับ)" / QC / Hold</b></span>
+     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+   <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+     <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
+     <div style="font-size:13px">
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · วิภา &nbsp;<span class="muted">เดิม:</span> "คืนตามปกติ" <span class="muted">→ ใหม่:</span> "ล็อตนี้เคยมีปัญหากลิ่นมาก่อน — แจ้งจัดซื้อให้เฝ้าระวัง supplier รายนี้"</div>
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · วิภา &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "คืนตามปกติ"</div></div>
+     <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+ </div></div>
+</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

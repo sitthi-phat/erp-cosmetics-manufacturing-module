@@ -172,6 +172,19 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    </tbody></table></div><div style="padding:12px 16px;border-top:1px solid var(--border2)"><div class="tiny" style="margin-bottom:6px">⚖️ PO "พร้อมจัดส่ง" เมื่อ <b>ทั้ง 2 line ผ่าน QC</b> — ตอนนี้ผ่าน 0/2</div><div style="text-align:right"><span class="muted">รวม+VAT7% </span><b class="tnum" style="font-size:17px">95,230.00 บาท</b></div></div></div></div>
   <div class="card"><div class="card-h"><h3>ประวัติสถานะ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">ผลิตซ้ำ line #2 — gen แบตช์ B-…-181-2-2 (run 2)</div><div class="tm">08/07 11:10 · วิชัย (ผลิต)</div><div class="tc">รับงานกลับจาก QC ตีกลับ</div></div><div class="t"><div class="th">QC ตีกลับ line #2 (B-…-181-2-1)</div><div class="tm">08/07 10:40 · อรุณี (QC)</div><div class="tc">"เนื้อโฟมเป็นก้อน ปั๊มไม่ออก" — ตีกลับเฉพาะ line #2</div></div><div class="t"><div class="th">เริ่มผลิต line #1/#2 — gen แบตช์ run 1</div><div class="tm">06/07 08:40 · วิชัย (ผลิต)</div><div class="tc">B-…-181-1-1, B-…-181-2-1</div></div><div class="t"><div class="th">กำลังผลิต — สร้างงานผลิต PRD-202607-000091/088</div><div class="tm">04/07 09:12 · ระบบ (จาก PO ยืนยัน)</div></div><div class="t"><div class="th">ยืนยัน PO + จองสต็อก</div><div class="tm">02/07 15:40 · สมหญิง</div></div><div class="t"><div class="th">สร้าง PO (ร่าง)</div><div class="tm">02/07 15:20 · สมหญิง</div></div></div></div></div>
  </div>
+ <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 ===== -->
+ <div class="card cmt"><div class="card-h"><h3>📝 หมายเหตุ (comment)</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
+   <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">ลูกค้าขอเลื่อนวันรับของเป็นสัปดาห์หน้า — ประสานฝ่ายผลิตแล้ว</textarea>
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+     <span class="tiny">แก้ล่าสุด: <b>สมชาย</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
+     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+   <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+     <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
+     <div style="font-size:13px">
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · สมชาย &nbsp;<span class="muted">เดิม:</span> "รอยืนยันสเปกกับลูกค้า" <span class="muted">→ ใหม่:</span> "ลูกค้าขอเลื่อนวันรับของเป็นสัปดาห์หน้า — ประสานฝ่ายผลิตแล้ว"</div>
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · สมหญิง &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รอยืนยันสเปกกับลูกค้า"</div></div>
+     <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+ </div></div>
  <style>
  .modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
  .modal-bg.open{display:block}

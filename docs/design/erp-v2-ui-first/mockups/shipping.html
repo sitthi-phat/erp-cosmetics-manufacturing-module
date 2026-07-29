@@ -180,6 +180,19 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    </tbody></table></div>
    <div class="notify" style="margin-top:12px">รอบยัง <b>ส่งบางส่วน</b> เพราะ DN-123 ถูกปฏิเสธ (PO-175 กลับคิว + raise Sale สมหญิง) และ DN-124 เลื่อน (PO-178 flag Postpone 10/07 ค้างคิว) · ดูรายละเอียดที่ <a href="delivery-note.html">ใบจัดส่ง</a></div>
  </div></div>
+ <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 · ต่อรอบจัดส่ง (Shipment round) ===== -->
+ <div class="card cmt"><div class="card-h"><h3>📝 หมายเหตุ (comment) — รอบ SHP-20260708-0046</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
+   <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">เส้นทางฝั่งตะวันออกรถติดหนัก — เลื่อนคิว DN-124 ไปรอบถัดไป</textarea>
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+     <span class="tiny">แก้ล่าสุด: <b>ประเสริฐ</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
+     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+   <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+     <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
+     <div style="font-size:13px">
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · ประเสริฐ &nbsp;<span class="muted">เดิม:</span> "รอบปกติ 3 ออเดอร์" <span class="muted">→ ใหม่:</span> "เส้นทางฝั่งตะวันออกรถติดหนัก — เลื่อนคิว DN-124 ไปรอบถัดไป"</div>
+       <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · ประเสริฐ &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รอบปกติ 3 ออเดอร์"</div></div>
+     <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
+ </div></div>
  <script>function shipWay(el,i){document.querySelectorAll('.card .chip').forEach(function(c){c.classList.remove('on')});el.classList.add('on');document.getElementById('wayhint').innerHTML=i===0?'📋 <b>วิธี ①:</b> ติ๊กเลือก PO ที่ "พร้อมจัดส่ง" จากคิวด้านล่าง → กรอกข้อมูลรอบ (คนขับ/รถ/route) → กดสร้างรอบ · ระบบออก DN 1 ใบต่อออเดอร์อัตโนมัติ':'📦 <b>วิธี ②:</b> กรอกข้อมูลรอบ (คนขับ/รถ/route) สร้าง <b>รอบเปล่า</b> ก่อน → แล้วค่อย <b>search เพิ่ม PO</b> ที่พร้อมจัดส่งเข้ารอบทีหลัง (ใช้ช่องค้นด้านล่าง เพิ่มได้เรื่อย ๆ)';}</script>
  <div class="card"><div class="card-h"><h3>รอบจัดส่ง (Shipment) ล่าสุด</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลขรอบ</th><th class="num">จำนวน DN</th><th>คนขับ</th><th>สถานะรอบ</th><th></th></tr></thead><tbody>
     <tr><td class="strong">SHP-20260708-0046</td><td class="num tnum">3</td><td>ประเสริฐ · กระบะ</td><td><span class="badge b-warning">ส่งบางส่วน</span></td><td class="num"><a href="delivery-note.html">เปิด</a></td></tr>
