@@ -153,10 +153,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">ℹ️</span><div>สถานะ<b>ระดับรอบ</b> = สรุปจากทุกใบจัดส่ง (DN) ในรอบ — ตอนนี้ <b>ส่งบางส่วน</b> เพราะมี 1 ใบถูกเลื่อน · ใบจัดส่งแยก <b>1 ใบต่อออเดอร์</b> พิมพ์ให้ลูกค้าเซ็นทีละใบ</div></div></div></div>
  <div class="split">
   <div class="card"><div class="card-h"><h3>ใบจัดส่ง (DN) ในรอบนี้ — 1 ใบ/ออเดอร์</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><thead><tr><th>เลข DN</th><th>ออเดอร์ (PO/SO)</th><th>ลูกค้า</th><th>สถานะ DN</th><th></th></tr></thead><tbody>
-    <tr><td class="strong">DN-20260708-00122</td><td><a href="po-detail.html">PO-174</a></td><td>บิวตี้ เอเชีย</td><td><span class="badge b-success">ส่งถึงแล้ว 11:00</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾</button></td></tr>
-    <tr><td class="strong">DN-20260708-00123</td><td><a href="po-detail.html">PO-175</a></td><td>กลอรี่</td><td><span class="badge b-error">ถูกปฏิเสธ</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾</button></td></tr>
-    <tr><td class="strong">DN-20260708-00124</td><td><a href="po-detail.html">PO-178</a></td><td>บิวตี้ เอเชีย</td><td><span class="badge b-warning">เลื่อนส่ง 10/07</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾</button></td></tr>
-    <tr style="background:#F3FBF6"><td class="strong">DN-20260708-00125</td><td><a href="so-detail.html">SO-202607-000030</a> <span class="badge b-neutral plain" style="height:20px">Own-Brand</span></td><td>ร้านสวยใส</td><td><span class="badge b-success">ส่งถึงแล้ว 11:30</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾</button></td></tr>
+    <tr><td class="strong">DN-20260708-00122</td><td><a href="po-detail.html">PO-174</a></td><td>บิวตี้ เอเชีย</td><td><span class="badge b-success">ส่งถึงแล้ว 11:00</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾ (U)</button></td></tr>
+    <tr><td class="strong">DN-20260708-00123</td><td><a href="po-detail.html">PO-175</a></td><td>กลอรี่</td><td><span class="badge b-error">ถูกปฏิเสธ</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾ (U)</button></td></tr>
+    <tr><td class="strong">DN-20260708-00124</td><td><a href="po-detail.html">PO-178</a></td><td>บิวตี้ เอเชีย</td><td><span class="badge b-warning">เลื่อนส่ง 10/07</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾ (U)</button></td></tr>
+    <tr style="background:#F3FBF6"><td class="strong">DN-20260708-00125</td><td><a href="so-detail.html">SO-202607-000030</a> <span class="badge b-neutral plain" style="height:20px">Own-Brand</span></td><td>ร้านสวยใส</td><td><span class="badge b-success">ส่งถึงแล้ว 11:30</span></td><td class="num"><a href="#">🖨 พิมพ์</a> · <button class="btn-link">เปลี่ยน ▾ (U)</button></td></tr>
    </tbody></table></div>
    <div style="padding:10px 16px 0"><div class="pager"><span class="tiny">แสดง 1–4 จาก 4 ใบจัดส่งในรอบนี้</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">›</button></div></div></div>
    <div style="padding:12px 16px"><div class="notify" style="margin-bottom:8px">↩️ DN ที่ <b>ถูกปฏิเสธ</b> → ออเดอร์กลับเป็น "พร้อมจัดส่ง" + <b>raise Sale ให้ตัดสินใจ</b> (ติดต่อลูกค้า / ยกเลิก) (C10)</div>
@@ -167,7 +167,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">รถออกสาย 09:30 เพราะรอโหลด DN-125 — แจ้งลูกค้าทุกเจ้าแล้ว</textarea>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
       <span class="tiny">แก้ล่าสุด: <b>ประเสริฐ</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
-      <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+      <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ (U)</button></div>
     <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
       <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
       <div style="font-size:13px">

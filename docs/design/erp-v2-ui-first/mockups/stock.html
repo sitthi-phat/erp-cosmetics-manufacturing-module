@@ -171,7 +171,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">คลังสินค้า</div></div></div></div></div>
   <div class="content">
  <div class="pagehead"><div><h1>สต็อก (วัตถุดิบ + สินค้าสำเร็จรูป)</h1><div class="sub">แท็บ <b>RM</b> = วัตถุดิบ · แท็บ <b>FG</b> = สินค้าสำเร็จรูป (ราย Batch/FIFO) · คงเหลือเรียลไทม์ · เกณฑ์ "ใกล้หมด" <b>ไม่มีค่าเริ่มต้น</b> — Admin/คลังตั้งเองต่อวัตถุดิบจึงจะเริ่มเตือน · แยกราคาซื้อ/ขาย</div></div>
-  <div style="display:flex;gap:10px"><button class="btn">➕ เพิ่มวัตถุดิบใหม่</button><a class="btn btn-primary" href="goods-receipt.html">📦 รับเข้าคลัง (Goods Receipt)</a></div></div>
+  <div style="display:flex;gap:10px"><button class="btn">➕ เพิ่มวัตถุดิบใหม่ (C)</button><a class="btn btn-primary" href="goods-receipt.html">📦 รับเข้าคลัง (Goods Receipt) (C)</a></div></div>
  <div class="tabs"><a class="active" onclick="stkTab(0,this)">🗄️ วัตถุดิบ (RM)</a><a onclick="stkTab(1,this)">🧴 สินค้าสำเร็จรูป (FG) · ราย Batch</a><a onclick="stkTab(2,this)">📦 Good Receipt (RM) <span class="count">18</span></a></div>
  <script>function stkTab(i,el){document.querySelectorAll('.tabs a').forEach(function(a){a.classList.remove('active')});el.classList.add('active');document.getElementById('tab-rm').style.display=i===0?'block':'none';document.getElementById('tab-fg').style.display=i===1?'block':'none';document.getElementById('tab-gr').style.display=i===2?'block':'none';}</script>
  <div id="tab-rm"><div class="split">
@@ -181,7 +181,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="tblwrap"><table class="tbl" style="min-width:700px"><thead><tr><th>วัตถุดิบ</th><th>UOM</th><th class="num">คงคลัง</th><th class="num">จองแล้ว</th><th class="num">ใช้ได้</th><th class="num">ราคาซื้อ</th><th>สถานะ</th></tr></thead><tbody>
      <tr><td><b>วิตามินซี</b><div class="id">RM-014 · ตั้งเกณฑ์ไว้ 20%</div></td><td>กก.</td><td class="num tnum">12</td><td class="num tnum">4</td><td class="num strong tnum">8</td><td class="num tnum">850</td><td><span class="badge b-success">ปกติ</span></td></tr>
      <tr><td><b>วิตามินอี</b><div class="id">RM-016 · ตั้งเกณฑ์ไว้ 2 กก. · PR-000030 รับทราบแล้ว</div></td><td>กก.</td><td class="num tnum">0.2</td><td class="num tnum">0</td><td class="num strong tnum" style="color:var(--warning)">0.2</td><td class="num tnum">1,200</td><td><span class="badge b-warning">ใกล้หมด</span></td></tr>
-     <tr><td><b>กลีเซอรีน</b><div class="id">RM-005 · ยังไม่ตั้งเกณฑ์</div></td><td>กก.</td><td class="num tnum">66</td><td class="num tnum">20</td><td class="num strong tnum">46</td><td class="num tnum">45</td><td><span class="badge b-neutral">ยังไม่ตั้งเกณฑ์เตือน</span> <a href="#" class="tiny">ตั้งเกณฑ์</a></td></tr>
+     <tr><td><b>กลีเซอรีน</b><div class="id">RM-005 · ยังไม่ตั้งเกณฑ์</div></td><td>กก.</td><td class="num tnum">66</td><td class="num tnum">20</td><td class="num strong tnum">46</td><td class="num tnum">45</td><td><span class="badge b-neutral">ยังไม่ตั้งเกณฑ์เตือน</span> <a href="#" class="tiny">ตั้งเกณฑ์ (U)</a></td></tr>
      <tr style="background:#FFF7EE"><td><b>ไทเทเนียมไดออกไซด์</b><div class="id">RM-020 · ตั้งเกณฑ์ไว้ 5 กก. · จองโดย PO-185 (ครีมกันแดด) เกินของในคลัง</div></td><td>กก.</td><td class="num tnum">40</td><td class="num tnum" style="color:var(--warning)">55</td><td class="num strong tnum" style="color:var(--warning)">-15</td><td class="num tnum">320</td><td><span class="badge b-warning">จองเกิน (รอรับเข้า)</span></td></tr>
      <tr style="background:#FFF7F7"><td><b>แอลกอฮอล์</b><div class="id">RM-040 · ตั้งเกณฑ์ไว้ 30 ล. · ผลิต PO-185 ก่อนของเข้า → ตัด stock กายภาพติดลบ · L-TT-ALC-2607 (200 ล.) ยังรอ QC ใช้ไม่ได้</div></td><td>ลิตร</td><td class="num strong tnum" style="color:var(--error)">-30</td><td class="num tnum">0</td><td class="num strong tnum" style="color:var(--error)">-30</td><td class="num tnum">42</td><td><span class="badge b-error">ติดลบ (รอรับเข้า)</span></td></tr>
     </tbody></table></div>
@@ -200,7 +200,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="grid2"><div class="field"><label>ราคาซื้อเริ่มต้น</label><input class="inp tnum" placeholder="0.00"><div class="help">ตั้งเป็น 0 ได้</div></div>
      <div class="field"><label>ราคาขาย</label><input class="inp tnum" placeholder="0.00"><div class="help">ใช้เป็น default ตอนขายวัตถุดิบตรงใน PO · <b>ตั้งเป็น 0 ได้</b></div></div></div>
     <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>สร้างเป็น <b>master วัตถุดิบ</b> เท่านั้น — ยอด <b>คงคลังเริ่มต้น = 0</b> · ของจริงเข้าคลังผ่าน <a href="goods-receipt.html">รับเข้าคลัง (GR)</a> (gen Lot) เท่านั้น · การสร้างถูก <b>audit + ปรากฏบน trace</b> (entity=RM · action=create · ใคร/เมื่อ — D15)</div></div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกวัตถุดิบ</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกวัตถุดิบ (C)</button></div>
   </div></div>
  </div>
  <div class="split">
@@ -247,7 +247,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <div class="field"><label>จำนวนที่ตัด <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 2"></div>
       <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น ผงหกระหว่างชั่ง / เสียหายระหว่างจัดเก็บ"></textarea></div>
       <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>ตัด on_hand อย่างเดียว (−) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · ledger source = <code>warehouse</code> · <b>audit + trace</b> (D15) · <b>คืน supplier</b> ทำที่หน้า <a href="return.html">ใบคืนของ</a> (โผล่ ledger เป็น <code>return (−)</code>)</div></div>
-      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
+      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง) (U)</button></div>
     </div>
     <!-- Adjust (+) -->
     <div id="rm-adjust" style="display:none">
@@ -283,7 +283,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <div class="field"><label>จำนวนที่เพิ่ม <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 5"></div>
       <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น นับสต็อกพบเพิ่ม / ปรับยอดจากการตรวจนับ"></textarea></div>
       <div class="alert alert-ok" style="font-size:13px"><span class="ai">✅</span><div><b>เพิ่ม on_hand อย่างเดียว (+) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · <b>อ้าง Lot เสมอ</b> (เลือกล็อต หรือ FIFO) · ledger source = <code>warehouse-adjust</code> + Lot/FIFO · <b>audit + trace</b> (D15)</div></div>
-      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
+      <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง) (U)</button></div>
     </div>
   </div></div>
  </div>
@@ -328,7 +328,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <div class="grid2"><div class="field"><label>ประเภท</label><select class="sel"><option>loss (ตัด on_hand) −</option><option>ปรับยอด (adjust) ±</option></select></div><div class="field"><label>จำนวน <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 12"></div></div>
      <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น ขวดแตกระหว่างจัดเก็บ / นับสต็อกคลาดเคลื่อน"></textarea></div>
      <div class="alert alert-warn" style="font-size:13px"><span class="ai">⚠️</span><div><b>ปรับยอด FG (±) · loss (−) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · loss ตัด on_hand ราย Batch แบบ <b>FIFO</b> · ledger source = <code>warehouse</code> · <b>audit + trace</b> (D15) · แก้ได้ทั้งหน้านี้และหน้า <a href="production.html">การผลิต</a></div></div>
-     <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
+     <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง) (U)</button></div>
    </div></div>
   </div>
  </div>
@@ -354,11 +354,11 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <tr><td><b>GR-20260708-008</b></td><td class="tnum">08/07/2569</td><td>เคมีภัณฑ์ ไทยเทค</td>
        <td><div><b>L-TT-ALC-2607</b> · แอลกอฮอล์ <span class="badge b-warning" style="height:20px">รอตรวจ</span></div><div style="margin-top:4px"><b>L-TT-PHE-2607</b> · สารกันเสีย <span class="badge b-warning" style="height:20px">รอตรวจ</span></div></td>
        <td class="num tnum">200 ล.<br>50 กก.</td><td><span class="badge b-warning">QC ตรวจสอบ</span><div class="tiny" style="margin-top:3px">ยังไม่เข้าสต็อก</div></td>
-       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก (D)</button></div></td></tr>
      <tr><td><b>GR-20260708-007</b></td><td class="tnum">08/07/2569</td><td>กลีเซอรีนไทย</td>
        <td><div><b>L-GLY-2607</b> · กลีเซอรีน <span class="badge b-warning" style="height:20px">รอตรวจ</span></div><div style="margin-top:4px"><b>L-GLY-2608</b> · น้ำหอมกุหลาบ <span class="badge b-warning" style="height:20px">รอตรวจ</span></div></td>
        <td class="num tnum">6 กก.<br>3 กก.</td><td><span class="badge b-warning">QC ตรวจสอบ</span><div class="tiny" style="margin-top:3px">ยังไม่เข้าสต็อก</div></td>
-       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก (D)</button></div></td></tr>
      <tr style="background:#F3FBF6"><td><b>GR-20260705-006</b></td><td class="tnum">05/07/2569</td><td>กลีเซอรีนไทย</td>
        <td><div><b>L-GLY-2506</b> · กลีเซอรีน <span class="badge b-success" style="height:20px">ผ่าน</span></div></td>
        <td class="num tnum">60 กก.</td><td><span class="badge b-success">ผ่าน</span><div class="tiny" style="margin-top:3px">credit แล้ว · <code>GR (+60)</code></div></td>
@@ -366,7 +366,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <tr style="background:#FFF7F7"><td><b>GR-20260703-005</b></td><td class="tnum">03/07/2569</td><td>อโรมา เฮ้าส์</td>
        <td><div><b>L-ARM-FRG-2606</b> · น้ำหอม <span class="badge b-error" style="height:20px">ไม่ผ่าน</span> <span class="tiny">กลิ่นผิดเพี้ยน</span></div><div style="margin-top:4px"><b>L-ARM-OIL-2606</b> · น้ำมันหอมระเหย <span class="badge b-success" style="height:20px">ผ่าน</span></div></td>
        <td class="num tnum">5 กก.<br>10 กก.</td><td><span class="badge b-error">ไม่ผ่าน</span><div class="tiny" style="margin-top:3px">1/2 Lot ไม่ผ่าน</div></td>
-       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><button class="btn btn-sm" onclick="grResubmit(this)">↩️ ส่งกลับ QC</button><a class="btn btn-sm" href="return.html">ทำใบคืน</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><button class="btn btn-sm" onclick="grResubmit(this)">↩️ ส่งกลับ QC (U)</button><a class="btn btn-sm" href="return.html">ทำใบคืน (U)</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก (D)</button></div></td></tr>
      <tr style="opacity:.7"><td><b>GR-20260702-004</b></td><td class="tnum">02/07/2569</td><td>ไทยเทค</td>
        <td><div><b>L-TT-EMU-2606</b> · อิมัลซิไฟเออร์ <span class="badge b-neutral" style="height:20px">ยกเลิก</span></div></td>
        <td class="num tnum">30 กก.</td><td><span class="badge b-neutral">ยกเลิก</span><div class="tiny" style="margin-top:3px">เหตุ: รับผิดใบ</div></td>

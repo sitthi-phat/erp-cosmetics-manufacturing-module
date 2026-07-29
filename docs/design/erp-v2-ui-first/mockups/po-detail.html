@@ -149,7 +149,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย/CS</div></div></div></div></div>
   <div class="content">
  <div class="pagehead"><div><h1>PO-202607-000181</h1><div class="sub">บริษัท เดอร์มา แคร์ จำกัด · Sale: สมหญิง · เปิด 02/07/2569 · กำหนดส่ง 15/07/2569</div></div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="po-list.html">← ย้อนกลับ</a><button class="btn">✎ แก้ไข PO</button><button class="btn btn-danger" onclick="openCancel()">✕ ยกเลิก PO</button></div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="po-list.html">← ย้อนกลับ</a><button class="btn">✎ แก้ไข PO (U)</button><button class="btn btn-danger" onclick="openCancel()">✕ ยกเลิก PO (D)</button></div></div>
  <div class="alert alert-warn"><span class="ai">🔁</span><div><b>QC ตีกลับ line #2 (โฟมล้างหน้า)</b> run 1 — กำลังผลิตซ้ำ run 2 (B-PO-202607-000181-2-2) · <b>line #1 (โลชั่น) รอ QC</b> · PO จะเป็น <b>"พร้อมจัดส่ง"</b> เมื่อทั้ง 2 line ผ่าน QC (reconcile ที่ PO) · QC ตีกลับเฉพาะ line ที่ไม่ผ่าน — line ที่ผ่านไม่ผลิตซ้ำ</div></div>
  <div class="card"><div class="card-b">
    <div class="tiny" style="margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">ราง 1 · การผลิต/จัดส่ง</div>
@@ -163,7 +163,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div class="alert alert-info" style="font-size:12px;margin-bottom:12px;padding:10px 12px"><span class="ai">ℹ️</span><div>สถานะ ราง 1 (ผลิต/จัดส่ง) ส่วนใหญ่ <b>ขับเคลื่อนอัตโนมัติ</b> จากฝ่ายผลิต/QC/จัดส่ง — การเปลี่ยนด้วยมือ (force override) ทำได้เฉพาะสิทธิ์ <b>Admin</b> และต้องมีเหตุผล · ทุกครั้งบันทึก trace + แจ้งฝ่ายที่เกี่ยว</div></div>
    <div class="grid2"><div class="field"><label>เปลี่ยนสถานะเป็น</label><select class="sel"><option>— เลือกการเปลี่ยนสถานะ —</option><option>ยกเลิก PO (บังคับเหตุผล)</option><option>เปิดใหม่: Cancelled → ร่าง (คงเลขเดิม)</option><option>บังคับ: พร้อมจัดส่ง (Admin override)</option><option>บังคับ: กลับกำลังผลิต (Admin override)</option></select></div>
     <div class="field"><label>เหตุผล <span class="req">*</span></label><input class="inp" placeholder="ระบุเหตุผลของการเปลี่ยนสถานะ (บังคับ)"></div></div>
-   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-primary">บันทึกการเปลี่ยนสถานะ + แจ้งที่เกี่ยวข้อง</button></div>
+   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-primary">บันทึกการเปลี่ยนสถานะ + แจ้งที่เกี่ยวข้อง (D/A/Ad)</button></div>
  </div></div>
  <div class="split">
   <div class="card"><div class="card-h"><h3>รายการสินค้า (ราย line) + PRD/แบตช์/QC</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl" style="min-width:720px"><thead><tr><th>สินค้า (line)</th><th class="num">จำนวน</th><th class="num">ราคา/หน่วย</th><th>ใบสั่งผลิต (PRD)</th><th>แบตช์ล่าสุด</th><th>ผลิต / QC</th></tr></thead><tbody>
@@ -177,7 +177,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">ลูกค้าขอเลื่อนวันรับของเป็นสัปดาห์หน้า — ประสานฝ่ายผลิตแล้ว</textarea>
    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
      <span class="tiny">แก้ล่าสุด: <b>สมชาย</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
-     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ (U)</button></div>
    <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
      <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
      <div style="font-size:13px">
@@ -206,7 +206,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <label class="radiorow" onclick="this.parentNode.querySelectorAll('.radiorow').forEach(function(r){r.classList.remove('on')});this.classList.add('on')"><span class="rd"></span><div><b>ไม่คืน (Write-off ตัดเป็นของเสีย)</b><div class="tiny">ของถูกใช้/เสียหายแล้ว — ตัดทิ้ง ไม่บวกกลับ stock (บันทึก trace)</div></div></label>
      <div class="field" style="margin-top:8px"><label>เหตุผลการยกเลิก <span class="req">*</span> <span class="tiny">(บังคับ)</span></label><textarea class="inp" rows="2" placeholder="เช่น ลูกค้ายกเลิกออเดอร์ / สั่งผิดรุ่น"></textarea></div>
      <div class="notify" style="margin-bottom:12px">🔓 line ที่ยังไม่ผลิตของ PO นี้จะ <b>คืนของที่จอง</b> อัตโนมัติ → ยอด "ใช้ได้" กลับคืน · แจ้ง Stock + ฝ่ายผลิต · PO ที่ยกเลิกแล้ว <b>เปิดใหม่เป็น "ร่าง" คงเลขเดิม</b> ได้</div>
-     <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" onclick="closeCancel()">ไม่ยกเลิก</button><button class="btn btn-danger">ยืนยันยกเลิก PO</button></div>
+     <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" onclick="closeCancel()">ไม่ยกเลิก</button><button class="btn btn-danger">ยืนยันยกเลิก PO (D)</button></div>
    </div>
  </div></div>
  <script>function openCancel(){document.getElementById('cancelModal').classList.add('open');}function closeCancel(){document.getElementById('cancelModal').classList.remove('open');}</script>

@@ -156,9 +156,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย OEM</div></div></div></div></div>
   <div class="content">
 
- <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-neutral" id="qtBadge">ร่าง (Draft)</span></h1><div class="sub" id="qtSub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><a class="btn" href="quotation-print.html">🖨 พิมพ์ / ส่งให้ลูกค้า (print-ready)</a>
-   <button class="btn btn-primary" id="topConvert" onclick="openConvert()">➡️ Convert to PO</button>
-   <a class="btn btn-primary" id="topGoPO" href="po-create.html" style="display:none">📄 ไปสร้าง PO ด้วยข้อมูลนี้</a></div></div>
+ <div class="pagehead"><div><h1>QT-202607-000010 <span class="tiny" style="font-size:14px">v2</span> &nbsp;<span class="badge b-neutral" id="qtBadge">ร่าง (Draft)</span></h1><div class="sub" id="qtSub">กลอรี่ คอสเมติก · Sale สมหญิง · OEM · เสนอราคา 26/07/2569</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="quotation-list.html">← ย้อนกลับ</a><a class="btn" href="quotation-print.html">🖨 พิมพ์ / ส่งให้ลูกค้า (print-ready) (U)</a>
+   <button class="btn btn-primary" id="topConvert" onclick="openConvert()">➡️ Convert to PO (U+C)</button>
+   <a class="btn btn-primary" id="topGoPO" href="po-create.html" style="display:none">📄 ไปสร้าง PO ด้วยข้อมูลนี้ (C)</a></div></div>
  <div class="alert alert-info" id="sentBox"><span class="ai">📤</span><div><b>ส่งใบเสนอราคาให้ลูกค้าได้ทันทีจากปุ่ม "🖨 พิมพ์ / ส่งให้ลูกค้า" (print-ready)</b> — การส่งเป็นการพิมพ์/แชร์ ไม่เปลี่ยนสถานะ · ถ้าลูกค้าตกลง กด <b>"Convert to PO"</b> → ระบบถามยืนยัน (สถานะจะเปลี่ยนเป็น <b>ยืนยัน/Confirmed</b>) แล้วให้เลือก "สร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง" · ถ้าลูกค้าไม่ตกลง กด <b>ปฏิเสธ</b> (จบสาย)</div></div>
  <!-- Q5: persistent banner — Confirmed with no PO yet (revealed after Convert-confirm choice ข) -->
  <div class="alert alert-ok" id="confirmedBanner" style="border-color:#B7E0C6;display:none"><span class="ai">✅</span><div><b>ใบเสนอราคานี้ได้รับการยืนยันแล้ว (Confirmed).</b> ยังไม่มี PO ผูกกับใบนี้ — <a href="po-create.html"><b>ไปสร้าง PO ด้วยข้อมูลนี้</b></a> เพื่อออก PO เลขใหม่ (prefill line/จำนวน/ราคา + เก็บลิงก์ QT↔PO) · <b>แบนเนอร์นี้แสดงถาวรจนกว่าจะมี PO</b> — เมื่อมี PO แล้วจะเปลี่ยนเป็นลิงก์ 🔗 PO-… · QT ที่ยืนยันแล้ว = immutable</div></div>
@@ -178,7 +178,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">ลูกค้าขอปรับกล่องบรรจุเป็นกล่องกระดาษรีไซเคิล — แจ้งฝ่ายผลิตแล้ว</textarea>
      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
        <span class="tiny">แก้ล่าสุด: <b>สมชาย</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
-       <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+       <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ (U)</button></div>
      <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
        <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
        <div style="font-size:13px">
@@ -189,14 +189,14 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>การดำเนินการ</h3></div><div class="card-b">
-     <button class="btn btn-primary" id="actConvert" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openConvert()">➡️ Convert to PO (ออก PO เลขใหม่)</button>
-     <a class="btn btn-primary" id="actGoPO" href="po-create.html" style="width:100%;justify-content:center;margin-bottom:10px;display:none">📄 ไปสร้าง PO ด้วยข้อมูลนี้ (prefill)</a>
+     <button class="btn btn-primary" id="actConvert" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openConvert()">➡️ Convert to PO (ออก PO เลขใหม่) (U+C)</button>
+     <a class="btn btn-primary" id="actGoPO" href="po-create.html" style="width:100%;justify-content:center;margin-bottom:10px;display:none">📄 ไปสร้าง PO ด้วยข้อมูลนี้ (prefill) (C)</a>
      <div class="notify" style="margin-bottom:10px">กด Convert → <b>popup ยืนยัน</b>: "สถานะจะเปลี่ยนเป็น <b>ยืนยัน (Confirmed)</b>" → ตั้ง Confirmed <b>ทันที (immutable)</b> ไม่ว่าจะสร้าง PO ต่อหรือไม่ → เลือก <b>"สร้าง PO เดี๋ยวนี้ (prefill)"</b> หรือ <b>"ไว้ทีหลัง"</b></div>
      <div class="notify" style="margin-bottom:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">🚫 <b>ถ้าลูกค้ากลายเป็น ปิดใช้งาน/บัญชีดำ (Disabled/Blacklist) ภายหลัง → Convert to PO / สร้าง PO ถูกบล็อก</b> (hard block · customer.md §4.2) พร้อมข้อความ "ลูกค้าสถานะ Disabled/Blacklist — เปิดใบสั่งซื้อไม่ได้"</div>
-     <div style="display:flex;gap:8px"><a class="btn btn-sm" id="actEdit" href="quotation-create.html" style="flex:1;justify-content:center">✎ แก้ (เวอร์ชันใหม่)</a><button class="btn btn-sm btn-danger" id="actReject" style="flex:1;justify-content:center">ปฏิเสธ</button></div>
+     <div style="display:flex;gap:8px"><a class="btn btn-sm" id="actEdit" href="quotation-create.html" style="flex:1;justify-content:center">✎ แก้ (เวอร์ชันใหม่) (U)</a><button class="btn btn-sm btn-danger" id="actReject" style="flex:1;justify-content:center">ปฏิเสธ (U)</button></div>
      <div class="notify" style="margin-top:10px">✎ <b>แก้ = เปิดฟอร์มเวอร์ชันใหม่</b> (เหมือนหน้าสร้าง) — มี <b>"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"</b> ครบเช่นเดียวกับตอนสร้าง (Q3) · Confirmed = immutable แก้ไม่ได้</div>
      <div style="border-top:1px dashed var(--border);margin:14px 0 12px"></div>
-     <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="openCancel()">🗑 ยกเลิกใบเสนอราคา</button>
+     <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="openCancel()">🗑 ยกเลิกใบเสนอราคา (D)</button>
      <div class="notify" style="margin-top:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">ยกเลิกได้ <b>ทุกสถานะ</b> (ร่าง/ยืนยัน/ปฏิเสธ) · ต้องระบุ <b>เหตุผล (บังคับ)</b> → บันทึกลง activity-log + ตั้ง QT = <b>ยกเลิก</b> · <b>เลข QT คงอยู่ (gapless · ไม่ลบจริง)</b> · <b>ไม่กระทบ PO</b> ที่เคยแปลงไป (loose reference — ไม่มี cascade)</div>
      <div class="notify" style="margin-top:12px" id="poLink">🔗 <b>PO ที่แปลง:</b> ยังไม่มี PO — ใช้ปุ่มด้านบนเพื่อออก PO เลขใหม่ แล้วลิงก์จะปรากฏที่นี่ · ตัวอย่างที่แปลงแล้ว: <a href="po-detail.html">QT-000008 → PO-202607-000181</a></div>
    </div></div>
@@ -216,8 +216,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="cmodal-b">
     <div class="alert alert-ok" style="font-size:13px;margin-bottom:14px"><span class="ai">✅</span><div><b>สถานะจะเปลี่ยนเป็น "ยืนยัน (Confirmed)" ทันที</b> — ทั้งสองทางเลือกด้านล่างตั้ง QT = Confirmed เหมือนกัน (QT จะ <b>immutable</b> แก้ไม่ได้อีก) · การไปสร้าง PO จริงเป็นอิสระจากการเปลี่ยนสถานะ</div></div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-primary" style="justify-content:flex-start;height:auto;padding:14px 16px;text-align:left" onclick="confirmQT(true)"><div><b>ยืนยัน + สร้าง PO เดี๋ยวนี้ (prefill)</b><div class="tiny" style="color:#D8F0EE;font-weight:400;margin-top:2px">ตั้ง Confirmed แล้วเปิดหน้า po-create ที่ prefill line/จำนวน/ราคา จากใบนี้</div></div></button>
-      <button class="btn" style="justify-content:flex-start;height:auto;padding:14px 16px;text-align:left" onclick="confirmQT(false)"><div><b>ยืนยันเฉย ๆ (ไว้สร้าง PO ทีหลัง)</b><div class="tiny" style="font-weight:400;margin-top:2px">ตั้ง Confirmed แล้วกลับหน้านี้ · แบนเนอร์ "ไปสร้าง PO ด้วยข้อมูลนี้" แสดงถาวรจนกว่าจะมี PO</div></div></button>
+      <button class="btn btn-primary" style="justify-content:flex-start;height:auto;padding:14px 16px;text-align:left" onclick="confirmQT(true)"><div><b>ยืนยัน + สร้าง PO เดี๋ยวนี้ (prefill) (U+C)</b><div class="tiny" style="color:#D8F0EE;font-weight:400;margin-top:2px">ตั้ง Confirmed แล้วเปิดหน้า po-create ที่ prefill line/จำนวน/ราคา จากใบนี้</div></div></button>
+      <button class="btn" style="justify-content:flex-start;height:auto;padding:14px 16px;text-align:left" onclick="confirmQT(false)"><div><b>ยืนยันเฉย ๆ (ไว้สร้าง PO ทีหลัง) (U)</b><div class="tiny" style="font-weight:400;margin-top:2px">ตั้ง Confirmed แล้วกลับหน้านี้ · แบนเนอร์ "ไปสร้าง PO ด้วยข้อมูลนี้" แสดงถาวรจนกว่าจะมี PO</div></div></button>
     </div>
   </div>
   <div class="cmodal-f"><button class="btn btn-ghost" onclick="closeConvert()">ยกเลิก</button></div>
@@ -228,7 +228,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="field"><label>เหตุผลการยกเลิก <span class="req">*</span></label><textarea class="inp" rows="3" placeholder="ระบุเหตุผล เช่น ลูกค้ายกเลิกโครงการ / เสนอราคาผิดสเปก / ทำใบใหม่แทน…"></textarea><div class="help">บังคับกรอก — บันทึกลง activity-log (ใคร/เมื่อ/ทำไม)</div></div>
     <div class="alert alert-info" style="font-size:13px;margin-bottom:0"><span class="ai">🔗</span><div><b>ไม่กระทบ PO ที่แปลงไปแล้ว:</b> PO อ้าง QT แบบ loose reference เท่านั้น → <b>ไม่มี cascade</b> · PO ที่เปิดจากใบนี้เดินสายต่อได้ตามปกติ</div></div>
   </div>
-  <div class="cmodal-f"><button class="btn" onclick="closeCancel()">ปิด</button><button class="btn btn-danger" onclick="closeCancel()">🗑 ยืนยันยกเลิก + บันทึกเหตุผล</button></div>
+  <div class="cmodal-f"><button class="btn" onclick="closeCancel()">ปิด</button><button class="btn btn-danger" onclick="closeCancel()">🗑 ยืนยันยกเลิก + บันทึกเหตุผล (D)</button></div>
 </div></div>
 <script>
 function openCancel(){document.getElementById('cancelModal').classList.add('open')}

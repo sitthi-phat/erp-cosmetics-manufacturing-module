@@ -181,7 +181,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     </div>
     <!-- G6 comment IN CONTEXT of this Lot record (distinct from pass/fail reason) -->
     <div class="field" style="border-top:1px dashed var(--border);padding-top:14px"><label>📝 หมายเหตุ (comment) <span class="tiny" style="font-weight:400">— ของ Lot L-TT-ALC-2607 · คนละช่องกับ "เหตุผลที่ไม่ผ่าน"</span></label><textarea class="inp" rows="2" placeholder="ค่า pH, ความเข้มข้น, เลขเครื่องวัด ฯลฯ (แก้ทับได้ · เก็บประวัติทุกครั้ง)"></textarea><div class="tiny" style="margin-top:5px">เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <a href="trace.html">ประวัติการแก้ไข</a> (CC7 · ลบไม่ได้)</div></div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจรับ</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจรับ (U)</button></div>
   </div></div>
  </div>
  <div id="qc-batch" style="display:none">
@@ -215,10 +215,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <!-- QC-3: G6 comment IN CONTEXT of THIS Batch (distinct from feedback) -->
     <div class="cmt" style="border-top:1px dashed var(--border);padding-top:14px;margin-top:4px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><label style="font-size:13px;font-weight:600">📝 หมายเหตุ (comment) — <b>ของแบตช์ B-PO-…181-1-1</b></label><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติ</button></div>
       <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุของแบตช์นี้… (ช่องเดียว · แก้ทับได้ · เก็บประวัติ · คนละช่องกับ Feedback QC)">ตรวจเพิ่มค่าความหนืด (viscosity) ตามคำขอลูกค้า — บันทึกค่าไว้ในแฟ้มแล้ว</textarea>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px"><span class="tiny">แก้ล่าสุด: <b>อรุณี</b> · 28/07 10:20 · <b>ผูกกับแบตช์นี้โดยตรง</b> (ไม่ลอยแยก)</span><button class="btn btn-sm btn-primary">💾 บันทึก</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px"><span class="tiny">แก้ล่าสุด: <b>อรุณี</b> · 28/07 10:20 · <b>ผูกกับแบตช์นี้โดยตรง</b> (ไม่ลอยแยก)</span><button class="btn btn-sm btn-primary">💾 บันทึก (U)</button></div>
       <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px"><div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า</div><div style="font-size:13px"><div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 10:20</b> · อรุณี &nbsp;<span class="muted">เดิม:</span> "ตรวจตามมาตรฐาน" <span class="muted">→ ใหม่:</span> "ตรวจเพิ่มค่าความหนืด …"</div><div style="padding:8px 0"><b>27/07 16:05</b> · อรุณี &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "ตรวจตามมาตรฐาน"</div></div><div class="tiny" style="margin-top:8px">audit — <b>ลบไม่ได้ (CC7)</b> · โผล่ <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
     </div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจแบตช์นี้</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจแบตช์นี้ (U)</button></div>
   </div></div>
   </div>
 
@@ -246,10 +246,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <!-- QC-3: G6 comment IN CONTEXT of THIS Batch -->
     <div class="cmt" style="border-top:1px dashed var(--border);padding-top:14px;margin-top:4px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><label style="font-size:13px;font-weight:600">📝 หมายเหตุ (comment) — <b>ของแบตช์ B-PRD-…104-1</b></label><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติ</button></div>
       <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุของแบตช์นี้… (ช่องเดียว · แก้ทับได้ · เก็บประวัติ · คนละช่องกับ Feedback QC)"></textarea>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px"><span class="tiny"><b>ผูกกับแบตช์นี้โดยตรง</b> · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ</span><button class="btn btn-sm btn-primary">💾 บันทึก</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px"><span class="tiny"><b>ผูกกับแบตช์นี้โดยตรง</b> · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ</span><button class="btn btn-sm btn-primary">💾 บันทึก (U)</button></div>
       <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px"><div class="tiny">ยังไม่มีประวัติการแก้ไขหมายเหตุสำหรับแบตช์นี้ · เมื่อแก้จะบันทึก audit (CC7 · ลบไม่ได้) + โผล่ <a href="trace.html">สืบย้อนกลับ</a></div></div>
     </div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจแบตช์นี้</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary">บันทึกผลตรวจแบตช์นี้ (U)</button></div>
   </div></div>
   </div>
  </div>

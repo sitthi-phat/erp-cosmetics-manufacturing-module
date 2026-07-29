@@ -179,7 +179,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="alert alert-ok" style="margin-top:14px;font-size:13px"><span class="ai">✓</span><div><b>1 ใบรับอ้างได้หลาย PR / บรรทัดที่ไม่มี PR ก็ได้:</b> บรรทัดแอลกอฮอล์อ้าง <b>PR-000028</b> (แอลกอฮอล์ 250 ล.) · บรรทัดสารกันเสียไม่อ้าง PR (สั่งเพิ่มเอง) — <b>เมื่อ QC ตรวจรับ "ผ่าน" ครบจำนวน</b> ระบบปิด PR เป็น <b>"ของเข้าครบ"</b> อัตโนมัติ พร้อมผูก Lot ที่รับ (สถานะ PR คิดจากปริมาณที่ QC ผ่าน ไม่ใช่ปริมาณที่บันทึกรับ · C4)</div></div>
     <div class="alert alert-warn" style="margin-top:10px;font-size:13px"><span class="ai">📋</span><div><b>รับไม่ครบ:</b> PR-000028 ขอ 250 ล. รับจริง <b>200 ล. (ขาด 50)</b> → หลัง QC ผ่าน PR-000028 = <b>"รับบางส่วน"</b> · ระบบเปิด <b>กล่องยืนยัน "สร้าง PR ใหม่ (PR-000032) สำหรับแอลกอฮอล์ 50 ล. ที่ขาด?"</b> ให้กดยืนยันก่อน (ไม่สร้างเงียบ ๆ) — ตามกติกาที่ปอนด์กำหนด</div></div>
     <div class="alert alert-warn" style="margin-top:10px;font-size:13px"><span class="ai">⏳</span><div><b>ยอดติดลบจะถูกชดเชย "เมื่อ QC ผ่าน" — ยังไม่ชดเชยตอนนี้:</b> แอลกอฮอล์ในคลังติดลบ <b>−30 ล.</b> (ผลิต PO-185 ก่อนของเข้า) · การรับครั้งนี้ <b>ยังไม่เข้าสต็อก</b> จนกว่า QC ตรวจรับ Lot <b>L-TT-ALC-2607</b> "ผ่าน" → ตอน QC ผ่านระบบจึง <b>บวกกลับชดเชย 30 ล. + ผูก retro-FIFO + นำส่วนที่เหลือ 170 ล. เข้า stock</b> · <b>ถ้า QC ไม่ผ่าน = ไม่เข้าสต็อก ยอดคง −30</b> (รอ Lot ที่ผ่านใบถัดไปมาชดเชย) · <a href="qc.html">ไปตรวจที่หน้า QC ›</a></div></div>
-    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary" onclick="openSave()">บันทึกรับเข้า → สร้าง GR + Lot รอตรวจ (ยังไม่เข้าสต็อก)</button></div>
+    <div class="footerbar"><button class="btn">ยกเลิก</button><button class="btn btn-primary" onclick="openSave()">บันทึกรับเข้า → สร้าง GR + Lot รอตรวจ (ยังไม่เข้าสต็อก) (C)</button></div>
   </div></div>
   <div>
    <div class="card"><div class="card-h"><h3>รับเข้าล่าสุด</h3></div><div class="card-b" style="padding:0"><div class="tblwrap"><table class="tbl"><tbody>
@@ -195,7 +195,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">กล่องบรรจุกลีเซอรีนมีรอยบุบเล็กน้อย — ของภายในปกติ ถ่ายรูปเก็บไว้แล้ว</textarea>
    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
      <span class="tiny">แก้ล่าสุด: <b>วิภา</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold</b></span>
-     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
+     <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ (U)</button></div>
    <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
      <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
      <div style="font-size:13px">

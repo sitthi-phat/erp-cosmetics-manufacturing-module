@@ -237,7 +237,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     </div>
     <div class="tiny" style="color:var(--text2)">TYPE = OEM → การ์ดนี้ไม่บังคับ (ซ่อน/ปล่อยว่างได้) เพราะผลิตตามสั่ง ไม่วางแผนสต็อก</div>
   </div></div>
-  <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="bom.html">ยกเลิก</a><button class="btn btn-primary">บันทึกสูตรใหม่</button></div>
+  <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="bom.html">ยกเลิก</a><button class="btn btn-primary">บันทึกสูตรใหม่ (C)</button></div>
  <script>
  function bomType(t,el){var chips=el.parentNode.querySelectorAll('.chip');chips.forEach(function(c){c.classList.remove('on')});el.classList.add('on');document.getElementById('planningCard').style.display=(t==='fg')?'':'none';}
  var bomUsedCodes=['FG-101','FG-118','FG-150','FG-202','FG-204','RM-005'];
