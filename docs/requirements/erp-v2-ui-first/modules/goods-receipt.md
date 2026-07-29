@@ -2,21 +2,21 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs GR-specific parts of functional-spec `stock.html` US-STK-02/US-STK-03 + PR auto-close)
 Mockups: `mockups/goods-receipt.html` (+ `mockups/stock.html` for balances)
-กฎอ้างอิง: `stock.md` (3 ยอด, ledger D15) · entity-status-map §1.6 (negative on_hand, FIFO retro-link) · `pr.md` (auto-close/partial) · `return.md` (RM return link) · README §3 · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: `stock.md` (3 ยอด, ledger D15, **RM master §3b**) · entity-status-map §1.6 (negative on_hand, FIFO retro-link) · `pr.md` (auto-close/partial) · `return.md` (RM return link) · README §3 · **`comment-convention.md` (comment + change-history)**
 
 ## สรุปภาษาไทย
-รับเข้าวัตถุดิบ (RM) แบบ **multi-line ต่อ 1 supplier ต่อใบ** → gen Lot รายบรรทัด (สถานะ "รอตรวจรับ") → **บวก on_hand/Available (ไม่แตะ Reserved)** + `GR (+)` ledger. อ้าง PR ได้: รับครบ → **PR "ของเข้าครบ" อัตโนมัติ**; รับบางส่วน → **PR "รับบางส่วน" + เสนอสร้าง PR ใหม่ส่วนที่ขาด (รอ user review)**. รองรับ **ชดเชยยอดติดลบ**: ถ้า on_hand ติดลบจากผลิตล่วงหน้า → GR บวกกลับ + **back-allocate การตัดที่ติดลบเข้า lot ใหม่แบบ FIFO** (คง Batch↔Lot GMP) + notice ก่อนยืนยัน. เลข Lot `{supplier prefix}{YYMM}` · GR `GR-{YYYYMMDD}-{NNN}`. RM ที่ตรวจเจอเสีย/QC ไม่ผ่าน → ลิงก์ไปทำใบคืน (`return.md`). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+รับเข้าวัตถุดิบ (RM) แบบ **multi-line ต่อ 1 supplier ต่อใบ** → gen Lot รายบรรทัด (สถานะ "รอตรวจรับ") → **บวก on_hand/Available (ไม่แตะ Reserved)** + `GR (+)` ledger. **วัตถุดิบใน line = อ้าง RM master ที่สร้างไว้แล้ว** (สร้าง/ตั้งรหัส unique ที่แท็บ RM ของ `stock.md` §3b — GR ไม่สร้าง RM ใหม่). อ้าง PR ได้: รับครบ → **PR "ของเข้าครบ" อัตโนมัติ**; รับบางส่วน → **PR "รับบางส่วน" + เสนอสร้าง PR ใหม่ส่วนที่ขาด (รอ user review)**. รองรับ **ชดเชยยอดติดลบ**: ถ้า on_hand ติดลบจากผลิตล่วงหน้า → GR บวกกลับ + **back-allocate การตัดที่ติดลบเข้า lot ใหม่แบบ FIFO** (คง Batch↔Lot GMP) + notice ก่อนยืนยัน. เลข Lot `{supplier prefix}{YYMM}` · GR `GR-{YYYYMMDD}-{NNN}`. RM ที่ตรวจเจอเสีย/QC ไม่ผ่าน → ลิงก์ไปทำใบคืน (`return.md`). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
 ## 1. Purpose
-บันทึกการรับวัตถุดิบเข้าคลังให้เป็นความจริงของ stock + Lot + PR + ledger: gen Lot, ปิด/แตก PR อัตโนมัติ, ชดเชยยอดติดลบด้วย FIFO retro-link, และเป็นต้นทางของ traceability (Lot).
+บันทึกการรับวัตถุดิบเข้าคลังให้เป็นความจริงของ stock + Lot + PR + ledger: gen Lot, ปิด/แตก PR อัตโนมัติ, ชดเชยยอดติดลบด้วย FIFO retro-link, และเป็นต้นทางของ traceability (Lot). **อ้าง RM master ที่มีอยู่** (RM ถูกสร้าง + ตั้งรหัส unique ที่แท็บ RM ของ `stock.md` §3b — ถ้ายังไม่มี RM ให้ไปสร้างก่อน).
 
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
 | `goods-receipt.html` | รับเข้า multi-line: supplier→auto lot prefix, จำนวน, ราคาซื้อ, เลขใบรับจาก supplier, upload, อ้าง PR + **ช่อง comment (+ "ประวัติการแก้ไข comment")** |
-| `stock.html` (RM tab) | ผลลัพธ์: on_hand/Available เพิ่ม + Lot ใหม่ + ledger `GR (+)` (ดู `stock.md`) |
+| `stock.html` (RM tab) | ผลลัพธ์: on_hand/Available เพิ่ม + Lot ใหม่ + ledger `GR (+)` (ดู `stock.md`) · **แหล่งสร้าง RM master (รหัส unique)** |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
@@ -25,6 +25,7 @@ Mockups: `mockups/goods-receipt.html` (+ `mockups/stock.html` for balances)
 | supplier | ref supplier | editable | 1 supplier ต่อ GR (header) · กำหนด lot prefix |
 | เลขใบรับจาก supplier | text | editable | **บังคับ** |
 | line items | list {วัตถุดิบ, จำนวน, ราคาซื้อ, อ้าง PR?} | editable | multi-line |
+| วัตถุดิบ (ต่อ line) | ref RM master | editable | **อ้าง RM ที่มีอยู่** (search dropdown ค้นชื่อ+รหัส) · สร้าง/ตั้งรหัส unique ที่ `stock.md` §3b |
 | ราคาซื้อ/หน่วย | THB | editable | 0 ได้, ติดลบไม่ได้ |
 | Lot ที่ gen | `{supplier prefix}{YYMM}` | computed | 1 Lot ต่อ line · สถานะเริ่ม "รอตรวจรับ" |
 | แนบไฟล์ | file | editable (optional) | หลักฐานรับเข้า |
@@ -54,10 +55,11 @@ Mockups: `mockups/goods-receipt.html` (+ `mockups/stock.html` for balances)
 | **แก้ไข comment (แก้ในที่)** | Warehouse/Stock.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | void GR | Warehouse/Stock.**Delete (D)** + เหตุผล |
 | ทำใบคืน (RM เสีย) | ไปที่ `return.md` (Stock.**Update** + เหตุผล) |
-> ไม่มีฟังก์ชันรับเข้าในหน้า Supplier — อยู่ที่นี่เท่านั้น.
+> ไม่มีฟังก์ชันรับเข้าในหน้า Supplier — อยู่ที่นี่เท่านั้น. **การสร้าง RM master (รหัส unique) = แท็บ RM ของ `stock.md` §3b (Stock.Create) — ไม่ใช่หน้านี้.**
 
 ## 7. Validations
 - supplier + เลขใบรับจาก supplier + ≥1 line = บังคับ.
+- **วัตถุดิบใน line ต้องเป็น RM master ที่มีอยู่** (ถ้ายังไม่มี → สร้างที่ `stock.md` §3b ก่อน).
 - ราคาซื้อ ≥ 0 (0 ได้).
 - อ้าง PR: วัตถุดิบใน line ต้องตรงกับ PR ที่อ้าง (มิฉะนั้น error "วัตถุดิบไม่ตรงกับคำขอ" — ไม่ปิด PR, ดู `pr.md`).
 - รับเกิน/ครบ/บางส่วน คำนวณเทียบยอด PR → ตั้งสถานะ PR อัตโนมัติ.
@@ -71,10 +73,12 @@ Mockups: `mockups/goods-receipt.html` (+ `mockups/stock.html` for balances)
 - ชดเชยติดลบ: ถ้า `on_hand < 0` ก่อนรับ → หลังรับ = `on_hand + GR qty`; ส่วนที่เคยตัดติดลบถูก back-allocate เข้า lot ใหม่ตาม FIFO.
 
 ## 10. Cross-links
-- ผลลัพธ์ยอด/ledger → `stock.md` (§5/§6, `GR (+)`). PR auto-close/partial → `pr.md`. Lot QC → `qc.md`. RM เสีย → `return.md`. negative/retro-link → entity-status-map §1.6.
+- ผลลัพธ์ยอด/ledger → `stock.md` (§5/§6, `GR (+)`). **RM master (รหัส unique) → `stock.md` §3b.** PR auto-close/partial → `pr.md`. Lot QC → `qc.md`. RM เสีย → `return.md`. negative/retro-link → entity-status-map §1.6.
 - **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **Absorbed:** GR-specific requirements จาก `stock.html` US-STK-02 (GR multi-line + PR auto-close) + US-STK-03 (negative compensation + FIFO retro-link) → รวมเป็น module GR เดี่ยวตาม module list ของปอนด์ (stock.md ยังถือเรื่องยอด/ledger).
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** ต่อ GR (header) — ยึด `comment-convention.md` (§3 field, §4b, §6 permission).
+- **★ เพิ่ม (2026-07-29 — Stock module 4 review):** ระบุชัด **วัตถุดิบใน GR line = อ้าง RM master ที่มีอยู่** (สร้าง/ตั้งรหัส unique ที่ `stock.md` §3b, ไม่ใช่หน้านี้) + วัตถุดิบเลือกผ่าน search dropdown (ชื่อ+รหัส). §1/§3/§6/§7/§10.
 - **คงเดิม:** 1 supplier/ใบ, gen Lot รายบรรทัด, PR partial→new PR รอ review, ราคาซื้อ ≥0.
+</content>

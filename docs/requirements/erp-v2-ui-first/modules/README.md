@@ -4,7 +4,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** (existing-good absorb + delta ใหม่) · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29)
 
 ## สรุปภาษาไทย
-เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** (จัดตามแถบเมนูแอป) · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md` = พื้นผิว trace/audit governance**) · **③ Reference** (เอกสารหลักการที่ยังใช้ได้) · ④ Architecture · ⑤ Mockups · **⑥ Archive (หน้าเก่า superseded, collapsed)** — หมวด ①/②/③ ลิงก์เฉพาะภายในแพ็กเกจ/reference ไม่เด้งออกไปหน้าเก่า. **★ ปอนด์เคาะ 4 ข้อ (2026-07-29) — ปิดคำถามค้างทั้งหมด:** (1) traceability → Non-Functional, (2) Reference เป็นหมวดของตัวเอง, (3) **Supply Planning แจ้งเตือน Low เชิงรุก** (real-time + J8 digest, แนบ Suggested), (4) **Quotation ยกเลิกได้ทุกสถานะ** (PO loose reference, no cascade, activity-log). **★ Customer module review (2026-07-29):** เพิ่ม **financial summary** (ยอดซื้อ/จ่าย/ค้าง) + **"ต้องติดตาม" = flag แยกจาก status** + **hard block QT/PO/SO เมื่อ Disabled/Blacklist** → มี **1 open question** (ถอด "Follow-up" จาก status enum จริงไหม — default ถอด) ดู §9. **★ Quotation module review (2026-07-29 — settled, no open Q):** เพิ่มสถานะ **"ส่งแล้ว (Sent)"** ใน list/filter/badge + ฟิลด์ **sent-date** + **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** + **banner "ไปสร้าง PO"** + **material check บนหน้า edit** + **activity-log ทุก action → trace**. **★ PO (module 3) review (2026-07-29 — cross-cutting):** (a) **Comment field convention** — ทุก object ธุรกรรม (QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR + **★ Return + QC record**) มี **ช่องหมายเหตุเดียว แก้ในที่ (overwrite) แต่เก็บประวัติการแก้ครบ (ใคร/เมื่อ/เดิม→ใหม่) ดูได้ inline + โผล่ trace** — กติกากลางที่ `comment-convention.md` · **★ ปอนด์เคาะตัวเลือก A (2026-07-29) → เพิ่ม Return + QC record ครบเป็น 12 object · settled, ไม่มี open Q เรื่อง comment แล้ว** · (b) **Customer Edit = แก้ได้ครบทุกฟิลด์เท่ากับ Create** (ไม่ใช่แค่ผู้ติดต่อ; financial summary read-only) — settled.
+เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** (จัดตามแถบเมนูแอป) · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md` = พื้นผิว trace/audit governance**) · **③ Reference** (เอกสารหลักการที่ยังใช้ได้) · ④ Architecture · ⑤ Mockups · **⑥ Archive (หน้าเก่า superseded, collapsed)** — หมวด ①/②/③ ลิงก์เฉพาะภายในแพ็กเกจ/reference ไม่เด้งออกไปหน้าเก่า. **★ ปอนด์เคาะ 4 ข้อ (2026-07-29) — ปิดคำถามค้างทั้งหมด:** (1) traceability → Non-Functional, (2) Reference เป็นหมวดของตัวเอง, (3) **Supply Planning แจ้งเตือน Low เชิงรุก** (real-time + J8 digest, แนบ Suggested), (4) **Quotation ยกเลิกได้ทุกสถานะ** (PO loose reference, no cascade, activity-log). **★ Customer module review (2026-07-29):** เพิ่ม **financial summary** (ยอดซื้อ/จ่าย/ค้าง) + **"ต้องติดตาม" = flag แยกจาก status** + **hard block QT/PO/SO เมื่อ Disabled/Blacklist** → มี **1 open question** (ถอด "Follow-up" จาก status enum จริงไหม — default ถอด) ดู §9. **★ Quotation module review (2026-07-29 — settled, no open Q):** เพิ่มสถานะ **"ส่งแล้ว (Sent)"** ใน list/filter/badge + ฟิลด์ **sent-date** + **reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** + **banner "ไปสร้าง PO"** + **material check บนหน้า edit** + **activity-log ทุก action → trace**. **★ PO (module 3) review (2026-07-29 — cross-cutting):** (a) **Comment field convention** — ทุก object ธุรกรรม (QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR + **★ Return + QC record**) มี **ช่องหมายเหตุเดียว แก้ในที่ (overwrite) แต่เก็บประวัติการแก้ครบ (ใคร/เมื่อ/เดิม→ใหม่) ดูได้ inline + โผล่ trace** — กติกากลางที่ `comment-convention.md` · **★ ปอนด์เคาะตัวเลือก A (2026-07-29) → เพิ่ม Return + QC record ครบเป็น 12 object · settled, ไม่มี open Q เรื่อง comment แล้ว** · (b) **Customer Edit = แก้ได้ครบทุกฟิลด์เท่ากับ Create** (ไม่ใช่แค่ผู้ติดต่อ; financial summary read-only) — settled. **★ Stock (module 4) review (2026-07-29 — settled, no open Q):** (1) **"เพิ่มวัตถุดิบใหม่" — RM code ผู้ใช้ตั้งเอง แต่ต้อง UNIQUE** · (2) **แยก Loss (ตัดคงคลัง −, Lot optional) / Adjust (ปรับยอด +, RM บังคับ)** เป็น 2 action บนแท็บ RM (D15) · (3) **เปลี่ยนป้ายปุ่ม → "บันทึก (คงคลัง)"** ทั้ง RM/FG · (4) **RM/Lot/FG = search dropdown; RM & FG ค้นได้ทั้งชื่อและรหัส** · (5) **BOM มีรหัส = รหัส FG (1 BOM=1 FG, 1:1, shared, auto — D11); "BOM = FG?" = ใช่** · (6) **audit + trace ทุก stock movement (add-RM/loss/adjust, RM+FG) + reason/source (D15)**. อัปเดต `stock.md` + `bom.md` + `goods-receipt.md` + `traceability.md` + `non-functional.md`.
 
 ---
 
@@ -19,7 +19,7 @@ docs/requirements/erp-v2-ui-first/modules/
   # System-wide / Governance (Non-Functional bucket ใน Hub)
   non-functional.md          ← NFR รวม: perf/auth-session/audit/backup-infra/data-format/jobs J1–J8/noti/search/responsive/soft-delete/reliability
   deletion-policy.md         ← (folded) soft-delete/void baseline + entity เดิม + entity ใหม่ (Quotation cancel-anytime/SO/FG Batch/OEM surplus/cost snapshot)
-  traceability.md            ← trace/audit governance ข้าม module (Hub จัดใน ② Non-Functional) · entity/field search · genealogy · field-audit · QT head-of-chain · ★ comment field audited
+  traceability.md            ← trace/audit governance ข้าม module (Hub จัดใน ② Non-Functional) · entity/field search · genealogy · field-audit · QT head-of-chain · ★ comment field audited · ★ stock movement audited
 
   # Platform & Navigation (Functional · ระบบ)
   platform.md                ← login local+Google · session 24h/06:00 · notification outbox+read-bit (+FG→Low) · global search · responsive+guard
@@ -33,13 +33,13 @@ docs/requirements/erp-v2-ui-first/modules/
   so.md                      ← Own-Brand Sales Order (sell-from-stock + produce-to-stock) · hard block (โหมด ก) · ★ comment
 
   # Supply Planning & Production (Functional · ผลิต&คุณภาพ)
-  bom.md                     ← BOM + other-cost + TYPE(OEM/FG) + Supply-Planning config
+  bom.md                     ← BOM + other-cost + TYPE(OEM/FG) + Supply-Planning config + ★ รหัส BOM=FG (1:1, shared, auto)
   supply-planning.md         ← Demand & Production Cover + FORMULA SUMMARY + ★ proactive Low alerting (real-time + J8)
   production.md              ← PRD/Batch + actual-qty/surplus + queue search/filter · ★ comment (PRD + Batch)
   qc.md                      ← ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain · ★ comment (QC record)
 
   # Inventory & Procurement (Functional · คลัง&จัดซื้อ)
-  stock.md · goods-receipt.md (★ comment) · pr.md (★ comment) · supplier.md · return.md (★ comment)
+  stock.md (★ add-RM unique + Loss/Adjust 2 actions + search dropdown) · goods-receipt.md (★ comment + RM master ref) · pr.md (★ comment) · supplier.md · return.md (★ comment)
 
   # Fulfilment & Finance (Functional · จัดส่ง&การเงิน)
   shipping.md (★ comment: Shipment รอบ + DN) · invoice.md (★ comment)
@@ -68,7 +68,7 @@ per-invoice override ยังทำได้; ยึด effective ตาม inv
 ### 2.3 ★ D18 reseat — QT "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" (2026-07-29 Quotation review)
 D18-4 กำหนดสถานะ ร่าง/ส่งแล้ว/**ตกลง (Agreed)**/ปฏิเสธ โดย "Agreed" เปิดปุ่ม Convert-to-PO. ปอนด์ปรับ (Quotation review): **การกด "Convert to PO" คือการยืนยันว่าลูกค้าตกลง → ตั้ง QT = "ยืนยัน (Confirmed)" ทันที** (รวมสองสเต็ปเดิม "mark Agreed → ค่อย Convert" เป็นสเต็ปเดียว) · การสร้าง PO เป็น **ขั้นอิสระ** (prefill ตอนนี้/ทีหลัง) · loose ref + no cascade + cancel-anytime **คงเดิม**. enum ใหม่: **ร่าง/ส่งแล้ว/ยืนยัน/ปฏิเสธ + ยกเลิก**. **module package wins** เหนือถ้อยคำ D18-4 (ดู §5 source-of-truth). authoritative = `quotation.md` §4/§6 · entity-status-map §1.1b.
 
-> D1–D7, D9–D17 **ไม่เปลี่ยน**. D18 = reseat ถ้อยคำสถานะ (business flow เดิม: เสนอ→ตกลง→เป็น PO).
+> D1–D7, D9–D17 **ไม่เปลี่ยน**. D18 = reseat ถ้อยคำสถานะ (business flow เดิม: เสนอ→ตกลง→เป็น PO). **หมายเหตุ Stock review (D11/D15):** ไม่แก้ D-rule — คำสั่งปอนด์รอบ Stock (RM code user-unique / Loss=− Adjust=+ / BOM=FG shared code) เป็น **การ implement ภายใต้ D11 (FG auto) + D15 (ledger reason/source) เดิม** ไม่ขัดกฎที่ล็อก.
 
 ---
 
@@ -82,6 +82,7 @@ D18-4 กำหนดสถานะ ร่าง/ส่งแล้ว/**ตก
 | **G4 Customer search dropdown** | quotation/po/so-create | ค้นเบอร์/บริษัท/ผู้ติดต่อ · แสดงสถานะ+credit term · modal detail · **★ Disabled/Blacklist เลือกไม่ได้ (hard block, customer.md §4.2)** |
 | **G5 Permission-per-action** | ทุกปุ่มระบุ capability | `permission-matrix.md` |
 | **★ G6 Comment + change-history** | ทุก object ธุรกรรมมี **ช่องหมายเหตุเดียว แก้ในที่ (overwrite) + เก็บประวัติการแก้ครบ (ใคร/เมื่อ/เดิม→ใหม่) ดู inline + โผล่ trace** | **12 object:** QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR + **★ Return + QC record** (ปอนด์เคาะตัวเลือก A, 2026-07-29) · กติกากลาง = **`comment-convention.md` (CC1–CC7)** · audit = field-audit เดิม · comment แยกจาก "เหตุผลการคืน (Return) / feedback (QC) / เหตุผลยกเลิก/void" เดิม |
+| **★ G7 Stock search dropdown** | เลือก RM/Lot/FG ในหน้า stock (add-RM/loss/adjust) | **RM & FG ค้นได้ทั้งชื่อและรหัส** · **Lot ค้นผ่าน dropdown** (stock.md §10) — ปอนด์สั่ง Stock review 2026-07-29 |
 
 > NFR ระดับระบบ (perf/auth/audit/format/jobs) รวมที่ `non-functional.md`.
 
@@ -96,6 +97,7 @@ D18-4 กำหนดสถานะ ร่าง/ส่งแล้ว/**ตก
 | **SO (ข) ผลิตเก็บสต็อก** | BOM check → production; RM ขาด auto-PR; QC ผ่าน → FG เข้าคลัง | `so.md` |
 | **★ Comment convention** | **12 object** ธุรกรรม (รวม Return + QC record) มีช่อง comment เดียว แก้ในที่ + เก็บประวัติครบ + โผล่ trace | `comment-convention.md` · ทุก module ธุรกรรม |
 | **★ Customer Edit = all fields** | หน้า edit แก้ได้ครบทุกฟิลด์เท่ากับ create (financial summary read-only) | `customer.md` §2b |
+| **★ Stock — RM code / Loss-Adjust / BOM=FG** | **RM code = ผู้ใช้ตั้งเอง + UNIQUE** · **Loss (ตัดคงคลัง −, Lot optional) / Adjust (ปรับยอด +, RM บังคับ)** = 2 action (D15) · ปุ่ม **"บันทึก (คงคลัง)"** ทั้ง RM/FG · **RM/Lot/FG search dropdown (RM&FG ชื่อ+รหัส)** · **BOM = FG (1:1, shared auto code — D11); BOM มีรหัส = FG code** · audit+trace ทุก movement | `stock.md` · `bom.md` · `goods-receipt.md` · `traceability.md` · `non-functional.md` |
 
 **หมายเหตุ:** Quotation ทำ material check (ทั้ง create + edit) แต่ **ไม่ auto-open PR**.
 
@@ -144,6 +146,7 @@ D18-4 กำหนดสถานะ ร่าง/ส่งแล้ว/**ตก
 | **★ Comment field convention (cross-cutting)** | **DECIDED 2026-07-29 (PO module 3 review) · settled** | ทุก object ธุรกรรม (QT/PO/SO/PRD/Batch/DN/Shipment/Invoice/GR/PR) มี **ช่อง comment เดียว แก้ในที่ (overwrite) + เก็บประวัติการแก้ครบ (ใคร/เมื่อ/เดิม→ใหม่) ผ่าน field-audit เดิม + ดู inline "ประวัติการแก้ไข comment" + โผล่ trace + activity-log**. กติกากลาง = **`comment-convention.md` (CC1–CC7, G6)**; ราย module อ้างอิงไม่ทำสำเนา. อัปเดต `po.md` §3/§5.1/§6/§7/§10 · `quotation.md` §3/§5c/§7/§10 · `so.md` §3/§5b/§7 · `production.md` §3/§5b/§7 (PRD+Batch) · `shipping.md` §3/§4b/§6 (Shipment+DN) · `invoice.md` §3/§5b/§6 · `goods-receipt.md` §3/§4b/§6 · `pr.md` §3/§4b/§6 · `traceability.md` §3/§4/§5/§9 · `non-functional.md` AU1/AU2 |
 | **★ Comment field — Return + QC record (object list 10→12)** | **DECIDED 2026-07-29 (ปอนด์เคาะตัวเลือก A) · settled · ปิด open item** | ปอนด์ยืนยัน **ตัวเลือก A** → **Return (ใบคืน) + QC record ได้ comment+history ด้วย** → comment-convention object list = **12** (เดิม 10). CC1–CC7 เหมือนกันทุกข้อ. comment เป็นช่องเพิ่ม **แยกจาก** "เหตุผลการคืน" (Return) และ "feedback" (QC) เดิม. อัปเดต `comment-convention.md` §2/§4/§6/§7 · `return.md` §2/§3/§4b/§5/§6/§7/§11 · `qc.md` §2/§3/§4b/§5/§6/§7/§11 · G6 (§3). **ปิด non-blocking flag §9 (Return/QC)** · UX/UI เพิ่ม UI comment บน return/qc screens (parallel) |
 | **★ Customer Edit = ALL fields** | **DECIDED 2026-07-29 (PO module 3 review) · settled** | หน้า edit ลูกค้าแก้ได้ครบทุกฟิลด์เท่ากับ create (บริษัท/TYPE/credit/ภาษี-ที่อยู่/สถานะ/⚑ flag/ผู้ติดต่อ) **ไม่ใช่แค่ผู้ติดต่อ** · financial summary + รหัส CUS read-only · ทุกการแก้ audit/management-history · สิทธิ์ราย action คงเดิม. `customer.md` §2b/§3/§8/§9 |
+| **★ Stock module 4 review (RM code / Loss-Adjust / BOM=FG / search / audit)** | **DECIDED 2026-07-29 (Stock module 4 review) · settled (no open Q)** | (1) **"เพิ่มวัตถุดิบใหม่"** — RM code **ผู้ใช้ตั้งเอง + UNIQUE** (reject ถ้าซ้ำ, free-form) · (2) **แยก Loss (ตัดคงคลัง −, RM บังคับ + Lot optional/FIFO) / Adjust (ปรับยอด +, RM บังคับ)** เป็น 2 action บนแท็บ RM — ledger `adjust (±)` → `loss (−)` + `adjust (+)` (D15) · (3) **ป้ายปุ่มบันทึก → "บันทึก (คงคลัง)"** ทั้ง RM ("บันทึก (ตัดคงคลัง)"→) และ FG ("บันทึก (ตัด onhand)"→) · (4) **RM/Lot/FG = search-in-dropdown; RM & FG ค้นได้ทั้งชื่อและรหัส** (G7) · (5) **BOM มีรหัส = รหัส FG (1 BOM=1 FG, 1:1, shared, auto — D11); "BOM = FG?" = ใช่** (OEM ก็มี FG identity ยอด 0 ยกเว้น surplus) · (6) **audit + trace ทุก stock movement (add-RM/loss/adjust, RM+FG) + reason/source (D15)**. อัปเดต `stock.md` §2/§3b/§4/§5/§6/§8/§9/§10/§11 · `bom.md` §3/§5/§7 · `goods-receipt.md` §1/§3/§6/§7/§10 · `traceability.md` §3/§4/§5/§9 · `non-functional.md` AU3/D-F4/D-F5 |
 | `scope-…` D8/credit · U4 · stock-reservation Q1 | คงตามรอบก่อน | D8 v2 · credit 60 · Option A |
 
 ---
@@ -167,13 +170,27 @@ D18-4 กำหนดสถานะ ร่าง/ส่งแล้ว/**ตก
 
 > **★ Customer review UI follow-up (2026-07-29):** (C1) การ์ด "สรุปการเงิน" · (C2) flag ⚑ badge แยก · (C3) filter "⚑ ต้องติดตาม" · (C4) block affordance เมื่อ Disabled/Blacklist. (`customer.md`)
 
+> **★ Stock module 4 review UI follow-up (2026-07-29) — จอ stock/bom:**
+> **แท็บ RM (`stock.html`):**
+> - **(S1)** ปุ่ม/ฟอร์ม **"เพิ่มวัตถุดิบใหม่"** — ช่อง **รหัสวัตถุดิบ (ผู้ใช้พิมพ์เอง)** + inline validation **"รหัสนี้ถูกใช้แล้ว"** (unique) + ชื่อ + หน่วยนับ.
+> - **(S2)** แยกเป็น **2 แท็บ/action:** **Loss (ตัดคงคลัง)** = ลด (−), เลือก **RM (บังคับ)** + **Lot (ไม่บังคับ)** · **Adjust (ปรับยอด)** = เพิ่ม (+), เลือก **RM (บังคับ)** — เหตุผลบังคับทั้งคู่.
+> - **(S3)** **RM & Lot = search-in-dropdown** — RM **ค้นได้ทั้งชื่อและรหัส** · Lot ค้นผ่าน dropdown.
+> - **(S4)** เปลี่ยนป้ายปุ่มบันทึก **"บันทึก (ตัดคงคลัง)" → "บันทึก (คงคลัง)"**.
+> **แท็บ FG (`stock.html`):**
+> - **(S5)** ฟอร์ม **loss / ปรับยอด FG** — เลือก **FG = search-in-dropdown ค้นได้ทั้งชื่อและรหัส**.
+> - **(S6)** เปลี่ยนป้ายปุ่มบันทึก **"บันทึก (ตัด onhand)" → "บันทึก (คงคลัง)"**.
+> **BOM (`bom-create.html`):**
+> - **(S7)** แสดง **ช่องรหัส BOM/FG** ให้เห็น (auto, 1 BOM=1 FG, 1:1, shared code — ไม่ให้ผู้ใช้แก้) เพื่อให้ FG ค้นด้วยรหัสได้.
+> ยึด `stock.md` §3b/§4/§5/§10 + `bom.md` §3/§5.
+
 ---
 
 ## 9. Open questions
-**เหลือ 1 open question ค้าง (จาก Customer review 2026-07-29) — comment/Return/QC ปิดแล้ว:**
-- **★ (BLOCKING-ish) ถอด "Follow-up" ออกจาก status enum จริงไหม?** — spec นี้ใช้ **default = ถอด** (5 สถานะ + flag แยก). ต้องให้ปอนด์ยืนยันก่อน sync dashboard tile/filter ที่อ้าง 6 สถานะเดิม. ตัวเลือก: **(A) ถอด** [default] · **(B) คงคำว่า "Follow-up" ไว้เป็นสถานะที่ 6 + มี flag แยกซ้อน**. (`customer.md` §12) — *(ค้างจากรอบ Customer; ไม่ใช่ประเด็นของ PO module 3)*
+**เหลือ 1 open question ค้าง (จาก Customer review 2026-07-29) — comment/Return/QC/Stock ปิดแล้ว:**
+- **★ (BLOCKING-ish) ถอด "Follow-up" ออกจาก status enum จริงไหม?** — spec นี้ใช้ **default = ถอด** (5 สถานะ + flag แยก). ต้องให้ปอนด์ยืนยันก่อน sync dashboard tile/filter ที่อ้าง 6 สถานะเดิม. ตัวเลือก: **(A) ถอด** [default] · **(B) คงคำว่า "Follow-up" ไว้เป็นสถานะที่ 6 + มี flag แยกซ้อน**. (`customer.md` §12) — *(ค้างจากรอบ Customer; ไม่ใช่ประเด็นของ PO module 3 / Stock module 4)*
 
 **คำถามที่ปิดแล้ว (2026-07-29):**
-- Supply Planning proactive alert → DECIDED · Quotation abandon → DECIDED · Quotation review → DECIDED · Traceability/Reference → DECIDED · Customer financial summary / hard block → DECIDED · **Comment convention (12 objects, รวม Return + QC record) → DECIDED (settled)** · **★ Comment บน Return + QC record → DECIDED ปอนด์เคาะตัวเลือก A (2026-07-29): ใส่ทั้งสอง → object list 10→12** · **Customer Edit = all fields → DECIDED (settled)**.
+- Supply Planning proactive alert → DECIDED · Quotation abandon → DECIDED · Quotation review → DECIDED · Traceability/Reference → DECIDED · Customer financial summary / hard block → DECIDED · **Comment convention (12 objects, รวม Return + QC record) → DECIDED (settled)** · **★ Comment บน Return + QC record → DECIDED ปอนด์เคาะตัวเลือก A (2026-07-29): ใส่ทั้งสอง → object list 10→12** · **Customer Edit = all fields → DECIDED (settled)** · **★ Stock module 4 (RM code user-unique / Loss=− Adjust=+ / BOM=FG shared code / search dropdown / audit) → DECIDED (settled, no open Q)**.
 
-> **สรุปสถานะ:** Comment convention (**12 objects** รวม Return + QC record) + Customer Edit=all fields = **settled → READY_FOR_UX_UI**. เหลือ **1 open item ค้างจากรอบ Customer** (Follow-up enum) ที่ไม่เกี่ยวกับรอบ comment นี้.
+> **สรุปสถานะ:** Comment convention (**12 objects**) + Customer Edit=all fields + **Stock module 4 review** = **settled → READY_FOR_UX_UI**. เหลือ **1 open item ค้างจากรอบ Customer** (Follow-up enum) ที่ไม่เกี่ยวกับรอบ Stock นี้.
+</content>
