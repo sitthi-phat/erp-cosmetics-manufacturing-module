@@ -145,6 +145,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .filtergrid .field{margin-bottom:0}
 .filtergrid .field label{font-size:12px;color:var(--text2);margin-bottom:4px}
 .daterange{display:flex;align-items:center;gap:6px}.daterange .inp{padding:0 8px;height:38px}.daterange .sep{color:var(--text3);font-size:12px;flex-shrink:0}
+.filtergrid .sel{height:38px}
+.searchactions{display:flex;gap:8px}.searchactions .btn{height:38px}
 .statusfilter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
 .statusfilter .lbl{font-size:12px;color:var(--text2);font-weight:500}
 /* ==== grouped accepted queue (PROD-6) ==== */
@@ -213,8 +215,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <!-- PROD-1 search + PROD-2 filter -->
    <div class="filterpanel"><div class="filtergrid">
      <div class="field"><label>ค้นหา (PO / SO / ชื่อลูกค้า / ผู้ติดต่อ)</label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="เช่น PO-202607-000185 · บิวตี้ เอเชีย · 08x-xxx-xxxx"></div></div>
-     <div class="field"><label>วันที่สร้าง PO/SO</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
-     <div class="field"><label>วันที่ต้องการรับของ</label><div class="daterange"><input class="inp" type="date" value="2026-07-10"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-20"></div></div>
+     <div class="field"><label>ค้นหาด้วยวันที่</label><select class="sel"><option>วันที่สร้าง PO/SO</option><option>วันที่ต้องการรับของ</option></select></div>
+     <div class="field"><label>ช่วงวันที่ (จาก – ถึง)</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+     <div class="field"><label>&nbsp;</label><div class="searchactions"><button class="btn btn-primary">🔍 ค้นหา</button><button class="btn">ล้าง</button></div></div>
    </div></div>
    <div class="statusfilter"><span class="lbl">สถานะ PO/SO:</span><span class="chip on">✓ พร้อมรับงาน</span><span class="chip">ยืนยันแล้ว (ยังไม่พร้อม)</span><span class="chip">พักงาน (Hold)</span><span class="chip">ทั้งหมดทุกสถานะ</span><span class="tiny" style="color:var(--text2)">· ค่าเริ่มต้น = <b>"พร้อมรับงาน"</b> (ลด noise) — เลือก "ทั้งหมด" เพื่อค้นทุกสถานะ</span></div>
    <div class="tblwrap"><table class="tbl"><thead><tr><th>งาน (line) · ยังไม่มี PRD</th><th>ลูกค้า</th><th>วันจัดส่ง</th><th>วัตถุดิบ</th><th></th></tr></thead><tbody>
@@ -228,8 +231,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <!-- PROD-4 search (+PRD) -->
    <div class="filterpanel"><div class="filtergrid">
      <div class="field"><label>ค้นหา (PO / SO / <b>PRD</b> / ชื่อลูกค้า / ผู้ติดต่อ)</label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="เช่น PRD-202607-000091 · PO-202607-000181 · เดอร์มา แคร์"></div></div>
-     <div class="field"><label>วันที่สร้าง PO/SO</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
-     <div class="field"><label>วันที่ต้องการรับของ</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+     <div class="field"><label>ค้นหาด้วยวันที่</label><select class="sel"><option>วันที่สร้าง PO/SO</option><option>วันที่ต้องการรับของ</option></select></div>
+     <div class="field"><label>ช่วงวันที่ (จาก – ถึง)</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+     <div class="field"><label>&nbsp;</label><div class="searchactions"><button class="btn btn-primary">🔍 ค้นหา</button><button class="btn">ล้าง</button></div></div>
    </div></div>
    <!-- PROD-5 filter + default + ordering -->
    <div class="statusfilter"><span class="lbl">สถานะ:</span><span class="chip on">รับงานแล้ว</span><span class="chip on">กำลังผลิต</span><span class="chip on">รอ QC</span><span class="chip on">พร้อมส่งมอบ</span><span class="chip on">พักงาน (Hold)</span><span class="chip">ทั้งหมด</span></div>
