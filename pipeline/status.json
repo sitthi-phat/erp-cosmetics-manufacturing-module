@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po + ux-ui",
-      "status": "WAITING_HUMAN_GATE",
+      "current_agent": "po",
+      "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -2908,7 +2908,7 @@
                 "เพิ่มงานรายวัน J8 แจ้งเตือนเมื่อ cover < safety",
                 "แจ้งเตือน + สรุปรายการที่ควรสั่งผลิต"
               ],
-              "answer": null
+              "answer": "ทำเชิงรุก (alerting): trigger เมื่อ FG=Low (cover<Target) + แนบ suggested qty; cadence ทั้ง real-time + สรุปเช้า (J8 06:00); ส่งผ่าน noti outbox/read-bit by permission"
             },
             {
               "q": "Deletion — การยกเลิก/ทิ้ง Quotation ที่ยังไม่ตกลง (Draft/Sent) เอาแบบไหน?",
@@ -2917,7 +2917,7 @@
                 "soft-delete แบบ master ได้ แต่ยัง search เจอ",
                 "Draft ลบได้, Sent = void อย่างเดียว"
               ],
-              "answer": null
+              "answer": "ยกเลิก QT ได้ทุกสถานะ; PO เก็บแค่ reference (ผูกหลวม) ถ้า QT ถูกยกเลิกไม่ cascade ไป PO แค่บันทึก activity log; เลข gapless คงไว้"
             }
           ],
           "summary": "Folded NFRs into non-functional.md + extended deletion policy to new entities (QT/SO/FG-Batch/surplus/snapshot); README source-of-truth + old->new map updated; HTML views regenerated + HTTP-verified. Overnight full-source-of-truth build COMPLETE. 2 non-blocking confirms parked (SP proactive alert default=on-read; QT abandon default=void-only). AWAITING Pond full review.",
@@ -2961,7 +2961,7 @@
                 "โอเคตามนี้ [default]",
                 "ย้าย traceability/audit-retention ไปโยง Non-Functional"
               ],
-              "answer": null
+              "answer": "ย้าย traceability ไป Non-Functional (platform คงอยู่ Functional)"
             },
             {
               "q": "IA — เอกสารหลักการเชิงลึก (entity-status-map/status-journeys/stock-reservation/scope/mock-data/brief/RTM/glossary/continuity/list-conventions) ทำเป็นแถบ 'อ้างอิง' ใต้ Functional?",
@@ -2969,7 +2969,7 @@
                 "โอเค [default]",
                 "แยกเป็นหมวดของตัวเอง"
               ],
-              "answer": null
+              "answer": "แยกเป็นหมวดของตัวเอง ③ Reference"
             }
           ],
           "summary": "Reorganized Document Hub IA into ① Functional (app-sidebar groups + flows + labeled reference band) and ② Non-Functional (NFR + deletion) as the two primary buckets; Architecture, Mockups, then a collapsed ⑤ Archive with all 16 superseded legacy pages out of the main flow. new<->old link tangle removed (verified: legacy hrefs only inside archive <details>; main flow links only to package + valid references). modules/index mirrors the split. HTTP-verified. 2 IA placement confirms (non-blocking, defaults applied). AWAITING Pond review.",
@@ -2979,5 +2979,5 @@
       ]
     }
   },
-  "generated_at": "2026-07-29T14:35:00+07:00"
+  "generated_at": "2026-07-29T15:00:00+07:00"
 }
