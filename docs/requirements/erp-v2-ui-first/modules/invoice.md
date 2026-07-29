@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs functional-spec `invoice.html` US-INV-01..04 + credit-term reconcile)
 Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/invoice-print.html`
-กฎอ้างอิง: entity-status-map §1.3 (billing) · `settings.md` (VAT effective date + ข้อมูลบริษัท) · `customer.md`/README §2.2 (credit term 30/60/90 default 60) · `shipping.md` (Delivered→เริ่มนับเครดิต) · deletion-policy §2.8 (void) · README §3 · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: entity-status-map §1.3 (billing) · `settings.md` (VAT effective date + ข้อมูลบริษัท) · `customer.md`/README §2.2 (credit term 30/60/90 default 60) · `shipping.md` (Delivered→เริ่มนับเครดิต) · deletion-policy §2.8 (void) · README §3 (**G8**) · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลข INV ออกตอนออกใบ)**
 
 ## สรุปภาษาไทย
-ออกใบแจ้งหนี้/ใบกำกับภาษีไทย ได้ตั้งแต่ **PO=Confirmed** (แต่ต้องแสดง stage จริงของ PO เสมอ). ใบกำกับภาษีครบฟิลด์ (logo, ผู้ออก+เลขภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/**VAT ตาม effective date ยึด invoice date**/grand total/**ตัวหนังสือไทย**/ลายเซ็น 2 ช่อง). **Overdue = ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย** (เครดิตระดับลูกค้า **30/60/90 default 60**, override รายใบได้). แก้/ยกเลิกแบบ **versioning + void (ไม่ hard delete, เลข gapless)**. เลข `INV-{YYYY}-{NNNNNN}`. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ออกใบแจ้งหนี้/ใบกำกับภาษีไทย ได้ตั้งแต่ **PO=Confirmed** (แต่ต้องแสดง stage จริงของ PO เสมอ). ใบกำกับภาษีครบฟิลด์ (logo, ผู้ออก+เลขภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/**VAT ตาม effective date ยึด invoice date**/grand total/**ตัวหนังสือไทย**/ลายเซ็น 2 ช่อง). **Overdue = ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย** (เครดิตระดับลูกค้า **30/60/90 default 60**, override รายใบได้). แก้/ยกเลิกแบบ **versioning + void (ไม่ hard delete, เลข gapless)**. เลข `INV-{YYYY}-{NNNNNN}`. **★ เลข INV ไม่โชว์ล่วงหน้า → ออก gapless ตอน "ออกใบแจ้งหนี้" สำเร็จ + popup ยืนยันแสดง "เลข INV + สรุป (ลูกค้า/อ้าง PO/SO/ยอด grand total)" + ลิงก์ดู detail/print (G8 · `numbering-on-save.md`); แก้ใบ (versioning) / void = ใช้เลขเดิม (NS6)**. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 > **หมายเหตุ reconcile:** functional-spec เดิมยกตัวอย่างเครดิต "30 วัน"; แหล่งความจริงล่าสุด = **preset 30/60/90 default 60** (README §2.2 / `customer.md`). ใช้ค่านี้ — override รายใบยังทำได้เหมือนเดิม.
 
@@ -17,14 +17,14 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `invoices.html` | รายการ + overdue alert + PO stage |
+| `invoices.html` | รายการ + overdue alert + PO stage · **★ ออกใบใหม่ → เลข INV = "(ระบบออกให้เมื่อบันทึก)" → ออกตอนออกใบ + popup (G8)** |
 | `invoice-detail.html` | รายละเอียด + versioning + สถานะ PO + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
 | `invoice-print.html` | ใบกำกับภาษีไทยเต็มรูป (พิมพ์) |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
 |---|---|---|---|
-| เลข `INV-{YYYY}-{NNNNNN}` | string | computed | gapless ต่อปี |
+| เลข `INV-{YYYY}-{NNNNNN}` | string | computed | gapless ต่อปี · **★ ไม่โชว์ก่อนออกใบ (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออกตอน "ออกใบแจ้งหนี้" สำเร็จ + popup (G8)** · versioning/void = เลขเดิม (NS6) |
 | อ้าง PO/SO | ref | editable | ออกได้ตั้งแต่ Confirmed |
 | PO stage (แสดง) | enum | computed | แสดง fulfilment จริงเสมอ |
 | ลูกค้า + ที่อยู่/เลขภาษี | ref/text | computed | |
@@ -37,14 +37,14 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 | **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · **ไม่พิมพ์ลงใบกำกับภาษี** (เป็นหมายเหตุภายใน) · คนละฟิลด์กับเหตุผล void |
 
 ## 4. Statuses / lifecycle (entity-status-map §1.3)
-รอชำระ (Invoiced) → ชำระแล้ว (Paid) / **เกินกำหนด (Overdue)**. **Overdue** = ส่งของแล้ว (PO Delivered) + เลยเครดิต + ยังไม่จ่าย (scheduler ประเมินรายวัน). void = ยกเลิกใบ (เลขคงอยู่ gapless, ออกใหม่แทนได้).
+รอชำระ (Invoiced) → ชำระแล้ว (Paid) / **เกินกำหนด (Overdue)**. **Overdue** = ส่งของแล้ว (PO Delivered) + เลยเครดิต + ยังไม่จ่าย (scheduler ประเมินรายวัน). void = ยกเลิกใบ (เลขคงอยู่ gapless — G8/NS5, ออกใหม่แทนได้).
 > **★ comment แก้ได้ทุกสถานะรวม void** (metadata ภายใน ไม่กระทบ business state — comment-convention.md §3).
 
 ## 5. User Stories (absorbed) + AC สรุป
-- **US-INV-01 (Must) — ออกตั้งแต่ Confirmed + เห็น stage จริง:** PO-176 "ส่งถึงแล้ว" → gen INV-2026-000135 "รอชำระ"; ราง billing PO="วางบิลแล้ว"; แสดง fulfilment="ส่งถึงแล้ว"; เครดิตจากระดับลูกค้า (C13). **Edge:** PO เพิ่งยืนยัน (ยังไม่ส่ง) → ออกได้ + ป้ายเตือน "ยืนยันแล้ว (ยังไม่ส่ง)". **Error:** PO ร่าง/ยกเลิก → บล็อก "ออกใบแจ้งหนี้ได้ตั้งแต่ PO ยืนยันแล้วเท่านั้น".
+- **US-INV-01 (Must) — ออกตั้งแต่ Confirmed + เห็น stage จริง:** PO-176 "ส่งถึงแล้ว" → **★ กด "ออกใบแจ้งหนี้" → ออกเลข INV-2026-000135 (gapless) + popup ยืนยัน (เลข + ลูกค้า/อ้าง PO/ยอด) + ลิงก์ detail/print (G8/NS2–NS3)** → INV "รอชำระ"; ราง billing PO="วางบิลแล้ว"; แสดง fulfilment="ส่งถึงแล้ว"; เครดิตจากระดับลูกค้า (C13). **Edge:** PO เพิ่งยืนยัน (ยังไม่ส่ง) → ออกได้ + ป้ายเตือน "ยืนยันแล้ว (ยังไม่ส่ง)". **Error:** PO ร่าง/ยกเลิก → บล็อก "ออกใบแจ้งหนี้ได้ตั้งแต่ PO ยืนยันแล้วเท่านั้น" · **ไม่ออกเลข INV (G8/NS4)**.
 - **US-INV-02 (Must) — ใบกำกับภาษีไทย + VAT effective date:** ตั้ง VAT 7% effective 01/01/2569, ออกใบ 08/07/2569 → ใบแสดงฟิลด์ครบ + **VAT 7% (มีผล 01/01/2569)** + ตัวหนังสือไทย + ลายเซ็น 2 ช่อง. **Edge:** หลายอัตรา VAT → เลือกอัตราที่ effective ครอบ **invoice date** เท่านั้น. **Error:** ข้อมูลบริษัทไม่ครบใน settings → เตือน "ข้อมูลผู้ออกไม่ครบ กรุณากรอกในตั้งค่า" — ไม่พิมพ์ใบที่ฟิลด์บังคับว่าง.
 - **US-INV-03 (Should) — Overdue/ติดตามหนี้:** ส่งของแล้ว + เลยเครดิต + ยังไม่จ่าย → scheduler → billing "เกินกำหนด" + จำนวนวันค้าง; noti Finance+Sale (C14). **Edge:** ออกใบแล้วแต่ PO ยังไม่ "ส่งถึงแล้ว" → **ยังไม่ overdue** แม้เลยวันเครดิต. **Error:** บันทึกรับชำระเกินยอดใบ → error "ยอดรับชำระเกินยอดค้าง" — ไม่บันทึก.
-- **US-INV-04 (Should) — Versioning / void:** แก้ใบ → เก็บเวอร์ชันใหม่ + ประวัติ; เลขเดิมคงอยู่. **Edge:** void + เหตุผล → ใบ=void (ไม่ลบ), เลข gapless, ออกใหม่แทนได้ (deletion §2.8). **Error:** ไม่มีปุ่ม "ลบ" ถาวร — มีเฉพาะ void (เอกสารการค้าห้าม hard delete).
+- **US-INV-04 (Should) — Versioning / void:** แก้ใบ → เก็บเวอร์ชันใหม่ + ประวัติ; **★ เลขเดิมคงอยู่ (G8/NS6 — ไม่ออกเลขใหม่)**. **Edge:** void + เหตุผล → ใบ=void (ไม่ลบ), เลข gapless, ออกใหม่แทนได้ (deletion §2.8). **Error:** ไม่มีปุ่ม "ลบ" ถาวร — มีเฉพาะ void (เอกสารการค้าห้าม hard delete).
 
 ## 5b. ★ Comment + change-history (ยึด `comment-convention.md`)
 - **1 ช่อง comment free-text ต่อ Invoice** (หมายเหตุภายใน) · แก้ในที่ (overwrite) จาก invoice-detail.
@@ -55,7 +55,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 | ปุ่ม/action | Permission required |
 |---|---|
 | ดู list/detail/print + **ดูประวัติ comment** | Invoice.**Read (R)** |
-| ออกใบแจ้งหนี้ (อ้าง PO/SO) | Invoice.**Create (C)** |
+| ออกใบแจ้งหนี้ (อ้าง PO/SO, ★ ออกเลข INV + popup) | Invoice.**Create (C)** |
 | บันทึกรับชำระ / แก้ (เวอร์ชันใหม่) | Invoice.**Update (U)** |
 | **แก้ไข comment (แก้ในที่)** | Invoice.**Update (U)** (เก็บประวัติ auto — comment-convention.md) |
 | void ใบ | Invoice.**Delete (D)** + เหตุผล |
@@ -63,6 +63,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 
 ## 7. Validations
 - ออกใบได้ตั้งแต่ PO/SO = Confirmed เท่านั้น (Draft/Cancelled บล็อก).
+- **★ เลข INV ออกตอน "ออกใบแจ้งหนี้" สำเร็จเท่านั้น (G8/NS2) — บล็อก/ไม่ผ่าน = ไม่ออกเลข (NS4); versioning/void = เลขเดิม (NS6).**
 - VAT ยึด effective date ตาม invoice date.
 - overdue นับเมื่อส่งของแล้วเท่านั้น.
 - รับชำระ ≤ ยอดค้าง.
@@ -80,10 +81,12 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 
 ## 10. Cross-links
 - Delivered→เริ่มนับเครดิต (C10) → `shipping.md`. VAT/ข้อมูลบริษัท → `settings.md`. credit term → `customer.md`/README §2.2. billing state → entity-status-map §1.3.
+- **★ เลข INV ออกตอนออกใบ (G8) → `numbering-on-save.md` · gapless → `non-functional.md` §5 (D-F2).**
 - **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
 - **Absorbed:** functional-spec `invoice.html` US-INV-01..04 (12 AC) verbatim ในความหมาย.
 - **แก้ (reconcile, ไม่ re-open):** ตัวอย่างเครดิต "30 วัน" → ใช้ค่าจริงล่าสุด **preset 30/60/90 default 60** (README §2.2) — กติกา overdue/effective คงเดิม.
 - **เพิ่ม (delta):** ออก invoice อ้าง **SO (Own-Brand)** ได้ด้วย (ไม่ใช่แค่ PO).
+- **★ เพิ่ม (2026-07-29 — number-on-save G8, extend, ปอนด์ cross-cutting):** เลข INV **ไม่โชว์ก่อนออกใบ → ออก gapless ตอน "ออกใบแจ้งหนี้" สำเร็จ + popup ยืนยัน (เลข + summary + ลิงก์ detail/print)** — §2/§3/§5/§6/§7/§10, ยึด `numbering-on-save.md` (G8/NS2/NS4/NS6). versioning/void = เลขเดิม.
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** บน invoice-detail (หมายเหตุภายใน, ไม่พิมพ์ลงใบกำกับ) — ยึด `comment-convention.md` (§3 field, §5b, §6 permission). คนละฟิลด์กับเหตุผล void.

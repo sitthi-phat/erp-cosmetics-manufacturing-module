@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return.html`
-กฎอ้างอิง: stock-reservation (3 ยอด, reserve/consume) · entity-status-map §1.6 (negative stock, FIFO retro-link) / **§1.8 (GR object · QC-gated stock-in)** · **D11 v2/D12/D16** (FG per-Batch, 1 BOM=1 FG, รหัส user-entered-locked) · **D13** (surplus) · **D15** (loss + ledger reason/source) · README §3 · `bom.md` (BOM/FG code + create-only-lock) · **`goods-receipt.md` §4 (GR object lifecycle · credit on QC pass)** · **`qc.md` §4.1 (ตรวจรับ RM = gate เข้าสต็อก)** · `traceability.md` (audit)
+กฎอ้างอิง: stock-reservation (3 ยอด, reserve/consume) · entity-status-map §1.6 (negative stock, FIFO retro-link) / **§1.8 (GR object · QC-gated stock-in)** · **D11 v2/D12/D16** (FG per-Batch, 1 BOM=1 FG, รหัส user-entered-locked) · **D13** (surplus) · **D15** (loss + ledger reason/source) · README §3 (**G8**) · `bom.md` (BOM/FG code + create-only-lock) · **`goods-receipt.md` §4/§5 (GR object lifecycle · credit on QC pass · ★ เลข GR+Lot ออกตอนบันทึก G8)** · **`qc.md` §4.1 (ตรวจรับ RM = gate เข้าสต็อก)** · **`numbering-on-save.md` (G8)** · `traceability.md` (audit)
 
 ## สรุปภาษาไทย
-คลังรองรับ **RM (per-lot) + FG (per-Batch, FIFO — D16)** แยกแท็บ **+ ★ แท็บ "Good Receipt (RM)"** (มุมมอง GR ให้ warehouse). ทุกวัตถุดิบ/FG มี 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้), ติดลบได้ + badge. **แท็บ RM: (1) "เพิ่มวัตถุดิบใหม่" — รหัส RM ผู้ใช้ตั้งเองตอนสร้าง, ต้องไม่ซ้ำ (unique), และ ★ แก้ไขไม่ได้หลังสร้าง (create-only-lock)** · (2) แยกเป็น **2 action**: **Loss (ตัดคงคลัง −)** และ **Adjust (ปรับยอด +)** — **★ ทั้งคู่อ้าง Lot: เลือก lot ที่ต้องการ หรือเลือก "FIFO"**. ทั้งคู่ปุ่ม **"บันทึก (คงคลัง)"**, เหตุผลบังคับ + ledger source (D15). เลือก RM/Lot ผ่าน **search dropdown** (RM ค้นได้ทั้ง **ชื่อและรหัส**). **★ แท็บ "Good Receipt (RM)": ลิสต์ GR ทุกใบ + ค้น (GR/Lot/Supplier/ชื่อ RM/รหัส/ช่วงวันที่รับ) + filter สถานะ (ผ่าน/ไม่ผ่าน/QC ตรวจสอบ/ยกเลิก) + action "ส่งกลับ QC" / "ยกเลิก"** — เพื่อให้ warehouse เห็น RM ที่รับมาแต่ QC ไม่ผ่าน แล้วจัดการได้ (`goods-receipt.md` §4). **★ RM ที่รับเข้าจะ credit on_hand ก็ต่อเมื่อ QC ตรวจรับ "ผ่าน" (ไม่ใช่ตอนบันทึก GR)** — `GR (+)` movement + FIFO retro-link เกิดตอน QC pass (`qc.md` §4.1). **แท็บ FG: loss/ปรับยอด FG** เลือก FG ผ่าน **search dropdown ค้นได้ทั้งชื่อและรหัส**, ปุ่ม **"บันทึก (คงคลัง)"**. ทุก movement (add-RM/reserve/consume/GR/FG-in/surplus/loss/adjust/return) เป็น **ledger + audit + trace ที่มีเหตุผล + แหล่งที่มา (source ref) บังคับ** (append-only, D15).
+คลังรองรับ **RM (per-lot) + FG (per-Batch, FIFO — D16)** แยกแท็บ **+ ★ แท็บ "Good Receipt (RM)"** (มุมมอง GR ให้ warehouse). ทุกวัตถุดิบ/FG มี 3 ยอด (คงคลัง/จองแล้ว/ใช้ได้), ติดลบได้ + badge. **แท็บ RM: (1) "เพิ่มวัตถุดิบใหม่" — รหัส RM ผู้ใช้ตั้งเองตอนสร้าง, ต้องไม่ซ้ำ (unique), และ ★ แก้ไขไม่ได้หลังสร้าง (create-only-lock)** · (2) แยกเป็น **2 action**: **Loss (ตัดคงคลัง −)** และ **Adjust (ปรับยอด +)** — **★ ทั้งคู่อ้าง Lot: เลือก lot ที่ต้องการ หรือเลือก "FIFO"**. ทั้งคู่ปุ่ม **"บันทึก (คงคลัง)"**, เหตุผลบังคับ + ledger source (D15). เลือก RM/Lot ผ่าน **search dropdown** (RM ค้นได้ทั้ง **ชื่อและรหัส**). **★ แท็บ "Good Receipt (RM)": ลิสต์ GR ทุกใบ + ค้น (GR/Lot/Supplier/ชื่อ RM/รหัส/ช่วงวันที่รับ) + filter สถานะ (ผ่าน/ไม่ผ่าน/QC ตรวจสอบ/ยกเลิก) + action "ส่งกลับ QC" / "ยกเลิก"** — เพื่อให้ warehouse เห็น RM ที่รับมาแต่ QC ไม่ผ่าน แล้วจัดการได้ (`goods-receipt.md` §4). **★ การรับเข้า (goods-receipt): เลข GR + Lot ออกตอนบันทึกสำเร็จ + popup ยืนยัน (G8 · `numbering-on-save.md` NS7).** **★ RM ที่รับเข้าจะ credit on_hand ก็ต่อเมื่อ QC ตรวจรับ "ผ่าน" (ไม่ใช่ตอนบันทึก GR)** — `GR (+)` movement + FIFO retro-link เกิดตอน QC pass (`qc.md` §4.1). **แท็บ FG: loss/ปรับยอด FG** เลือก FG ผ่าน **search dropdown ค้นได้ทั้งชื่อและรหัส**, ปุ่ม **"บันทึก (คงคลัง)"**. ทุก movement (add-RM/reserve/consume/GR/FG-in/surplus/loss/adjust/return) เป็น **ledger + audit + trace ที่มีเหตุผล + แหล่งที่มา (source ref) บังคับ** (append-only, D15).
 
 ---
 
@@ -18,8 +18,8 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 | `stock.html` แท็บ **RM** | 3 ยอดต่อ RM + negative badge + **ledger view (reason/source)** + **"เพิ่มวัตถุดิบใหม่" (รหัส RM ผู้ใช้ตั้งตอนสร้าง+unique+ล็อกหลังสร้าง)** + **2 action: Loss (ตัดคงคลัง −, อ้าง Lot/FIFO) / Adjust (ปรับยอด +, อ้าง Lot/FIFO)** — RM/Lot = search dropdown |
 | `stock.html` แท็บ **FG** | FG แตกราย Batch (FIFO) + 3 ยอด + **loss/ปรับยอด FG (FG = search dropdown ค้นชื่อ+รหัส)** + ledger (FG-in/surplus/loss/adjust) |
 | **★ `stock.html` แท็บ "Good Receipt (RM)"** | **ลิสต์ GR object ทุกใบ + สถานะ (ผ่าน/ไม่ผ่าน/QC ตรวจสอบ/ยกเลิก) + search + filter + action ส่งกลับ QC / ยกเลิก** — §2b |
-| `goods-receipt.html` | รับเข้า RM (gen GR object + Lot รอตรวจ, **credit ตอน QC ผ่าน**) — อ้าง RM ที่สร้างไว้แล้ว (`goods-receipt.md`) |
-| `return.html` | คืน RM ให้ supplier (ระบุ Lot → ตัด stock + เหตุผลบังคับ) |
+| `goods-receipt.html` | รับเข้า RM (gen GR object + Lot รอตรวจ, **credit ตอน QC ผ่าน**) — อ้าง RM ที่สร้างไว้แล้ว · **★ เลข GR+Lot ออกตอนบันทึกสำเร็จ + popup (G8/NS7 — `goods-receipt.md` §5)** |
+| `return.html` | คืน RM ให้ supplier (ระบุ Lot **+ ★ เลือก RM ในล็อต (1 lot หลาย RM)** → ตัด stock + เหตุผลบังคับ — `return.md`) |
 
 ## 2b. ★ แท็บ "Good Receipt (RM)" — มุมมอง/จัดการ GR ของ warehouse (ปอนด์สั่ง 2026-07-29)
 เพิ่มแท็บใหม่ใน `stock.html` เคียงข้างแท็บ RM และ FG — **เพื่อให้คลังเห็น RM ที่รับมาแต่ QC ไม่ผ่าน แล้ว action ต่อได้**. แท็บนี้เป็น **มุมมองของ GR object** (data เดียวกับ `goods-receipt.md`; แท็บนี้ = list + จัดการ, ไม่สร้าง GR ใหม่ที่นี่).
@@ -29,7 +29,7 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 - **★ Filter by สถานะ:** **ผ่าน (pass) · ไม่ผ่าน (fail) · QC ตรวจสอบ (under QC) · ยกเลิก (cancelled)** (ตรง GR object lifecycle, `goods-receipt.md` §4.2).
 - **★ Action ต่อ record:**
   - **ส่งกลับไปที่ QC (re-submit to QC):** เฉพาะ GR **ไม่ผ่าน** → Lot ที่ไม่ผ่านกลับ "รอตรวจ" + GR กลับ "QC ตรวจสอบ" (Warehouse/Stock.Update, audit) — `goods-receipt.md` §4.3.
-  - **ยกเลิก (cancel) GR:** เฉพาะสถานะ **QC ตรวจสอบ / ไม่ผ่าน** (ยังไม่ credit หรือส่วนที่ไม่ผ่าน) + เหตุผลบังคับ (Warehouse/Stock.Delete, audit, gapless) — `goods-receipt.md` §4.3.
+  - **ยกเลิก (cancel) GR:** เฉพาะสถานะ **QC ตรวจสอบ / ไม่ผ่าน** (ยังไม่ credit หรือส่วนที่ไม่ผ่าน) + เหตุผลบังคับ (Warehouse/Stock.Delete, audit, gapless — เลข GR คงอยู่) — `goods-receipt.md` §4.3.
   - (ลิงก์) **เปิด GR เต็ม** (`goods-receipt.html`) · **ทำใบคืน** (RM ไม่ผ่าน → `return.md`).
 - **★ credit note:** GR สถานะ **ผ่าน** = on_hand ของ Lot ถูก credit แล้ว (movement `GR (+)` §6); **QC ตรวจสอบ/ไม่ผ่าน/ยกเลิก = ยังไม่ credit** (ของยังไม่เข้ายอดคงคลัง) — สอดคล้อง QC-gated stock-in (`qc.md` §4.1).
 - **Permission:** ดู = Warehouse/Stock.Read · ส่งกลับ QC = Update · ยกเลิก = Delete + เหตุผล (§8).
@@ -47,13 +47,13 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 - ฟิลด์:
   | ฟิลด์ | ชนิด | editable/computed | หมายเหตุ |
   |---|---|---|---|
-  | **รหัสวัตถุดิบ (RM code)** | string | **editable เฉพาะตอนสร้าง (ผู้ใช้พิมพ์เอง) · LOCKED หลังสร้าง (read-only)** | **บังคับ + ต้องไม่ซ้ำ (UNIQUE) ตอนสร้าง** · รูปแบบอิสระ (free-form) แต่ระบบ **reject ถ้าซ้ำ** ก่อนบันทึก · **★ แก้ไขไม่ได้หลังสร้าง (create-only-lock)** — ปอนด์สั่ง 2026-07-29 ("RM ก็ด้วย") เพื่อไม่ให้ reference (GR/Lot/BOM component/trace) แตก · กติกาเดียวกับรหัส BOM/FG (`bom.md` §5) |
+  | **รหัสวัตถุดิบ (RM code)** | string | **editable เฉพาะตอนสร้าง (ผู้ใช้พิมพ์เอง) · LOCKED หลังสร้าง (read-only)** | **บังคับ + ต้องไม่ซ้ำ (UNIQUE) ตอนสร้าง** · รูปแบบอิสระ (free-form) แต่ระบบ **reject ถ้าซ้ำ** ก่อนบันทึก · **★ แก้ไขไม่ได้หลังสร้าง (create-only-lock)** — ปอนด์สั่ง 2026-07-29 ("RM ก็ด้วย") เพื่อไม่ให้ reference (GR/Lot/BOM component/trace) แตก · กติกาเดียวกับรหัส BOM/FG (`bom.md` §5) · **หมายเหตุ: RM code = user-entered master identity ไม่ใช่ running number → นอกขอบเขต G8 (`numbering-on-save.md` §4)** |
   | ชื่อวัตถุดิบ | string | editable | บังคับ |
   | หน่วยนับ (unit) | string | editable | บังคับ |
   | (optional) supplier ตั้งต้น / หมายเหตุ | ref/text | editable | ไม่บังคับ |
 - **ยอดตั้งต้น:** RM ที่เพิ่งสร้าง on_hand = 0 · ของจริงเข้าคลังผ่าน **Goods Receipt** (gen Lot) **+ QC ผ่าน** เท่านั้น — การ "เพิ่มวัตถุดิบใหม่" คือสร้าง master ไม่ใช่ movement.
 - **Audit/trace:** การสร้าง RM = **entity-create event** ที่ถูก audit + ปรากฏบน trace (entity=RM, action=create, ใคร/เมื่อ) — `traceability.md` §3/§4.
-- RM ที่สร้างแล้วเลือกได้ทันทีใน GR / Loss / Adjust / BOM component (search dropdown, ค้นชื่อ+รหัส).
+- RM ที่สร้างแล้วเลือกได้ทันทีใน GR / Loss / Adjust / BOM component / **Return** (search dropdown, ค้นชื่อ+รหัส).
 
 ## 4. ★ FG per-Batch (D16) + FG เข้าคลัง (D12) + surplus (D13) + รหัส FG (D11 v2)
 - **FG แตกราย Batch** (Batch = "lot" ของ FG) · ตัด **FIFO** ตอนขาย/ส่ง · UI โชว์ breakdown ราย Batch (recall GMP).
@@ -88,9 +88,9 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 | `surplus (+)` | FG on_hand + (ผลิตเกิน OEM, remark ไม่ approve) | Batch/PRD/PO |
 | `loss (−)` | on_hand − (เหตุผลบังคับ, ไม่อนุมัติ) · **RM: อ้าง Lot (เลือก lot มี stock **หรือ** "FIFO")** | Batch/PRD (production) หรือ **warehouse** + Lot/FIFO |
 | `adjust (+)` | on_hand + (**เพิ่มอย่างเดียว**, เหตุผลบังคับ, RM บังคับ) · **★ RM: อ้าง Lot (เลือก lot **หรือ** "FIFO")** | **warehouse-adjust** + Lot/FIFO |
-| `return (−)` | on_hand − (คืน supplier) | Lot/Supplier/RT |
+| `return (−)` | on_hand − (คืน supplier) | **Lot + RM + Supplier + RT** |
 > append-only. **ทุกแถว ledger = audit event + ปรากฏบน trace** (reason + source + Lot ref + ใคร/เมื่อ — D15, `traceability.md` §4). loss ที่ทำให้ได้ไม่ครบตามสั่ง → **ไม่ auto re-produce** (คนกด "ผลิตซ้ำ" เอง, D15).
-> **★ delta 2026-07-29 (ปอนด์):** (a) เดิม `adjust (±)` → แยกเป็น **`loss (−)`** + **`adjust (+)`**. (b) **Production review:** **`adjust (+)` เพิ่ม Lot ref (เลือก lot หรือ "FIFO")** เหมือน `loss (−)`. **(c) ★ QC + GR/Stock flow review: `GR (+)` เกิดตอน QC ตรวจรับ "ผ่าน" เท่านั้น (ไม่ใช่ตอนบันทึก GR)** — ชดเชยติดลบ + FIFO retro-link ย้ายมาที่ QC pass; QC ไม่ผ่าน = ไม่มี `GR (+)` movement. CONSUME ระบุชัด "เลือกเฉพาะ lot ที่มี stock; หลาย lot = FIFO" (production.md §5d).
+> **★ delta 2026-07-29 (ปอนด์):** (a) เดิม `adjust (±)` → แยกเป็น **`loss (−)`** + **`adjust (+)`**. (b) **Production review:** **`adjust (+)` เพิ่ม Lot ref (เลือก lot หรือ "FIFO")** เหมือน `loss (−)`. **(c) ★ QC + GR/Stock flow review: `GR (+)` เกิดตอน QC ตรวจรับ "ผ่าน" เท่านั้น (ไม่ใช่ตอนบันทึก GR)** — ชดเชยติดลบ + FIFO retro-link ย้ายมาที่ QC pass; QC ไม่ผ่าน = ไม่มี `GR (+)` movement. CONSUME ระบุชัด "เลือกเฉพาะ lot ที่มี stock; หลาย lot = FIFO" (production.md §5d). **(d) ★ Return module: `return (−)` source ผูก Lot + RM + Supplier + RT (เลือก RM ในล็อต — 1 lot หลาย RM, `return.md`).**
 
 ## 7. Loss (D15)
 - จุดบันทึก: (ก) `production` (บนหน้าจัดการงานผลิต — ปุ่ม Loss + confirm popup ทุกครั้ง, production.md §7.5) · (ข) `stock` warehouse (RM + FG).
@@ -105,10 +105,10 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 | Adjust (ปรับยอด +, อ้าง Lot/FIFO) RM/FG | Warehouse/Stock.**Update (U)** + เหตุผล |
 | Loss (ตัดคงคลัง −, อ้าง Lot/FIFO) RM/FG (warehouse) | Warehouse/Stock.**Update (U)** + เหตุผล |
 | บันทึก loss (production) | Production.**Update (U)** + เหตุผล |
-| Goods Receipt (gen GR object + Lot รอตรวจ) | Warehouse/Stock.**Create (C)** |
+| Goods Receipt (gen GR object + Lot รอตรวจ, ★ ออกเลข GR+Lot ตอนบันทึก G8) | Warehouse/Stock.**Create (C)** |
 | **★ ส่งกลับ QC (re-submit GR ไม่ผ่าน) — แท็บ GR (RM)** | Warehouse/Stock.**Update (U)** |
 | **★ ยกเลิก GR (สถานะ QC ตรวจสอบ/ไม่ผ่าน) — แท็บ GR (RM)** | Warehouse/Stock.**Delete (D)** + เหตุผล |
-| Return (คืน supplier) | Warehouse/Stock.**Update (U)** + เหตุผล |
+| Return (คืน supplier — เลือก RM ในล็อต) | Warehouse/Stock.**Update (U)** + RM + เหตุผล |
 > surplus (D13) = auto ตอนพร้อมส่ง (ไม่มี permission แยก, แจ้ง remark). **`GR (+)` credit = ผลอัตโนมัติของ QC pass (ตัดสินที่ `qc.md`), ไม่ใช่ action ในหน้า stock.**
 
 ## 9. Validations
@@ -117,7 +117,8 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 - **Adjust (FG): FG บังคับ** (search dropdown) · เป็น ± (ราย Batch, FIFO/เลือก Batch) · เหตุผล + source บังคับ.
 - **Loss (RM): RM บังคับ · Lot อ้างอิง (เลือก lot มี stock **หรือ** "FIFO")** · เป็น **− เท่านั้น** · เหตุผล + source บังคับ.
 - **★ Lot ที่เลือกได้ = เฉพาะ lot ที่มี stock (on_hand > 0);** เลือก "FIFO" = ระบบจัดการ lot เก่าสุดก่อน.
-- **★ GR (RM) tab: ส่งกลับ QC = เฉพาะ GR ไม่ผ่าน · ยกเลิก = เฉพาะ QC ตรวจสอบ/ไม่ผ่าน + เหตุผลบังคับ.**
+- **★ GR (RM) tab: ส่งกลับ QC = เฉพาะ GR ไม่ผ่าน · ยกเลิก = เฉพาะ QC ตรวจสอบ/ไม่ผ่าน + เหตุผลบังคับ (เลข GR คงอยู่ gapless).**
+- **★ Goods Receipt: เลข GR + Lot ออกตอนบันทึกสำเร็จ (G8/NS2, NS7) — `goods-receipt.md` §5/§7.**
 - adjust/loss/return = **เหตุผลบังคับ** + source ref · **ทุกครั้ง audit + trace**.
 - FG ตัดตอนขาย/loss = FIFO ราย Batch (ห้ามข้าม Batch เก่า).
 - on_hand ติดลบ = แดง + badge "ติดลบ (รอรับเข้า)"; available ติดลบ = "จองเกิน (รอรับเข้า)".
@@ -128,10 +129,12 @@ Mockups: `mockups/stock.html` · `mockups/goods-receipt.html` · `mockups/return
 - **★ RM/Lot/FG selection = search-in-dropdown** (ปอนด์สั่ง): **RM ค้นได้ทั้งชื่อและรหัส** · **Lot** ค้นผ่าน dropdown (**Loss + Adjust ทั้งคู่ + option "FIFO"**) · **FG ค้นได้ทั้งชื่อและรหัส**.
 
 ## 11. Cross-links
-- reservation → stock-reservation · **★ GR/retro-link/credit ตอน QC ผ่าน → entity-status-map §1.6/§1.8 · `goods-receipt.md` §4/§9 · `qc.md` §4.1** · **RM master ที่สร้างที่นี่ → อ้างใน `goods-receipt.md` (GR line), `bom.md` (component)** · **FG/รหัส FG + create-only-lock → `bom.md` §5 (1 BOM=1 FG, code)** · FG source + loss/lot-FIFO consume → `production.md` §5/§7 (surplus, loss, FIFO), `so.md` (produce-to-stock FG-in) · **audit/trace ทุก movement + add-RM + GR status → `traceability.md` §3/§4 · `non-functional.md` AU3** · trace → scope §8.5.
+- reservation → stock-reservation · **★ GR/retro-link/credit ตอน QC ผ่าน → entity-status-map §1.6/§1.8 · `goods-receipt.md` §4/§9 · `qc.md` §4.1** · **★ เลข GR+Lot ออกตอนบันทึก (G8/NS7) → `numbering-on-save.md` · `goods-receipt.md` §5** · **RM master ที่สร้างที่นี่ → อ้างใน `goods-receipt.md` (GR line), `bom.md` (component), `return.md` (RM ในล็อต)** · **FG/รหัส FG + create-only-lock → `bom.md` §5 (1 BOM=1 FG, code)** · FG source + loss/lot-FIFO consume → `production.md` §5/§7 (surplus, loss, FIFO), `so.md` (produce-to-stock FG-in) · **audit/trace ทุก movement + add-RM + GR status → `traceability.md` §3/§4 · `non-functional.md` AU3** · trace → scope §8.5.
 
 ## 12. Module changelog
 - **เพิ่ม (รอบก่อน):** FG per-Batch tab + ปรับยอด FG ตรง (D15) · ledger reason/source ทุก movement · surplus batch identity (แก้ U6) · RM ledger/loss form (แก้ U2).
+- **★ เพิ่ม (2026-07-29 — number-on-save G8, ปอนด์ cross-cutting):** ระบุชัดว่า **Goods Receipt (รับเข้า) ออกเลข GR + Lot ตอนบันทึกสำเร็จ + popup (G8/NS7)** — §2/§2b/§8/§9/§11, ยึด `goods-receipt.md` §5 + `numbering-on-save.md`. หมายเหตุ **RM code = master identity → นอกขอบเขต G8** (§3b).
+- **★ เพิ่ม (2026-07-29 — Return module feedback, ปอนด์):** `return (−)` source ผูก **Lot + RM + Supplier + RT** (เลือก RM ในล็อต — 1 lot หลาย RM); RM master เลือกได้ใน Return (§2/§6/§8, ref `return.md`).
 - **★ เพิ่ม (2026-07-29 — Stock module 4 review, ปอนด์):**
   1. **"เพิ่มวัตถุดิบใหม่"** — RM code **ผู้ใช้ตั้งเอง แต่ต้อง UNIQUE** — §3b · audit entity-create.
   2. **แยก Loss / Adjust เป็น 2 action (RM)** — §5.1, ledger §6.

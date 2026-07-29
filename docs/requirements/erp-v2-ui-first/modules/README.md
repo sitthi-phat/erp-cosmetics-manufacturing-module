@@ -4,7 +4,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** (existing-good absorb + delta ใหม่) · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29)
 
 ## สรุปภาษาไทย
-เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md`**) · **③ Reference** · ④ Architecture · ⑤ Mockups · **⑥ Archive**. **★ ปอนด์เคาะรอบก่อน (2026-07-29):** traceability → Non-Functional · Reference หมวดเอง · Supply Planning proactive Low · Quotation ยกเลิกได้ทุกสถานะ · Customer/Quotation/PO/Stock/Supplier/BOM/Settings · **Production (คิวงานผลิต)** · **Supply Planning (list+expand+modal · FG search ชื่อ/รหัส/RM · สั่งผลิต batch-count + cost/revenue/margin sim · simulate vs save-back BOM · sell-price settled)**. **★★ NEW — QC + GR/Stock flow review (ปอนด์ 2026-07-29 — settled):** **(1) ★ QC-gated stock-in:** RM ที่รับเข้า **ไม่เข้าสต็อกทันที** — Goods Receipt สร้าง **GR object + Lot รอตรวจ (ยังไม่ credit)** → QC ตรวจรับบันทึก **ผ่าน/ไม่ผ่าน**: **ผ่าน → credit on_hand + ชดเชยติดลบ + FIFO retro-link ตอนนี้** · **ไม่ผ่าน → ไม่เข้าสต็อก + Lot ระงับ**. (reconcile กับ GR→Lot + negative-compensation เดิม — credit + retro-link **ย้ายจากตอน GR มาที่จุด QC pass**, กลไก FIFO ไม่ขัดกัน). **(2) ★ GR object lifecycle 4 สถานะ:** QC ตรวจสอบ → ผ่าน / ไม่ผ่าน / ยกเลิก + action **ส่งกลับ QC (re-submit)** / **ยกเลิก GR** (ยกเลิก = เฉพาะก่อน credit → ไม่ reverse ยอด; เอาของออกหลังผ่าน = Return/Loss — PO reasonable decision, override ได้). **(3) ★ แท็บใหม่ "Good Receipt (RM)" ใน stock** — list GR + ค้น (GR/Lot/Supplier/ชื่อ RM/รหัส/ช่วงวันที่รับ) + filter สถานะ 4 + action ส่งกลับ QC/ยกเลิก (ให้ warehouse เห็น RM ที่ QC ไม่ผ่าน). **(4) ★ ตรวจแบตช์ แยก 2 sub-tab: "Batch OEM" / "Batch Own-Brand"** (ตัดสินเหมือนกัน; ต่างที่ context + ปลายทางหลังผ่าน = surplus vs FG-in เต็มจำนวน). **(5) ★ CONFIRM Batch QC ไม่ผ่าน → PRD Rework = "กำลังผลิต · Rework" (reuse feedback "QC ไม่ผ่าน")** — settled ตรง entity-status-map §1.4. **(6) ★ Comment placement:** comment/feedback ของ Batch แสดง **ในบริบท Batch นั้น (ติดกับ Batch)** — UX note. อัปเดต `qc.md` (primary) · `goods-receipt.md` (GR object + QC-gated stock-in) · `stock.md` §2b (GR (RM) tab) · `entity-status-map.md` §1.4/§1.6/§1.8 (r10) · `traceability.md` §3/§4/§9 · `non-functional.md` AU1/AU3/AU4/R3/R5/§6 · README.
+เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md`**) · **③ Reference** · ④ Architecture · ⑤ Mockups · **⑥ Archive**. **★ ปอนด์เคาะรอบก่อน (2026-07-29):** traceability → Non-Functional · Reference หมวดเอง · Supply Planning proactive Low · Quotation ยกเลิกได้ทุกสถานะ · Customer/Quotation/PO/Stock/Supplier/BOM/Settings · **Production (คิวงานผลิต)** · **Supply Planning** · **QC + GR/Stock flow (QC-gated stock-in)**. **★★ NEW — 2 คำสั่งปอนด์ (2026-07-29):** **(1) Return module:** เพิ่ม **RM selector (บังคับ) บน return-create** เพราะ **1 Lot ถือได้หลาย RM** (lot = `{supplier prefix}{YYMM}`) → ผู้ใช้เลือกว่าคืน RM ตัวใดในล็อต (search-in-dropdown ชื่อ+รหัส G7); จำนวนคืนหักจากคงเหลือของ (lot, RM); + list search ด้วย Lot/Supplier/ชื่อ RM/รหัส RM. **(2) ★ NEW Global Rule G8 — เลขเอกสารออกตอนบันทึก (number-on-save):** create ทุกใบ **ไม่โชว์เลขล่วงหน้า** (แสดง "(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · ป้องกันเลขหาย (ร่างที่ไม่บันทึกไม่กินเลข). Apply: **Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR** + ขยายไป **DN/SHP · Invoice · PRD · Batch** (นิยามครั้งเดียวที่ `numbering-on-save.md`, อ้างจากแต่ละ module). อัปเดต `return.md` · `numbering-on-save.md` (NEW) · `quotation.md`/`so.md`/`po.md`/`pr.md`/`goods-receipt.md`/`stock.md`/`shipping.md`/`invoice.md`/`production.md` (อ้าง G8 บน create flow) · `non-functional.md` D-F2/D-F5/AU1/§6/§9/§10/R5 · README.
 
 ---
 
@@ -15,9 +15,10 @@ docs/requirements/erp-v2-ui-first/modules/
   README.md                  ← ไฟล์นี้ (index + D-rule spine + changelog + source-of-truth + old→new map + global rules)
   permission-matrix.md       ← capability → module → action/button
   comment-convention.md      ← ★ กติกากลาง comment + change-history (CC1–CC7) · 12 object · อ้างโดยทุก module ธุรกรรม
+  numbering-on-save.md        ← ★ NEW กติกากลาง G8 = เลขเอกสารออกตอนบันทึก (NS1–NS7) · อ้างโดยทุก create flow
 
   # System-wide / Governance (Non-Functional bucket ใน Hub)
-  non-functional.md          ← NFR รวม (★ +GR QC-gated stock-in audit)
+  non-functional.md          ← NFR รวม (★ +GR QC-gated stock-in audit · +number-on-save G8)
   deletion-policy.md         ← soft-delete/void baseline + entity
   traceability.md            ← trace/audit governance (★ +GR object lifecycle + credit on QC pass)
 
@@ -29,14 +30,14 @@ docs/requirements/erp-v2-ui-first/modules/
 
   # Supply Planning & Production (Functional · ผลิต&คุณภาพ)
   bom.md · supply-planning.md
-  production.md              ← คิวผลิต 2 แท็บ + management page + comment (PRD+Batch)
+  production.md              ← คิวผลิต 2 แท็บ + management page + comment (PRD+Batch) · ★ PRD/Batch เลขใน confirm popup (G8)
   qc.md                      ← ★ (A) ตรวจรับ RM = QC-gate เข้าสต็อก · (B) ตรวจแบตช์ 2 sub-tab OEM/Own-Brand · comment placement
 
   # Inventory & Procurement (Functional · คลัง&จัดซื้อ)
-  stock.md (★ +แท็บ "Good Receipt (RM)" · Adjust อ้าง Lot/FIFO · GR credit on QC pass) · goods-receipt.md (★ GR object + QC-gated stock-in) · pr.md · supplier.md · return.md
+  stock.md (★ +แท็บ "Good Receipt (RM)" · Adjust อ้าง Lot/FIFO · GR credit on QC pass · GR/Lot เลขตอนบันทึก G8) · goods-receipt.md (★ GR object + QC-gated stock-in · GR+Lot number-on-save G8) · pr.md · supplier.md · return.md (★ +RM selector · +list search)
 
   # Fulfilment & Finance
-  shipping.md · invoice.md
+  shipping.md (★ SHP+DN number-on-save G8) · invoice.md (★ INV number-on-save G8)
 
   # System
   settings.md
@@ -71,7 +72,7 @@ per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`
 Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั่งผลิต" (ก่อน VAT, decision-support ไม่ใช่ COGS; D10 snapshot คงเดิม). authoritative = `supply-planning.md` §5b/§6.2b · `bom.md` §3/§4.
 
 ### 2.7 ★★ D12/D16 clarify — QC + GR/Stock flow review (2026-07-29)
-**RM เข้าสต็อกเมื่อ QC ตรวจรับ "ผ่าน" เท่านั้น** — Goods Receipt สร้าง **GR object + Lot รอตรวจ (ยังไม่ credit)**; **QC ผ่าน → `GR (+)` credit + ชดเชยติดลบ + FIFO retro-link ที่จุดนี้** · **ไม่ผ่าน → ไม่เข้าสต็อก + Lot ระงับ**. **D12 (FG เข้าคลังตอน QC ผ่าน) + negative-compensation + FIFO retro-link เดิมไม่ขัดกัน** — เพียงเลื่อน trigger ของ RM credit จาก "ตอน GR" → "ตอน QC pass". GR object 4 สถานะ (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก). authoritative = `goods-receipt.md` §4/§9 · `qc.md` §4.1 · `stock.md` §2b/§6 · entity-status-map §1.6/§1.8 (r10).
+**RM เข้าสต็อกเมื่อ QC ตรวจรับ "ผ่าน" เท่านั้น** — Goods Receipt สร้าง **GR object + Lot รอตรวจ (ยังไม่ credit)**; **QC ผ่าน → `GR (+)` credit + ชดเชยติดลบ + FIFO retro-link ที่จุดนี้** · **ไม่ผ่าน → ไม่เข้าสต็อก + Lot ระงับ**. GR object 4 สถานะ (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก). authoritative = `goods-receipt.md` §4/§9 · `qc.md` §4.1 · `stock.md` §2b/§6 · entity-status-map §1.6/§1.8 (r10).
 
 > D1–D7, D14–D17 **ไม่เปลี่ยน**. D8 → D8 v2. D9/D10 = clarify. D11 → D11 v2. D13 = reinforce. D18 = reseat. **D12/D16 = clarify (RM credit gated on QC pass, gr object).**
 
@@ -82,12 +83,13 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 | # | กติกา | รายละเอียด |
 |---|---|---|
 | **G1 Pagination** | list/history ทุกอัน **20 แถว/หน้า + pagination** | ทุก list + **★ stock "Good Receipt (RM)" tab + คิว QC (ตรวจรับ/ตรวจแบตช์)** |
-| **G2 Date-range search** | ค้น **เลขเอกสาร** หรือ **ช่วงวันที่** | quotation/PO/SO/GR/PR/invoice/shipping list + production queue + audit + **★ GR (RM) tab (received-date range)** |
+| **G2 Date-range search** | ค้น **เลขเอกสาร** หรือ **ช่วงวันที่** | quotation/PO/SO/GR/PR/invoice/shipping list + production queue + audit + **★ GR (RM) tab (received-date range) · Return (RT/date)** |
 | **G3 Drill + back คงสถานะ** | กลับ **ไม่เสีย state เดิม** | dashboard drill · PO/SO detail modal · Supply Planning FG modal |
 | **G4 Customer search dropdown** | quotation/po/so-create | ค้นเบอร์/บริษัท/ผู้ติดต่อ · Disabled/Blacklist hard block |
 | **G5 Permission-per-action** | ทุกปุ่มระบุ capability | `permission-matrix.md` |
 | **★ G6 Comment + change-history** | ทุก object ธุรกรรมมี **ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ** | **12 object** · กติกากลาง = **`comment-convention.md`** · **★ r10: comment/feedback ของ Batch แสดงในบริบท Batch นั้น** |
-| **★ G7 Search-in-dropdown (RM/FG/Lot/component)** | RM/Lot/FG + BOM component + supplier price-matrix | **RM & FG ค้นชื่อ+รหัส** · **Lot ค้น dropdown (Loss+Adjust+option "FIFO")** |
+| **★ G7 Search-in-dropdown (RM/FG/Lot/component)** | RM/Lot/FG + BOM component + supplier price-matrix + **★ Return RM-in-lot** | **RM & FG ค้นชื่อ+รหัส** · **Lot ค้น dropdown (Loss+Adjust+option "FIFO")** · **★ Return: เลือก RM ในล็อต ค้นชื่อ+รหัส** |
+| **★ G8 Document number on SAVE** | **create ทุกใบ: ไม่โชว์เลขล่วงหน้า → ออกเลข gapless ตอนบันทึกสำเร็จ + popup ยืนยัน (เลข + summary + ลิงก์ดู/พิมพ์)** · ร่างที่ไม่บันทึกไม่กินเลข | กติกากลาง = **`numbering-on-save.md`** (NS1–NS7) · **Apply:** Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR · **Extend:** DN/SHP · Invoice · PRD · Batch · **นอกขอบเขต:** QC record + master code |
 
 > NFR ระดับระบบ รวมที่ `non-functional.md`.
 
@@ -107,7 +109,9 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 | **★★ Supplier / BOM / Settings module reviews** | price-matrix dropdown+audit · code lock+Active/Inactive+audit · role disable/soft-delete+Admin-only | `supplier.md` · `bom.md` · `settings.md` |
 | **★★ Production module review** | คิว 2 แท็บ · 1 PO หลาย PRD · actual≥ordered · QC-gate พร้อมส่ง · lot-FIFO · loss · ไปหน้า QC · edit-PO→follow-up | `production.md` · `stock.md` · `po.md` §5.2 · `qc.md` · entity-status-map r9 |
 | **★★ Supply Planning module review** | list+expand+modal · FG search ชื่อ/รหัส/RM · สั่งผลิต batch-count + cost/revenue/margin sim · simulate vs save-back · sell-price settled | `supply-planning.md` · `bom.md` · `so.md` · `traceability.md` · `non-functional.md` |
-| **★★ QC + GR/Stock flow review (NEW 2026-07-29 — settled)** | **★ QC-gated stock-in:** RM ไม่เข้าสต็อกทันที · GR สร้าง GR object + Lot รอตรวจ (ยังไม่ credit) · **QC ผ่าน → credit on_hand + ชดเชยติดลบ + FIFO retro-link ที่จุดนี้** · **ไม่ผ่าน → ไม่เข้า + Lot ระงับ** · **GR object 4 สถานะ (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก) + ส่งกลับ QC/ยกเลิก** (ยกเลิก = เฉพาะก่อน credit; หลังผ่านใช้ Return/Loss — PO reasonable decision) · **แท็บ "Good Receipt (RM)" ใน stock** (list+ค้น GR/Lot/Supplier/ชื่อ RM/รหัส/ช่วงวันที่รับ + filter สถานะ 4 + action ส่งกลับ QC/ยกเลิก) · **ตรวจแบตช์ 2 sub-tab OEM/Own-Brand** · **Batch QC ไม่ผ่าน → Rework = กำลังผลิต·Rework (reuse feedback "QC ไม่ผ่าน")** · **comment/feedback ในบริบท Batch** | `qc.md` (primary) · `goods-receipt.md` · `stock.md` §2b/§6 · `entity-status-map.md` §1.4/§1.6/§1.8 (r10) · `traceability.md` §3/§4/§9 · `non-functional.md` AU1/AU3/AU4/R3/R5/§6 |
+| **★★ QC + GR/Stock flow review (2026-07-29 — settled)** | **★ QC-gated stock-in:** RM ไม่เข้าสต็อกทันที · GR สร้าง GR object + Lot รอตรวจ · **QC ผ่าน → credit + ชดเชยติดลบ + FIFO retro-link** · **ไม่ผ่าน → ไม่เข้า + Lot ระงับ** · **GR object 4 สถานะ + ส่งกลับ QC/ยกเลิก** · **แท็บ "Good Receipt (RM)" ใน stock** · **ตรวจแบตช์ 2 sub-tab OEM/Own-Brand** · **Batch QC ไม่ผ่าน → Rework** · **comment ในบริบท Batch** | `qc.md` (primary) · `goods-receipt.md` · `stock.md` §2b/§6 · `entity-status-map.md` §1.4/§1.6/§1.8 (r10) · `traceability.md` §3/§4/§9 · `non-functional.md` |
+| **★★ NEW — Return module: RM selector + list search (2026-07-29)** | **1 Lot ถือได้หลาย RM** (lot = `{supplier prefix}{YYMM}`) → return-create **บังคับเลือก RM ในล็อต (search-in-dropdown ชื่อ+รหัส G7)**; จำนวนคืน ≤ คงเหลือของ (lot, RM); ตัด stock + ledger `return (−)` source ผูก Lot+RM+Supplier+RT; **list ค้น Lot/Supplier/ชื่อ RM/รหัส RM (+ RT/date)** | `return.md` · `goods-receipt.md` §3 (lot naming) · `stock.md` §6 |
+| **★★ NEW — G8 Document number on SAVE (2026-07-29)** | create **ไม่โชว์เลขล่วงหน้า** ("(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · ร่างที่ไม่บันทึกไม่กินเลข · หลายเลข/บันทึก (GR+Lot · SHP+DN) → popup แสดงครบ · **Apply:** Lot/GR/QT/SO/PO/PR · **Extend:** DN/SHP·Invoice·PRD·Batch · **นอกขอบเขต:** QC record + master code | **`numbering-on-save.md` (G8/NS1–NS7)** · quotation/so/po/pr/goods-receipt/stock/shipping/invoice/production · `non-functional.md` D-F2 |
 
 **หมายเหตุ:** Quotation ทำ material check แต่ **ไม่ auto-open PR**.
 
@@ -116,7 +120,7 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 ## 5. ★ Source-of-Truth Statement (ประกาศชัด)
 
 1. **`modules/*.md` = AUTHORITATIVE spec ปัจจุบันของทุก module + NFR + Deletion Policy + Traceability** — ชุดเดียวที่ BA/QA/TL ยึด.
-2. แต่ละ .md เป็น **spec เต็ม**. `non-functional.md` = NFR authoritative · `deletion-policy.md` = deletion authoritative · `traceability.md` = trace/audit governance · **`comment-convention.md` = comment convention authoritative**.
+2. แต่ละ .md เป็น **spec เต็ม**. `non-functional.md` = NFR authoritative · `deletion-policy.md` = deletion authoritative · `traceability.md` = trace/audit governance · **`comment-convention.md` = comment convention authoritative** · **`numbering-on-save.md` = number-on-save (G8) convention authoritative**.
 3. **เอกสารเก่า** = **historical reference** → Hub ⑥ Archive (collapsed).
 4. **เอกสารหลักการเชิงลึก** (`entity-status-map`, `status-journeys`, `stock-reservation`, `scope` D1–D18, `mock-data-spec`, ADRs, `scheduled-jobs`, `rtm`, `glossary`, `list-conventions`) = **authoritative reference** → Hub ③ Reference. **★ entity-status-map §1.1=customer · §1.1b=QT · §1.1c=BOM · §1.4/§1.6 (r9)=Production/Stock · §1.8 (r10)=GR object — sync กับ module spec.** **เมื่อถ้อยคำ D-rule ที่ล็อก (scope) ต่างจาก module spec → module package wins.**
 5. **RTM/Traceability คงครบ.**
@@ -132,6 +136,7 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 | `list-conventions.html` | **G1–G3 (README §3)** + Pagination/Search ทุก module | มาตรฐาน list |
 | `continuity.html` | **platform.md** (noti) + cross-links | cascade reference |
 | `brief.md` · ADR-000..009 · `scheduled-jobs.html` · entity-status-map §1.6 · stock-reservation | **non-functional.md** (J8 · A6/A7/A8) | NFR รวม+อัปเดต |
+| ADR-008 gapless numbering | **`numbering-on-save.md` (G8)** + `non-functional.md` D-F2 | ★ number-on-save = พฤติกรรม create ของทุกใบ |
 | root `deletion-policy.md` · `rbac-deletion.html` | **deletion-policy.md** + **settings.md** / **permission-matrix.md** | fold + entity ใหม่ |
 | `functional-spec/traceability.html` | **traceability.md** — Hub ② Non-Functional | classification เปลี่ยน |
 
@@ -151,7 +156,9 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 | **★ Delete Sale → customers unassigned · US-SET-02 simplified** | **DECIDED 2026-07-29 · settled** | ลบ Sale → unassigned; ไม่ bulk-reassign |
 | **★★ Production (คิวงานผลิต) module review** | **DECIDED 2026-07-29 · settled (no open Q)** | คิว 2 แท็บ · 1 PO หลาย PRD · actual≥ordered · QC-gate พร้อมส่ง · lot-FIFO · loss · ไปหน้า QC · edit-PO→follow-up · Adjust Lot/FIFO |
 | **★★ Supply Planning module review** | **DECIDED 2026-07-29 · settled (no open Q)** | list+expand+modal · FG search ชื่อ/รหัส/RM · สั่งผลิต batch-count + cost/revenue/margin sim · simulate vs save-back · sell-price settled |
-| **★★ QC + GR/Stock flow review (NEW)** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **(1) ★ QC-gated stock-in:** RM ไม่เข้าสต็อกทันที; GR สร้าง GR object + Lot รอตรวจ (ยังไม่ credit); **QC ผ่าน → credit on_hand + ชดเชยติดลบ + FIFO retro-link ที่จุดนี้** (reconcile GR→Lot + negative-compensation + FIFO retro-link เดิม — credit **ย้ายมาที่ QC pass**, กลไกไม่ขัด); **ไม่ผ่าน → ไม่เข้า + Lot ระงับ**. **(2) ★ GR object lifecycle 4 สถานะ** (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก) + **ส่งกลับ QC (re-submit)** / **ยกเลิก GR** (ยกเลิก = เฉพาะก่อน credit → ไม่ reverse ยอด; หลังผ่าน = Return/Loss — PO reasonable decision, override ได้). **(3) ★ แท็บใหม่ "Good Receipt (RM)" ใน stock** (list GR + ค้น GR/Lot/Supplier/ชื่อ RM/รหัส/ช่วงวันที่รับ + filter สถานะ 4 + action ส่งกลับ QC/ยกเลิก). **(4) ★ ตรวจแบตช์ แยก 2 sub-tab: Batch OEM / Batch Own-Brand** (ตัดสินเหมือน; ต่าง context + ปลายทาง surplus vs FG-in). **(5) ★ CONFIRM Batch QC ไม่ผ่าน → Rework = "กำลังผลิต · Rework" (reuse feedback "QC ไม่ผ่าน")** — settled ตรง entity-status-map §1.4. **(6) ★ comment/feedback ในบริบท Batch (UX placement).** อัปเดต `qc.md` (primary) · `goods-receipt.md` · `stock.md` §2b/§5.1/§6/§8/§9/§10 · `entity-status-map.md` §1.4/§1.6/§1.7/§1.8/cascade 17/17b/18/18b (r10) · `traceability.md` §3/§4/§5/§9/§11 · `non-functional.md` AU1/AU3/AU4/R3/R5/§6/§7/§9/§10/D-F2/D-F4/changelog · README |
+| **★★ QC + GR/Stock flow review** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | QC-gated stock-in · GR object lifecycle + ส่งกลับ QC/ยกเลิก · stock "Good Receipt (RM)" tab · ตรวจแบตช์ 2 sub-tab · Batch fail→Rework · comment placement (ดูรอบก่อน) |
+| **★★ NEW — Return module: RM selector + list search** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **1 Lot หลาย RM** (lot = `{supplier prefix}{YYMM}`) → return-create **บังคับเลือก RM ในล็อต (search-in-dropdown ชื่อ+รหัส, G7)**; จำนวนคืน ≤ คงเหลือของ (lot, RM); ตัด stock + ledger `return (−)` source ผูก **Lot+RM+Supplier+RT**; **list ค้น Lot/Supplier/ชื่อ RM/รหัส RM** (+ RT/date). อัปเดต `return.md` (§2/§3/§5/§6/§7/§8/§9/§10/§11) · `stock.md` §6/§8 (return source) · `non-functional.md` AU3/D-F4. |
+| **★★ NEW — G8 Document number on SAVE (number-on-save)** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **create ไม่โชว์เลขล่วงหน้า** (แสดง "(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · **ร่างที่ไม่บันทึกไม่กินเลข** (ป้องกัน gap) · **หลายเลข/บันทึก (GR+Lot · SHP+DN) → popup แสดงครบ (NS7)** · แก้/เวอร์ชันใหม่/void = เลขเดิม (NS6). **Apply (ปอนด์-listed):** Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR. **Extend (propose → apply):** DN/SHP · Invoice · PRD · Batch (PRD/Batch = ออกตอน action → เลขใน confirm popup, NS1 N/A; Batch เลข derived; PR auto = ไม่มี popup). **นอกขอบเขต:** QC record + master code. NEW `numbering-on-save.md` (G8/NS1–NS7) · อ้างจาก quotation/so/po/pr/goods-receipt/stock/shipping/invoice/production create flow · `non-functional.md` D-F2/D-F5/AU1/§6/§9/§10/R5 · README §3 (G8). |
 | `scope-…` D8/credit · U4 · stock-reservation Q1 | คงตามรอบก่อน | D8 v2 · credit 60 · Option A |
 
 ---
@@ -160,15 +167,24 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 
 **punch-list เดิม + delta รอบก่อน:** customer · quotation · po/so · stock/GR/return · bom · production · supply-planning · dashboard/home/platform · qc/shipping/invoice/traceability/settings · pagination/search + customer dropdown. (คงตามรอบก่อน — commit history)
 
-> **★★ QC + GR/Stock flow review — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2026-07-29 · `qc.html` + `goods-receipt.html` + `stock.html` + `production.html`):**
-> - **(QC-1) แท็บ "ตรวจรับวัตถุดิบ (RM incoming)":** คิว GR/Lot สถานะ "รอตรวจ" → บันทึก **ผ่าน/ไม่ผ่าน** ราย Lot (per GR line). **ผ่าน = gate ให้ RM เข้าสต็อก** (แสดงผลว่า credit เกิดตอนนี้ + กล่อง "ชดเชยยอดติดลบ X (ผูก Lot ย้อน FIFO)" ถ้ามี). **ไม่ผ่าน = Lot ระงับ + GR ไม่ผ่าน** + ลิงก์ทำใบคืน.
-> - **(QC-2) แท็บ "ตรวจแบตช์" แยก 2 sub-tab:** **"Batch OEM"** (แสดง PO + ลูกค้า) และ **"Batch Own-Brand"** (แสดง SO produce-to-stock + FG + batch count). การตัดสิน (ผ่าน/ไม่ผ่าน+feedback) เหมือนกัน; default = OEM. deep-link "ไปหน้า QC" เลือก sub-tab อัตโนมัติตามชนิด PRD.
-> - **(QC-3) comment placement:** comment (G6) + feedback ("QC ไม่ผ่าน") ต้องแสดง **ในบริบท/ติดกับ card ของ Batch นั้น** (ไม่ลอยแยก) — ให้ชัดว่าเป็นของ Batch ใด.
-> - **(GR-1) `goods-receipt.html`:** บันทึก GR แล้ว → GR = "QC ตรวจสอบ" + Lot รอตรวจ (**แสดงชัดว่า "ยังไม่เข้าสต็อก รอ QC"**); **กล่องชดเชยยอดติดลบย้ายไปแสดงตอน QC ผ่าน** (ไม่ใช่ตอนบันทึก GR).
-> - **(STK-2) แท็บใหม่ "Good Receipt (RM)" ใน `stock.html`:** เคียงข้าง RM/FG. list GR ทุกใบ (20/หน้า) + **search: GR / Lot / Supplier / ชื่อ RM / name-code / ช่วงวันที่รับ** + **filter สถานะ: ผ่าน / ไม่ผ่าน / QC ตรวจสอบ / ยกเลิก** + **action: ส่งกลับไปที่ QC (re-submit) / ยกเลิก (cancel)** + ลิงก์เปิด GR เต็ม / ทำใบคืน.
-> - **(PRD-fail) Batch QC ไม่ผ่าน → PRD = "กำลังผลิต · Rework"** (สีฟ้า processing) + gen Batch run ถัดไป (คงตาม production.md §6.2 — ยืนยันคำศัพท์สถานะ).
-> ยึด `qc.md` §2/§2b/§4/§9 · `goods-receipt.md` §4 · `stock.md` §2b · `entity-status-map.md` §1.8.
-> **หมายเหตุ collision:** รอบนี้ PO แก้ **requirement docs เท่านั้น** — mockups (QC-1..3 · GR-1 · STK-2 · PRD-fail) เป็นงานที่ส่งต่อ UX/UI (เข้า GATE 1 review เฉพาะหน้าที่แก้).
+> **★★ QC + GR/Stock flow review — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2026-07-29 · `qc.html` + `goods-receipt.html` + `stock.html` + `production.html`):** (QC-1/QC-2/QC-3 · GR-1 · STK-2 · PRD-fail — คงตามรอบก่อน, commit history)
+
+> **★★ NEW รอบนี้ (2026-07-29) — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2 คำสั่งปอนด์):**
+>
+> **(A) Return module — `return.html` (create + list):**
+> - **(RET-1) RM selector บน return-create (บังคับ):** หลังเลือก Lot (→ supplier auto) เพิ่ม **ช่องเลือกวัตถุดิบ (RM) ในล็อตนั้น** = **search-in-dropdown ค้นชื่อ+รหัส RM (G7)**; ตัวเลือกจำกัดเฉพาะ RM ที่ยังมีคงเหลือใน lot (on_hand ของ (lot, RM) > 0) + แสดงคงเหลือของ RM ตัวนั้นเป็นเพดานจำนวนคืน. ลำดับฟิลด์: Lot → supplier(auto) → **RM** → จำนวน → เหตุผลการคืน(บังคับ) → comment.
+> - **(RET-2) validation:** จำนวนคืน **≤ คงเหลือของ RM ที่เลือกในล็อต** (ต่อ (lot, RM) ไม่ใช่ทั้ง lot); ไม่เลือก RM = error "ต้องเลือกวัตถุดิบที่จะคืนในล็อตนี้".
+> - **(RET-3) list search:** เพิ่มค้นด้วย **Lot / Supplier / ชื่อ RM / รหัส RM** (คง RT/ช่วงวันที่เดิม) — RM = search-in-dropdown (ชื่อ+รหัส).
+> - ยึด `return.md` §2/§3/§5/§8/§9.
+>
+> **(B) Number-on-save (G8) — ทุกหน้า create ที่ออกเลข:**
+> - **(NS-A) ซ่อนเลขล่วงหน้าบน create:** ช่อง "เลขเอกสาร" บนหน้าสร้าง แสดงเป็น **read-only placeholder "(ระบบออกให้เมื่อบันทึก)"** (ไม่มีเลขจริง). ครอบ: **goods-receipt (GR+Lot) · quotation-create (QT) · so-create (SO) · po-create (PO) · pr-create (PR)** + extend **shipping create-round (SHP+DN) · invoice ออกใบ (INV)**.
+> - **(NS-B) popup ยืนยันหลังบันทึกสำเร็จ:** เด้ง **confirmation popup** แสดง **(ก) เลขที่ออกให้ (เด่นชัด)** + **(ข) สรุปเอกสาร** (คู่ค้า/ลูกค้า/supplier · จำนวนรายการ · ยอดรวม/ปริมาณ ตามชนิด) + **(ค) ลิงก์ "ดูรายละเอียด"/"พิมพ์"** ตามที่มี. **หลายเลขต่อการบันทึก → popup แสดงครบ:** goods-receipt = **GR + ทุก Lot** (+ ย้ำ "ยังไม่เข้าสต็อก รอ QC"); shipping = **SHP + ทุก DN** ในรอบ (NS7).
+> - **(NS-C) PRD/Batch (production):** ไม่มีฟอร์ม create ที่โชว์ช่องเลข → **แสดงเลขที่ออกให้ใน confirm popup ของ action เดิม** — **"รับงาน" → เลข PRD**, **"เริ่มผลิต" → เลข Batch** (fold เข้ากับ confirm popup เดิม §7.7 ของ production, ไม่ทำ popup ซ้อนใหม่).
+> - **(NS-D) พฤติกรรม:** ปิด/ยกเลิกร่างก่อนบันทึก = ไม่ออกเลข; แก้/เวอร์ชันใหม่/void = เลขเดิม (ไม่มี popup ออกเลข).
+> - ยึด `numbering-on-save.md` (G8/NS1–NS7) + create flow ของแต่ละ module (quotation §5 · po §5 · so §5/§6 · pr §5 · goods-receipt §5 · shipping §5 · invoice §5 · production §7.7).
+>
+> **หมายเหตุ collision:** รอบนี้ PO แก้ **requirement docs เท่านั้น** — mockups (RET-1..3 · NS-A..D) เป็นงานที่ส่งต่อ UX/UI (เข้า GATE 1 review เฉพาะหน้าที่แก้). **stock.md แก้โดย PO (.md) ขณะ UX แก้ stock.html — ไม่ชนไฟล์.**
 
 > **★★ รอบก่อน (Production PROD-1..14/STK-1 · Supply Planning SP-1..10 · Comment control · Customer Edit · Quotation REVERT Sent · Stock · Supplier/BOM · Settings) — คงตามรอบก่อน (commit history).**
 
@@ -177,15 +193,12 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 ## 9. Open questions
 **ไม่มี open question ค้าง — ปิดครบทั้งหมด (2026-07-29).**
 
-**คำถามที่ปิดแล้ว (2026-07-29):** Supply Planning proactive alert · Quotation abandon/review/REVERT Sent · Traceability/Reference · Customer · Comment convention · Stock · Supplier · BOM · Settings · **Production module review** · Delete Sale → unassigned · **Supply Planning module review** · **★★ QC + GR/Stock flow review → DECIDED (settled, no open Q).**
+**คำถามที่ปิดแล้ว (2026-07-29):** Supply Planning proactive alert · Quotation abandon/review/REVERT Sent · Traceability/Reference · Customer · Comment convention · Stock · Supplier · BOM · Settings · **Production module review** · Delete Sale → unassigned · **Supply Planning module review** · **★★ QC + GR/Stock flow review** · **★★ NEW Return RM selector + list search → DECIDED (settled, no open Q)** · **★★ NEW G8 number-on-save → DECIDED (settled, no open Q).**
 
-> **★★ QC + GR/Stock flow — PO reasonable decisions (settled; ไม่ถือเป็น open question — locked mechanics เป็นตัวกำหนด):**
-> - **★ credit gated on QC pass = คำสั่งตรงของปอนด์** ("ผ่าน → RM เข้าสต็อก · ไม่ผ่าน → ไม่เข้า"); credit + FIFO retro-link **ย้ายจากตอน GR มาที่จุด QC pass**. กลไก negative-stock/FIFO-retro-link เดิม **ไม่ขัดกัน** (เพียงเลื่อน trigger หนึ่งขั้น) → **ไม่มี genuine conflict**.
-> - **★ GR-cancel restore negative stock?** ในโมเดลใหม่ GR ที่ยกเลิกได้ **ยังไม่เคย credit สต็อก** (ยกเลิก = เฉพาะสถานะ QC ตรวจสอบ/ไม่ผ่าน) → **ยกเลิกไม่ต้อง restore/reverse อะไร** และ **ไม่กระทบยอดติดลบ** (ติดลบคงอยู่จนกว่ามี GR/Lot ที่ผ่านมาชดเชย) — determined. หลังผ่านแล้วต้องเอาของออก = **Return/Loss** (คง ledger/GMP), ไม่ใช่ยกเลิก GR.
-> - **★ QC-fail interact กับ FIFO retro-link?** QC ไม่ผ่าน → **ไม่ credit → ไม่มี retro-link** → ยอดติดลบ (ถ้ามี) คงอยู่จนกว่า GR/Lot ที่ผ่านใบถัดไปมาชดเชย; Lot ที่ไม่ผ่าน = ระงับ → คืน supplier — determined (ตามกลไก credit-on-pass).
-> - **★ Batch QC ไม่ผ่าน → กำลังผลิต·Rework** = ตรง entity-status-map §1.4 (locked) → settled (ปอนด์: "ถ้าใช่ เอาเป็นแบบนี้ไปก่อน"). "QC ไม่ผ่าน" comment = reuse feedback field.
-> **ถ้าปอนด์เห็นต่างข้อใด — แจ้งปรับได้** (เช่น อยากให้ credit เกิดตอนรับของ (GR) แล้ว QC เป็นแค่ release-to-use เหมือนเดิม, หรืออยากให้ยกเลิก GR หลังผ่านแบบ reverse credit) — default ปัจจุบันตามด้านบน.
+> **★★ NEW — PO reasonable decisions (settled; ไม่ถือเป็น open question — ปอนด์ override ได้):**
+> - **★ G8 ขยายไป DN/SHP · Invoice · PRD · Batch = apply** (ปอนด์: "apply to those too unless one has a reason not to"). **ไม่มีเอกสารใดที่ genuinely shouldn't follow** → **ไม่มีคำถามค้าง**. ข้อยกเว้นเชิงเทคนิคที่อธิบายไว้ (ไม่ใช่ open question): **PRD/Batch** ออกเลขตอน action ("รับงาน"/"เริ่มผลิต") ไม่มีฟอร์ม create ที่โชว์ช่องเลข → ใช้ **confirm popup เดิมแสดงเลข** (NS1 N/A, ไม่ทำ popup ซ้อน); **Batch เลข derived** (`B-{PO}-{line}-{run}`) ไม่ใช่ gapless-per-เดือน; **PR auto จาก PO/SO** = ระบบออกเลขเอง ไม่มี popup (ไม่มี user action); **QC record + master code (RM/BOM/FG)** = นอกขอบเขต G8 (ไม่มี running number). *(ถ้าปอนด์อยากให้ doc ใด ไม่ใช้ G8 หรืออยากโชว์เลขล่วงหน้าบางใบ — แจ้งปรับได้.)*
+> - **★ Return:** "1 Lot หลาย RM" มาจาก lot naming (`{supplier prefix}{YYMM}` แชร์หลาย RM, `goods-receipt.md` §3) → RM selector บังคับ + จำนวนคืนหักจาก (lot, RM). settled.
 
-> **การตัดสินสมเหตุผลของ PO รอบก่อน (ไม่ถือเป็น open question):** 1 PO หลาย PRD (locked model) · "พร้อมส่ง" QC-gated · Rework ในกลุ่มกำลังผลิต · Stock Adjust อ้าง Lot/FIFO · Supply Planning revenue = ราคาขาย (BOM §3) ก่อน VAT. (คงตามรอบก่อน)
+> **การตัดสินสมเหตุผลของ PO รอบก่อน (ไม่ถือเป็น open question):** QC-gated stock-in / GR object lifecycle / 1 PO หลาย PRD / "พร้อมส่ง" QC-gated / Rework ในกลุ่มกำลังผลิต / Stock Adjust อ้าง Lot/FIFO / Supply Planning revenue = ราคาขาย ก่อน VAT. (คงตามรอบก่อน)
 
-> **สรุปสถานะ:** ทุกรายการ **settled → READY_FOR_UX_UI**. รอบล่าสุด = **QC + GR/Stock flow review** (QC-gated stock-in · GR object lifecycle + ส่งกลับ QC/ยกเลิก · stock "Good Receipt (RM)" tab · ตรวจแบตช์ 2 sub-tab OEM/Own-Brand · Batch fail→Rework · comment placement) — ripples ครบทุกไฟล์ (`qc.md`/`goods-receipt.md`/`stock.md`/`entity-status-map.md`/`traceability.md`/`non-functional.md`/README).
+> **สรุปสถานะ:** ทุกรายการ **settled → READY_FOR_UX_UI**. รอบล่าสุด = **(1) Return RM selector + list search · (2) G8 number-on-save** — ripples: `return.md` · `numbering-on-save.md` (NEW) · quotation/so/po/pr/goods-receipt/stock/shipping/invoice/production (อ้าง G8) · `non-functional.md` · README.

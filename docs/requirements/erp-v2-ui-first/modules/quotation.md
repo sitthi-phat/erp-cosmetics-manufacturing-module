@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mockups/quotation-detail.html`
-กฎอ้างอิง: **D18** (OEM Quotation) · D3 (RM-direct ผ่านขั้นผลิต) · README §3 (G1–G5) · §4 (Convert-to-PO resolution) · `deletion-policy.md` §2.9 (cancel-anytime) · **`customer.md` §4.2 (hard block Disabled/Blacklist)** · **`bom.md` §5c (inactive-BOM block)** · **`traceability.md` §3/§4 (QT = head-of-chain, activity/field-audit)** · **`non-functional.md` §3 (AU1 audit)** · **`comment-convention.md` (comment + change-history)**
+กฎอ้างอิง: **D18** (OEM Quotation) · D3 (RM-direct ผ่านขั้นผลิต) · README §3 (G1–G5, **G8**) · §4 (Convert-to-PO resolution) · `deletion-policy.md` §2.9 (cancel-anytime) · **`customer.md` §4.2 (hard block Disabled/Blacklist)** · **`bom.md` §5c (inactive-BOM block)** · **`traceability.md` §3/§4 (QT = head-of-chain, activity/field-audit)** · **`non-functional.md` §3 (AU1 audit) · §5 (D-F2 gapless)** · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลขออกตอนบันทึก)**
 
 ## สรุปภาษาไทย
-ใบเสนอราคา **เฉพาะสาย OEM** (Own-Brand SO ไม่มี Quotation). เลข `QT-{YYYYMM}-{NNNNNN}`. สถานะ: **ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **แก้ทุกครั้ง = เวอร์ชันใหม่เสมอ (immutable)** · ไม่มีวันหมดอายุ. **★ การส่งใบเสนอราคาให้ลูกค้า = แค่ print/share (พิมพ์/ส่งไฟล์) — ไม่ใช่สถานะ และไม่มีฟิลด์ "วันที่ส่งลูกค้า"**. Create + Edit: **customer search dropdown**, มี **"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"** ทั้งหน้า create และ edit. **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน QT ไม่ได้ (HARD block)**. **★ BOM/FG ที่ถูกตั้ง Inactive = เปิด QT ไม่ได้ (HARD block, คนละแหล่งกับลูกค้า — `bom.md` §5c)**. ปุ่มหลัก = **"บันทึก"** แล้วโชว์ **print-ready view**. list ค้นได้ **แกนวันที่เดียว = ช่วงวันที่สร้าง (created-date)** + filter/badge ครบทุกสถานะ (ร่าง/ยืนยัน/ปฏิเสธ/ยกเลิก). **★ Convert to PO (2026-07-29 — DECIDED):** กด "Convert to PO (ออก PO เลขใหม่)" → **popup ยืนยัน "สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"** → ตั้ง QT = **ยืนยัน (Confirmed) ทันที** (immutable) ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ → ให้ผู้ใช้ **เลือก "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"**. ถ้า QT = Confirmed แต่ **ยังไม่มี PO** → detail โชว์ banner ถาวร *"ใบเสนอราคานี้ได้รับการยืนยันแล้ว"* + ปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** (ไม่ใช่ครั้งเดียว). PO อ้าง QT แบบ **loose reference → ไม่มี cascade**. **★ ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ). **★ ทุก action (create/edit→version/convert→Confirmed/cancel) เขียน activity-log + โผล่หน้า traceability** (QT = หัวสาย OEM: QT→PO→PRD→Batch→…). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบเสนอราคา **เฉพาะสาย OEM** (Own-Brand SO ไม่มี Quotation). เลข `QT-{YYYYMM}-{NNNNNN}`. สถานะ: **ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) + ยกเลิก (Cancelled)** · **แก้ทุกครั้ง = เวอร์ชันใหม่เสมอ (immutable)** · ไม่มีวันหมดอายุ. **★ การส่งใบเสนอราคาให้ลูกค้า = แค่ print/share (พิมพ์/ส่งไฟล์) — ไม่ใช่สถานะ และไม่มีฟิลด์ "วันที่ส่งลูกค้า"**. Create + Edit: **customer search dropdown**, มี **"เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)"** ทั้งหน้า create และ edit. **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน QT ไม่ได้ (HARD block)**. **★ BOM/FG ที่ถูกตั้ง Inactive = เปิด QT ไม่ได้ (HARD block, คนละแหล่งกับลูกค้า — `bom.md` §5c)**. ปุ่มหลัก = **"บันทึก"** แล้วโชว์ **print-ready view**. **★ เลข QT ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออกเลข gapless ตอนบันทึกสำเร็จ + popup ยืนยันแสดงเลข QT + สรุป (G8 · `numbering-on-save.md`)**. list ค้นได้ **แกนวันที่เดียว = ช่วงวันที่สร้าง (created-date)** + filter/badge ครบทุกสถานะ (ร่าง/ยืนยัน/ปฏิเสธ/ยกเลิก). **★ Convert to PO (2026-07-29 — DECIDED):** กด "Convert to PO (ออก PO เลขใหม่)" → **popup ยืนยัน "สถานะจะเปลี่ยนเป็น ยืนยัน (Confirmed)"** → ตั้ง QT = **ยืนยัน (Confirmed) ทันที** (immutable) ไม่ว่าจะไปสร้าง PO ต่อหรือไม่ → ให้ผู้ใช้ **เลือก "ไปสร้าง PO เดี๋ยวนี้ (prefill)" หรือ "ไว้ทีหลัง"**. ถ้า QT = Confirmed แต่ **ยังไม่มี PO** → detail โชว์ banner ถาวร *"ใบเสนอราคานี้ได้รับการยืนยันแล้ว"* + ปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** (ไม่ใช่ครั้งเดียว). PO อ้าง QT แบบ **loose reference → ไม่มี cascade**. **★ ยกเลิกได้ทุกสถานะ** (เหตุผลบังคับ). **★ ทุก action (create/edit→version/convert→Confirmed/cancel) เขียน activity-log + โผล่หน้า traceability** (QT = หัวสาย OEM: QT→PO→PRD→Batch→…). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -16,14 +16,14 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 | หน้าจอ | บทบาท |
 |---|---|
 | `quotation-list.html` | list QT + **filter สถานะครบชุด: ร่าง / ยืนยัน / ปฏิเสธ / ยกเลิก** (badge ครบทุกสถานะ) + **search เลข QT / ช่วงวันที่สร้าง (created-date range)** (G2) + 20/หน้า (G1) |
-| `quotation-create.html` | สร้าง QT ใหม่ (customer dropdown, line, **material check เหมือน Page PO — ไม่สร้าง/ส่ง PR**, **ช่อง comment**) |
+| `quotation-create.html` | สร้าง QT ใหม่ (customer dropdown, line, **material check เหมือน Page PO — ไม่สร้าง/ส่ง PR**, **ช่อง comment**) · **★ ช่องเลข QT = "(ระบบออกให้เมื่อบันทึก)" (G8)** |
 | `quotation-detail.html` | ดูรายละเอียด + ประวัติเวอร์ชัน + **activity-log (แสดงในหน้า)** + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** + ปุ่ม **Convert to PO** (popup → Confirmed) + **banner "ยืนยันแล้ว · ไปสร้าง PO ด้วยข้อมูลนี้" (ถาวร เมื่อ Confirmed-แต่ยังไม่มี PO)** + **ปุ่มยกเลิก** + **print-ready view (พิมพ์/ส่งให้ลูกค้า)** |
 | edit = สร้างเวอร์ชันใหม่จาก detail (immutable) | **มี material check เหมือนหน้า create** (ไม่สร้าง/ส่ง PR) |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
 |---|---|---|---|
-| เลข `QT-{YYYYMM}-{NNNNNN}` | string | computed (auto, gapless ต่อเดือน) | ออกตอนบันทึกครั้งแรก · ยกเลิกแล้วเลขคงอยู่ (gapless) |
+| เลข `QT-{YYYYMM}-{NNNNNN}` | string | computed (auto, gapless ต่อเดือน) | **★ ไม่โชว์บน create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออกตอนบันทึกสำเร็จ + popup (G8)** · ยกเลิกแล้วเลขคงอยู่ (gapless) |
 | เวอร์ชัน | int | computed | แก้ = +1, เก็บเวอร์ชันเก่า (immutable) |
 | ลูกค้า | ref customer | editable (via dropdown G4) | แสดง สถานะ + credit term เมื่อเลือก · **Disabled/Blacklist เลือกไม่ได้ (§8)** |
 | วันที่สร้าง (created-date) | date | computed | ออกตอนบันทึกครั้งแรก · **แกนค้นหาวันที่เดียวของ list (§9)** |
@@ -56,17 +56,17 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 > **หมายเหตุ:** การแก้ **comment** ไม่ทำให้เกิดเวอร์ชันใหม่ของ QT (comment เป็น metadata เชิงบันทึก แก้ทับได้ทุกสถานะรวม Confirmed/Cancelled — comment-convention.md §3); ประวัติการแก้ comment เก็บใน field-audit แยกจากประวัติเวอร์ชันของ line/ราคา.
 
 ## 5. ★ Create flow (delta)
-1. เปิด `quotation-create` → **เลือกลูกค้าผ่าน customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail แบบ modal แล้วกลับไม่เสีย state).
+1. เปิด `quotation-create` → **เลือกลูกค้าผ่าน customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail แบบ modal แล้วกลับไม่เสีย state). **★ ช่องเลข QT บนหน้านี้ = read-only "(ระบบออกให้เมื่อบันทึก)" — ยังไม่มีเลขจริงจนกว่าจะบันทึก (G8/NS1).**
    - **★ Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ลูกค้าสถานะ Disabled/Blacklist **ค้นเจอ+เห็นสถานะ แต่เลือกไม่ได้** (disabled option); ถ้าหลุดเข้ามาต้อง **บล็อกตอนบันทึก** พร้อมข้อความ *"ลูกค้าสถานะ {Disabled/Blacklist} — เปิดใบเสนอราคาไม่ได้"*. เป็น **HARD block** (ต่างจาก TYPE mismatch = เตือน).
 2. เพิ่ม line items (BOM/RM + qty + ราคา/หน่วย). RM-direct line → แสดง hint D3 ("ผ่านขั้นผลิตเมื่อเป็น PO").
    - **★ Hard block BOM/FG Inactive (`bom.md` §5c):** BOM/FG ที่ถูกตั้ง **Inactive (ปิดใช้งาน)** **หายจาก dropdown เลือกรายการ**; ถ้าหลุดเข้ามา → **บล็อกตอนบันทึก** ข้อความ *"สูตร/สินค้านี้ปิดใช้งาน (Inactive) — เปิดใบเสนอราคาไม่ได้"*. คนละแหล่งกับ block ลูกค้า.
 3. **"เช็ควัตถุดิบตามสูตร"** — เช็ค RM ตาม BOM เหมือน PO **แต่:** อนุญาตสร้าง Quotation ได้เสมอ (ไม่บล็อกแม้ RM ขาด) · **ไม่ auto-สร้าง/ส่ง PR ไปคลัง** (Quotation ยังไม่ผูกพันการผลิต/จัดซื้อ).
 4. (optional) กรอก **หมายเหตุ (comment)** ได้ (ช่องเดียว) — ดู §5c.
-5. กด **"บันทึก"** → บันทึก QT (Draft) + **เขียน activity-log "สร้าง QT"** → **แสดง print-ready view ทันที**.
+5. กด **"บันทึก"** → **★ ระบบออกเลข QT gapless ตอนบันทึกสำเร็จ (G8/NS2)** + บันทึก QT (Draft) + **เขียน activity-log "สร้าง QT"** → **★ popup ยืนยันแสดง "เลข QT ที่ออกให้ + สรุป (ลูกค้า/จำนวน line/ยอดรวม)" + ลิงก์ดู detail/print-ready (G8/NS3)** → แสดง print-ready view.
 > การส่งใบเสนอราคาให้ลูกค้า = **print/share** จาก print-ready view (พิมพ์/ส่งไฟล์) — **ไม่ใช่การเปลี่ยนสถานะ** และไม่บันทึกวันที่ส่ง. primary action ตอนสร้าง = "บันทึก".
 
 ## 5b. ★ Edit flow (delta — NEW confirm 2026-07-29)
-- แก้ QT ที่ออกไปแล้ว = **สร้างเวอร์ชันใหม่เสมอ** (immutable, เก็บประวัติ) → เขียน activity-log "แก้ไข → เวอร์ชันใหม่ v{n}".
+- แก้ QT ที่ออกไปแล้ว = **สร้างเวอร์ชันใหม่เสมอ** (immutable, เก็บประวัติ) → เขียน activity-log "แก้ไข → เวอร์ชันใหม่ v{n}". **★ ใช้เลข QT เดิม (G8/NS6 — ไม่ออกเลขใหม่).**
 - **★ หน้า edit ต้องมี "เช็ควัตถุดิบตามสูตร (เหมือน PO · แต่ไม่สร้าง/ส่ง PR)" เช่นเดียวกับหน้า create** (§5.3) — เช็ค RM ตาม BOM, เตือนเท่านั้น, ไม่บล็อก, **ไม่ auto-PR**.
 - ลูกค้า/line/ราคา แก้ได้ในเวอร์ชันใหม่ · hard block Disabled/Blacklist + hard block Inactive BOM/FG ยังบังคับ (§8).
 
@@ -81,7 +81,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
    - **(ก) ยืนยัน + ไปสร้าง PO เดี๋ยวนี้ (prefill)** — ตั้ง QT = Confirmed แล้วเปิด `po-create` ที่ PRE-FILL.
    - **(ข) ยืนยันเฉย ๆ (ไว้สร้าง PO ทีหลัง)** — ตั้ง QT = Confirmed แล้วกลับหน้า detail (ยังไม่มี PO).
 2. **ระบบตั้ง QT = ยืนยัน (Confirmed) ทันทีทั้ง 2 ทาง** → QT **immutable** → **เขียน activity-log "Convert to PO → Confirmed (ใคร/เมื่อ)"**. (การไปสร้าง PO จริงหรือไม่ = อิสระจากการเปลี่ยนสถานะ.)
-3. ถ้าเลือก (ก): เปิดหน้า **`po-create` ที่ PRE-FILL** line items + qty + ราคา/หน่วย จาก QT + สร้าง **ลิงก์ QT↔PO แบบ loose reference** ("created from QT-…"; D18-1/§8.1). ผู้ใช้กรอกฟิลด์ที่เหลือ (วันที่ต้องการรับของ, remark) → บันทึก → ออก **PO เลขใหม่** → เข้า OEM flow เดิม.
+3. ถ้าเลือก (ก): เปิดหน้า **`po-create` ที่ PRE-FILL** line items + qty + ราคา/หน่วย จาก QT + สร้าง **ลิงก์ QT↔PO แบบ loose reference** ("created from QT-…"; D18-1/§8.1). ผู้ใช้กรอกฟิลด์ที่เหลือ (วันที่ต้องการรับของ, remark) → บันทึก → **★ ออก PO เลขใหม่ตอนบันทึก + popup (G8, `po.md` §5)** → เข้า OEM flow เดิม.
 4. **★ QT = Confirmed แต่ยังไม่มี PO (persistent affordance):** ถ้าเลือก (ข) หรือปิดหน้า po-create ก่อนบันทึก → `quotation-detail` แสดง **banner ถาวร:** *"ใบเสนอราคานี้ได้รับการยืนยันแล้ว"* + ปุ่ม **"ไปสร้าง PO ด้วยข้อมูลนี้"** (prefill เหมือนข้อ 3) — **โชว์ทุกครั้งจนกว่าจะมี PO ผูก** (ไม่ใช่ครั้งเดียว). เมื่อ PO ถูกสร้าง → banner เปลี่ยนเป็นลิงก์ "🔗 PO-…".
 > **ลูกค้าไม่ตกลง** → ตั้ง QT = ปฏิเสธ (Rejected) จาก detail → จบสาย ไม่เกิด PO.
 > **หมายเหตุ:** ถ้าลูกค้ากลายเป็น Disabled/Blacklist หลังออก QT (หรือ BOM/FG ถูก Inactivate) → Convert to PO / สร้าง PO จาก banner **ถูกบล็อก** (customer.md §4.2 · bom.md §5c) เช่นเดียวกับการเปิด PO ตรง.
@@ -107,6 +107,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 - แก้ QT ที่ออกไปแล้ว → บังคับสร้างเวอร์ชันใหม่ (ห้ามแก้ทับ); Confirmed = immutable. **(comment ยกเว้น — แก้ทับได้ ไม่สร้างเวอร์ชัน §5c).**
 - Convert to PO ทำได้เมื่อ QT = **ร่าง (Draft)** (ไม่ใช่ Confirmed/Rejected/Cancelled) **และลูกค้าไม่ใช่ Disabled/Blacklist และ BOM/FG ไม่ Inactive**.
 - material check = เตือนเท่านั้น (ไม่บล็อก, ไม่ auto-PR) — **คนละกฎกับ hard block ข้างบน** — มีทั้งหน้า create และ edit.
+- **★ เลข QT ออกตอนบันทึกสำเร็จเท่านั้น (G8/NS2) — ร่างที่ไม่บันทึกไม่กินเลข (NS4).**
 - **★ ยกเลิก QT:** ทำได้ทุกสถานะ · **เหตุผลบังคับ** (comment ยกเลิก) → บันทึก activity-log · เลข QT คงอยู่ gapless (ไม่ hard-delete) · **ไม่ทำอะไรกับ PO ที่ผูก** (loose ref, no cascade).
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3).
 
@@ -120,7 +121,7 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 **ทุก action ของ QT ต้องเขียน activity/field-audit (AU1) และโผล่บนหน้า traceability (สืบย้อนกลับ):**
 | action | บันทึก activity-log | ปรากฏบน trace |
 |---|---|---|
-| สร้าง QT (Draft) | ✓ ใคร/เมื่อ + เลข QT | ✓ QT = head-of-chain |
+| สร้าง QT (Draft) + **ออกเลข (G8)** | ✓ ใคร/เมื่อ + เลข QT | ✓ QT = head-of-chain |
 | แก้ไข → เวอร์ชันใหม่ | ✓ v{n-1}→v{n} + diff field | ✓ (ประวัติเวอร์ชัน) |
 | **★ แก้ไข comment (แก้ในที่)** | ✓ ใคร/เมื่อ + เดิม→ใหม่ (comment-convention.md) | ✓ (entity=QT, field=`comment`) |
 | **Convert to PO (→ Confirmed)** | ✓ + ผูก loose ref QT↔PO (เมื่อสร้าง PO) | ✓ QT→PO→PRD→Batch→… |
@@ -136,11 +137,13 @@ Mockups: `mockups/quotation-list.html` · `mockups/quotation-create.html` · `mo
 - **Inactive BOM/FG block → `bom.md` §5c · `deletion-policy.md` §2.4.**
 - **Cancel policy → `deletion-policy.md` §2.9 (cancel-anytime, loose ref, no cascade).**
 - **Activity/audit → `traceability.md` §3/§4 (QT head-of-chain) + `non-functional.md` §3 (AU1).**
+- **★ เลขออกตอนบันทึก (G8) → `numbering-on-save.md` · gapless → `non-functional.md` §5 (D-F2).**
 - **Comment + change-history → `comment-convention.md`.**
 - Trace QT→PO→… → scope §8.1.
 
 ## 12. Module changelog
 - **เพิ่ม:** customer search dropdown; material check (no auto-PR); print-ready view หลังบันทึก; Convert-to-PO prefill flow (resolved).
+- **★ เพิ่ม (2026-07-29 — number-on-save G8, ปอนด์ cross-cutting):** เลข QT **ไม่โชว์บน create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออก gapless ตอนบันทึกสำเร็จ + popup ยืนยัน (เลข + summary + ลิงก์ print-ready)** — §3/§5/§8/§10/§11, ยึด `numbering-on-save.md` (G8/NS1–NS4/NS6). แก้/เวอร์ชันใหม่ = เลขเดิม.
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/convert QT เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) — คนละกฎกับ TYPE mismatch (warn).
 - **★ DECIDED (2026-07-29) — Cancel:** QT ยกเลิกได้ **ทุกสถานะ** (เพิ่มสถานะ "ยกเลิก") · PO เก็บแค่ **loose reference** · ยกเลิก QT = **ไม่ cascade ไป PO** · บันทึก **activity-log** + เลข gapless.
 - **★ DECIDED (2026-07-29 — Quotation module review, Pond) — reseat status + activity:**
