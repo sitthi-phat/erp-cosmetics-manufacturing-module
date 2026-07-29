@@ -172,8 +172,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="content">
  <div class="pagehead"><div><h1>สต็อก (วัตถุดิบ + สินค้าสำเร็จรูป)</h1><div class="sub">แท็บ <b>RM</b> = วัตถุดิบ · แท็บ <b>FG</b> = สินค้าสำเร็จรูป (ราย Batch/FIFO) · คงเหลือเรียลไทม์ · เกณฑ์ "ใกล้หมด" <b>ไม่มีค่าเริ่มต้น</b> — Admin/คลังตั้งเองต่อวัตถุดิบจึงจะเริ่มเตือน · แยกราคาซื้อ/ขาย</div></div>
   <div style="display:flex;gap:10px"><button class="btn">➕ เพิ่มวัตถุดิบใหม่</button><a class="btn btn-primary" href="goods-receipt.html">📦 รับเข้าคลัง (Goods Receipt)</a></div></div>
- <div class="tabs"><a class="active" onclick="stkTab(0,this)">🗄️ วัตถุดิบ (RM)</a><a onclick="stkTab(1,this)">🧴 สินค้าสำเร็จรูป (FG) · ราย Batch</a></div>
- <script>function stkTab(i,el){document.querySelectorAll('.tabs a').forEach(function(a){a.classList.remove('active')});el.classList.add('active');document.getElementById('tab-rm').style.display=i===0?'block':'none';document.getElementById('tab-fg').style.display=i===1?'block':'none';}</script>
+ <div class="tabs"><a class="active" onclick="stkTab(0,this)">🗄️ วัตถุดิบ (RM)</a><a onclick="stkTab(1,this)">🧴 สินค้าสำเร็จรูป (FG) · ราย Batch</a><a onclick="stkTab(2,this)">📦 Good Receipt (RM) <span class="count">18</span></a></div>
+ <script>function stkTab(i,el){document.querySelectorAll('.tabs a').forEach(function(a){a.classList.remove('active')});el.classList.add('active');document.getElementById('tab-rm').style.display=i===0?'block':'none';document.getElementById('tab-fg').style.display=i===1?'block':'none';document.getElementById('tab-gr').style.display=i===2?'block':'none';}</script>
  <div id="tab-rm"><div class="split">
   <div class="card"><div class="card-b">
     <div class="toolbar"><div class="l"><h3>วัตถุดิบ</h3><span class="count">32 รายการ</span></div><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหาชื่อ/รหัส (กรองทันที)"></div></div>
@@ -332,6 +332,50 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    </div></div>
   </div>
  </div>
+ <!-- ============ STK-2: Good Receipt (RM) tab — warehouse view of GR objects (goods-receipt.md §4 · stock.md §2b) ============ -->
+ <div id="tab-gr" style="display:none">
+  <div class="alert alert-info" style="font-size:13px"><span class="ai">📦</span><div>มุมมองคลังของ <b>ใบรับวัตถุดิบ (GR)</b> ทุกใบ · <b>RM เข้าสต็อกเมื่อ QC ตรวจรับ "ผ่าน" เท่านั้น</b> — สถานะ <span class="badge b-warning plain" style="height:20px">QC ตรวจสอบ</span>/<span class="badge b-error plain" style="height:20px">ไม่ผ่าน</span>/<span class="badge b-neutral plain" style="height:20px">ยกเลิก</span> = <b>ยังไม่เข้ายอดคงคลัง</b> · เฉพาะ <span class="badge b-success plain" style="height:20px">ผ่าน</span> = credit แล้ว (movement <code>GR (+)</code>) · RM ที่ QC ไม่ผ่าน → <b>ส่งกลับ QC</b> หรือ <b>ยกเลิก</b> ได้จากที่นี่ (สร้างใบรับใหม่ที่ <a href="goods-receipt.html">รับเข้าคลัง</a>)</div></div>
+  <div class="card"><div class="card-b">
+    <div class="toolbar"><div class="l"><h3>Good Receipt (RM)</h3><span class="count">18 ใบ</span></div>
+      <div class="searchbox" style="max-width:420px"><span class="si">🔍</span><input class="inp" placeholder="ค้น: เลข GR / Lot / Supplier / ชื่อ RM / รหัส RM"></div></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
+      <div><label class="tiny" style="display:block;margin-bottom:4px;font-weight:600">วันที่รับ — ตั้งแต่</label><input class="inp" type="date" style="height:36px;width:150px" value="2026-07-01"></div>
+      <div><label class="tiny" style="display:block;margin-bottom:4px;font-weight:600">ถึง</label><input class="inp" type="date" style="height:36px;width:150px" value="2026-07-08"></div>
+      <button class="btn btn-sm">ค้นหา</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="chip on">ทั้งหมด <span class="tnum">18</span></span>
+      <span class="chip">🕓 QC ตรวจสอบ <span class="tnum">4</span></span>
+      <span class="chip">✅ ผ่าน <span class="tnum">11</span></span>
+      <span class="chip">⛔ ไม่ผ่าน <span class="tnum">2</span></span>
+      <span class="chip">🚫 ยกเลิก <span class="tnum">1</span></span>
+    </div>
+    <div class="tblwrap"><table class="tbl" style="min-width:940px"><thead><tr><th>เลข GR</th><th>วันที่รับ</th><th>Supplier</th><th>Lot / วัตถุดิบ (สถานะ QC ราย Lot)</th><th class="num">จำนวน</th><th>สถานะ GR</th><th></th></tr></thead><tbody>
+     <tr><td><b>GR-20260708-008</b></td><td class="tnum">08/07/2569</td><td>เคมีภัณฑ์ ไทยเทค</td>
+       <td><div><b>L-TT-ALC-2607</b> · แอลกอฮอล์ <span class="badge b-warning" style="height:20px">รอตรวจ</span></div><div style="margin-top:4px"><b>L-TT-PHE-2607</b> · สารกันเสีย <span class="badge b-warning" style="height:20px">รอตรวจ</span></div></td>
+       <td class="num tnum">200 ล.<br>50 กก.</td><td><span class="badge b-warning">QC ตรวจสอบ</span><div class="tiny" style="margin-top:3px">ยังไม่เข้าสต็อก</div></td>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+     <tr><td><b>GR-20260708-007</b></td><td class="tnum">08/07/2569</td><td>กลีเซอรีนไทย</td>
+       <td><div><b>L-GLY-2607</b> · กลีเซอรีน <span class="badge b-warning" style="height:20px">รอตรวจ</span></div><div style="margin-top:4px"><b>L-GLY-2608</b> · น้ำหอมกุหลาบ <span class="badge b-warning" style="height:20px">รอตรวจ</span></div></td>
+       <td class="num tnum">6 กก.<br>3 กก.</td><td><span class="badge b-warning">QC ตรวจสอบ</span><div class="tiny" style="margin-top:3px">ยังไม่เข้าสต็อก</div></td>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="qc.html">ไปตรวจ QC ›</a><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+     <tr style="background:#F3FBF6"><td><b>GR-20260705-006</b></td><td class="tnum">05/07/2569</td><td>กลีเซอรีนไทย</td>
+       <td><div><b>L-GLY-2506</b> · กลีเซอรีน <span class="badge b-success" style="height:20px">ผ่าน</span></div></td>
+       <td class="num tnum">60 กก.</td><td><span class="badge b-success">ผ่าน</span><div class="tiny" style="margin-top:3px">credit แล้ว · <code>GR (+60)</code></div></td>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a><span class="tiny" style="align-self:center">เอาของออกใช้ <a href="return.html">คืน</a>/Loss</span></div></td></tr>
+     <tr style="background:#FFF7F7"><td><b>GR-20260703-005</b></td><td class="tnum">03/07/2569</td><td>อโรมา เฮ้าส์</td>
+       <td><div><b>L-ARM-FRG-2606</b> · น้ำหอม <span class="badge b-error" style="height:20px">ไม่ผ่าน</span> <span class="tiny">กลิ่นผิดเพี้ยน</span></div><div style="margin-top:4px"><b>L-ARM-OIL-2606</b> · น้ำมันหอมระเหย <span class="badge b-success" style="height:20px">ผ่าน</span></div></td>
+       <td class="num tnum">5 กก.<br>10 กก.</td><td><span class="badge b-error">ไม่ผ่าน</span><div class="tiny" style="margin-top:3px">1/2 Lot ไม่ผ่าน</div></td>
+       <td class="num"><div class="rowact" style="flex-wrap:wrap;gap:6px"><button class="btn btn-sm" onclick="grResubmit(this)">↩️ ส่งกลับ QC</button><a class="btn btn-sm" href="return.html">ทำใบคืน</a><button class="btn btn-sm btn-danger" onclick="grCancel(this)">ยกเลิก</button></div></td></tr>
+     <tr style="opacity:.7"><td><b>GR-20260702-004</b></td><td class="tnum">02/07/2569</td><td>ไทยเทค</td>
+       <td><div><b>L-TT-EMU-2606</b> · อิมัลซิไฟเออร์ <span class="badge b-neutral" style="height:20px">ยกเลิก</span></div></td>
+       <td class="num tnum">30 กก.</td><td><span class="badge b-neutral">ยกเลิก</span><div class="tiny" style="margin-top:3px">เหตุ: รับผิดใบ</div></td>
+       <td class="num"><div class="rowact"><a class="btn btn-sm" href="goods-receipt.html">เปิด GR</a></div></td></tr>
+    </tbody></table></div>
+    <div class="pager"><span class="tiny">แสดง 1–5 จาก 18 ใบ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">2</button><button class="pgbtn">3</button><button class="pgbtn">4</button><button class="pgbtn">›</button></div></div>
+    <div class="alert alert-warn" style="margin-top:12px;font-size:13px"><span class="ai">⚙️</span><div><b>action ตามสถานะ:</b> <b>ส่งกลับ QC (re-submit)</b> = เฉพาะ GR <b>ไม่ผ่าน</b> → ตั้ง Lot ที่ไม่ผ่านกลับ "รอตรวจ" + GR กลับ "QC ตรวจสอบ" (Stock.Update) · <b>ยกเลิก (cancel)</b> = เฉพาะ <b>QC ตรวจสอบ / ไม่ผ่าน</b> (ยังไม่ credit → ไม่ต้อง reverse ยอด · ไม่กระทบยอดติดลบ) + เหตุผลบังคับ (Stock.Delete) · <b>ผ่านแล้ว</b> เอาของออกใช้ <a href="return.html">คืน</a>/Loss</div></div>
+  </div></div>
+ </div>
  </div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav>
 <script>
 function rmAct(i,el){el.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('rm-loss').style.display=i===0?'block':'none';document.getElementById('rm-adjust').style.display=i===1?'block':'none';}
@@ -339,5 +383,8 @@ function ssTog(tg){var dd=tg.closest('.ssdd');var wasOpen=dd.classList.contains(
 function ssFilter(inp){var q=inp.value.trim().toLowerCase();var ls=inp.closest('.ssdd-pan').querySelector('.ssdd-ls');var n=0;ls.querySelectorAll('.ssdd-op').forEach(function(op){var hit=(op.getAttribute('data-s')||'').toLowerCase().indexOf(q)>-1;op.style.display=hit?'block':'none';if(hit)n++;});var none=ls.querySelector('.ssdd-none');if(none)none.style.display=n?'none':'block';}
 function ssPick(op,name,code){var dd=op.closest('.ssdd');dd.querySelectorAll('.ssdd-op').forEach(function(o){o.classList.remove('sel')});op.classList.add('sel');var cur=dd.querySelector('.ssdd-tg .cur');cur.innerHTML=code?('<b>'+name+'</b> <span class="ssdd-op code" style="padding:1px 7px">'+code+'</span>'):('<b>'+name+'</b>');dd.classList.remove('open');}
 document.addEventListener('click',function(e){if(!e.target.closest('.ssdd'))document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});});
+/* STK-2: GR (RM) tab row actions (mockup confirmations) */
+function grResubmit(btn){var tr=btn.closest('tr');var gr=tr.querySelector('b').textContent;if(confirm('ส่งกลับ QC (re-submit) — '+gr+'\n\nLot ที่ไม่ผ่านจะกลับสถานะ "รอตรวจ" และ GR กลับเป็น "QC ตรวจสอบ" ให้ QC ตรวจใหม่')){tr.querySelector('td:nth-child(6) .badge').outerHTML='<span class="badge b-warning">QC ตรวจสอบ</span>';}}
+function grCancel(btn){var tr=btn.closest('tr');var gr=tr.querySelector('b').textContent;var r=prompt('ยกเลิก GR '+gr+' — ระบุเหตุผล (บังคับ):');if(r){alert('ยกเลิก '+gr+' แล้ว (void, gapless) · ยังไม่เคย credit สต็อก → ไม่ต้อง reverse ยอด · เหตุผล: '+r);}}
 </script>
 </body></html>
