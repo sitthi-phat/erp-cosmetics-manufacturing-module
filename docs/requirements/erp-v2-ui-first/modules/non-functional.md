@@ -1,19 +1,19 @@
 # Non-Functional Requirements (NFR) — ESSENCE Hub System
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE NFR SPEC** (consolidates + updates ทุก NFR ที่ล็อกแล้ว, adapt สู่ scope OEM/Own-Brand/Supply-Planning/Quotation)
-ที่มา (locked, ไม่ประดิษฐ์ตัวเลข): `brief.md` §5/§8 · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · architecture `index.html`/`db-schema.html` · `entity-status-map.md` §1.6 (negative stock) · `stock-reservation.md` (Option A) · `deletion-policy.md` · scope D1–D18 · README §2/§3 · **`supply-planning.md` §5.1 (Low alerting — J8) + §5c (save-back planning param audited)** · **`comment-convention.md` (comment field = audited)** · **`stock.md` §3b/§6 (add-RM + loss/adjust movements + Lot/FIFO)** · **`bom.md` §5/§5c (code user-entered-locked + BOM changes/inactivate)** · **`supplier.md` §10 (supplier + price-matrix audit)** · **`settings.md` §4b/§5/§6 (password modes + Google link + role disable/soft-delete + Admin-only VAT/Company/Audit)** · **`production.md` §5/§7 (accept/actual-qty/status-change/loss/lot-consume) + `po.md` §5.2 (PO edit audit)**
+ที่มา (locked, ไม่ประดิษฐ์ตัวเลข): `brief.md` §5/§8 · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · architecture `index.html`/`db-schema.html` · `entity-status-map.md` §1.6/**§1.8 (negative stock · GR QC-gated stock-in)** · `stock-reservation.md` (Option A) · `deletion-policy.md` · scope D1–D18 · README §2/§3 · **`supply-planning.md` §5.1/§5c** · **`comment-convention.md`** · **`stock.md` §2b/§3b/§6 (GR (RM) tab + add-RM + loss/adjust + Lot/FIFO)** · **`bom.md` §5/§5c** · **`supplier.md` §10** · **`settings.md` §4b/§5/§6** · **`production.md` §5/§7 + `po.md` §5.2** · **`goods-receipt.md` §4/§9 + `qc.md` §4.1 (GR object lifecycle · credit on QC pass)**
 
 ## สรุปภาษาไทย
-รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว. ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + QT/SO/Supply-Planning), **Auth/Session** (local+Google, 24h + เตะออก 06:00, RBAC generic RUCDAA+Admin bit — D14; **★ login basic vs Google · password mode · Google link · VAT/Company/Audit = Admin bit**), **Audit** (field-level, retention 1 ปี แล้ว manual purge; **ทุก stock movement — รวมเพิ่มวัตถุดิบใหม่/loss(−)/adjust(+, อ้าง Lot/FIFO) — มี reason+source + audit + trace (D15)**; **★ ทุก production action (รับงาน/เปลี่ยนสถานะ/จำนวนผลิตจริง/loss/consume lot) + การแก้ PO (field-level, รวมจากการผลิต) ถูก audit เต็ม**; **★ "บันทึกกลับ BOM master" (save-back planning param จาก Supply Planning) ถูก audit; การ simulate/what-if ที่ไม่ persist = ไม่ audit**; **ทุก action ของ QT/BOM/Supplier/Settings ก็ถูก audit**; **★ ช่อง `comment` ทุก object ธุรกรรมก็เป็น field ที่ถูก audit**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL), **Data/Format** (Asia/Bangkok, พ.ศ./UTC, gapless; **★ RM/BOM/FG code = user-entered + unique + lock**, THB, VAT ตาม invoice date), **Scheduled Jobs J1–J8** (J8 = Supply Planning low-stock digest), **Notification outbox+read-bit** (FG→Low), **global search**, **responsive**, **soft-delete + reference-guard** (BOM inactivate, **Role disable/soft-delete**), **reliability/integrity**. ทุกข้อ derive จากค่าที่ล็อก — ไม่มีการเดา.
+รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว. ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + QT/SO/Supply-Planning), **Auth/Session** (local+Google, 24h + เตะออก 06:00, RBAC generic RUCDAA+Admin bit — D14), **Audit** (field-level, retention 1 ปี; **ทุก stock movement — รวมเพิ่มวัตถุดิบใหม่/loss(−)/adjust(+, อ้าง Lot/FIFO)/`GR (+)` — มี reason+source + audit + trace (D15)**; **★★ r10 GR object lifecycle (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก + ส่งกลับ QC/ยกเลิก) ถูก audit; ★ `GR (+)` credit + FIFO retro-link เกิดตอน QC ตรวจรับ "ผ่าน" (audit ที่จุดนั้น); QC ไม่ผ่าน = ไม่มี credit**; **★ ทุก production action + การแก้ PO ถูก audit**; **★ save-back planning param ถูก audit; simulate ไม่ audit**; **★ ช่อง `comment` ทุก object ถูก audit**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL), **Data/Format** (Asia/Bangkok, พ.ศ./UTC, gapless; RM/BOM/FG code = user-entered + unique + lock, THB, VAT ตาม invoice date), **Scheduled Jobs J1–J8**, **Notification outbox+read-bit** (FG→Low), **global search**, **responsive**, **soft-delete + reference-guard**, **reliability/integrity** (★ negative stock ชดเชย + FIFO retro-link ตอน GR **QC ผ่าน**). ทุกข้อ derive จากค่าที่ล็อก — ไม่มีการเดา.
 
 ---
 
 ## 1. Performance & Capacity
 | # | NFR | ค่า (locked) | หมายเหตุ scope ใหม่ |
 |---|---|---|---|
-| P1 | เวลาตอบสนองต่อหน้า | **< 2s (hard cap 3s)** | ครอบทุกหน้ารวม quotation/so/supply-planning/production queue/dashboard drill |
+| P1 | เวลาตอบสนองต่อหน้า | **< 2s (hard cap 3s)** | ครอบทุกหน้ารวม quotation/so/supply-planning/production queue/dashboard drill/**qc (ตรวจรับ+ตรวจแบตช์)/stock GR tab** |
 | P2 | ผู้ใช้พร้อมกัน | **50 concurrent users** | brief §5.1 |
-| P3 | ปริมาณงานต่อวัน | **> 200 PO/วัน · GR > 50/วัน** | **เพิ่ม load profile:** QT, SO, Supply-Planning recompute + Low-alert events |
+| P3 | ปริมาณงานต่อวัน | **> 200 PO/วัน · GR > 50/วัน** | **★ r10: GR>50/วัน แต่ละใบผ่าน QC-gate ก่อน credit → เพิ่ม QC decision events + GR list/GR (RM) tab load** |
 | P4 | Dashboard aggregate | < 2s (hard 3s) | 7 แผนก/29 tile + drill |
 | P5 | Client polling | dashboard 15s · noti bell 15s | ฝั่งเบราว์เซอร์ |
 
@@ -34,10 +34,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 ## 3. Audit & Traceability (NFR ระดับระบบ)
 | # | NFR | รายละเอียด (locked) |
 |---|---|---|
-| AU1 | Field-level audit | ทุก action ทุก module เก็บ เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล (traceability.md) · **★ Quotation:** create / edit→version / Convert-to-PO→Confirmed / cancel (การส่ง = print/share ไม่มี sent-date) · **★ BOM/Supplier:** create/edit/ราคา/inactivate/reactivate · price-matrix · **★ BOM planning-param save-back (Supply Planning):** การกด **"บันทึกกลับ BOM master"** (persist Sales Rate/Lead/Safety/Target/Batch กลับ 1-BOM=1-FG master) = field-level audit (old→new, ใคร/เมื่อ) — **การแก้ param เพื่อ "จำลอง (simulate/what-if)" ใน modal ที่ไม่กด save (ไม่ persist) = ไม่ audit** (scratch, ทิ้งเมื่อปิด) — supply-planning.md §5c · **★ Settings:** role (create/edit-perm/disable/enable/soft-delete/restore/remove-user) · user (create/edit/password set-reset/สลับ Active/เปลี่ยน role/Google link/ลบ+reassign) · VAT/company (รหัสผ่านเก็บ event ไม่เก็บค่า) · **★ Production (2026-07-29):** **รับงาน (accept→gen PRD) / เริ่มผลิต (gen Batch + consume lot FIFO) / ส่ง QC / กด "พร้อมส่ง" (surplus→FG) / Hold / rework / field `actual_produced_qty` (จำนวนผลิตจริง old→new) / loss (production)** · **★ PO edit (2026-07-29):** การแก้ PO ทุกครั้ง **รวมจากบริบทการผลิต (under-production)** = field-level old→new ทุกฟิลด์ + raise ⚑ follow-up ที่ลูกค้า (po.md §5.2, customer.md §4.1) · **★ comment ทุก object ธุรกรรม:** แก้ทับแต่เก็บประวัติครบ ใคร/เมื่อ/เดิม→ใหม่ + trace (comment-convention.md CC3/CC6) |
+| AU1 | Field-level audit | ทุก action ทุก module เก็บ เวลา/ผู้ทำ/entity/field/จาก→เป็น/เหตุผล (traceability.md) · **★ Quotation:** create / edit→version / Convert-to-PO→Confirmed / cancel · **★ BOM/Supplier:** create/edit/ราคา/inactivate/reactivate · price-matrix · **★ BOM planning-param save-back (Supply Planning)** = field-level audit — **simulate/what-if ที่ไม่ save = ไม่ audit** — supply-planning.md §5c · **★ Settings:** role/user/VAT/company · **★ Production (2026-07-29):** รับงาน / เริ่มผลิต (consume lot FIFO) / ส่ง QC / พร้อมส่ง (surplus→FG) / Hold / rework / `actual_produced_qty` / loss · **★ PO edit (2026-07-29):** field-level old→new + raise ⚑ follow-up · **★★ r10 GR/QC (2026-07-29):** **GR object lifecycle** (บันทึกรับ→gen Lot รอตรวจ ยังไม่ credit / **QC ตรวจรับ "ผ่าน" → `GR (+)` credit + FIFO retro-link + Lot พร้อมใช้ + GR=ผ่าน** / QC "ไม่ผ่าน" → Lot ระงับ + GR=ไม่ผ่าน / **ส่งกลับ QC (re-submit)** / **ยกเลิก GR**) + **Batch QC ผ่าน/ไม่ผ่าน + feedback "QC ไม่ผ่าน"→Rework** = audit ครบ (goods-receipt.md §4/§9, qc.md §4.1/§4.2) · **★ comment ทุก object ธุรกรรม:** แก้ทับแต่เก็บประวัติครบ + trace (comment-convention.md CC3/CC6) |
 | AU2 | Retention | **online 1 ปี** แล้ว **Super User manual purge/archive** — ไม่มี auto-purge · ประวัติ comment ลบไม่ได้ · **★ Audit-log viewer = Admin bit (A8)** |
-| AU3 | Stock ledger + movement audit | ทุก movement = **append-only ledger + reason + source ref บังคับ** (D15) · **★ audit + trace ทุก movement:** **เพิ่มวัตถุดิบใหม่** · **loss (−)** (RM: อ้าง Lot — เลือก lot/"FIFO") · **adjust (+)** (RM: **★ อ้าง Lot — เลือก lot/"FIFO"** · FG ราย Batch) · GR (+) · FG-in (+) · surplus (+) · return (−) · **CONSUME (−)** (เลือก lot มี stock; หลาย lot = FIFO — production.md §5d) — entity=RM/Lot หรือ FG/Batch, ใคร/เมื่อ/จำนวน/reason/source/Lot ref (`stock.md` §3b/§6). **RM/BOM/FG code = user-defined unique + ★ create-only-lock** |
-| AU4 | GMP chain | Lot→Batch→line→PO(หรือ SO)→ลูกค้า→DN/INV · QT = head-of-chain สาย OEM, FG per-Batch · **★ Supply Planning "สั่งผลิต" = SO produce-to-stock → PRD/Batch → FG-in (traceable, พก batch count — supply-planning.md §5b)** |
+| AU3 | Stock ledger + movement audit | ทุก movement = **append-only ledger + reason + source ref บังคับ** (D15) · **★ audit + trace ทุก movement:** **เพิ่มวัตถุดิบใหม่** · **loss (−)** (RM: อ้าง Lot — เลือก lot/"FIFO") · **adjust (+)** (RM: **★ อ้าง Lot — เลือก lot/"FIFO"** · FG ราย Batch) · **`GR (+)` (★★ r10: เกิดตอน QC ตรวจรับ "ผ่าน" เท่านั้น — ชดเชยติดลบ + FIFO retro-link ที่จุดนี้; QC ไม่ผ่าน = ไม่มี movement)** · FG-in (+) · surplus (+) · return (−) · **CONSUME (−)** (เลือก lot มี stock; หลาย lot = FIFO — production.md §5d) — entity=RM/Lot หรือ FG/Batch, ใคร/เมื่อ/จำนวน/reason/source/Lot ref (`stock.md` §2b/§3b/§6). **RM/BOM/FG code = user-defined unique + ★ create-only-lock** |
+| AU4 | GMP chain | Lot→Batch→line→PO(หรือ SO)→ลูกค้า→DN/INV · QT = head-of-chain สาย OEM, FG per-Batch · **★★ r10: Lot ผูก GR object ต้นทาง; Lot เข้าสาย genealogy จริงเมื่อ QC ตรวจรับ "ผ่าน" (credit)** · **★ Supply Planning "สั่งผลิต" = SO produce-to-stock → PRD/Batch → FG-in** |
 | AU5 | Archive | text file · Super User เท่านั้น · ยืนยันก่อน export |
 
 ## 4. Backup / Infrastructure
@@ -52,9 +52,9 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | # | NFR | รายละเอียด (locked) |
 |---|---|---|
 | D-F1 | Timezone | **Asia/Bangkok** · แสดง **พ.ศ.** / เก็บ **UTC** |
-| D-F2 | Gapless numbering | **ต่อปี/เดือน** — PO/**QT-**/**SO-**/PR/GR/PRD/Batch/DN/INV/SHP (ADR-008) · void ไม่ทำให้เลขหาย |
-| D-F3 | Currency/VAT | **THB** · VAT ตาม **invoice date** · ตัวหนังสือไทย · **★ margin simulation ใน Supply Planning = คำนวณจาก cost/ราคาขาย ก่อน VAT (VAT เป็นเรื่องตอน invoice; margin sim เป็น decision-support ไม่ใช่เอกสารภาษี — supply-planning.md §5b)** |
-| D-F4 | สถานะ/UI | ป้ายสถานะ**ภาษาไทย**เสมอ · **dropdown search: RM/FG ค้นชื่อ+รหัส, Lot ค้น dropdown (Loss+Adjust+option "FIFO") · BOM component RM ค้นชื่อ+รหัส · Supplier price-matrix RM · customer dropdown (G4) · ★ Supply Planning ค้น FG ชื่อ/รหัส/วัตถุดิบ (RM reverse lookup)** · **★ Settings: ค้นหา role/user** · **★ Production queue: ค้น PO/SO/PRD/ลูกค้า/ผู้ติดต่อ/ช่วงวันที่สร้าง/ช่วงวันที่ต้องการรับของ (production.md §6)** |
+| D-F2 | Gapless numbering | **ต่อปี/เดือน** — PO/**QT-**/**SO-**/PR/GR/PRD/Batch/DN/INV/SHP (ADR-008) · void/**ยกเลิก GR** ไม่ทำให้เลขหาย |
+| D-F3 | Currency/VAT | **THB** · VAT ตาม **invoice date** · ตัวหนังสือไทย · **★ margin simulation ใน Supply Planning = ก่อน VAT (decision-support ไม่ใช่เอกสารภาษี)** |
+| D-F4 | สถานะ/UI | ป้ายสถานะ**ภาษาไทย**เสมอ · **dropdown search: RM/FG ค้นชื่อ+รหัส, Lot ค้น dropdown (Loss+Adjust+option "FIFO") · BOM component RM · Supplier price-matrix RM · customer dropdown (G4) · Supply Planning ค้น FG ชื่อ/รหัส/วัตถุดิบ** · Settings ค้น role/user · Production queue search · **★ r10: stock "Good Receipt (RM)" tab ค้น GR/Lot/Supplier/ชื่อ RM/รหัส + ช่วงวันที่รับ + filter สถานะ (ผ่าน/ไม่ผ่าน/QC ตรวจสอบ/ยกเลิก) · qc ตรวจรับ/ตรวจแบตช์ (sub-tab OEM/Own-Brand)** |
 | D-F5 | เลขเอกสาร / รหัส master | `PO-…` · `QT-…` · `SO-…` · `INV-…` · `GR-…` · `SHP-…` · `DN-…` · Batch `B-{PO}-{line}-{run}` · **★ RM code = user-entered + unique + create-only-lock** · **★ FG/BOM code = user-entered (shared, 1:1) + unique + create-only-lock** |
 
 ## 6. Scheduled / Background Jobs (J1–J8) — locked + scope update
@@ -69,42 +69,42 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 | **J7** Database backup | ทุกวัน | Phase2 dump / Phase3 backup | — | ✓ |
 | **★ J8** Supply Planning low-stock digest | **ทุกวัน ~06:00** | FG (Active) Low ทั้งหมด + Suggested → 1 แจ้งเตือนสรุป | ✓ Read Supply Planning | ✓ |
 
-**Not a job (on-read / event / client):** BOM cost badge · Supply-Planning cover/suggested/**margin simulation (client recompute)** · Shipment รอบปิด · Inactive→Active · ปิด PR · dashboard/bell 15s · gapless numbering · stock movement (add-RM/loss/adjust/consume) = event + ledger write · BOM inactivate · **★ BOM planning-param save-back (บันทึกกลับ BOM master) = event + audit; simulate/what-if = client scratch, ไม่ persist/ไม่ audit** · **★ production action (รับงาน/เริ่มผลิต/พร้อมส่ง/loss) + PO edit = event + audit** · role disable/enable/soft-delete/restore = event + audit.
+**Not a job (on-read / event / client):** BOM cost badge · Supply-Planning cover/suggested/margin simulation (client) · Shipment รอบปิด · Inactive→Active · ปิด PR · dashboard/bell 15s · gapless numbering · stock movement (add-RM/loss/adjust/consume) = event + ledger write · **★★ r10: `GR (+)` credit = event ตอน QC ตรวจรับ "ผ่าน" (ไม่ใช่ job, ไม่ใช่ตอนบันทึก GR); GR ส่งกลับ QC/ยกเลิก = event + audit** · BOM inactivate · BOM planning-param save-back = event + audit (simulate = client scratch) · production action + PO edit = event + audit · role disable/enable/soft-delete/restore = event + audit.
 
 ### 6.1 ★ Supply Planning proactive alerting (DECIDED 2026-07-29)
 - **Trigger:** FG (Active) พลิกเข้า **Low** — แนบ Suggested. **FG Inactive ไม่เข้าข่าย**.
 - **(a) Real-time:** event ที่ทำให้ FG พลิก non-Low→Low → ยิงทันที (outbox J5).
 - **(b) Daily digest:** **J8** ~06:00.
-- **Recipient:** มีสิทธิ์ Read Supply Planning (fan-out, ไม่ hardcode role). Deep-link → supply-planning / SO produce-to-stock.
+- **Recipient:** มีสิทธิ์ Read Supply Planning (fan-out). Deep-link → supply-planning / SO produce-to-stock.
 
 ## 7. Notification (NFR)
 - **Transactional outbox + read-bit ราย user** (J5/ADR-005): ผู้รับ = Read ของ module ปลายทาง · deep link + ack/read + mark all + "ดูทั้งหมด" (20/หน้า) + badge "9+".
-- **Events รวม:** PO Confirmed→Production, QC pass/fail, DN Delivered/Rejected/Postponed, PR auto, Overdue, Inactivity **+ ★ FG→Low (real-time + J8)**.
-> **หมายเหตุ:** การแก้ `comment`, stock movement (loss/adjust/add-RM/consume), **★ production action (รับงาน/พร้อมส่ง/loss/actual-qty) + PO edit**, BOM/supplier changes (รวม **"บันทึกกลับ BOM master"** จาก Supply Planning), Settings changes = audit event **แต่ไม่ยิง notification** (ยกเว้น movement ที่ทำให้ FG พลิก Low, และ **PO edit → raise ⚑ follow-up ที่ลูกค้า** ซึ่งเป็น flag ไม่ใช่ notification) เว้นแต่ปอนด์ระบุเพิ่ม.
+- **Events รวม:** PO Confirmed→Production, **★ r10 QC ตรวจรับ Lot ผ่าน/ไม่ผ่าน (→Stock)**, QC pass/fail (Batch), DN Delivered/Rejected/Postponed, PR auto, Overdue, Inactivity **+ ★ FG→Low (real-time + J8)**.
+> **หมายเหตุ:** การแก้ `comment`, stock movement (loss/adjust/add-RM/consume), **★ GR ส่งกลับ QC/ยกเลิก**, production action + PO edit, BOM/supplier changes (รวม save-back), Settings changes = audit event **แต่ไม่ยิง notification** (ยกเว้น movement ที่ทำให้ FG พลิก Low, QC ตรวจรับ Lot ผ่าน/ไม่ผ่าน ที่แจ้ง Stock, และ PO edit → raise ⚑ follow-up) เว้นแต่ปอนด์ระบุเพิ่ม.
 
 ## 8. Global Search (NFR)
 - ค้นข้าม entity จาก header · จำกัดตามสิทธิ์ Read · ≥ 2 ตัวอักษร · deep link.
 
 ## 9. Responsive / Usability (NFR — first-class)
-- **Responsive ทุกหน้า (Must)** · minimize clicks · smart defaults · dropdown search ทุกจุด · ไม่มี enum ดิบ · **★ ทุกการเปลี่ยนสถานะในสายผลิต = confirm popup (production.md §7.7)**.
+- **Responsive ทุกหน้า (Must)** · minimize clicks · smart defaults · dropdown search ทุกจุด · ไม่มี enum ดิบ · **★ ทุกการเปลี่ยนสถานะในสายผลิต = confirm popup (production.md §7.7)** · **★ r10: ยกเลิก GR = confirm + เหตุผลบังคับ**.
 
 ## 10. Soft-Delete + Reference-Guard (NFR baseline)
-- **ไม่มี hard delete** · master = soft-delete · **BOM = inactivate** · **★ Role = Disable / Soft-delete (member เสีย permission; ไม่ต้องย้าย user ก่อน)** · เอกสารการค้า = void/cancel (gapless) · reference-guard · audit + comment บังคับ · undelete = Admin.
+- **ไม่มี hard delete** · master = soft-delete · **BOM = inactivate** · **★ Role = Disable / Soft-delete** · เอกสารการค้า = void/cancel (gapless; **★ r10: ยกเลิก GR = void แบบ gapless, เฉพาะก่อน credit**) · reference-guard · audit + comment บังคับ · undelete = Admin.
 
 ## 11. Reliability / Integrity
 | # | NFR | รายละเอียด (locked) |
 |---|---|---|
 | R1 | Append-only ledger | stock ledger เป็นความจริง — recompute ได้ (ADR-001) |
 | R2 | Nightly integrity | J6 เทียบ 2 cache |
-| R3 | Negative-stock policy | on_hand/Available ติดลบได้; GR ชดเชย + FIFO retro-link |
+| R3 | Negative-stock policy | on_hand/Available ติดลบได้; **★★ r10: GR ชดเชย + FIFO retro-link เกิดตอน QC ตรวจรับ "ผ่าน"** (QC ไม่ผ่าน = ไม่ชดเชย, ติดลบคงอยู่จนกว่า GR/Lot ที่ผ่านมาชดเชย) |
 | R4 | Reservation | ยืนยัน = จอง; เริ่มผลิต/dispatch = ตัดจริง (เลือก lot มี stock; หลาย lot = FIFO, Option A) |
-| R5 | Transactional outbox | noti event (รวม FG→Low) เขียนใน tx เดียวกับ ledger |
+| R5 | Transactional outbox | noti event (รวม FG→Low, **★ r10 QC ตรวจรับ Lot ผ่าน→`GR (+)`**) เขียนใน tx เดียวกับ ledger |
 
 ## 12. Open question (NFR)
-**ไม่มี open question ค้าง.** (production action audit + PO edit audit + adjust Lot/FIFO + confirm popup + **BOM save-back planning param audit (simulate ไม่ audit) + Supply Planning margin sim ก่อน VAT** = ใช้กลไก field-audit/RBAC/UX เดิม — ไม่มี NFR ใหม่ที่ต้องถาม.)
+**ไม่มี open question ค้าง.** (★★ r10 GR QC-gated stock-in + GR object lifecycle audit + credit on QC pass = ใช้กลไก field-audit/ledger/RBAC/outbox เดิม — ไม่มี NFR ใหม่ที่ต้องถาม. production/PO edit/adjust Lot-FIFO/confirm popup/BOM save-back/margin sim = คงเดิม.)
 
 ## 13. Cross-links
-- Auth/session/RBAC → `settings.md`/`platform.md` · Audit → `traceability.md` · ledger + add-RM/loss/adjust(Lot-FIFO)/consume → `stock.md` §3b/§6 · **★ production action/actual-qty/loss + PO edit audit → `production.md` §5/§7 + `po.md` §5.2** · BOM → `bom.md` · supplier → `supplier.md` · negative stock → entity-status-map §1.6 · reservation → stock-reservation · soft-delete/role → `deletion-policy.md` · **Low alerting + save-back planning param audit + margin sim → `supply-planning.md` §5.1/§5c/§5b** · QT audit → `quotation.md` §10 · comment → `comment-convention.md`.
+- Auth/session/RBAC → `settings.md`/`platform.md` · Audit → `traceability.md` · ledger + add-RM/loss/adjust(Lot-FIFO)/consume/**`GR (+)` on QC pass** → `stock.md` §2b/§3b/§6 · **★ r10 GR object + QC-gated stock-in → `goods-receipt.md` §4/§9 · `qc.md` §4.1 · entity-status-map §1.8** · **production action/actual-qty/loss + PO edit audit → `production.md` §5/§7 + `po.md` §5.2** · BOM → `bom.md` · supplier → `supplier.md` · negative stock → entity-status-map §1.6/§1.8 · reservation → stock-reservation · soft-delete/role → `deletion-policy.md` · Low alerting + save-back + margin sim → `supply-planning.md` · QT audit → `quotation.md` §10 · comment → `comment-convention.md`.
 
 ## 14. Module changelog
 - **Consolidated + updated:** NFR ทั้งหมด → NFR module เดียว.
@@ -114,12 +114,11 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORI
 - **★ เพิ่ม (2026-07-29 — Stock review):** stock movement + RM code + dropdown.
 - **★ CHANGED (2026-07-29 — BOM + Supplier review):** code lock · BOM/Supplier audit.
 - **★ เพิ่ม/CHANGED (2026-07-29 — Settings review):** A1/A6/A7/A8 · A3/A4 · AU1/AU2 Settings audit · §10 Role disable/soft-delete.
-- **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):**
-  1. **AU1:** เพิ่ม **ทุก production action (รับงาน/เริ่มผลิต/ส่ง QC/พร้อมส่ง/Hold/rework/`actual_produced_qty`/loss/consume lot FIFO) + PO edit (field-level, รวมจากการผลิต) → field-audit** (ref production.md §5/§7, po.md §5.2).
-  2. **AU3:** **adjust (+) RM อ้าง Lot/FIFO** (เดิม RM-only) · CONSUME ระบุ "เลือก lot มี stock; หลาย lot = FIFO".
-  3. **D-F4:** production queue search fields · **§9:** confirm popup ทุก status change.
-- **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):**
-  1. **AU1:** ระบุชัด **"บันทึกกลับ BOM master" (save-back planning param จาก Supply Planning) = field-level audit** (old→new) · **การ simulate/what-if ที่ไม่ persist = ไม่ audit** — ref supply-planning.md §5c · §6 "Not a job" list sync.
-  2. **AU4:** "สั่งผลิต from Supply Planning" traceable (SO produce-to-stock → PRD/Batch → FG-in, พก batch count).
-  3. **D-F3:** margin simulation ก่อน VAT (decision-support, ไม่ใช่เอกสารภาษี) · **D-F4:** Supply Planning FG search ชื่อ/รหัส/RM reverse lookup.
+- **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):** AU1 production action + PO edit audit · AU3 adjust Lot/FIFO + CONSUME lot · D-F4 production queue search · §9 confirm popup.
+- **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):** AU1 save-back planning param audit (simulate ไม่ audit) · AU4 "สั่งผลิต" traceable · D-F3 margin sim ก่อน VAT · D-F4 FG search.
+- **★★ เพิ่ม (2026-07-29 — QC + GR/Stock flow review, ปอนด์):**
+  1. **AU1/AU3:** **GR object lifecycle audit** (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก + ส่งกลับ QC) · **`GR (+)` credit + FIFO retro-link เกิดตอน QC ตรวจรับ "ผ่าน"** (ไม่ใช่ตอนบันทึก GR) — ref `goods-receipt.md` §4/§9 · `qc.md` §4.1.
+  2. **AU4/R3/R5:** GMP chain + negative-stock ชดเชย + outbox → ผูกจุด QC pass (Lot เข้าสายเมื่อ credit) · QC ไม่ผ่าน = ไม่ credit.
+  3. **D-F4/§9/§10:** stock "Good Receipt (RM)" tab search/filter · qc ตรวจรับ + ตรวจแบตช์ sub-tab OEM/Own-Brand · ยกเลิก GR = confirm+เหตุผล+gapless (เฉพาะก่อน credit) · **§6 "Not a job" sync** (GR credit = event on QC pass).
+  4. **P3:** GR>50/วัน ผ่าน QC-gate → QC decision events + GR (RM) tab load.
 - **ไม่มีตัวเลขประดิษฐ์.**
