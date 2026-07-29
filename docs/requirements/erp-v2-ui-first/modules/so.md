@@ -1,12 +1,11 @@
 # Module — Sales Order (SO, Own-Brand)
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detail.html`
-กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4
+กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)**
 > โมดูลใหญ่ — sub-files แนะนำ: `so-sell-from-stock.md` (ก) · `so-produce-to-stock.md` (ข). รอบนี้รวมใน so.md.
 
 ## สรุปภาษาไทย
-ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **(ข) ผลิตเก็บสต็อก** = ไม่เลือกลูกค้า, ทำตัวเหมือนเปิด PO: โชว์ BOM RM stock check → ส่งงานเข้า production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR ไปคลัง**; ผลิตเสร็จ (QC ผ่าน) → **FG เข้าคลัง** → ขายภายหลังผ่าน (ก). List ค้นด้วยเลข/ช่วงวันที่ (เหมือน QT/PO).
+ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). List ค้นด้วยเลข/ช่วงวันที่.
 
 ---
 
@@ -25,7 +24,7 @@ Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detai
 |---|---|---|---|
 | เลข `SO-{YYYYMM}-{NNNNNN}` | string | computed (gapless ต่อเดือน) | แยกจาก PO (D1) |
 | โหมด | enum {ขายจากสต็อก(ก), ผลิตเก็บสต็อก(ข)} | editable | (ก) มีลูกค้า / (ข) ไม่มี (D2) |
-| ลูกค้า | ref customer | editable (dropdown G4) | **(ก) บังคับ · (ข) ว่าง** |
+| ลูกค้า | ref customer | editable (dropdown G4) | **(ก) บังคับ · (ข) ว่าง** · (ก) **Disabled/Blacklist เลือกไม่ได้ (§8)** |
 | line items | (ก) FG + qty · (ข) FG(BOM) + qty ผลิต | editable | (ก) โชว์ FG Available ราย Batch (D16) |
 | FG Available (ราย Batch) | units | computed (read-only) | (ก) เท่านั้น — จาก FG stock |
 | สถานะ | enum (§4) | mostly auto | ต่างกันตามโหมด |
@@ -47,6 +46,7 @@ Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detai
 
 ## 5. ★ (ก) Sell-from-stock — RESOLVED flow (README §4)
 1. `so-create` โหมด (ก) → **เลือกลูกค้าผ่าน customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail modal แล้วกลับไม่เสีย state).
+   - **★ Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ลูกค้าสถานะ Disabled/Blacklist **ค้นเจอ+เห็นสถานะ แต่เลือกไม่ได้** (disabled option); ถ้าหลุดเข้ามาต้อง **บล็อกตอนยืนยันใบสั่งขาย** พร้อมข้อความ *"ลูกค้าสถานะ {Disabled/Blacklist} — เปิดใบสั่งขายไม่ได้"*. เป็น **HARD block** (ต่างจาก TYPE mismatch/FG ไม่พอ = เตือน).
 2. เลือก FG ที่มีสต็อก → ระบบโชว์ **FG Available ราย Batch (FIFO, D16)**.
 3. กด **"ยืนยันใบสั่งขาย (จอง FG)"** — **ความหมายที่ยืนยัน:** ของ **มี/พร้อมในสต็อก** →
    - **จอง FG per-Batch** (มิเรอร์ RM reservation; reserved+, available−).
@@ -57,7 +57,7 @@ Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detai
 6. **ยกเลิก SO** ก่อน dispatch = **คืนจอง FG** (release).
 
 ## 6. ★ (ข) Produce-to-stock — RESOLVED flow (README §4)
-> **ทำตัวเหมือนเปิด PO** (แต่ไม่มีลูกค้า):
+> **ทำตัวเหมือนเปิด PO** (แต่ไม่มีลูกค้า → **hard block Disabled/Blacklist ไม่เกี่ยวกับโหมดนี้**):
 1. `so-create` โหมด (ข) → **ไม่เลือกลูกค้า** → เลือก FG(BOM) + จำนวนที่จะผลิต.
    - **ที่มาการ prefill:** ถ้ามาจาก Supply Planning ปุ่ม "สั่งผลิต" (D8 v2) → หน้านี้ถูก **prefill** FG + จำนวน = Suggested. ผู้ใช้ทวน/ยืนยัน.
 2. ยืนยัน → แสดง **BOM raw-material stock check** (เทียบ Available).
@@ -81,7 +81,8 @@ Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detai
 
 ## 8. Validations
 - (ก) บังคับเลือกลูกค้า + FG มี Available พอ (ขาด = เตือน/บล็อกตามนโยบาย FG reserve; มิเรอร์ RM warning-not-block).
-- (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต.
+- **★ (ก) Hard block ลูกค้า Disabled/Blacklist (customer.md §4.2):** ห้ามเลือก/ยืนยันใบสั่งขายให้ลูกค้าสถานะ Disabled/Blacklist — **บล็อกจริง** + ข้อความชัด (แยกจาก FG-availability warning).
+- (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต — **hard block Disabled/Blacklist ไม่เกี่ยว** (ไม่มีลูกค้า).
 - ยกเลิก = บังคับ comment.
 
 ## 9. Pagination / Search
@@ -89,6 +90,8 @@ Mockups: `mockups/so-list.html` · `mockups/so-create.html` · `mockups/so-detai
 
 ## 10. Cross-links
 - D8 v2 prefill → `supply-planning.md` · FG stock/FIFO → `stock.md` · DN/Invoice อ้าง SO → delivery-note/invoice (scope §10.1) · flow → `flows/ownbrand-flow.md`.
+- **Hard block Disabled/Blacklist (โหมด ก) → `customer.md` §4.2.**
 
 ## 11. Module changelog
 - **เพิ่ม:** date-range search (list) · customer dropdown (ก) · resolved (ก) Ready-to-Ship→Delivery flow · resolved (ข) auto-PR flow · prefill จาก Supply Planning (D8 v2).
+- **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/ยืนยัน SO โหมด (ก) เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) · โหมด (ข) ไม่เกี่ยว (ไม่มีลูกค้า).

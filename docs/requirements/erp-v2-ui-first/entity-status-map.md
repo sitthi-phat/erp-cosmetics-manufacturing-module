@@ -1,11 +1,12 @@
 # Entity Status Map — ESSENCE Hub System (แผนที่สถานะฉบับเดียวจบ)
 
-เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`**
+เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก (default ถอด Follow-up จาก enum — รอปอนด์ยืนยัน; ดู `modules/customer.md` §4/§12)**
 เป็น **ความจริงหลัก** เรื่อง entity/สถานะ/ใครเปลี่ยน/cascade · `status-journeys.md` อ้างอิงเอกสารนี้ (sync แล้ว ไม่ให้มี 2 ความจริง)
 
 ## สรุปภาษาไทย
 **ปอนด์ปรับ flow (r4.1):** PO ยืนยันแล้ว → งานแต่ละ line เข้า **คิวผลิตสถานะ "รอรับงาน"** (ยัง**ไม่**เกิด PRD) → **ฝ่ายผลิตกด "รับงาน" เอง → ตอนนั้นถึงสร้าง PRD** (1 ใบต่อ line, สถานะเริ่ม = รับงาน) → กด "เริ่มผลิต" = gen เลข **Batch** · **1 PO : N PRD (N=line) : M Batch (M≥N, +1/rework)** · **วัตถุดิบขาดไม่บล็อก** — รับงาน/เริ่มผลิตได้เลย (เตือนวัตถุดิบอาจไม่พร้อม) และ **ผลิตจริงตัด stock ติดลบได้** พอทำ GR ค่อยบวกกลับ (หน้า stock/GR ต้องโชว์ยอดติดลบชัด) · Batch ผ่าน QC → PRD line พร้อมส่งมอบ → ทุก PRD ของ PO พร้อม → PO พร้อมจัดส่ง
 **★ r5 Stock Reservation (ปอนด์ถาม 2026-07-10):** **PO Confirmed → จอง (Reserve) วัตถุดิบ = ΣBOM×qty ต่อ line** (ยังไม่ตัดจริง) → เกิดยอด **ใช้ได้ (Available) = คงคลัง − จองแล้ว** · **ตัดจริง (Consume)** ตอนไหน = คำถามหลัก (PO เสนอ "เริ่มผลิต" ราย Batch) · **Cancel PO = คืน (Release) ที่จองอัตโนมัติ** · จองเกิน available ได้+เตือน · **ดู `stock-reservation.md` (ความจริงหลักเรื่อง reservation)**
+**★ r6 Customer (ปอนด์ 2026-07-29):** สถานะลูกค้า **6 → 5** (Lead/Active/Inactive/Disabled/Blacklist) · **"ต้องติดตาม (Follow-up)" ไม่เป็นสถานะอีกต่อไป → เป็น flag แยกอิสระ** (boolean + เหตุผล + ใคร/เมื่อ) ที่ **ควบคู่ได้ทุกสถานะ** (Blacklist+ติดเงิน, Active+PO มีปัญหา) · **Disabled/Blacklist = HARD block เปิดงานขาย QT/PO/SO** · **★ default ถอด Follow-up ออกจาก enum — รอปอนด์ยืนยัน** (`modules/customer.md` §12).
 
 ---
 
@@ -24,13 +25,25 @@
 ## 1. รายการ Entity + สถานะของตัวเอง
 
 ### 1.1 Customer · `CUS-{NNNNNN}` · หน้า: customers / customer-detail
-| สถานะ | ใครเปลี่ยน | เกิดตอน |
+**r6 (2026-07-29): 5 สถานะหลัก + "ต้องติดตาม" เป็น flag แยก** (ดู `modules/customer.md` §4/§4.1/§4.2 — authoritative spec)
+
+| สถานะ (enum r2) | ใครเปลี่ยน | เกิดตอน |
 |---|---|---|
 | ผู้สนใจ (Lead) | ระบบ (สร้างลูกค้า) | สร้างลูกค้าใหม่ |
 | ลูกค้าประจำ (Active) | auto (มี PO ใบแรก/มี order ในรอบ) | ยืนยัน PO ใบแรก |
 | ห่างหาย (Inactive) | auto scheduler (ไม่มี order เกินรอบ default 3 ด.) | ครบรอบไม่มี order |
-| ต้องติดตาม (Follow-up) | Sale / Sale Manager (บังคับ comment) | manual (เช่นจาก PRD Hold เหตุลูกค้า) |
-| ปิดใช้งาน (Disabled) / บัญชีดำ (Blacklist) | Sale Manager / Admin (บังคับ comment) | manual |
+| ปิดใช้งาน (Disabled) | Sale Manager / Admin (บังคับ comment) | manual · **→ HARD block เปิด QT/PO/SO** |
+| บัญชีดำ (Blacklist) | Sale Manager / Admin (บังคับ comment) | manual · **→ HARD block เปิด QT/PO/SO** |
+
+**★ Follow-up flag (attribute แยกจาก status — r6):**
+| attribute | ใครตั้ง/เคลียร์ | เกิดตอน |
+|---|---|---|
+| **⚑ ต้องติดตาม (Follow-up flag)** = boolean + เหตุผล + ใคร/เมื่อ | Sale / Sale Manager (manual, บังคับเหตุผล) หรือ auto จาก cascade | manual (เช่น ติดเงิน/ค้างชำระ) หรือ auto (PRD Hold เหตุลูกค้า, Invoice Overdue) |
+
+- **flag ควบคู่ได้ทุกสถานะ** — ตั้ง/เคลียร์โดยไม่แตะสถานะหลัก. ตัวอย่าง: **Blacklist + ⚑** (ติดเงิน), **Active + ⚑** (PO มีปัญหา).
+- **UI: แยก badge ⚑ ออกจาก status badge เสมอ** + list/history filter ได้ (`modules/customer.md` §4.1/§10).
+- **★ default = ถอด "Follow-up" ออกจาก status enum (6→5) — รอปอนด์ยืนยัน** (`modules/customer.md` §12). ถ้าปอนด์ให้คงไว้ → เพิ่มกลับเป็นสถานะที่ 6 (แต่ flag ยังคงเป็น attribute แยก).
+- **Soft-delete** ได้เสมอ (deletion-policy §2.1) — PO เดิมเดินต่อ, ห้ามเปิด order ใหม่, หายจาก dropdown.
 
 ### 1.2 PO — ราง Fulfilment (การผลิต/จัดส่ง) · `PO-{YYYYMM}-{NNNNNN}` · หน้า: po-create / po-detail / po-list
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
@@ -43,6 +56,7 @@
 | ส่งถึงแล้ว (Delivered) | auto (DN Delivered) | ลูกค้าเซ็นรับ |
 | ยกเลิก (Cancelled) → เปิดใหม่เป็น ร่าง | Sale/Admin (บังคับ comment) · reopen คงเลข PO เดิม | ทุกขั้น |
 > force override (ข้ามลำดับ) = เฉพาะสิทธิ์ **Admin** + เหตุผล + trace (ที่การ์ด "เปลี่ยนสถานะ PO" หน้า po-detail)
+> **Create-time gate (r6):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** (HARD block — `modules/customer.md` §4.2)
 
 ### 1.3 PO — ราง Billing (วางบิล/ชำระ) · หน้า: invoices / invoice-detail / po-detail
 | สถานะ | ใครเปลี่ยน | เกิดตอน |
@@ -51,6 +65,7 @@
 | วางบิลแล้ว (Invoiced) | Finance/Sale (ออก invoice ได้ตั้งแต่ PO=Confirmed) | ออกใบแจ้งหนี้ |
 | ชำระแล้ว (Paid) | Finance | รับชำระครบ |
 | เกินกำหนด (Overdue) | auto scheduler | ส่งของแล้ว + เลยเครดิต(ระดับลูกค้า) + ยังไม่จ่าย |
+> **r6:** ยอด billing เหล่านี้เป็นฐานของ **Customer financial summary** (ยอดซื้อรวม/จ่ายมาแล้ว/ค้างชำระ) — ดู `modules/customer.md` §7 + `modules/invoice.md`.
 
 ### 1.4 ★ PRD — ใบสั่งผลิต (Production Order) · `PRD-{YYYYMM}-{NNNNNN}` · หน้า: production (+ dashboard/qc/po-detail อ้างอิง)
 **นิยาม:** ใบสั่งผลิต **1 ใบต่อ 1 line item** · **สร้างเมื่อฝ่ายผลิตกด "รับงาน"** (ไม่ auto ตอน Confirm — ปอนด์เลือก) · เป็น "งาน" ที่ฝ่ายผลิตรับมาทำ · 1 PRD มีได้หลาย Batch (run) เมื่อ rework
@@ -132,7 +147,7 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 | เลื่อนส่ง (Postponed) | Shipping | เลื่อน → PO พร้อมจัดส่ง + flag Postpone+วันที่ ค้างคิว |
 
 ### 1.11 Invoice · `INV-{YYYY}-{NNNNNN}` · หน้า: invoices / invoice-detail / invoice-print
-รอชำระ / ชำระแล้ว / เกินกำหนด + **versioning** (ยึด VAT rate ตาม effective ณ invoice date) · ผู้ทำ = Finance
+รอชำระ / ชำระแล้ว / เกินกำหนด + **versioning** (ยึด VAT rate ตาม effective ณ invoice date) · ผู้ทำ = Finance · **r6:** เป็นฐานของ Customer financial summary (`modules/customer.md` §7)
 
 ---
 
@@ -146,19 +161,20 @@ event บันทึกรับเข้า (header 1 supplier + หลาย 
 | 5 | **Batch → QC ผ่าน** (QC) | PRD line=พร้อมส่งมอบ; **ถ้าทุก PRD ของ PO ผ่าน → PO=พร้อมจัดส่ง** → โผล่คิวจัดส่ง | qc, po-detail, shipping | Shipping (เมื่อ PO พร้อม) |
 | 6 | **Batch → QC ไม่ผ่าน** (QC + feedback) | Batch=ไม่ผ่าน; PRD=Rework(กลับกำลังผลิต); PO ยังไม่พร้อม | qc, production (badge Rework) | Production |
 | 7 | **PRD Rework → เริ่มผลิตซ้ำ** (Production "ผลิตซ้ำ") | **gen Batch run ถัดไป** `...-{run+1}` → กลับคิว QC; **ใช้วัตถุดิบเพิ่ม (ตัดจาก available/ติดลบได้ — r5 Q4)** | production, qc, stock | QC |
-| 8 | **PRD → Hold** (Production, เหตุลูกค้า/stock) | raise Sale/Stock; (เหตุลูกค้า) Sale ตั้งลูกค้า Follow-up | production, po-detail, customers | Sale หรือ Stock |
+| 8 | **PRD → Hold** (Production, เหตุลูกค้า/stock) | raise Sale/Stock; **(เหตุลูกค้า) Sale ตั้ง flag ⚑ "ต้องติดตาม" ที่ลูกค้า (r6 — ไม่เปลี่ยน status, บังคับเหตุผล)** | production, po-detail, customers | Sale หรือ Stock |
 | 9 | **PO พร้อมจัดส่ง → กำลังจัดส่ง** (Shipping สร้าง Shipment+DN) | Shipment=รับเข้ารอบ→In-Route; DN=กำลังนำส่ง | shipping, delivery-note | — |
 | 10 | **DN → ส่งถึงแล้ว** (Shipping) | PO=ส่งถึงแล้ว; เริ่มนับ overdue; Shipment จบรอบเมื่อ DN ครบ | delivery-note, po-detail | Finance + Sale |
 | 11 | **DN → ถูกปฏิเสธ** (Shipping) | PO=พร้อมจัดส่ง(กลับคิว) + raise Sale | delivery-note, po-list, shipping | Sale |
 | 12 | **DN → เลื่อนส่ง** (Shipping) | PO=พร้อมจัดส่ง + flag Postpone+วันที่ ค้างคิว | delivery-note, shipping | Shipping |
-| 13 | **ออก Invoice** (Finance) | PO billing=วางบิลแล้ว | invoices, po-detail | — |
-| 14 | **Overdue** (scheduler) | billing=เกินกำหนด | invoices, dashboard(Finance) | Finance + Sale |
+| 13 | **ออก Invoice** (Finance) | PO billing=วางบิลแล้ว; **+ Customer financial summary อัปเดต (ยอดซื้อรวม/ค้างชำระ — r6)** | invoices, po-detail, customer-detail | — |
+| 14 | **Overdue** (scheduler) | billing=เกินกำหนด; **(แนะนำ) auto ตั้ง flag ⚑ "ต้องติดตาม" ที่ลูกค้า เหตุ "ค้างชำระ" (r6)** | invoices, dashboard(Finance), customer-detail | Finance + Sale |
 | 15 | **PO วัตถุดิบขาด** (ตอนเปิด PO) | เตือน(ไม่บล็อก, เทียบ **available** — r5) + gen PR(ส่วนที่ขาด) | po-create, purchase-request | Stock + Production |
 | 16 | **ผลิตตัด stock ติดลบ** (Batch เริ่มผลิต, วัตถุดิบไม่พอ) | stock ติดลบ + trace; badge สีแดงในหน้า stock; ไม่บล็อกการผลิต | stock, production, trace | Stock |
 | 17 | **Goods Receipt บันทึกรับ** (Stock) | gen Lot(รอตรวจรับ) รายบรรทัด + ปิด/อัปเดต PR + **บวก stock กลับ + FIFO retro-link + Available เพิ่ม (r5)** | goods-receipt, purchase-request, stock, trace | Stock/Production |
 | 18 | **Lot QC ขาเข้า ผ่าน/ไม่ผ่าน** (QC) | ผ่าน→Lot พร้อมใช้ (+อาจปิด PR) / ไม่ผ่าน→Lot ระงับ→คืนของ | qc, stock, return | Stock |
 | 19 | **PO ยกเลิก → เปิดใหม่(ร่าง)** (Sale/Admin) | คงเลข PO เดิม + trace; คิว/PRD/Batch ยกเลิกตาม; **+ Release reservation ที่ยังไม่ consume ทั้งหมด (คืน Available — r5)** | po-detail, stock | Production |
 | 20 | **★ Reservation (r5)** — Confirm=จอง / Cancel-แก้ลด=คืน / เริ่มผลิต=ตัดจริง | Reserved/Available เปลี่ยน (ดู `stock-reservation.md`) | stock (3 ยอด), po-detail | Stock (ถ้า available ติดลบ) |
+| 21 | **★ Customer → Disabled/Blacklist (r6)** (Sale Manager/Admin) | **HARD block เปิดงานขายใหม่ (QT/PO/SO) ของลูกค้ารายนั้น** (ดู `modules/customer.md` §4.2); PO/QT/SO เดิมเดินต่อ (no cascade) | customers, quotation/po/so-create (dropdown บล็อก) | Sale |
 
 ---
 
@@ -206,12 +222,14 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 **เส้นวัตถุดิบ (ขนาน):** PO วัตถุดิบขาด → **PR** (PR-{NNNNNN}) → [Stock] **Goods Receipt** (GR-{YYYYMMDD}-{NNN}) → gen **Lot** (รอตรวจรับ) + **บวก stock กลับ/ชดเชยติดลบ + FIFO retro-link** → [QC] ตรวจรับ → Lot พร้อมใช้ → ใช้ในการผลิต Batch
 **หมายเหตุ negative stock:** ถ้าผลิตก่อนของเข้า → Batch ตัด stock ติดลบ (badge แดงหน้า stock) → GR เข้ามาบวกกลับ + ผูก Lot ย้อน FIFO ให้ genealogy ครบ (notice "ชดเชยยอดติดลบ")
 **หมายเหตุ reservation (r5):** Confirmed=จอง (Available ลด) · เริ่มผลิต=ตัดจริง (Option A) · Cancel=คืนจอง · ดู `stock-reservation.md`
+**หมายเหตุ customer r6:** ก่อนเปิด PO/QT/SO → เช็คสถานะลูกค้า; **Disabled/Blacklist = บล็อก (hard)**; flag ⚑ "ต้องติดตาม" = ป้ายเตือน ไม่บล็อก
 
 ---
 
 ## 4. ตรวจ mockups ปัจจุบัน สอดคล้องนิยามนี้ไหม (รายการแก้ — ไม่แก้เอง)
 | จุด | สถานะ | รายการแก้ (ให้ UX/UI) |
 |---|---|---|
+| **★ Customer status 6→5 + follow-up flag (r6)** | ⚠ ต้องแก้ | customers/customer-detail: ถอด "Follow-up" จาก status badge → เพิ่ม **flag ⚑ "ต้องติดตาม" แยก badge + เหตุผล** · list filter ⚑ · financial summary card · block affordance บน QT/PO/SO create (รอปอนด์ยืนยันการถอด §12) |
 | **PRD manual accept (รอรับงาน → รับงาน)** | ⚠ ต้องแก้ | **เดิม mockup ทำ PRD auto ตอน Confirm** — ต้องเพิ่ม **คิว "รอรับงาน" + ปุ่ม "รับงาน"** ในหน้า production; เลข PRD ออกตอนกดรับงาน (ก่อนกด = ยังไม่มีเลข PRD) |
 | **Negative stock display** | ⚠ ต้องเพิ่ม | stock.html: ยอดติดลบ = **สีแดง + badge "ติดลบ (รอรับเข้า)"**; production: เตือน "จะตัด stock ติดลบ X หน่วย" ตอนรับงาน/เริ่มผลิต |
 | **GR negative notice + FIFO retro-link** | ⚠ ต้องเพิ่ม | goods-receipt: กล่องแจ้ง **"การรับนี้ชดเชยยอดติดลบ X หน่วย (ผูก Lot ย้อน FIFO)"** ก่อนยืนยัน; trace: แสดง Lot ที่ผูกย้อนใน genealogy |
@@ -228,3 +246,4 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 - **r4 (3 ข้อ): ตอบครบแล้ว ✅** — (1) PRD **ไม่ auto** ฝ่ายผลิตกด "รับงาน" เอง (เพิ่มคิว "รอรับงาน") · (2) **1 line = 1 PRD** ✅ · (3) วัตถุดิบขาด**ไม่บล็อก** + อนุญาต **stock ติดลบ** (GR บวกกลับ + FIFO retro-link + โชว์ชัด)
 - **Deletion Policy: ตอบครบ 7 ข้อ ล็อกแล้ว ✅** — ดู `deletion-policy.md`
 - **★ r5 Stock Reservation: มี 5 คำถามค้าง (จุดตัดจริงสำคัญสุด)** — ดู `stock-reservation.md` §8: (1) ตัดจริงตอนไหน [PO แนะนำ เริ่มผลิต] (2) เกณฑ์ใกล้หมด available/on_hand (3) จองเกิน available (4) rework material (5) มูลค่าสต็อก on_hand เท่านั้น
+- **★ r6 Customer (2026-07-29): 1 คำถามค้าง** — **ถอด "Follow-up" ออกจาก status enum จริงไหม?** (default = ถอด, เหลือ 5 สถานะ + flag แยก) ดู `modules/customer.md` §12.
