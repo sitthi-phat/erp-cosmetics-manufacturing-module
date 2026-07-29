@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po + ux-ui",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3357,5 +3357,5 @@
       ]
     }
   },
-  "generated_at": "2026-07-30T05:00:00+07:00"
+  "generated_at": "2026-07-30T05:40:00+07:00"
 }
