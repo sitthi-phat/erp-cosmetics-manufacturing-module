@@ -150,16 +150,16 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="content">
 
  <style>
- .spgrid{display:grid;grid-template-columns:1fr;gap:16px}
- .spcard .cfg{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:14px 0}
- @media(max-width:991px){.spcard .cfg{grid-template-columns:repeat(3,1fr)}}
- @media(max-width:575px){.spcard .cfg{grid-template-columns:repeat(2,1fr)}}
- .cfg .b{border:1px solid var(--border2);border-radius:8px;padding:8px 10px;background:#fff}
- .cfg .b.ro{background:#F7F9FA}
- .cfg .b label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px}
- .cfg .b .v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
- .cfg .b input,.cfg .b select{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-family:inherit;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
- .cfg .b .lock{font-size:10px;color:var(--text3);float:right}
+ /* ---- modal base ---- */
+ .modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
+ .modal-bg.open{display:block}
+ .modal{max-width:940px;margin:20px auto;background:#fff;border-radius:var(--radius-lg);box-shadow:0 12px 40px rgba(16,25,40,.28);overflow:hidden}
+ .modal-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border2)}
+ .modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;padding:4px}
+ .modal-b{padding:20px;max-height:calc(100vh - 150px);overflow:auto}
+ .modal-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+ @media(max-width:991px){.modal-b .split{grid-template-columns:1fr}}
+ /* ---- coverage bar (shared list + modal) ---- */
  .cvbar{position:relative;height:34px;border-radius:8px;margin:6px 0 4px;overflow:hidden;background:linear-gradient(90deg,#FCEAEA 0%,#FCEAEA 30%,#E6F5EC 30%,#E6F5EC 60%,#E8F0FE 60%,#E8F0FE 100%)}
  .cvfill{position:absolute;top:0;bottom:0;left:0;background:rgba(14,124,123,.28);border-right:2px solid var(--primary)}
  .cvafter{position:absolute;top:0;bottom:0;border-right:2px dashed var(--primary)}
@@ -169,88 +169,384 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .cvscale span{position:absolute;transform:translateX(-50%);white-space:nowrap}
  .narr{background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:8px;padding:10px 12px;font-size:13px;color:#0B5754;margin:8px 0}
  .footchips{display:flex;gap:8px;flex-wrap:wrap}
+ /* ---- FG list ---- */
+ table.splist{width:100%;border-collapse:collapse;background:#fff;min-width:640px}
+ .splist th{text-align:left;font-size:12px;font-weight:600;color:var(--text2);padding:11px 16px;border-bottom:1px solid var(--border);background:#FAFBFC;white-space:nowrap}
+ .splist td{padding:12px 16px;border-bottom:1px solid var(--border2);font-size:14px;vertical-align:top}
+ .fgrow{cursor:pointer}.fgrow:hover td{background:#FAFCFC}
+ .fgrow td.exptd{width:34px;padding-right:0}
+ .expbtn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;color:var(--text2);display:grid;place-items:center;line-height:1}
+ .expbtn:hover{border-color:var(--primary);color:var(--primary)}
+ .fgname{font-weight:600}.fgcode{font-size:12px;color:var(--text3);font-variant-numeric:tabular-nums}
+ .whycalc{font-size:12.5px;color:var(--text2);margin-top:5px;line-height:1.5}
+ .whycalc .sug{color:var(--primary);font-weight:600}
+ .whycalc .lowtxt{color:var(--error);font-weight:600}
+ .rmpanel{background:#FAFBFC;border-bottom:1px solid var(--border2)}
+ .rmpanel td{padding:0}
+ .rmpanel .inner{padding:12px 16px 14px 52px}
+ .rmhead{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px}
+ table.rmtbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border2);border-radius:8px;overflow:hidden;min-width:520px}
+ .rmtbl th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);padding:8px 12px;background:#F4F6F8;white-space:nowrap}
+ .rmtbl td{padding:8px 12px;border-top:1px solid var(--border2);font-size:13px}
+ .rmtbl .num{text-align:right;font-variant-numeric:tabular-nums}
+ .rmneg{color:var(--error);font-weight:600}
+ /* ---- modal planning grid ---- */
+ .cfg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:4px 0 14px}
+ .cfg .b{border:1px solid var(--border2);border-radius:8px;padding:8px 10px;background:#fff}
+ .cfg .b.ro{background:#F7F9FA}
+ .cfg .b label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px}
+ .cfg .b .v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+ .cfg .b input,.cfg .b select{width:100%;height:32px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font-family:inherit;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+ .cfg .b .lock{font-size:10px;color:var(--text3);float:right}
+ .simflag{display:none;align-items:center;gap:10px;background:#FBF0DE;border:1px solid #F1D6A6;color:#7A4A0F;border-radius:8px;padding:8px 12px;font-size:12.5px;margin-bottom:12px}
+ .simflag.on{display:flex}
+ .mrow{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:14px}
+ .mrow dt{color:var(--text2)}.mrow dd{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+ .marginbox{background:#F7F9FA;border:1px solid var(--border2);border-radius:10px;padding:14px 16px}
+ .marginbox.disabled{opacity:.55}
+ .mg-big{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+ .qtybox{display:flex;align-items:center;gap:8px}
+ .qtybox input{width:80px;height:38px;border:1px solid var(--border);border-radius:8px;text-align:center;font-size:15px;font-weight:600;font-family:inherit}
+ .stepbtn{width:34px;height:38px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:18px;cursor:pointer;color:var(--text2)}
+ .stepbtn:hover{border-color:var(--primary);color:var(--primary)}
+ .msec{border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:16px}
+ .msec-h{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+ @media(max-width:575px){.cfg{grid-template-columns:1fr}.mrow{grid-template-columns:1fr;gap:2px}.mrow dd{text-align:left}}
  </style>
- <div class="pagehead"><div><h1>SUPPLY PLANNING — Demand &amp; Production Cover &nbsp;<span class="badge b-error" style="height:24px">🔔 1 Low — ต้องสั่งผลิต</span></h1><div class="sub">Own-Brand: วางแผนผลิตเก็บสต็อกจาก demand จริง · <b>FG On Hand = อ่านจาก FG stock</b> · <b>In Production = นับจาก Batch ของ FG นั้น</b> (D4) · ป้าย Low/OK/Overstock ตามจำนวนวันคุ้ม (D5) · ปุ่ม "สั่งผลิต" → <b>เปิดหน้าใบสั่งขาย (ข) ผลิตเก็บสต็อกแบบ prefill</b> จำนวน = Suggested (D8 v2) · แก้ Sales Rate/Lead/Safety/Target แล้ว <b>บันทึกกลับ BOM master</b> ได้</div></div></div>
- <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นหา FG ตามชื่อ เช่น 'ไบรท์ เซรั่ม'"></div></div>
-   <div class="r"><span class="tiny">สถานะ:</span><span class="chip on">ทั้งหมด</span><span class="chip"><span class="badge b-error plain" style="height:14px;padding:0 6px">Low</span></span><span class="chip"><span class="badge b-success plain" style="height:14px;padding:0 6px">OK</span></span><span class="chip"><span class="badge b-processing plain" style="height:14px;padding:0 6px">Overstock</span></span></div></div>
+ <div class="pagehead"><div><h1>SUPPLY PLANNING — Demand &amp; Production Cover &nbsp;<span class="badge b-error" style="height:24px" id="lowbell">🔔 <span id="lowcount">3</span> Low — ต้องสั่งผลิต</span></h1><div class="sub">Own-Brand: วางแผนผลิตเก็บสต็อกจาก demand จริง · <b>FG On Hand = อ่านจาก FG stock</b> · <b>In Production = นับจาก Batch ของ FG นั้น</b> (D4) · ป้าย Low/OK/Overstock ตามจำนวนวันคุ้ม (D5) · คลิกแถวเพื่อดูรายละเอียด/สั่งผลิต · แถบขยาย ▸ ดูวัตถุดิบ (RM) ของสูตร</div></div></div>
+
+ <!-- SP-1 : 3 stat tiles on list header -->
  <div class="stats" style="grid-template-columns:repeat(3,1fr)">
-   <div class="stat"><div class="k">ITEMS BELOW TARGET</div><div class="v" style="color:var(--error)">1 <span style="font-size:16px;color:var(--text3)">of 3</span></div><div class="d muted">cover ต่ำกว่า Target</div></div>
-   <div class="stat"><div class="k">SUGGESTED PRODUCTION</div><div class="v" style="color:var(--primary)">1,500</div><div class="d muted">รวมทุก FG (หน่วย)</div></div>
-   <div class="stat"><div class="k">SHORTEST COVER</div><div class="v">14 <span style="font-size:16px;color:var(--text3)">วัน</span></div><div class="d muted">FG-101 เอสเซนส์ ไบรท์ เซรั่ม</div></div>
+   <div class="stat"><div class="k">ITEMS BELOW TARGET</div><div class="v" style="color:var(--error)"><span id="t-below">3</span> <span style="font-size:16px;color:var(--text3)">of <span id="t-total">6</span></span></div><div class="d muted">cover ต่ำกว่า Target</div></div>
+   <div class="stat"><div class="k">SUGGESTED PRODUCTION</div><div class="v" style="color:var(--primary)"><span id="t-sugg">3,900</span></div><div class="d muted">รวมทุก FG Active (หน่วย)</div></div>
+   <div class="stat"><div class="k">SHORTEST COVER</div><div class="v"><span id="t-short">6</span> <span style="font-size:16px;color:var(--text3)">วัน</span></div><div class="d muted" id="t-shortfg">FG-233 เอสเซนส์ ซันสกรีน ครีม</div></div>
  </div>
- <div class="alert alert-err" style="font-size:13px"><span class="ai">🔔</span><div><b>FG อยู่สถานะ Low (cover &lt; Target) — แจ้งเตือนแล้ว · ต้องสั่งผลิต:</b>
-   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px"><span class="badge b-error" style="height:22px">Low</span> <b>FG-101 · เอสเซนส์ ไบรท์ เซรั่ม</b> — ควรผลิต <b>1,500</b> หน่วย (ceil 3 แบตช์ × 500) <a class="btn btn-sm btn-primary" href="so-create.html" style="margin-left:auto">🏭 สั่งผลิต 1,500 →</a></div>
-   <div class="tiny" style="margin-top:8px;color:#8F2020">แจ้งเตือนเชิงรุก (ไม่ใช่ on-read): ยิง <b>real-time</b> ทันทีที่ FG พลิกเข้า Low + <b>สรุปรายวัน ~06:00 (J8 digest)</b> — ส่งเข้า <b>Notification panel 🔔</b> ให้ผู้มีสิทธิ์ Read Supply Planning (deep-link มาการ์ด FG นี้ / หน้าสร้าง SO ผลิตเก็บสต็อกที่ prefill Suggested) · แนบ Suggested เสมอ (platform.md §FG→Low · §5.1)</div></div></div>
- <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>ป้ายสถานะ (D5): <span class="badge b-error" style="height:20px">Low</span> cover &lt; Target · <span class="badge b-success" style="height:20px">OK</span> Target ≤ cover ≤ 2×Target · <span class="badge b-processing" style="height:20px">Overstock</span> cover &gt; 2×Target · <b>Available = FG On Hand + In Production</b> · Suggested = ปัดขึ้น (ceil) ให้เต็มทวีคูณ Batch Size จนถึง Target (D6)</div></div>
- <div class="alert alert-warn" style="font-size:13px"><span class="ai">🔒</span><div><b>FG ที่สูตร (BOM) ปิดใช้งาน (Inactive) จะถูกกันออกจากหน้านี้</b> — ไม่คำนวณ Suggested · ไม่มีปุ่ม "สั่งผลิต" · ไม่ยิงแจ้งเตือน Low (ผลิตเติมสูตรที่ปิดไปแล้วไม่ได้) · งานผลิต/Batch ที่วิ่งอยู่แล้วเดินต่อจนจบได้ตามปกติ (bom.md §5c)</div></div>
- <div class="spgrid">
 
-  <!-- FG-101 LOW -->
-  <div class="card spcard"><div class="card-h"><div><h3>FG-101 · เอสเซนส์ ไบรท์ เซรั่ม <span class="badge b-error">Low</span> <span class="badge b-warning" style="height:22px">🔔 แจ้งเตือนแล้ว</span></h3><div class="tiny">Own-Brand · 1 BOM = 1 FG (auto) · ขวด 30ml</div></div><a class="btn btn-primary" href="so-create.html">🏭 สั่งผลิต 1,500 (3 แบตช์ × 500) →</a></div><div class="card-b">
-    <div class="cfg">
-      <div class="b ro"><label>FG On Hand <span class="lock">🔒</span></label><div class="v tnum">1,200</div></div>
-      <div class="b ro"><label>In Production <span class="lock">🔒</span></label><div class="v tnum">13</div></div>
-      <div class="b"><label>Sales Rate</label><div style="display:flex;gap:4px"><input value="85"><select style="width:64px;text-align:left"><option>/day</option><option>/week</option><option>/month</option></select></div></div>
-      <div class="b"><label>Lead Time (d)</label><input value="7"></div>
-      <div class="b"><label>Safety Cover (d)</label><input value="5"></div>
-      <div class="b"><label>Target Cover (d)</label><input value="30"></div>
-      <div class="b"><label>Batch Size</label><input value="500"></div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 10px"><span class="tiny">แก้ค่าวางแผนด้านบนแล้ว →</span><button class="btn btn-sm">💾 บันทึกกลับ BOM master</button></div>
-    <div class="cvbar">
-      <div class="cvfill" style="width:14.3%"></div>
-      <div class="cvafter" style="width:31.9%"></div>
-      <div class="cvtick risk" style="left:12%"></div>
-      <div class="cvtick" style="left:30%"></div>
-    </div>
-    <div class="cvscale"><span style="left:12%">⚠ Risk 12d</span><span style="left:14.3%;top:15px;color:var(--primary);font-weight:600">Cover 14d</span><span style="left:30%">🎯 Target 30d</span><span style="left:31.9%;top:15px;color:var(--primary)">After 32d</span></div>
-    <div class="narr">1,213 units available at 85/day covers <b>14.3 days</b> — runs out <b>10 ส.ค.</b> Produce <b>1,500</b> units to hold <b>2,713</b> and cover <b>31.9 days</b> through <b>27 ส.ค.</b></div>
-    <div class="footchips"><span class="chip plain">Safety stock <b>&nbsp;425</b></span><span class="chip plain">Reorder point <b>&nbsp;1,020</b></span><span class="chip plain">Target stock <b>&nbsp;2,550</b></span><span class="chip plain" style="color:var(--primary)">Suggested <b>&nbsp;1,500</b></span></div>
-  </div></div>
+ <div class="alert alert-warn" style="font-size:13px"><span class="ai">🔒</span><div><b>FG ที่สูตร (BOM) ปิดใช้งาน (Inactive) จะถูกกันออกจากหน้านี้</b> — ไม่คำนวณ Suggested · ไม่มีปุ่ม "สั่งผลิต" · ไม่ยิงแจ้งเตือน Low · งานผลิต/Batch ที่วิ่งอยู่แล้วเดินต่อจนจบได้ตามปกติ (bom.md §5c)</div></div>
 
-  <!-- FG-150 OK -->
-  <div class="card spcard"><div class="card-h"><div><h3>FG-150 · เอสเซนส์ ลิปบาล์ม <span class="badge b-success">OK</span></h3><div class="tiny">Own-Brand · หลอด 4g</div></div><button class="btn" disabled style="opacity:.55;cursor:default">พอแล้ว — ไม่ต้องผลิต</button></div><div class="card-b">
-    <div class="cfg">
-      <div class="b ro"><label>FG On Hand <span class="lock">🔒</span></label><div class="v tnum">1,500</div></div>
-      <div class="b ro"><label>In Production <span class="lock">🔒</span></label><div class="v tnum">200</div></div>
-      <div class="b"><label>Sales Rate</label><div style="display:flex;gap:4px"><input value="40"><select style="width:64px;text-align:left"><option>/day</option><option>/week</option><option>/month</option></select></div></div>
-      <div class="b"><label>Lead Time (d)</label><input value="7"></div>
-      <div class="b"><label>Safety Cover (d)</label><input value="5"></div>
-      <div class="b"><label>Target Cover (d)</label><input value="30"></div>
-      <div class="b"><label>Batch Size</label><input value="400"></div>
-    </div>
-    <div class="cvbar">
-      <div class="cvfill" style="width:42.5%"></div>
-      <div class="cvtick risk" style="left:12%"></div>
-      <div class="cvtick" style="left:30%"></div>
-    </div>
-    <div class="cvscale"><span style="left:12%">⚠ Risk 12d</span><span style="left:30%">🎯 Target 30d</span><span style="left:42.5%;color:var(--success);font-weight:600">Cover 42d</span></div>
-    <div class="narr" style="background:#EAF7EF;border-color:#B7E0C6;color:#1E6B3D">1,700 units available at 40/day covers <b>42.5 days</b> — runs out <b>08 ก.ย.</b> Produce <b>0</b> units (cover ≥ Target, อยู่ในเกณฑ์ OK).</div>
-    <div class="footchips"><span class="chip plain">Safety stock <b>&nbsp;200</b></span><span class="chip plain">Reorder point <b>&nbsp;480</b></span><span class="chip plain">Target stock <b>&nbsp;1,200</b></span><span class="chip plain">Suggested <b>&nbsp;0</b></span></div>
-  </div></div>
+ <!-- SP-2 / SP-3 : search (3 axes) + status filter chips -->
+ <div class="card"><div class="card-b" style="padding:16px 20px">
+   <div class="toolbar" style="margin-bottom:12px">
+     <div class="l" style="flex:1">
+       <div class="searchbox" style="max-width:440px"><span class="si">🔍</span><input class="inp" id="sp-search" placeholder="ค้นชื่อ/รหัส FG หรือวัตถุดิบ (RM) — เช่น 'ไบรท์', 'FG-101', 'ไทเทเนียม'" oninput="render()"></div>
+       <button class="btn btn-sm" onclick="render()">ค้นหา</button>
+       <label class="chip" style="cursor:pointer;gap:8px" id="rmtoggle-wrap"><input type="checkbox" id="rm-only" onchange="render()" style="margin:0"> ค้นด้วยวัตถุดิบ (RM) เท่านั้น</label>
+     </div>
+     <div class="r"><span class="tiny">สถานะ:</span>
+       <span class="chip on" data-f="all" onclick="setFilter(this)">ทั้งหมด</span>
+       <span class="chip" data-f="Low" onclick="setFilter(this)"><span class="badge b-error plain" style="height:14px;padding:0 6px">Low</span></span>
+       <span class="chip" data-f="OK" onclick="setFilter(this)"><span class="badge b-success plain" style="height:14px;padding:0 6px">OK</span></span>
+       <span class="chip" data-f="Overstock" onclick="setFilter(this)"><span class="badge b-processing plain" style="height:14px;padding:0 6px">Overstock</span></span>
+     </div>
+   </div>
+   <div class="tiny" id="rm-hint" style="display:none;color:var(--info)">🔎 ค้นย้อนจากวัตถุดิบ (reverse lookup): แสดง FG ทุกตัวที่สูตร (BOM) มี RM ตรงคำค้น</div>
+ </div></div>
 
-  <!-- FG-204 OVERSTOCK -->
-  <div class="card spcard"><div class="card-h"><div><h3>FG-204 · เอสเซนส์ ซันสกรีน SPF50 <span class="badge b-processing">Overstock</span></h3><div class="tiny">Own-Brand · หลอด 40g</div></div><button class="btn" disabled style="opacity:.55;cursor:default">เกินเป้า — ไม่ต้องผลิต</button></div><div class="card-b">
-    <div class="cfg">
-      <div class="b ro"><label>FG On Hand <span class="lock">🔒</span></label><div class="v tnum">2,900</div></div>
-      <div class="b ro"><label>In Production <span class="lock">🔒</span></label><div class="v tnum">0</div></div>
-      <div class="b"><label>Sales Rate</label><div style="display:flex;gap:4px"><input value="30"><select style="width:64px;text-align:left"><option>/day</option><option>/week</option><option>/month</option></select></div></div>
-      <div class="b"><label>Lead Time (d)</label><input value="7"></div>
-      <div class="b"><label>Safety Cover (d)</label><input value="5"></div>
-      <div class="b"><label>Target Cover (d)</label><input value="30"></div>
-      <div class="b"><label>Batch Size</label><input value="500"></div>
+ <!-- SP-1 : FG LIST -->
+ <div class="card"><div class="card-h"><h3>รายการสินค้า (FG) <span class="count" id="listcount">6 รายการ</span></h3><span class="tiny">คลิกแถว = รายละเอียด · ▸ = ขยายดูวัตถุดิบ</span></div>
+   <div class="tblwrap"><table class="splist"><thead><tr>
+     <th style="width:34px"></th><th>สินค้า (FG)</th><th>สถานะ &amp; เหตุผล (why-calc)</th><th style="text-align:right;white-space:nowrap">Cover / Target</th>
+   </tr></thead><tbody id="fgbody"></tbody></table></div>
+   <div class="card-b" style="padding:12px 20px"><div class="pager">
+     <span class="tiny">แสดง <b id="pg-range">1–6</b> จาก <b id="pg-total">6</b> รายการ · 20 ต่อหน้า (G1)</span>
+     <div class="pages"><button class="pgbtn" disabled>‹</button><button class="pgbtn on">1</button><button class="pgbtn" disabled>›</button></div>
+   </div></div>
+ </div>
+
+ <div class="notify" style="margin-top:4px">🏭 กด <b>"สั่งผลิต"</b> ใน modal → เปิดหน้า <b><a href="so-create.html">สร้างใบสั่งขาย (ข) ผลิตเก็บสต็อก</a> แบบ prefill</b> (FG + จำนวน = <b>batch count × Batch Size</b> ที่เลือกเอง, ไม่เลือกลูกค้า) → ผู้ใช้ทวน/ยืนยัน → เข้าสาย <a href="production.html">การผลิต</a> (BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → QC ผ่าน → FG เข้าคลังราย Batch, D8 v2/D12) · Supply Planning ไม่สร้าง PRD เอง · สิทธิ์ "สั่งผลิต" = Supply Planning.Create (§7)</div>
+</div></div></div>
+
+<!-- SP-6 : FG detail MODAL -->
+<div id="fgModal" class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+ <div class="modal-h"><div><h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span id="m-name">—</span> <span id="m-badge" class="badge">—</span> <span id="m-notified" class="badge b-warning" style="height:22px;display:none">🔔 แจ้งเตือนแล้ว</span></h3><div class="tiny" id="m-sub">—</div></div><button class="modal-x" onclick="closeModal()" title="ปิด">✕</button></div>
+ <div class="modal-b">
+
+   <div class="narr" id="m-narr">—</div>
+
+   <!-- SP-9 : simulate banner -->
+   <div class="simflag" id="m-simflag"><span>⚠️ กำลังจำลอง (unsaved) — ปรับค่าพารามิเตอร์เพื่อดูผล ยังไม่บันทึกลง BOM master</span><button class="btn btn-sm" style="margin-left:auto" onclick="resetParams()">↺ รีเซ็ตกลับค่าจริง</button></div>
+
+   <div class="split" style="grid-template-columns:1fr 340px">
+    <div>
+     <!-- SP-9 : editable planning params -->
+     <div class="msec"><div class="msec-h">⚙️ พารามิเตอร์การวางแผน <span class="tiny" style="font-weight:400;color:var(--text3)">(แก้ = จำลองทันที · ไม่บันทึกจนกด "บันทึกกลับ BOM")</span></div>
+      <div class="cfg">
+        <div class="b ro"><label>FG On Hand <span class="lock">🔒 D4</span></label><div class="v tnum" id="m-onhand">—</div></div>
+        <div class="b ro"><label>In Production <span class="lock">🔒 D4</span></label><div class="v tnum" id="m-inprod">—</div></div>
+        <div class="b"><label>Sales Rate</label><div style="display:flex;gap:4px"><input id="p-rate" oninput="recalc()"><select id="p-period" style="width:72px;text-align:left" onchange="recalc()"><option value="day">/day</option><option value="week">/week</option><option value="month">/month</option></select></div></div>
+        <div class="b"><label>Lead Time (d)</label><input id="p-lead" oninput="recalc()"></div>
+        <div class="b"><label>Safety Cover (d)</label><input id="p-safety" oninput="recalc()"></div>
+        <div class="b"><label>Target Cover (d)</label><input id="p-target" oninput="recalc()"></div>
+        <div class="b"><label>Batch Size</label><input id="p-batch" oninput="recalc()"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px">
+        <span class="tiny" id="m-saveperm">สิทธิ์ Supply Planning.Update · audited</span>
+        <button class="btn btn-sm" id="m-savebtn" onclick="saveBack()">💾 บันทึกกลับ BOM master</button>
+      </div>
+     </div>
+
+     <!-- full planning numbers -->
+     <div class="msec"><div class="msec-h">📊 ตัวเลขการวางแผน</div>
+      <dl class="mrow">
+        <dt>Available (On Hand + In Prod)</dt><dd id="n-avail">—</dd>
+        <dt>Cover today</dt><dd id="n-cover">—</dd>
+        <dt>Safety stock (Safety × r)</dt><dd id="n-safety">—</dd>
+        <dt>Reorder point ((Lead+Safety)×r)</dt><dd id="n-reorder">—</dd>
+        <dt>Target stock (Target × r)</dt><dd id="n-target">—</dd>
+        <dt>Suggested production (ceil→batch)</dt><dd id="n-sugg" style="color:var(--primary)">—</dd>
+        <dt>Cover after production</dt><dd id="n-after">—</dd>
+        <dt>Runs out / Cover-through</dt><dd id="n-dates">—</dd>
+      </dl>
+      <div class="cvbar" style="margin-top:12px"><div class="cvfill" id="cv-fill"></div><div class="cvafter" id="cv-after"></div><div class="cvtick risk" id="cv-risk"></div><div class="cvtick" id="cv-tgt"></div></div>
+      <div class="cvscale" id="cv-scale"></div>
+     </div>
     </div>
-    <div class="cvbar">
-      <div class="cvfill" style="width:96.7%"></div>
-      <div class="cvtick risk" style="left:12%"></div>
-      <div class="cvtick" style="left:30%"></div>
-      <div class="cvtick" style="left:60%"></div>
+
+    <div>
+     <!-- SP-7 + SP-8 : สั่งผลิต + margin sim -->
+     <div class="msec" id="m-produce"><div class="msec-h">🏭 สั่งผลิต (ผลิตเก็บสต็อก · D8 v2)</div>
+      <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px">จำนวน batch ที่จะผลิต</label>
+      <div class="qtybox"><button class="stepbtn" onclick="stepBatch(-1)">−</button><input id="p-bcount" type="text" value="3" oninput="recalc()"><button class="stepbtn" onclick="stepBatch(1)">+</button><span class="tiny">× <b id="m-bsize">500</b> = <b id="m-qty" style="color:var(--text)">1,500</b> ชิ้น</span></div>
+      <div class="tiny" style="margin:6px 0 12px">ค่าเริ่มต้น = จำนวน batch ที่ถึง Suggested (integer ≥ 1)</div>
+
+      <!-- SP-8 : margin simulation -->
+      <div class="marginbox" id="m-marginbox">
+        <div class="tiny" style="margin-bottom:8px">ประมาณการเพื่อการตัดสินใจ (ก่อน VAT) — ไม่ใช่รายงาน COGS</div>
+        <dl class="mrow" style="grid-template-columns:1fr auto;gap:5px 12px">
+          <dt>ต้นทุน (BOM <span id="mg-uc">42</span>/หน่วย × qty)</dt><dd id="mg-cost">63,000</dd>
+          <dt>รายได้ (ราคาขาย <span id="mg-sp">70</span>/หน่วย × qty)</dt><dd id="mg-rev">105,000</dd>
+        </dl>
+        <div style="border-top:1px dashed var(--border);margin:10px 0 8px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="muted">กำไร (margin)</span><span class="mg-big" id="mg-margin" style="color:var(--success)">42,000</span></div>
+        <div style="text-align:right"><span class="pill" id="mg-pct">margin 40%</span></div>
+      </div>
+      <div class="help err" id="m-marginhint" style="display:none">ข้อมูลราคา/ต้นทุนไม่ครบใน BOM — ปิดการคำนวณ margin (สั่งผลิตยังทำได้)</div>
+
+      <a class="btn btn-primary" id="m-produce-btn" href="so-create.html" style="width:100%;justify-content:center;margin-top:14px">🏭 สั่งผลิต <span id="m-qty2">1,500</span> → prefill SO</a>
+      <div class="tiny" style="margin-top:6px">→ เปิด SO ผลิตเก็บสต็อก (ไม่เลือกลูกค้า) prefill FG + จำนวนนี้</div>
+     </div>
+     <div class="msec" id="m-inactive" style="display:none;background:#F7F9FA;color:var(--text2)">🔒 FG นี้ปิดใช้งาน (Inactive) — สั่งผลิตไม่ได้ (bom.md §5c)</div>
+
+     <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-sm" id="m-bomlink" href="bom.html">เปิดหน้า BOM/FG เต็ม ›</a><a class="btn btn-sm" href="so-create.html">เปิดหน้า SO produce-to-stock ›</a></div>
     </div>
-    <div class="cvscale"><span style="left:12%">⚠ Risk 12d</span><span style="left:30%">🎯 Target 30d</span><span style="left:60%">2×Target 60d</span><span style="left:92%;color:#1F5EDB;font-weight:600">Cover 97d</span></div>
-    <div class="narr" style="background:#EDF3FE;border-color:#BBD1F8;color:#204A9E">2,900 units available at 30/day covers <b>96.7 days</b> — runs out <b>02 พ.ย.</b> Produce <b>0</b> units (cover &gt; 2×Target = Overstock — พิจารณาชะลอการผลิต).</div>
-    <div class="footchips"><span class="chip plain">Safety stock <b>&nbsp;150</b></span><span class="chip plain">Reorder point <b>&nbsp;360</b></span><span class="chip plain">Target stock <b>&nbsp;900</b></span><span class="chip plain">Suggested <b>&nbsp;0</b></span></div>
-  </div></div>
+   </div>
+
+   <!-- SP-5 : RM breakdown in modal -->
+   <div class="msec" style="margin-top:16px"><div class="msec-h">🧬 วัตถุดิบในสูตร (RM) + สต็อกคงเหลือ <span class="tiny" style="font-weight:400;color:var(--text3)">(read-only · จัดการที่ Stock/BOM)</span></div>
+     <div class="tblwrap"><table class="rmtbl" id="m-rmtbl"><thead><tr><th>รหัส RM</th><th>ชื่อวัตถุดิบ</th><th class="num">qty/หน่วยสินค้า</th><th class="num">คงเหลือ (on hand)</th><th class="num">ใช้ได้ (available)</th></tr></thead><tbody></tbody></table></div>
+   </div>
 
  </div>
- <div class="notify" style="margin-top:4px">🏭 กด <b>"สั่งผลิต"</b> → เปิดหน้า <b><a href="so-create.html">สร้างใบสั่งขาย (ข) ผลิตเก็บสต็อก</a> แบบ prefill</b> (FG + จำนวน = Suggested, ไม่เลือกลูกค้า) → ผู้ใช้ทวน/ยืนยัน → เข้าสาย <a href="production.html">การผลิต</a> (BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → QC ผ่าน → FG เข้าคลังราย Batch, D8 v2/D12) · Supply Planning ไม่สร้าง PRD เอง — ที่มา produce-to-stock มีที่เดียว · สิทธิ์ = Supply Planning.Create (§7)</div>
-</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ <div class="modal-f"><button class="btn" onclick="closeModal()">ปิด</button><a class="btn" id="m-bomlink2" href="bom.html">เปิดหน้า BOM/FG เต็ม ›</a></div>
+</div></div>
+
+<script>
+/* ---------- mock data (Active FG only shown; Inactive excluded per bom.md §5c) ---------- */
+var RM={
+ 'RM-014':{name:'ไนอาซินาไมด์ (Niacinamide)',u:'kg',oh:120,av:95},
+ 'RM-021':{name:'ไฮยาลูรอนิก แอซิด',u:'kg',oh:8,av:3},
+ 'RM-008':{name:'น้ำ DI (DI Water)',u:'L',oh:5000,av:4800},
+ 'RM-045':{name:'กลีเซอรีน (Glycerin)',u:'kg',oh:300,av:260},
+ 'RM-052':{name:'แอลกอฮอล์ (Ethanol)',u:'L',oh:40,av:10},
+ 'RM-060':{name:'น้ำหอม (Fragrance)',u:'kg',oh:25,av:22},
+ 'RM-071':{name:'บีสแวกซ์ (Beeswax)',u:'kg',oh:60,av:55},
+ 'RM-033':{name:'ไทเทเนียมไดออกไซด์ (TiO₂)',u:'kg',oh:30,av:-15},
+ 'RM-005':{name:'ซิงค์ออกไซด์ (ZnO)',u:'kg',oh:150,av:120}
+};
+function rm(code,q){return{code:code,q:q};}
+var FG=[
+ {code:'FG-101',name:'เอสเซนส์ ไบรท์ เซรั่ม',pkg:'ขวด 30ml',active:true,notified:true,onHand:1200,inProd:13,rate:85,period:'day',lead:7,safety:5,target:30,batch:500,cost:42,price:70,
+   rms:[rm('RM-008','12 ml'),rm('RM-014','0.90 g'),rm('RM-021','0.15 g'),rm('RM-045','1.20 g')]},
+ {code:'FG-118',name:'เอสเซนส์ เฟเชียล โทนเนอร์',pkg:'ขวด 120ml',active:true,notified:true,onHand:800,inProd:100,rate:60,period:'day',lead:7,safety:5,target:30,batch:300,cost:28,price:55,
+   rms:[rm('RM-008','95 ml'),rm('RM-052','18 ml'),rm('RM-045','2.00 g'),rm('RM-060','0.30 g')]},
+ {code:'FG-233',name:'เอสเซนส์ ซันสกรีน ครีม',pkg:'หลอด 40g',active:true,notified:true,onHand:300,inProd:0,rate:50,period:'day',lead:7,safety:5,target:30,batch:500,cost:38,price:68,
+   rms:[rm('RM-033','2.40 g'),rm('RM-005','1.60 g'),rm('RM-045','1.10 g')]},
+ {code:'FG-150',name:'เอสเซนส์ ลิปบาล์ม',pkg:'หลอด 4g',active:true,notified:false,onHand:1500,inProd:200,rate:40,period:'day',lead:7,safety:5,target:30,batch:400,cost:12,price:29,
+   rms:[rm('RM-071','2.80 g'),rm('RM-045','0.50 g'),rm('RM-060','0.10 g')]},
+ {code:'FG-172',name:'เอสเซนส์ มอยส์เจอไรเซอร์',pkg:'กระปุก 50g',active:true,notified:false,onHand:1100,inProd:0,rate:25,period:'day',lead:7,safety:5,target:30,batch:400,cost:30,price:null,
+   rms:[rm('RM-008','20 g'),rm('RM-021','0.20 g'),rm('RM-045','3.00 g')]},
+ {code:'FG-204',name:'เอสเซนส์ ซันสกรีน SPF50',pkg:'หลอด 40g',active:true,notified:false,onHand:2900,inProd:0,rate:30,period:'day',lead:7,safety:5,target:30,batch:500,cost:45,price:79,
+   rms:[rm('RM-033','2.20 g'),rm('RM-005','1.80 g'),rm('RM-008','8 g'),rm('RM-045','1.00 g')]}
+];
+
+/* ---------- formulas (§6) ---------- */
+function perDay(rate,period){return period==='week'?rate/7:period==='month'?rate/30:rate;}
+function calc(f,ov){
+ ov=ov||{};
+ var rate=num(ov.rate,f.rate),period=ov.period||f.period,lead=num(ov.lead,f.lead),safety=num(ov.safety,f.safety),target=num(ov.target,f.target),batch=num(ov.batch,f.batch);
+ var r=perDay(rate,period);
+ var avail=f.onHand+f.inProd;
+ var cover=r>0?avail/r:0;
+ var safetyStock=safety*r, reorder=(lead+safety)*r, targetStock=target*r, risk=lead+safety;
+ var need=Math.max(0,targetStock-avail);
+ var sBatches=batch>0?Math.ceil(need/batch):0;
+ var suggested=sBatches*batch;
+ var after=r>0?(avail+suggested)/r:0;
+ var status=cover<target?'Low':(cover<=2*target?'OK':'Overstock');
+ return{r:r,avail:avail,cover:cover,safetyStock:safetyStock,reorder:reorder,targetStock:targetStock,risk:risk,suggested:suggested,sBatches:sBatches,after:after,status:status,target:target,batch:batch};
+}
+function num(v,d){var n=parseFloat(v);return isNaN(n)?d:n;}
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
+function fmt1(n){return (Math.round(n*10)/10).toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});}
+function addDays(d){var t=new Date(2026,6,29);t.setDate(t.getDate()+Math.round(d));return t.getDate()+' '+['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][t.getMonth()];}
+var BADGE={Low:'b-error',OK:'b-success',Overstock:'b-processing'};
+
+/* ---------- list render (SP-1..5) ---------- */
+var filter='all';
+function setFilter(el){filter=el.getAttribute('data-f');document.querySelectorAll('.chip[data-f]').forEach(function(c){c.classList.toggle('on',c===el);});render();}
+function matchSearch(f,q,rmOnly){
+ if(!q)return !rmOnly;
+ q=q.toLowerCase();
+ var inRM=f.rms.some(function(c){return c.code.toLowerCase().indexOf(q)>=0 || RM[c.code].name.toLowerCase().indexOf(q)>=0;});
+ if(rmOnly)return inRM;
+ return f.name.toLowerCase().indexOf(q)>=0 || f.code.toLowerCase().indexOf(q)>=0 || inRM;
+}
+function render(){
+ var q=document.getElementById('sp-search').value.trim();
+ var rmOnly=document.getElementById('rm-only').checked;
+ document.getElementById('rm-hint').style.display=(rmOnly||(q&&FG.some(function(f){return matchSearch(f,q,false)&&!(f.name.toLowerCase().indexOf(q.toLowerCase())>=0||f.code.toLowerCase().indexOf(q.toLowerCase())>=0);})))?'block':'none';
+ var rows=FG.filter(function(f){
+   var c=calc(f);
+   if(filter!=='all'&&c.status!==filter)return false;
+   return matchSearch(f,q,rmOnly);
+ });
+ var tb=document.getElementById('fgbody');tb.innerHTML='';
+ rows.forEach(function(f){
+   var c=calc(f);var bc=BADGE[c.status];
+   var why;
+   if(c.status==='Low')why='<span class="lowtxt">เหลือ cover '+fmt1(c.cover)+' วัน &lt; Target '+c.target+' วัน</span> <span class="muted">(Safety '+f.safety+' / Lead '+f.lead+')</span> — <span class="sug">ควรผลิต '+fmt(c.suggested)+' ชิ้น ('+c.sBatches+' แบตช์ × '+fmt(f.batch)+')</span>';
+   else if(c.status==='Overstock')why='cover '+fmt1(c.cover)+' วัน &gt; 2×Target ('+(2*c.target)+') — ไม่ต้องผลิต (Suggested 0)';
+   else why='cover '+fmt1(c.cover)+' วัน · อยู่ในเกณฑ์ Target '+c.target+'–'+(2*c.target)+' วัน — ไม่ต้องผลิต (Suggested 0)';
+   var tr=document.createElement('tr');tr.className='fgrow';tr.onclick=function(){openModal(f.code);};
+   tr.innerHTML='<td class="exptd" onclick="event.stopPropagation();toggleRM(this,\''+f.code+'\')"><button class="expbtn">▸</button></td>'+
+     '<td><div class="fgname">'+f.name+'</div><div class="fgcode">'+f.code+' · '+f.pkg+'</div></td>'+
+     '<td><span class="badge '+bc+'">'+c.status+'</span>'+(f.notified&&c.status==='Low'?' <span class="badge b-warning plain" style="height:22px">🔔 แจ้งแล้ว</span>':'')+'<div class="whycalc">'+why+'</div></td>'+
+     '<td style="text-align:right"><div style="font-weight:600;font-variant-numeric:tabular-nums;color:var(--'+(c.status==='Low'?'error':c.status==='OK'?'success':'info')+')">'+fmt1(c.cover)+' วัน</div><div class="tiny">/ Target '+c.target+' วัน</div></td>';
+   tb.appendChild(tr);
+ });
+ if(!rows.length)tb.innerHTML='<tr><td colspan="4"><div class="empty" style="padding:30px"><div class="ei">🔍</div><h3>ไม่พบ FG ที่ตรงเงื่อนไข</h3><p class="muted">ลองค้นด้วยชื่อ/รหัส FG หรือชื่อ/รหัสวัตถุดิบ</p></div></td></tr>';
+ document.getElementById('listcount').textContent=rows.length+' รายการ';
+ document.getElementById('pg-range').textContent='1–'+rows.length;
+ document.getElementById('pg-total').textContent=rows.length;
+ refreshTiles();
+}
+function toggleRM(td,code){
+ var tr=td.parentNode, btn=td.querySelector('.expbtn');
+ if(tr.nextSibling&&tr.nextSibling.classList&&tr.nextSibling.classList.contains('rmpanel')){tr.nextSibling.remove();btn.textContent='▸';return;}
+ btn.textContent='▾';
+ var f=byCode(code);var panel=document.createElement('tr');panel.className='rmpanel';
+ var body='';
+ f.rms.forEach(function(cp){var m=RM[cp.code];var neg=m.av<0;
+   body+='<tr><td>'+cp.code+'</td><td>'+m.name+'</td><td class="num">'+cp.q+'</td><td class="num">'+fmt(m.oh)+' '+m.u+'</td><td class="num'+(neg?' rmneg':'')+'">'+(neg?'−'+fmt(-m.av):fmt(m.av))+' '+m.u+'</td></tr>';});
+ panel.innerHTML='<td colspan="4"><div class="inner"><div class="rmhead">🧬 วัตถุดิบในสูตร (BOM) — read-only</div><div class="tblwrap"><table class="rmtbl"><thead><tr><th>รหัส RM</th><th>ชื่อวัตถุดิบ</th><th class="num">qty/หน่วยสินค้า</th><th class="num">คงเหลือ</th><th class="num">ใช้ได้</th></tr></thead><tbody>'+body+'</tbody></table></div></div></td>';
+ tr.parentNode.insertBefore(panel,tr.nextSibling);
+}
+function byCode(code){for(var i=0;i<FG.length;i++)if(FG[i].code===code)return FG[i];}
+function refreshTiles(){
+ var below=0,sugg=0,shortest=1e9,shortFG='';
+ FG.forEach(function(f){var c=calc(f);if(c.status==='Low')below++;sugg+=c.suggested;if(c.cover<shortest){shortest=c.cover;shortFG=f.code+' '+f.name;}});
+ document.getElementById('t-below').textContent=below;
+ document.getElementById('t-total').textContent=FG.length;
+ document.getElementById('t-sugg').textContent=fmt(sugg);
+ document.getElementById('t-short').textContent=fmt1(shortest);
+ document.getElementById('t-shortfg').textContent=shortFG;
+ document.getElementById('lowcount').textContent=below;
+ document.getElementById('lowbell').style.display=below?'inline-flex':'none';
+}
+
+/* ---------- modal (SP-6..9) ---------- */
+var cur=null,curOv=null;
+function openModal(code){
+ cur=byCode(code);curOv={rate:cur.rate,period:cur.period,lead:cur.lead,safety:cur.safety,target:cur.target,batch:cur.batch};
+ document.getElementById('p-rate').value=cur.rate;document.getElementById('p-period').value=cur.period;
+ document.getElementById('p-lead').value=cur.lead;document.getElementById('p-safety').value=cur.safety;
+ document.getElementById('p-target').value=cur.target;document.getElementById('p-batch').value=cur.batch;
+ var c=calc(cur);
+ document.getElementById('p-bcount').value=Math.max(1,c.sBatches);
+ document.getElementById('m-onhand').textContent=fmt(cur.onHand);
+ document.getElementById('m-inprod').textContent=fmt(cur.inProd);
+ document.getElementById('m-name').textContent=cur.code+' · '+cur.name;
+ document.getElementById('m-sub').textContent='Own-Brand · 1 BOM = 1 FG · '+cur.pkg;
+ document.getElementById('m-notified').style.display=(cur.notified&&c.status==='Low')?'inline-flex':'none';
+ // active/inactive produce section
+ document.getElementById('m-produce').style.display=cur.active?'block':'none';
+ document.getElementById('m-inactive').style.display=cur.active?'none':'block';
+ document.getElementById('m-simflag').classList.remove('on');
+ recalc();
+ document.getElementById('fgModal').classList.add('open');
+}
+function closeModal(){document.getElementById('fgModal').classList.remove('open');}
+function currentOv(){return{rate:document.getElementById('p-rate').value,period:document.getElementById('p-period').value,lead:document.getElementById('p-lead').value,safety:document.getElementById('p-safety').value,target:document.getElementById('p-target').value,batch:document.getElementById('p-batch').value};}
+function paramsDirty(o){return num(o.rate,0)!=curOv.rate||o.period!=curOv.period||num(o.lead,0)!=curOv.lead||num(o.safety,0)!=curOv.safety||num(o.target,0)!=curOv.target||num(o.batch,0)!=curOv.batch;}
+function recalc(){
+ if(!cur)return;var o=currentOv();var c=calc(cur,o);
+ document.getElementById('m-simflag').classList.toggle('on',paramsDirty(o));
+ // numbers
+ document.getElementById('n-avail').textContent=fmt(c.avail);
+ document.getElementById('n-cover').textContent=fmt1(c.cover)+' วัน';
+ document.getElementById('n-safety').textContent=fmt(c.safetyStock);
+ document.getElementById('n-reorder').textContent=fmt(c.reorder);
+ document.getElementById('n-target').textContent=fmt(c.targetStock);
+ document.getElementById('n-sugg').textContent=fmt(c.suggested)+' ('+c.sBatches+' แบตช์)';
+ document.getElementById('n-after').textContent=fmt1(c.after)+' วัน';
+ document.getElementById('n-dates').textContent=addDays(c.cover)+' / '+addDays(c.after);
+ // badge + narrative
+ var mb=document.getElementById('m-badge');mb.className='badge '+BADGE[c.status];mb.textContent=c.status;
+ document.getElementById('m-narr').innerHTML=fmt(c.avail)+' units available at '+fmt1(c.r)+'/day covers <b>'+fmt1(c.cover)+' days</b> — runs out <b>'+addDays(c.cover)+'</b>. Produce <b>'+fmt(c.suggested)+'</b> units to hold <b>'+fmt(c.avail+c.suggested)+'</b> and cover <b>'+fmt1(c.after)+' days</b> through <b>'+addDays(c.after)+'</b>.';
+ // coverage bar (scale: 0..max(after,2*target))
+ var maxd=Math.max(c.after,2*c.target,c.cover)*1.05;
+ function pc(v){return Math.min(100,v/maxd*100);}
+ document.getElementById('cv-fill').style.width=pc(c.cover)+'%';
+ document.getElementById('cv-after').style.width=pc(c.after)+'%';
+ document.getElementById('cv-risk').style.left=pc(c.risk)+'%';
+ document.getElementById('cv-tgt').style.left=pc(c.target)+'%';
+ document.getElementById('cv-scale').innerHTML='<span style="left:'+pc(c.risk)+'%">⚠ Risk '+c.risk+'d</span><span style="left:'+pc(c.cover)+'%;top:15px;color:var(--primary);font-weight:600">Cover '+fmt1(c.cover)+'d</span><span style="left:'+pc(c.target)+'%">🎯 Target '+c.target+'d</span><span style="left:'+pc(c.after)+'%;top:15px;color:var(--primary)">After '+fmt1(c.after)+'d</span>';
+ // save button only when dirty
+ document.getElementById('m-savebtn').disabled=!paramsDirty(o);
+ // SP-7 batch count + qty
+ var bc=Math.max(1,Math.floor(num(document.getElementById('p-bcount').value,1)));
+ var bsize=num(o.batch,cur.batch);var qty=bc*bsize;
+ document.getElementById('m-bsize').textContent=fmt(bsize);
+ document.getElementById('m-qty').textContent=fmt(qty);
+ document.getElementById('m-qty2').textContent=fmt(qty);
+ // SP-8 margin sim
+ var box=document.getElementById('m-marginbox'),hint=document.getElementById('m-marginhint');
+ if(cur.price==null||cur.cost==null){box.style.display='none';hint.style.display='block';}
+ else{box.style.display='block';hint.style.display='none';
+   var cost=cur.cost*qty,rev=cur.price*qty,margin=rev-cost,pct=rev>0?margin/rev*100:0;
+   document.getElementById('mg-uc').textContent=fmt(cur.cost);
+   document.getElementById('mg-sp').textContent=fmt(cur.price);
+   document.getElementById('mg-cost').textContent=fmt(cost);
+   document.getElementById('mg-rev').textContent=fmt(rev);
+   var mel=document.getElementById('mg-margin');mel.textContent=fmt(margin);mel.style.color=margin>=0?'var(--success)':'var(--error)';
+   document.getElementById('mg-pct').textContent='margin '+Math.round(pct)+'%';
+ }
+ // links
+ document.getElementById('m-bomlink').href='bom.html';document.getElementById('m-bomlink2').href='bom.html';
+}
+function stepBatch(d){var el=document.getElementById('p-bcount');el.value=Math.max(1,Math.floor(num(el.value,1))+d);recalc();}
+function resetParams(){
+ document.getElementById('p-rate').value=curOv.rate;document.getElementById('p-period').value=curOv.period;
+ document.getElementById('p-lead').value=curOv.lead;document.getElementById('p-safety').value=curOv.safety;
+ document.getElementById('p-target').value=curOv.target;document.getElementById('p-batch').value=curOv.batch;
+ recalc();
+}
+function saveBack(){
+ var o=currentOv();
+ cur.rate=num(o.rate,cur.rate);cur.period=o.period;cur.lead=num(o.lead,cur.lead);cur.safety=num(o.safety,cur.safety);cur.target=num(o.target,cur.target);cur.batch=num(o.batch,cur.batch);
+ curOv={rate:cur.rate,period:cur.period,lead:cur.lead,safety:cur.safety,target:cur.target,batch:cur.batch};
+ alert('บันทึกกลับ BOM master แล้ว (persist + audited: ใคร/เมื่อ/เดิม→ใหม่)\nสถานะ/Suggested/แจ้งเตือน จะคำนวณจากค่าใหม่');
+ recalc();render();
+}
+
+/* ---------- RM breakdown table filler for modal is inline in recalc via openModal ---------- */
+function fillModalRM(){
+ var tb=document.querySelector('#m-rmtbl tbody');tb.innerHTML='';
+ cur.rms.forEach(function(cp){var m=RM[cp.code];var neg=m.av<0;
+   tb.innerHTML+='<tr><td>'+cp.code+'</td><td>'+m.name+'</td><td class="num">'+cp.q+'</td><td class="num">'+fmt(m.oh)+' '+m.u+'</td><td class="num'+(neg?' rmneg':'')+'">'+(neg?'−'+fmt(-m.av):fmt(m.av))+' '+m.u+'</td></tr>';});
+}
+var _open=openModal;openModal=function(code){_open(code);fillModalRM();};
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+render();
+</script><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
