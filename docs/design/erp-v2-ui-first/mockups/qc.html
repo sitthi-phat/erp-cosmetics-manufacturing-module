@@ -212,4 +212,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
        <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · อรุณี &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "ตรวจตามมาตรฐาน"</div></div>
      <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
  </div></div>
-</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav>
+<script>
+/* Deep-link from Production "ไปหน้า QC ›" → open the ตรวจแบตช์ tab focused on a specific Batch (production.md §7.4 · qc.md §9) */
+(function(){var p=new URLSearchParams(location.search);if(p.get('tab')==='batch'||p.get('batch')){var links=document.querySelectorAll('.tabs a');if(links[1])qcTab(1,links[1]);var b=p.get('batch');if(b){var banner=document.createElement('div');banner.className='alert alert-info';banner.style.cssText='font-size:13px;margin:0 24px 12px';banner.innerHTML='<span class="ai">🔗</span><div>เปิดจากหน้า <b>การผลิต</b> → โฟกัสแบตช์ <b>'+b+'</b> (แท็บ "ตรวจแบตช์") · ถ้าแบตช์นี้ไม่อยู่ในคิว QC จะแสดงแบบอ่านอย่างเดียว + ปุ่มตัดสิน disabled</div>';var content=document.querySelector('.content');var ph=content.querySelector('.tabs');ph.parentNode.insertBefore(banner,ph.nextSibling);}}})();
+</script>
+</body></html>

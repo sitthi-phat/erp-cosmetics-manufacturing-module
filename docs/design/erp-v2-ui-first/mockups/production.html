@@ -139,6 +139,41 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+/* ==== production queue search/filter panel (PROD-1/2/4/5) ==== */
+.filterpanel{background:#FAFBFC;border:1px solid var(--border2);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.filtergrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 16px;align-items:end}
+.filtergrid .field{margin-bottom:0}
+.filtergrid .field label{font-size:12px;color:var(--text2);margin-bottom:4px}
+.daterange{display:flex;align-items:center;gap:6px}.daterange .inp{padding:0 8px;height:38px}.daterange .sep{color:var(--text3);font-size:12px;flex-shrink:0}
+.statusfilter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
+.statusfilter .lbl{font-size:12px;color:var(--text2);font-weight:500}
+/* ==== grouped accepted queue (PROD-6) ==== */
+.grp-h td{background:#EDF5F4;border-top:2px solid #CDE6E4;padding-top:11px;padding-bottom:11px}
+.grp-h .gttl{font-weight:600;font-size:14px}.grp-h .gmeta{font-weight:400;color:var(--text2);font-size:12px;margin-top:1px}
+.prd-row td:first-child{padding-left:36px;position:relative}
+.prd-row td:first-child::before{content:"";position:absolute;left:20px;top:0;bottom:0;width:2px;background:var(--border2)}
+.prd-row:last-child td:first-child::before{bottom:50%}
+/* ==== search-in-dropdown (lot picker · reuse of stock G7) ==== */
+.ssdd{position:relative}
+.ssdd-tg{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;border:1px solid var(--border);border-radius:var(--radius);padding:5px 12px;background:#fff;cursor:pointer;font-size:13px}
+.ssdd-tg:hover{border-color:var(--primary)}
+.ssdd-tg .cur{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.ssdd-pan{display:none;position:absolute;left:0;right:0;top:42px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:70;overflow:hidden}
+.ssdd.open .ssdd-pan{display:block}
+.ssdd-sr{padding:10px;border-bottom:1px solid var(--border2);position:relative}
+.ssdd-sr .si{position:absolute;left:22px;top:20px;color:var(--text3)}
+.ssdd-sr .inp{padding-left:34px;height:36px}
+.ssdd-ls{max-height:240px;overflow:auto}
+.ssdd-op{padding:9px 14px;border-bottom:1px solid var(--border2);cursor:pointer}
+.ssdd-op:last-child{border-bottom:none}
+.ssdd-op:hover,.ssdd-op.sel{background:var(--primary-bg)}
+.ssdd-op .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ssdd-op .code{font-size:12px;color:var(--primary);font-weight:600;background:var(--primary-bg);border-radius:5px;padding:1px 7px}
+.ssdd-none{padding:14px;text-align:center;color:var(--text3);font-size:13px}
+/* ==== confirm popup (PROD-10/11/13/14) ==== */
+.cpop{max-width:480px!important}
+.btn.is-disabled{opacity:.55;cursor:not-allowed;background:#E4E7EB;border-color:var(--border);color:var(--text3)}
+.btn.is-disabled:hover{background:#E4E7EB;border-color:var(--border);color:var(--text3)}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class="active"><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>การผลิต</b></div></div>
@@ -148,7 +183,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-item"><span class="di">🔒</span><div><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · แจ้ง Stock</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · จาก PO ยืนยัน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🔁</span><div><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · จาก GR-008 รับไม่ครบ</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000170 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">↩️</span><div><a href="po-detail.html">DN-123 (PO-175) ถูกปฏิเสธ → raise Sale (ติดต่อลูกค้า)</a><div class="tm">วันนี้ 11:40 · จัดส่ง</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายผลิต</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>คิวงานผลิต</h1><div class="sub">PO ยืนยันแล้ว → line เข้าคิว "รอรับงาน" ก่อน · กด "รับงาน" จึงออกเลข PRD · เรียงตามวันจัดส่ง · เตือน "เสี่ยงล่าช้า" + "จะตัด stock ติดลบ" เมื่อวัตถุดิบไม่พอ</div></div></div>
+ <div class="pagehead"><div><h1>คิวงานผลิต</h1><div class="sub">2 แท็บ: <b>"รอรับงาน"</b> (PO/SO ยืนยันแล้ว รอฝ่ายผลิตกดรับ) และ <b>"คิวงานที่รับแล้ว"</b> (จัดกลุ่มตาม PO/SO → PRD ซ้อนใต้) · กด "รับงาน" จึงออกเลข PRD · ทุกการเปลี่ยนสถานะมี popup ยืนยัน</div></div></div>
  <style>
  .modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
  .modal-bg.open{display:block}
@@ -156,6 +191,7 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .modal-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border2)}
  .modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;padding:4px}
  .modal-b{padding:20px;max-height:calc(100vh - 150px);overflow:auto}
+ .modal-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
  @media(max-width:991px){.modal-b .split{grid-template-columns:1fr}}
  </style>
  <div class="tabs"><a class="active" onclick="prodTab(0,this)">📥 รอรับงาน <span class="count">2</span></a><a onclick="prodTab(1,this)">🏭 คิวงานที่รับแล้ว <span class="count">5</span></a></div>
@@ -163,56 +199,124 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  function prodTab(i,el){document.querySelectorAll('.tabs a').forEach(function(a){a.classList.remove('active')});el.classList.add('active');document.getElementById('tab-await').style.display=i===0?'block':'none';document.getElementById('tab-accepted').style.display=i===1?'block':'none';}
  function openPrd(){document.getElementById('prdModal').classList.add('open');}
  function closePrd(){document.getElementById('prdModal').classList.remove('open');}
+ function openOrder(no,kind){var m=document.getElementById('orderModal');m.querySelector('#om-no').textContent=no;m.querySelector('#om-kind').textContent=kind;m.querySelector('#om-full').href=(kind.indexOf('SO')>-1?'so-detail.html':'po-detail.html');m.classList.add('open');}
+ function closeOrder(){document.getElementById('orderModal').classList.remove('open');}
+ /* generic confirm popup — PROD-13: ทุกการเปลี่ยนสถานะมี popup ยืนยัน */
+ function cpop(o){o=o||{};document.getElementById('cpop-title').innerHTML=o.title||'ยืนยันการทำรายการ';document.getElementById('cpop-body').innerHTML=o.body||'';var r=document.getElementById('cpop-reason');r.style.display=o.reason?'block':'none';r.querySelector('.rlbl').innerHTML=o.reasonLabel||'เหตุผล <span class="req">*</span>';var ok=document.getElementById('cpop-ok');ok.textContent=o.ok||'ยืนยัน';ok.className='btn '+(o.tone==='danger'?'btn-danger':'btn-primary');document.getElementById('cpop-cancel').style.display=o.okOnly?'none':'inline-flex';document.getElementById('cpopModal').classList.add('open');}
+ function cpopClose(){document.getElementById('cpopModal').classList.remove('open');}
+ /* PROD-10: press "พร้อมส่ง" before QC pass → popup "QC ต้องผ่านก่อน" */
+ function qcGate(){cpop({title:'⛔ QC ต้องผ่านก่อน',okOnly:true,ok:'เข้าใจแล้ว',body:'<div class="alert alert-warn" style="margin:0"><span class="ai">🛡️</span><div>ยังกด <b>"พร้อมส่ง"</b> ไม่ได้ — แบตช์ <b>B-PO-202607-000181-1-1</b> ต้อง <b>ผ่าน QC</b> ก่อน<br>ไปที่หน้า <a href="qc.html?tab=batch&batch=B-PO-202607-000181-1-1">ตรวจคุณภาพ (QC) ›</a> เพื่อตัดสินผลก่อน แล้วปุ่มนี้จะเปิดให้กดได้อัตโนมัติ</div></div>'});}
  </script>
+ <!-- ================= TAB 1 : รอรับงาน (PROD-1/2/3) ================= -->
  <div id="tab-await" style="display:block"><div class="card"><div class="card-b">
-   <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>PO ยืนยันแล้ว → แต่ละ line เข้าคิวนี้ก่อน <b>ยังไม่มีเลข PRD</b> · กด <b>"รับงาน"</b> ระบบจึงออกเลข PRD (รูปแบบ PRD-{YYYYMM}-{NNNNNN}) แล้วเริ่มผลิตได้ · วัตถุดิบขาด <b>ไม่บล็อก</b> — เตือนก่อนตัด stock ติดลบ</div></div>
+   <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>PO/SO ยืนยันแล้ว → แต่ละ line เข้าคิวนี้ก่อน <b>ยังไม่มีเลข PRD</b> · กด <b>"รับงาน"</b> ระบบจึงออกเลข PRD (PRD-{YYYYMM}-{NNNNNN}) · คลิกแถว → ดูรายละเอียด PO/SO แบบ <b>popup</b> (ไม่สลับหน้า)</div></div>
+   <!-- PROD-1 search + PROD-2 filter -->
+   <div class="filterpanel"><div class="filtergrid">
+     <div class="field"><label>ค้นหา (PO / SO / ชื่อลูกค้า / ผู้ติดต่อ)</label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="เช่น PO-202607-000185 · บิวตี้ เอเชีย · 08x-xxx-xxxx"></div></div>
+     <div class="field"><label>วันที่สร้าง PO/SO</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+     <div class="field"><label>วันที่ต้องการรับของ</label><div class="daterange"><input class="inp" type="date" value="2026-07-10"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-20"></div></div>
+   </div></div>
+   <div class="statusfilter"><span class="lbl">สถานะ PO/SO:</span><span class="chip on">✓ พร้อมรับงาน</span><span class="chip">ยืนยันแล้ว (ยังไม่พร้อม)</span><span class="chip">พักงาน (Hold)</span><span class="chip">ทั้งหมดทุกสถานะ</span><span class="tiny" style="color:var(--text2)">· ค่าเริ่มต้น = <b>"พร้อมรับงาน"</b> (ลด noise) — เลือก "ทั้งหมด" เพื่อค้นทุกสถานะ</span></div>
    <div class="tblwrap"><table class="tbl"><thead><tr><th>งาน (line) · ยังไม่มี PRD</th><th>ลูกค้า</th><th>วันจัดส่ง</th><th>วัตถุดิบ</th><th></th></tr></thead><tbody>
-    <tr><td><b>ครีมกันแดด SPF50</b><div class="id">PO-202607-000185 · line #1 · 100 หน่วย · รอรับงาน</div></td><td>บิวตี้ เอเชีย</td><td class="tnum">15/07/2569</td><td><span class="badge b-success" style="height:20px">พร้อม</span></td><td class="num"><button class="btn btn-sm btn-primary">รับงาน</button></td></tr>
-    <tr style="background:#FFF7F7"><td><b>สเปรย์แอลกอฮอล์ 70%</b><div class="id">PO-202607-000185 · line #2 · 200 หน่วย · รอรับงาน</div><div class="tiny" style="color:#B02A2A;margin-top:2px">⚠ แอลกอฮอล์ไม่พอ (พร้อมใช้ 0 · lot L-TT-ALC-2607 200 ล. รอ QC) — เริ่มผลิตจะตัด stock <b>ติดลบ ~30 ล.</b></div></td><td>บิวตี้ เอเชีย</td><td class="tnum">15/07/2569</td><td><span class="badge b-warning" style="height:20px">อาจไม่พร้อม</span></td><td class="num"><button class="btn btn-sm btn-primary">รับงาน</button></td></tr>
+    <tr style="cursor:pointer" onclick="openOrder('PO-202607-000185','PO (OEM)')"><td><b>ครีมกันแดด SPF50</b><div class="id">PO-202607-000185 · line #1 · 100 หน่วย · <span class="badge b-success" style="height:18px">พร้อมรับงาน</span></div></td><td>บิวตี้ เอเชีย</td><td class="tnum">15/07/2569</td><td><span class="badge b-success" style="height:20px">พร้อม</span></td><td class="num"><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();cpop({title:'รับงานนี้เข้าคิวผลิต?',ok:'ยืนยันรับงาน',body:'<div class=&quot;alert alert-info&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>🏭</span><div>รับงาน <b>ครีมกันแดด SPF50</b> (PO-202607-000185 · line #1 × 100) → ระบบจะ<b>ออกเลข PRD</b> และย้ายเข้าแท็บ &quot;คิวงานที่รับแล้ว&quot;</div></div>'})">รับงาน</button></td></tr>
+    <tr style="background:#FFF7F7;cursor:pointer" onclick="openOrder('PO-202607-000185','PO (OEM)')"><td><b>สเปรย์แอลกอฮอล์ 70%</b><div class="id">PO-202607-000185 · line #2 · 200 หน่วย · <span class="badge b-success" style="height:18px">พร้อมรับงาน</span></div><div class="tiny" style="color:#B02A2A;margin-top:2px">⚠ แอลกอฮอล์ไม่พอ (พร้อมใช้ 0 · lot L-TT-ALC-2607 200 ล. รอ QC) — เริ่มผลิตจะตัด stock <b>ติดลบ ~30 ล.</b></div></td><td>บิวตี้ เอเชีย</td><td class="tnum">15/07/2569</td><td><span class="badge b-warning" style="height:20px">อาจไม่พร้อม</span></td><td class="num"><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();cpop({title:'รับงานนี้เข้าคิวผลิต?',ok:'ยืนยันรับงาน',body:'<div class=&quot;alert alert-warn&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>⚠️</span><div>รับงาน <b>สเปรย์แอลกอฮอล์ 70%</b> (line #2 × 200) → ออกเลข PRD · วัตถุดิบขาด <b>ไม่บล็อก</b> — เตือนตอนเริ่มผลิตว่าจะตัด stock ติดลบ</div></div>'})">รับงาน</button></td></tr>
    </tbody></table></div>
-   <div class="alert alert-warn" style="margin-top:12px;font-size:13px"><span class="ai">⚠️</span><div>กด <b>"รับงาน"</b> → ออกเลข PRD + เข้าแท็บ "คิวงานที่รับแล้ว" · เมื่อกด <b>"เริ่มผลิต"</b> ตอนวัตถุดิบไม่พอ ระบบเตือน <b>"จะตัด stock ติดลบ X หน่วย"</b> (ทำต่อได้ ไม่บล็อก) แล้ว <a href="goods-receipt.html">Goods Receipt</a> บวกกลับภายหลัง</div></div>
-   <div class="pager"><span class="tiny">แสดง 1–2 จาก 2 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">›</button></div></div>
+   <div class="pager"><span class="tiny">แสดง 1–2 จาก 2 รายการ (20/หน้า)</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">›</button></div></div>
  </div></div></div>
+ <!-- ================= TAB 2 : คิวงานที่รับแล้ว (PROD-4/5/6) ================= -->
  <div id="tab-accepted" style="display:none"><div class="card"><div class="card-b">
-   <div class="toolbar"><div class="l"><div class="searchbox" style="max-width:300px"><span class="si">🔍</span><input class="inp" placeholder="ค้นเลข: ลูกค้า / PO / Own-Brand production order"></div>
-     <input class="inp" type="date" style="width:150px" value="2026-07-01"><span class="tiny">ถึง</span><input class="inp" type="date" style="width:150px" value="2026-07-31"></div>
-    <div class="r"><span class="tiny">แหล่งงาน:</span><span class="chip on">ทั้งหมด</span><span class="chip">📄 PO (OEM)</span><span class="chip">🏭 Own-Brand (ผลิตเก็บสต็อก)</span></div></div>
-   <div class="tiny" style="margin:-6px 0 12px;color:var(--text2)">ค้นด้วยเลขเอกสาร <b>หรือ</b> ช่วงวันที่สร้าง (G2) · filter แยก PO(OEM) กับ Own-Brand production order · แสดง 20/หน้า (G1)</div>
-   <div class="tblwrap"><table class="tbl"><thead><tr><th>งานผลิต</th><th>ลูกค้า</th><th>วันจัดส่ง</th><th>สถานะ</th><th></th></tr></thead><tbody>
-    <tr><td><b>PRD-202607-000091</b> โลชั่นบำรุงผิว<div class="id">PO-202607-000181 · line #1 · แบตช์ B-PO-202607-000181-1-1 · 200 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">09/07/2569 <span class="badge b-error" style="height:20px">เสี่ยงล่าช้า</span></td><td><span class="badge b-warning">รอ QC</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
-    <tr style="background:#FFF7F7"><td><b>PRD-202607-000088</b> โฟมล้างหน้า <span class="badge b-error" style="height:20px">Rework</span><div class="id">PO-202607-000181 · line #2 · แบตช์ใหม่ B-PO-202607-000181-2-2 (ผลิตครั้งที่ 2) · 300 หน่วย</div><div class="tiny" style="color:#B02A2A;margin-top:2px">🔁 QC ตีกลับ run 1 (B-PO-202607-000181-2-1): "เนื้อโฟมเป็นก้อน ปั๊มไม่ออก — ต้องผสมใหม่"</div></td><td>เดอร์มา แคร์</td><td class="tnum">12/07/2569</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
-    <tr><td><b>PRD-202607-000082</b> เซรั่มวิตซี<div class="id">PO-202607-000188 · line #1 · แบตช์ B-PO-202607-000188-1-1 · 120 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">14/07/2569</td><td><span class="badge b-warning">พักงาน (Hold · ลูกค้าขอแก้สูตร)</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
-    <tr><td><b>PRD-202607-000079</b> โลชั่นบำรุงผิว<div class="id">PO-202607-000170 · line #1 · แบตช์ B-PO-202607-000170-1-2 (ผลิตครั้งที่ 2) · 200 หน่วย</div><div class="tiny" style="color:var(--success);margin-top:2px">✓ run1 ไม่ผ่าน → run2 ผ่าน QC → พร้อมส่งมอบ</div></td><td>กลอรี่</td><td class="tnum">10/07/2569</td><td><span class="badge b-processing">พร้อมส่งมอบ</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
-    <tr style="background:#F3FBF6"><td><b>PRD-202607-000104</b> เอสเซนส์ ไบรท์ เซรั่ม <span class="badge b-processing" style="height:20px">ผลิตเก็บสต็อก</span><div class="id">ไม่ผูกลูกค้า · จาก Supply Planning (FG-101) · แบตช์ B-PRD-202607-000104-1 · 1,500 หน่วย</div><div class="tiny" style="color:var(--primary);margin-top:2px">🏭 produce-to-stock — QC ผ่าน → FG เข้าคลังราย Batch (D12) · ไม่มีลูกค้า</div></td><td class="tiny">— (ไม่ผูกลูกค้า)</td><td class="tnum">—</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
+   <!-- PROD-4 search (+PRD) -->
+   <div class="filterpanel"><div class="filtergrid">
+     <div class="field"><label>ค้นหา (PO / SO / <b>PRD</b> / ชื่อลูกค้า / ผู้ติดต่อ)</label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="เช่น PRD-202607-000091 · PO-202607-000181 · เดอร์มา แคร์"></div></div>
+     <div class="field"><label>วันที่สร้าง PO/SO</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+     <div class="field"><label>วันที่ต้องการรับของ</label><div class="daterange"><input class="inp" type="date" value="2026-07-01"><span class="sep">ถึง</span><input class="inp" type="date" value="2026-07-31"></div></div>
+   </div></div>
+   <!-- PROD-5 filter + default + ordering -->
+   <div class="statusfilter"><span class="lbl">สถานะ:</span><span class="chip on">รับงานแล้ว</span><span class="chip on">กำลังผลิต</span><span class="chip on">รอ QC</span><span class="chip on">พร้อมส่งมอบ</span><span class="chip on">พักงาน (Hold)</span><span class="chip">ทั้งหมด</span></div>
+   <div class="tiny" style="margin:-4px 0 12px;color:var(--text2)">ค่าเริ่มต้น = 5 สถานะข้างต้น · <b>เรียงผลลัพธ์: รับงานแล้ว → กำลังผลิต → รอ QC → พร้อมส่งมอบ → Hold</b> (Rework นับอยู่กลุ่ม "กำลังผลิต") · <b>จัดกลุ่มตาม PO/SO → PRD ซ้อนใต้</b> (1 PO/SO : หลาย PRD) · 20/หน้า (G1)</div>
+   <div class="tblwrap"><table class="tbl"><thead><tr><th>งานผลิต (กลุ่มตาม PO/SO)</th><th>ลูกค้า</th><th>วันจัดส่ง</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    <!-- GROUP 1: PO-181 (2 PRD) -->
+    <tr class="grp-h" style="cursor:pointer" onclick="openOrder('PO-202607-000181','PO (OEM)')"><td colspan="2"><div class="gttl">📄 PO-202607-000181 · เดอร์มา แคร์ <span class="badge b-processing" style="height:18px">กำลังผลิต 2/2 line</span></div><div class="gmeta">2 PRD · คลิกเพื่อดูรายละเอียด PO (popup)</div></td><td class="tnum">09–12/07/2569</td><td><span class="badge b-processing">กำลังดำเนินการ</span></td><td class="num"><a href="#" onclick="event.stopPropagation();openOrder('PO-202607-000181','PO (OEM)');return false;">ดู PO</a></td></tr>
+    <tr class="prd-row"><td><b>PRD-202607-000091</b> โลชั่นบำรุงผิว<div class="id">line #1 · แบตช์ B-PO-202607-000181-1-1 · 200 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">09/07/2569 <span class="badge b-error" style="height:20px">เสี่ยงล่าช้า</span></td><td><span class="badge b-warning">รอ QC</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
+    <tr class="prd-row" style="background:#FFF7F7"><td><b>PRD-202607-000088</b> โฟมล้างหน้า <span class="badge b-error" style="height:20px">Rework</span><div class="id">line #2 · แบตช์ใหม่ B-PO-202607-000181-2-2 (ผลิตครั้งที่ 2) · 300 หน่วย</div><div class="tiny" style="color:#B02A2A;margin-top:2px">🔁 QC ตีกลับ run 1: "เนื้อโฟมเป็นก้อน ปั๊มไม่ออก — ต้องผสมใหม่"</div></td><td>เดอร์มา แคร์</td><td class="tnum">12/07/2569</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
+    <!-- GROUP 2: PO-188 (1 PRD · Hold) -->
+    <tr class="grp-h" style="cursor:pointer" onclick="openOrder('PO-202607-000188','PO (OEM)')"><td colspan="2"><div class="gttl">📄 PO-202607-000188 · เดอร์มา แคร์ <span class="badge b-warning" style="height:18px">พักงาน (Hold)</span></div><div class="gmeta">1 PRD · คลิกเพื่อดูรายละเอียด PO (popup)</div></td><td class="tnum">14/07/2569</td><td><span class="badge b-warning">พักงาน</span></td><td class="num"><a href="#" onclick="event.stopPropagation();openOrder('PO-202607-000188','PO (OEM)');return false;">ดู PO</a></td></tr>
+    <tr class="prd-row"><td><b>PRD-202607-000082</b> เซรั่มวิตซี<div class="id">line #1 · แบตช์ B-PO-202607-000188-1-1 · 120 หน่วย</div></td><td>เดอร์มา แคร์</td><td class="tnum">14/07/2569</td><td><span class="badge b-warning">พักงาน (Hold · ลูกค้าขอแก้สูตร)</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
+    <!-- GROUP 3: SO produce-to-stock (1 PRD · ไม่ผูกลูกค้า) -->
+    <tr class="grp-h" style="cursor:pointer;background:#F3FBF6" onclick="openOrder('SO-202607-000045','SO (Own-Brand)')"><td colspan="2"><div class="gttl">🏭 SO-202607-000045 · ผลิตเก็บสต็อก (Own-Brand) <span class="badge b-processing plain" style="height:18px">ไม่ผูกลูกค้า</span></div><div class="gmeta">1 PRD · จาก Supply Planning (FG-101) · คลิกเพื่อดูรายละเอียด SO (popup)</div></td><td class="tnum">—</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#" onclick="event.stopPropagation();openOrder('SO-202607-000045','SO (Own-Brand)');return false;">ดู SO</a></td></tr>
+    <tr class="prd-row" style="background:#F3FBF6"><td><b>PRD-202607-000104</b> เอสเซนส์ ไบรท์ เซรั่ม <span class="badge b-processing" style="height:20px">ผลิตเก็บสต็อก</span><div class="id">line #1 · แบตช์ B-PRD-202607-000104-1 · 1,500 หน่วย</div><div class="tiny" style="color:var(--primary);margin-top:2px">🏭 produce-to-stock — QC ผ่าน → FG เข้าคลังราย Batch (D12) · ไม่มีลูกค้า</div></td><td class="tiny">— (ไม่ผูกลูกค้า)</td><td class="tnum">—</td><td><span class="badge b-processing">กำลังผลิต</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
+    <!-- GROUP 4: PO-170 (1 PRD · พร้อมส่งมอบ) -->
+    <tr class="grp-h" style="cursor:pointer" onclick="openOrder('PO-202607-000170','PO (OEM)')"><td colspan="2"><div class="gttl">📄 PO-202607-000170 · กลอรี่ <span class="badge b-success" style="height:18px">พร้อมส่งมอบ</span></div><div class="gmeta">1 PRD · ทุก PRD พร้อมส่ง → PO พร้อมส่งมอบ · คลิกดู PO (popup)</div></td><td class="tnum">10/07/2569</td><td><span class="badge b-success">พร้อมส่งมอบ</span></td><td class="num"><a href="#" onclick="event.stopPropagation();openOrder('PO-202607-000170','PO (OEM)');return false;">ดู PO</a></td></tr>
+    <tr class="prd-row"><td><b>PRD-202607-000079</b> โลชั่นบำรุงผิว<div class="id">line #1 · แบตช์ B-PO-202607-000170-1-2 (ผลิตครั้งที่ 2) · 200 หน่วย</div><div class="tiny" style="color:var(--success);margin-top:2px">✓ run1 ไม่ผ่าน → run2 ผ่าน QC → พร้อมส่งมอบ</div></td><td>กลอรี่</td><td class="tnum">10/07/2569</td><td><span class="badge b-success">พร้อมส่งมอบ</span></td><td class="num"><a href="#" onclick="openPrd();return false;">จัดการ</a></td></tr>
    </tbody></table></div>
-   <div class="pager"><span class="tiny">แสดง 1–5 จาก 5 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">›</button></div></div>
+   <div class="pager"><span class="tiny">แสดง 4 กลุ่ม (5 PRD) · 20/หน้า (G1)</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">›</button></div></div>
  </div></div></div>
+ <!-- ================= PO/SO DETAIL MODAL (PROD-3) ================= -->
+ <div id="orderModal" class="modal-bg" onclick="if(event.target===this)closeOrder()"><div class="modal" style="max-width:720px">
+  <div class="modal-h"><h3><span id="om-no">PO-202607-000185</span> &nbsp;<span class="badge b-neutral plain" style="height:22px" id="om-kind">PO (OEM)</span></h3><button class="modal-x" onclick="closeOrder()" title="ปิด">✕</button></div>
+  <div class="modal-b">
+    <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>สรุปข้อมูล PO/SO สำหรับฝ่ายผลิต — ดูแบบ popup ไม่สลับหน้า (กลับมาไม่เสีย state · G3) · ต้องการรายละเอียดครบให้กด <b>"เปิดหน้าเต็ม"</b></div></div>
+    <dl class="kv" style="grid-template-columns:130px 1fr;margin-bottom:16px">
+      <dt>ลูกค้า</dt><dd>บิวตี้ เอเชีย</dd>
+      <dt>ผู้ติดต่อ</dt><dd>คุณมนัส · 08x-xxx-xxxx</dd>
+      <dt>วันที่สร้าง</dt><dd class="tnum">01/07/2569</dd>
+      <dt>ต้องการรับของ</dt><dd class="tnum">15/07/2569</dd>
+      <dt>สถานะ</dt><dd><span class="badge b-success">พร้อมรับงาน</span></dd>
+    </dl>
+    <div class="tblwrap"><table class="tbl"><thead><tr><th>line</th><th>สินค้า</th><th class="num">จำนวนสั่ง</th><th>สถานะ line</th></tr></thead><tbody>
+      <tr><td>#1</td><td>ครีมกันแดด SPF50</td><td class="num tnum">100</td><td><span class="badge b-success" style="height:20px">พร้อมรับงาน</span></td></tr>
+      <tr><td>#2</td><td>สเปรย์แอลกอฮอล์ 70%</td><td class="num tnum">200</td><td><span class="badge b-success" style="height:20px">พร้อมรับงาน</span></td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="modal-f"><button class="btn" onclick="closeOrder()">ปิด</button><a class="btn btn-primary" id="om-full" href="po-detail.html">เปิดหน้าเต็ม (PO/SO) ›</a></div>
+ </div></div>
+ <!-- ================= MANAGEMENT MODAL (PROD-7..14) ================= -->
  <div id="prdModal" class="modal-bg" onclick="if(event.target===this)closePrd()"><div class="modal">
-  <div class="modal-h"><h3>PRD-202607-000091 · โลชั่นบำรุงผิว &nbsp;<span class="badge b-error" style="height:22px">เสี่ยงล่าช้า</span></h3><button class="modal-x" onclick="closePrd()" title="ปิด">✕</button></div>
+  <div class="modal-h"><h3>PRD-202607-000091 · โลชั่นบำรุงผิว &nbsp;<span class="badge b-warning" style="height:22px">ส่งตรวจคุณภาพ (QC)</span></h3><button class="modal-x" onclick="closePrd()" title="ปิด">✕</button></div>
   <div class="modal-b"><div class="split" style="grid-template-columns:1fr 340px">
   <div>
     <div class="flow"><div class="s done"><span class="n">✓</span>รับงาน</div><div class="line"></div><div class="s done"><span class="n">✓</span>กำลังผลิต</div><div class="line"></div><div class="s cur"><span class="n">3</span>ตรวจคุณภาพ (QC)</div><div class="line"></div><div class="s "><span class="n">4</span>พร้อมส่งมอบ</div></div>
-    <div class="tiny" style="margin-top:6px;color:var(--text3)">หน้าผลิตจบที่ "พร้อมส่งมอบ" แล้วส่งต่อฝ่ายจัดส่ง — "ส่งมอบแล้ว/ส่งถึง" เป็นสถานะของใบจัดส่ง ไม่อยู่หน้านี้ · การตัดสิน QC ผ่าน/ไม่ผ่าน อยู่ที่หน้า <a href="qc.html">ตรวจคุณภาพ (QC)</a></div>
-    <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">🧫</span><div><b>แบตช์ B-PO-202607-000181-1-1</b> — สร้างอัตโนมัติเมื่อกด "เริ่มผลิต" (<b>1 line item = 1 แบตช์</b> · รูปแบบเลข = B-{PO}-{line}-{ครั้งที่ผลิต}) · ผูก <a href="po-detail.html">PO-202607-000181</a> line #1 โลชั่นบำรุงผิว × 200 · ใช้ Lot วัตถุดิบ (FIFO) ตามตารางล่าง → ไล่ย้อน Lot→แบตช์→line→PO ได้ที่ <a href="trace.html">สืบย้อนกลับ</a></div></div>
-    <div class="alert alert-ok" style="margin-top:12px;font-size:13px"><span class="ai">✓</span><div>ระบบคำนวณวัตถุดิบจากสูตร (BOM) × 200 หน่วยให้แล้ว — ฝ่ายผลิตแค่ตรวจทาน + เลือกล็อต (FIFO)</div></div>
-    <div class="tblwrap"><table class="tbl"><thead><tr><th>วัตถุดิบ</th><th class="num">ต้องใช้</th><th>ล็อต (FIFO)</th><th>QC</th></tr></thead><tbody>
-     <tr><td>กลีเซอรีน</td><td class="num strong tnum">8.0 กก.</td><td><select class="sel" style="height:32px"><option>L-GLY-2506 · 60 กก.</option></select></td><td><span class="badge b-success">ผ่าน</span></td></tr>
-     <tr><td>น้ำมันมะกอก</td><td class="num strong tnum">4.0 กก.</td><td><select class="sel" style="height:32px"><option>L-OLV-2604 · 22 กก.</option></select></td><td><span class="badge b-success">ผ่าน</span></td></tr>
+    <div class="tiny" style="margin-top:6px;color:var(--text3)">หน้าผลิตจบที่ "พร้อมส่งมอบ" แล้วส่งต่อฝ่ายจัดส่ง · การตัดสิน QC ผ่าน/ไม่ผ่าน อยู่ที่หน้า <a href="qc.html">ตรวจคุณภาพ (QC)</a> เท่านั้น</div>
+    <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">🧫</span><div><b>แบตช์ B-PO-202607-000181-1-1</b> — สร้างเมื่อกด "เริ่มผลิต" (<b>1 line = 1 แบตช์</b>) · ผูก <a href="po-detail.html">PO-202607-000181</a> line #1 × 200 · ไล่ย้อน Lot→แบตช์→line→PO ได้ที่ <a href="trace.html">สืบย้อนกลับ</a></div></div>
+    <!-- PROD-9: lot picker = search-dropdown of lots WITH stock; multiple → FIFO -->
+    <div class="alert alert-ok" style="margin-top:12px;font-size:13px"><span class="ai">✓</span><div>ระบบคำนวณวัตถุดิบจากสูตร (BOM) × 200 หน่วยให้แล้ว · <b>เลือกล็อตได้เฉพาะล็อตที่มี stock</b> — มีหลายล็อต ระบบตัด <b>FIFO (เก่าสุดก่อน)</b> เป็นค่าเริ่มต้น</div></div>
+    <div class="tblwrap"><table class="tbl"><thead><tr><th>วัตถุดิบ</th><th class="num">ต้องใช้</th><th style="min-width:230px">ล็อตที่ตัด (เฉพาะที่มี stock · FIFO)</th><th>QC</th></tr></thead><tbody>
+     <tr><td>กลีเซอรีน</td><td class="num strong tnum">8.0 กก.</td><td>
+       <div class="ssdd" id="lot-gly"><div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><b>FIFO (เก่าสุดก่อน)</b> <span class="tiny">L-GLY-2506 → L-GLY-2606</span></span><span style="color:var(--text3)">▾</span></div>
+         <div class="ssdd-pan"><div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นล็อต เช่น 'L-GLY'" oninput="ssFilter(this)"></div><div class="ssdd-ls">
+           <div class="ssdd-op sel" data-s="FIFO" onclick="ssPick(this,'FIFO (เก่าสุดก่อน)','')"><div class="nm"><b>FIFO (เก่าสุดก่อน)</b> <span class="tiny">— ระบบไล่ตัดล็อตเก่าก่อนอัตโนมัติ</span></div></div>
+           <div class="ssdd-op" data-s="L-GLY-2506" onclick="ssPick(this,'L-GLY-2506','')"><div class="nm"><b>L-GLY-2506</b></div><div class="tiny">คงเหลือ 60 กก. · รับ 05/06 (เก่าสุด)</div></div>
+           <div class="ssdd-op" data-s="L-GLY-2606" onclick="ssPick(this,'L-GLY-2606','')"><div class="nm"><b>L-GLY-2606</b></div><div class="tiny">คงเหลือ 18 กก. · รับ 03/07</div></div>
+           <div class="ssdd-none" style="display:none">ไม่พบล็อตที่มี stock</div></div></div></div>
+     </td><td><span class="badge b-success">ผ่าน</span></td></tr>
+     <tr><td>น้ำมันมะกอก</td><td class="num strong tnum">4.0 กก.</td><td>
+       <div class="ssdd" id="lot-olv"><div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><b>L-OLV-2604</b> <span class="tiny">22 กก.</span></span><span style="color:var(--text3)">▾</span></div>
+         <div class="ssdd-pan"><div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้นล็อต เช่น 'L-OLV'" oninput="ssFilter(this)"></div><div class="ssdd-ls">
+           <div class="ssdd-op" data-s="FIFO" onclick="ssPick(this,'FIFO (เก่าสุดก่อน)','')"><div class="nm"><b>FIFO (เก่าสุดก่อน)</b></div></div>
+           <div class="ssdd-op sel" data-s="L-OLV-2604" onclick="ssPick(this,'L-OLV-2604','')"><div class="nm"><b>L-OLV-2604</b></div><div class="tiny">คงเหลือ 22 กก. · รับ 12/06</div></div>
+           <div class="ssdd-none" style="display:none">ไม่พบล็อตที่มี stock</div></div></div></div>
+     </td><td><span class="badge b-success">ผ่าน</span></td></tr>
     </tbody></table></div>
+    <p class="tiny" style="margin-top:6px;color:var(--text3)">ล็อตที่ stock = 0 จะ<b>ไม่แสดง</b>ในรายการ · รวมทุกล็อตยังไม่พอ → ตัด stock ติดลบได้ (เตือน ไม่บล็อก) แล้ว <a href="goods-receipt.html">รับเข้า (GR)</a> บวกกลับ (retro-FIFO)</p>
+    <!-- PROD-7 actual qty + PROD-8 under-production + PROD-10 พร้อมส่ง QC-gated -->
     <div class="card" style="box-shadow:none;border-color:var(--primary-bg);margin-top:14px"><div class="card-h"><h3>จำนวนผลิตจริง & พร้อมส่ง (surplus → FG)</h3></div><div class="card-b">
-      <div class="grid2"><div class="field"><label>จำนวนสั่ง (ordered)</label><input class="inp tnum" value="200" disabled></div><div class="field"><label>จำนวนผลิตจริง (actual produced qty) <span class="req">*</span></label><input class="inp tnum" value="230"><div class="help">ฝ่ายผลิตกรอกระหว่างผลิต · อาจเกินจำนวนสั่ง (D13)</div></div></div>
-      <div class="alert alert-info" style="font-size:13px;margin-bottom:0"><span class="ai">📦</span><div>ตอนกด <b>"พร้อมส่ง (Ready to Ship)"</b> ระบบยืนยัน: <b>ส่งลูกค้า 200</b> · <b>ส่วนเกิน 30 (230−200) → เพิ่ม FG stock อัตโนมัติ</b> (ราย Batch · คงลิงก์ Batch/PRD/PO) + remark "สต็อกเพิ่มจากการผลิตเกิน" — <b>ไม่ใช่ approval</b> (D13)</div></div>
-      <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">✓ พร้อมส่ง (ส่ง 200 · เข้าคลัง 30)</button></div>
+      <div class="grid2"><div class="field"><label>จำนวนสั่ง (ordered)</label><input class="inp tnum" value="200" disabled><div class="help">แก้ได้เฉพาะผ่านการแก้ PO (§ ด้านล่าง)</div></div><div class="field"><label>จำนวนผลิตจริง (actual) <span class="req">*</span></label><input class="inp tnum" value="230" oninput="actualCheck(this.value)"><div class="help" id="act-help">✓ actual ≥ ordered — ส่วนเกิน 30 → เข้าคลัง FG</div></div></div>
+      <!-- under-production block message (PROD-7 validation + PROD-8 affordance) -->
+      <div id="under-warn" class="alert alert-err" style="font-size:13px;display:none"><span class="ai">⛔</span><div><b>ผลิตจริงต้อง ≥ จำนวนสั่ง เสมอ</b> — ตั้ง actual น้อยกว่า ordered ไม่ได้ (บล็อก) · <b>ผลิตน้อยกว่าสั่ง → ต้องแก้ PO ให้จำนวนสั่ง = ผลิตจริงก่อน</b> แล้วค่อยกดพร้อมส่ง<div style="margin-top:8px"><button class="btn btn-sm" onclick="cpop({title:'แก้ PO ให้จำนวนสั่ง = ผลิตจริง?',ok:'ไปแก้ PO',tone:'danger',reason:true,reasonLabel:'เหตุผลการแก้ (บันทึก audit) <span class=&quot;req&quot;>*</span>',body:'<div class=&quot;alert alert-warn&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>⚑</span><div>การแก้ PO จากหน้าผลิตจะ: (1) ตั้ง <b>ธง ⚑ &quot;ต้องติดตาม&quot; ที่ลูกค้า</b> ให้ Sale เห็น · (2) <b>audit ละเอียดระดับ field</b> (ใคร/เมื่อ/เดิม→ใหม่) · ต่อจากนั้นจำนวนสั่งใหม่ = ผลิตจริง (ไม่มี surplus)</div></div>'})">✎ แก้ PO (ลดจำนวนสั่ง)</button></div></div></div>
+      <div class="alert alert-info" style="font-size:13px;margin-bottom:0"><span class="ai">📦</span><div>กด <b>"พร้อมส่ง"</b> (เมื่อ QC ผ่าน) → ยืนยัน: <b>ส่งลูกค้า 200</b> · <b>ส่วนเกิน 30 → เพิ่ม FG stock อัตโนมัติ</b> (ราย Batch · คงลิงก์ PRD/PO) + remark "สต็อกเพิ่มจากการผลิตเกิน" — <b>ไม่ใช่ approval</b> (D13)</div></div>
+      <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:flex-end;align-items:center;gap:12px"><span class="tiny" style="color:var(--warning)">🛡️ ปุ่มปิดอยู่ — รอ QC ผ่านก่อน</span><button class="btn btn-primary is-disabled" onclick="qcGate()">✓ พร้อมส่ง (ส่ง 200 · เข้าคลัง 30)</button></div>
     </div></div>
-    <div class="card" style="box-shadow:none;margin-top:12px"><div class="card-h"><h3>บันทึก loss (ระหว่างผลิต)</h3></div><div class="card-b">
-      <div class="grid2"><div class="field"><label>จำนวนเสีย</label><input class="inp tnum" placeholder="เช่น 5"></div><div class="field"><label>เหตุผล <span class="req">*</span></label><input class="inp" placeholder="เช่น เนื้อครีมแยกชั้น"></div></div>
-      <p class="tiny" style="margin:0;color:var(--text2)">loss ตัด on_hand · <b>เหตุผลบังคับ</b> · ไม่ต้องอนุมัติ (D15) · ของไม่ครบตามสั่ง → <b>ไม่ผลิตซ้ำอัตโนมัติ</b> (กด "ผลิตซ้ำ" เอง)</p>
+    <!-- PROD-11 loss button + confirm popup + mandatory reason -->
+    <div class="card" style="box-shadow:none;margin-top:12px"><div class="card-h"><h3>📉 บันทึก Loss (ของเสียระหว่างผลิต)</h3><span class="dirtag" style="color:var(--error);background:#FCEAEA;font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px">ตัด on_hand −</span></div><div class="card-b">
+      <div class="grid2"><div class="field"><label>จำนวนเสีย <span class="req">*</span></label><input class="inp tnum" id="loss-qty" placeholder="เช่น 5"></div><div class="field"><label>เหตุผล <span class="req">*</span></label><input class="inp" id="loss-reason" placeholder="เช่น เนื้อครีมแยกชั้น"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><p class="tiny" style="margin:0;color:var(--text2);flex:1;min-width:200px">ตัด on_hand · <b>เหตุผลบังคับ</b> · ไม่ต้องอนุมัติ (D15) · ของไม่ครบ → <b>ไม่ผลิตซ้ำอัตโนมัติ</b></p>
+      <button class="btn btn-danger" onclick="cpop({title:'บันทึก Loss การผลิต?',ok:'ยืนยันบันทึก Loss',tone:'danger',reason:true,reasonLabel:'เหตุผล (บังคับ) <span class=&quot;req&quot;>*</span>',body:'<div class=&quot;alert alert-warn&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>📉</span><div>บันทึก Loss ของแบตช์ <b>B-PO-202607-000181-1-1</b> → <b>ตัด on_hand ของ Lot ที่ใช้</b> (ledger movement · source=Batch/PRD, D15) · ไม่ต้องอนุมัติ</div></div>'})">📉 บันทึก Loss</button></div>
     </div></div>
-    <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 · ต่อ PRD ===== -->
+    <!-- comment PRD -->
     <div class="card cmt" style="box-shadow:none;margin-top:12px"><div class="card-h"><h3>📝 หมายเหตุ (comment) — คำสั่งผลิต PRD-202607-000091</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
       <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">ลูกค้าขอเปลี่ยนกลิ่นน้ำหอมสำหรับล็อตนี้ — อัปเดตสูตรกับ R&D แล้ว</textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
-        <span class="tiny">แก้ล่าสุด: <b>วิชัย</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold / loss</b></span>
+        <span class="tiny">แก้ล่าสุด: <b>วิชัย</b> · 28/07 10:20 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับ QC / Hold / loss</b></span>
         <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
       <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
         <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
@@ -221,11 +325,11 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
           <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>27/07 16:05</b> · วิชัย &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "รอ R&D ยืนยันสูตร"</div></div>
         <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
     </div></div>
-    <!-- ===== หมายเหตุ (comment) — reusable control · comment-convention CC1–CC7 · ต่อ Batch run ===== -->
+    <!-- comment Batch -->
     <div class="card cmt" style="box-shadow:none;margin-top:12px"><div class="card-h"><h3>📝 หมายเหตุ (comment) — Batch B-PO-202607-000181-1-1</h3><button class="btn btn-sm" onclick="var h=this.closest('.cmt').querySelector('.cmt-hist');h.style.display=h.style.display==='block'?'none':'block'">🕘 ประวัติการแก้ไข</button></div><div class="card-b">
       <textarea class="inp" rows="2" placeholder="พิมพ์หมายเหตุ… (ช่องเดียว · แก้ทับได้ · ระบบเก็บประวัติทุกครั้ง)">แบตช์นี้เนื้อครีมข้นกว่าปกติเล็กน้อย — เพิ่มเวลากวน 5 นาที</textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
-        <span class="tiny">แก้ล่าสุด: <b>วิชัย</b> · 28/07 11:05 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับเหตุผลยกเลิก / QC / Hold / loss</b></span>
+        <span class="tiny">แก้ล่าสุด: <b>วิชัย</b> · 28/07 11:05 · เก็บ ใคร/เมื่อ/เดิม→ใหม่ อัตโนมัติ · <b>คนละช่องกับ QC / Hold / loss</b></span>
         <button class="btn btn-sm btn-primary">💾 บันทึกหมายเหตุ</button></div>
       <div class="cmt-hist" style="display:none;margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
         <div class="tiny" style="font-weight:600;margin-bottom:8px">ประวัติการแก้ไขหมายเหตุ — ล่าสุด→เก่า (20/หน้า)</div>
@@ -233,21 +337,43 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
           <div style="padding:8px 0;border-bottom:1px solid var(--border2)"><b>28/07 11:05</b> · วิชัย &nbsp;<span class="muted">เดิม:</span> <i>(ว่าง)</i> <span class="muted">→ ใหม่:</span> "แบตช์นี้เนื้อครีมข้นกว่าปกติเล็กน้อย — เพิ่มเวลากวน 5 นาที"</div></div>
         <div class="tiny" style="margin-top:8px">ประวัติเป็น audit — <b>ลบไม่ได้ (CC7)</b> · โผล่บนหน้า <a href="trace.html">สืบย้อนกลับ</a> (field=comment)</div></div>
     </div></div>
-    <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:space-between"><span class="tiny">ส่งตรวจ QC แล้ว 08/07 — รอผลตัดสินที่หน้า QC</span><a class="btn btn-primary" href="qc.html">ไปหน้า QC ›</a></div>
+    <!-- PROD-12: ไปหน้า QC enabled only when status = ส่งตรวจคุณภาพ (QC) → deep-link to that batch -->
+    <div class="footerbar" style="position:static;margin:12px 0 0;border:none;padding:0;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><span class="tiny">ส่งตรวจ QC แล้ว 08/07 — สถานะ = <b>ส่งตรวจคุณภาพ (QC)</b> · ปุ่ม "ไปหน้า QC" จึงเปิด</span><a class="btn btn-primary" href="qc.html?tab=batch&batch=B-PO-202607-000181-1-1" title="เปิดหน้า QC แท็บ 'ตรวจแบตช์' ที่ Batch นี้โดยตรง">ไปหน้า QC › (ตรวจแบตช์ B-…181-1-1)</a></div>
   </div>
   <div>
-   <div class="card"><div class="card-h"><h3>เปลี่ยนสถานะ (inline + trace)</h3></div><div class="card-b">
-     <div class="alert alert-info" style="font-size:12px;margin-bottom:12px;padding:10px 12px"><span class="ai">ℹ️</span><div>หน้าผลิตเปลี่ยนได้แค่ <b>เริ่มผลิต / ส่งตรวจ QC / พักงาน</b> — <b>การตัดสิน QC ผ่าน/ไม่ผ่าน ทำที่หน้า <a href="qc.html">ตรวจคุณภาพ (QC)</a> เท่านั้น</b></div></div>
+   <!-- PROD-13: confirm popup on every status change -->
+   <div class="card"><div class="card-h"><h3>เปลี่ยนสถานะ</h3></div><div class="card-b">
+     <div class="alert alert-info" style="font-size:12px;margin-bottom:12px;padding:10px 12px"><span class="ai">ℹ️</span><div>หน้าผลิตเปลี่ยนได้แค่ <b>เริ่มผลิต / ส่งตรวจ QC / พักงาน / ผลิตซ้ำ</b> — <b>การตัดสิน QC ทำที่หน้า QC เท่านั้น</b> · <b>ทุกการเปลี่ยนสถานะมี popup ยืนยัน</b></div></div>
      <div class="pop" style="max-width:none;box-shadow:none;border-color:var(--primary-bg)">
-      <select class="sel" style="margin-bottom:10px" onchange="document.getElementById('hbox').style.display=this.selectedIndex===2?'block':'none'"><option>กำลังผลิต (สถานะปัจจุบัน)</option><option>ส่งตรวจคุณภาพ (QC)</option><option>พักงาน (Hold)</option></select>
+      <select class="sel" id="stsel" style="margin-bottom:10px" onchange="document.getElementById('hbox').style.display=this.value==='hold'?'block':'none'"><option value="cur">ส่งตรวจคุณภาพ (สถานะปัจจุบัน)</option><option value="prod">กลับไป กำลังผลิต</option><option value="hold">พักงาน (Hold)</option><option value="rework">ผลิตซ้ำ (Rework · gen run ใหม่)</option></select>
       <div id="hbox" style="display:none" class="field"><label style="font-size:12px">ถ้า Hold — raise ไปที่</label><div style="display:flex;gap:8px"><span class="chip on">แจ้ง Sale (ติดที่ลูกค้า)</span><span class="chip">แจ้ง Stock (ติดวัตถุดิบ)</span></div></div>
-      <textarea class="inp" rows="2" placeholder="เหตุผล (บังคับเมื่อพักงาน Hold)"></textarea>
-      <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary btn-sm" style="flex:1;justify-content:center">บันทึก + แจ้ง</button><a class="btn btn-sm" href="po-detail.html" title="กรณี Hold ให้ Sale แก้ไข PO">✎ แก้ไข PO</a></div>
+      <textarea class="inp" id="stnote" rows="2" placeholder="เหตุผล (บังคับเมื่อพักงาน Hold / ผลิตซ้ำ)"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary btn-sm" style="flex:1;justify-content:center" onclick="var v=document.getElementById('stsel').value;var need=(v==='hold'||v==='rework');cpop({title:'ยืนยันเปลี่ยนสถานะ?',ok:'ยืนยัน + แจ้ง',reason:need,reasonLabel:'เหตุผล (บังคับ) <span class=&quot;req&quot;>*</span>',body:'<div class=&quot;alert alert-info&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>🔄</span><div>เปลี่ยนสถานะ PRD-202607-000091 → <b>'+document.getElementById('stsel').selectedOptions[0].text+'</b> · บันทึก activity-log + trace (ใคร/เมื่อ)</div></div>'})">บันทึก + แจ้ง</button>
+      <!-- PROD-14: edit-PO from production context → follow-up flag + audit -->
+      <button class="btn btn-sm" onclick="cpop({title:'แก้ไข PO จากหน้าผลิต?',ok:'ไปแก้ PO',reason:true,reasonLabel:'เหตุผลการแก้ (audit) <span class=&quot;req&quot;>*</span>',body:'<div class=&quot;alert alert-warn&quot; style=&quot;margin:0&quot;><span class=&quot;ai&quot;>⚑</span><div>การแก้ PO จากบริบทการผลิตจะ: (1) ตั้ง <b>ธง ⚑ &quot;ต้องติดตาม&quot; ที่ลูกค้า</b> (Sale เห็นว่า PO ถูกแก้) · (2) <b>audit ระดับ field</b> (ใคร/เมื่อ/เดิม→ใหม่) ทุกฟิลด์ · ต่อที่หน้า PO เต็ม</div></div>'})" title="แก้ PO → raise follow-up + audit">✎ แก้ไข PO</button></div>
      </div>
-     <div class="notify" style="margin-top:12px">🔁 เมื่อ QC (หน้า QC) <b>ตีกลับ</b> แบตช์นี้ → ระบบเปลี่ยนกลับเป็น "กำลังผลิต" พร้อม feedback อัตโนมัติ — ฝ่ายผลิตแค่รับงานกลับมาแก้ (ไม่ตัดสิน QC เอง) · C6</div>
-     <div class="notify" style="margin-top:8px">✅ QC ผ่านครบทุก line → PO "พร้อมจัดส่ง" โผล่หน้า <a href="shipping.html">จัดส่ง</a> (C8) · ⏸️ Hold → raise Sale แก้ไข PO แล้วผลิตต่อ (C7)</div>
+     <div class="notify" style="margin-top:12px">🔁 QC (หน้า QC) <b>ตีกลับ</b> → ระบบเปลี่ยนกลับ "กำลังผลิต" + feedback อัตโนมัติ (ฝ่ายผลิตไม่ตัดสิน QC เอง · C6)</div>
+     <div class="notify" style="margin-top:8px">✅ ทุก PRD ของ PO/SO พร้อมส่ง → PO/SO "พร้อมจัดส่ง" โผล่หน้า <a href="shipping.html">จัดส่ง</a> (C8)</div>
    </div></div>
-   <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">เสี่ยงล่าช้า (auto)</div><div class="tm">08/07 00:05 · scheduler</div><div class="tc">เหลือเวลาน้อยกว่า lead time 3 วัน · แจ้ง Sale+Stock</div></div><div class="t"><div class="th">เริ่มผลิต (รับงาน→กำลังผลิต)</div><div class="tm">06/07 08:40 · วิชัย</div></div><div class="t"><div class="th">รับงานจาก PO-181</div><div class="tm">04/07 09:12 · ระบบ</div></div></div></div></div>
+   <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline"><div class="t"><div class="th">ส่งตรวจคุณภาพ (QC)</div><div class="tm">08/07 14:25 · วิชัย</div><div class="tc">ส่งแบตช์เข้าคิว QC — รอผลตัดสิน</div></div><div class="t"><div class="th">เริ่มผลิต (รับงาน→กำลังผลิต)</div><div class="tm">06/07 08:40 · วิชัย</div></div><div class="t"><div class="th">รับงานจาก PO-181</div><div class="tm">04/07 09:12 · ระบบ</div></div></div></div></div>
   </div>
   </div></div>
- </div></div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ </div></div>
+ <!-- ================= GENERIC CONFIRM POPUP (PROD-10/11/13/14) ================= -->
+ <div id="cpopModal" class="modal-bg" onclick="if(event.target===this)cpopClose()"><div class="modal cpop">
+  <div class="modal-h"><h3 id="cpop-title">ยืนยัน</h3><button class="modal-x" onclick="cpopClose()" title="ปิด">✕</button></div>
+  <div class="modal-b" style="max-height:none"><div id="cpop-body"></div>
+    <div id="cpop-reason" class="field" style="display:none;margin-top:14px;margin-bottom:0"><label class="rlbl">เหตุผล <span class="req">*</span></label><textarea class="inp" rows="2" placeholder="ระบุเหตุผล (บังคับ)"></textarea></div>
+  </div>
+  <div class="modal-f"><button class="btn" id="cpop-cancel" onclick="cpopClose()">ยกเลิก</button><button class="btn btn-primary" id="cpop-ok" onclick="cpopClose()">ยืนยัน</button></div>
+ </div></div>
+ <script>
+ /* search-dropdown for lot picker (reuse of stock G7 pattern) */
+ function ssTog(tg){var dd=tg.closest('.ssdd');var was=dd.classList.contains('open');document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});if(!was){dd.classList.add('open');var sr=dd.querySelector('.ssdd-sr .inp');if(sr){sr.value='';ssFilter(sr);setTimeout(function(){sr.focus()},0);}}}
+ function ssFilter(inp){var q=inp.value.trim().toLowerCase();var ls=inp.closest('.ssdd-pan').querySelector('.ssdd-ls');var n=0;ls.querySelectorAll('.ssdd-op').forEach(function(op){var hit=(op.getAttribute('data-s')||'').toLowerCase().indexOf(q)>-1;op.style.display=hit?'block':'none';if(hit)n++;});var none=ls.querySelector('.ssdd-none');if(none)none.style.display=n?'none':'block';}
+ function ssPick(op,name,code){var dd=op.closest('.ssdd');dd.querySelectorAll('.ssdd-op').forEach(function(o){o.classList.remove('sel')});op.classList.add('sel');var cur=dd.querySelector('.ssdd-tg .cur');cur.innerHTML=code?('<b>'+name+'</b> <span class="ssdd-op code" style="padding:1px 7px">'+code+'</span>'):('<b>'+name+'</b>');dd.classList.remove('open');}
+ document.addEventListener('click',function(e){if(!e.target.closest('.ssdd'))document.querySelectorAll('.ssdd.open').forEach(function(d){d.classList.remove('open')});});
+ /* PROD-7 actual >= ordered validation (block message) */
+ function actualCheck(v){var ordered=200;var n=parseFloat(v);var help=document.getElementById('act-help');var warn=document.getElementById('under-warn');var inp=help.previousElementSibling;if(isNaN(n)){help.className='help';help.textContent='กรอกจำนวนผลิตจริง';warn.style.display='none';return;}if(n<ordered){inp.style.borderColor='var(--error)';inp.style.boxShadow='0 0 0 3px #FCEAEA';help.className='help err';help.innerHTML='⛔ ผลิตจริง ('+n+') น้อยกว่าจำนวนสั่ง ('+ordered+') — ไม่อนุญาต';warn.style.display='flex';}else{inp.style.borderColor='';inp.style.boxShadow='';help.className='help';help.innerHTML=(n>ordered?('✓ actual ≥ ordered — ส่วนเกิน '+(n-ordered)+' → เข้าคลัง FG'):'✓ actual = ordered — ไม่มีส่วนเกิน');warn.style.display='none';}}
+ </script>
+ </div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

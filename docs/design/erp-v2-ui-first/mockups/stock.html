@@ -264,10 +264,25 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
             </div>
           </div>
         </div>
-        <div class="help">ปรับยอดเพิ่มระดับ RM (ระบบจัดการ genealogy ราย lot ให้)</div></div>
+        <div class="help">เลือกวัตถุดิบ แล้วระบุ Lot ที่จะปรับยอดเพิ่ม (หรือ FIFO)</div></div>
+      <!-- STK-1: Adjust(+) now references a Lot (choose lot-with-stock OR "FIFO") — mirrors the Loss tab -->
+      <div class="field"><label>Lot <span class="req">*</span> <span class="tiny" style="font-weight:400">(เลือกล็อตที่มี stock หรือ "FIFO" ถ้าไม่มี/จำไม่ได้)</span></label>
+        <div class="ssdd" id="ssdd-lot-adj">
+          <div class="ssdd-tg" onclick="ssTog(this)"><span class="cur"><b>FIFO (บวกล็อตเก่าสุดก่อน)</b></span><span style="color:var(--text3)">▾</span></div>
+          <div class="ssdd-pan">
+            <div class="ssdd-sr"><span class="si">🔍</span><input class="inp" placeholder="ค้น Lot เช่น 'L-TT-TIO-2606'" oninput="ssFilter(this)"></div>
+            <div class="ssdd-ls">
+              <div class="ssdd-op sel" data-s="FIFO" onclick="ssPick(this,'FIFO (บวกล็อตเก่าสุดก่อน)','')"><div class="nm"><b>FIFO</b> <span class="tiny">— ไม่มีล็อต/จำไม่ได้ → ระบบผูกล็อตเก่าสุดก่อน</span></div></div>
+              <div class="ssdd-op" data-s="L-TT-TIO-2606" onclick="ssPick(this,'L-TT-TIO-2606','')"><div class="nm"><b>L-TT-TIO-2606</b></div><div class="tiny">คงเหลือ 25 กก. · รับ 05/06 (เก่าสุด)</div></div>
+              <div class="ssdd-op" data-s="L-TT-TIO-2607" onclick="ssPick(this,'L-TT-TIO-2607','')"><div class="nm"><b>L-TT-TIO-2607</b></div><div class="tiny">คงเหลือ 15 กก. · รับ 08/07</div></div>
+              <div class="ssdd-none" style="display:none">ไม่พบ Lot ที่มี stock ตรงกับคำค้น</div>
+            </div>
+          </div>
+        </div>
+        <div class="help">เลือก Lot → บวกเข้าล็อตนั้นเจาะจง (คง genealogy) · เลือก "FIFO" → ระบบผูกล็อตเก่าสุดก่อน · แสดงเฉพาะล็อตที่มี stock (สมมาตรกับ Loss)</div></div>
       <div class="field"><label>จำนวนที่เพิ่ม <span class="req">*</span></label><input class="inp tnum" placeholder="เช่น 5"></div>
       <div class="field"><label>เหตุผล <span class="req">*</span> <span class="tiny" style="font-weight:400">(บังคับ · D15)</span></label><textarea class="inp" rows="2" placeholder="เช่น นับสต็อกพบเพิ่ม / ปรับยอดจากการตรวจนับ"></textarea></div>
-      <div class="alert alert-ok" style="font-size:13px"><span class="ai">✅</span><div><b>เพิ่ม on_hand อย่างเดียว (+) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · ledger source = <code>warehouse-adjust</code> · <b>audit + trace</b> (D15)</div></div>
+      <div class="alert alert-ok" style="font-size:13px"><span class="ai">✅</span><div><b>เพิ่ม on_hand อย่างเดียว (+) · ไม่ต้องอนุมัติ · เหตุผลบังคับ</b> · <b>อ้าง Lot เสมอ</b> (เลือกล็อต หรือ FIFO) · ledger source = <code>warehouse-adjust</code> + Lot/FIFO · <b>audit + trace</b> (D15)</div></div>
       <div class="footerbar" style="position:static;margin:0;border:none;padding:0;justify-content:flex-end"><button class="btn btn-primary">บันทึก (คงคลัง)</button></div>
     </div>
   </div></div>
