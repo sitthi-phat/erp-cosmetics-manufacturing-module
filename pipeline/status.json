@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
+      "current_agent": "po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3353,9 +3353,34 @@
           "summary": "SUPPLY PLANNING MODULE DONE (spec+screens): restructured cards->FG list with inline why-calc + expandable RM breakdown+stock; 3-axis search incl RM reverse-lookup; click->modal with สั่งผลิต batch-count + live cost/revenue/margin (decision-support, pre-VAT, not COGS) + param simulate-vs-save-back-to-BOM (audited). Recovered from mid-task OAuth agent death with no lost work.",
           "overridden_by": null,
           "updated_at": "2026-07-30T04:00:00+07:00"
+        },
+        {
+          "agent": "po + ux-ui",
+          "phase": "return + number-on-save-G8",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "Return RM selector (required, search name+code) + list search (Lot/Supplier/RM); spec+screen",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "G8 number-on-save (numbering-on-save.md) applied to 8 create screens: hidden number + save popup w/ number+summary (multi-number GR+Lots, SHP+DNs; PRD/Batch in existing popups); HTTP-verified",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/return.html",
+            "docs/requirements/erp-v2-ui-first/modules/numbering-on-save.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "RETURN + G8 number-on-save DONE (spec+screens): Return RM selector (1 Lot many RM), G8 hide-number-on-create + assign-gapless-on-save + confirmation popup across Lot/GR/QT/SO/PO/PR/DN/INV/PRD/Batch. Next: permission-code label suffix convention (G9) + all-mockup sweep.",
+          "overridden_by": null,
+          "updated_at": "2026-07-30T06:00:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-30T05:40:00+07:00"
+  "generated_at": "2026-07-30T06:05:00+07:00"
 }
