@@ -91,6 +91,17 @@ Hard rules:
   See [ADR-000](docs/adr/000-tech-stack.md). Tech-Lead must design on this stack — do not propose alternatives.
 - **Product name (decided by Pond, 2026-07-08)**: **ESSENCE Hub System** — use this name in all UI
   (login, header, browser title, logo/icon placeholder), documents, and user-facing text.
+- **Source of Truth (feature erp-v2-ui-first, established 2026-07-29)**: the CANONICAL, up-to-date spec is the
+  **per-module package** — every subagent prompt must point agents here, not at older scattered docs:
+  - Requirements (authoritative Markdown): `docs/requirements/erp-v2-ui-first/modules/*.md` — one file per module +
+    `flows/oem-flow.md`, `flows/ownbrand-flow.md`, `permission-matrix.md`, `non-functional.md`, `deletion-policy.md`.
+    **Start at `modules/README.md`** (source-of-truth statement + old→new map + changelog).
+  - Locked business rules: `docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md` (D1–D18).
+  - Human-readable review hub (same content, HTML): `docs/design/erp-v2-ui-first/functional-spec/modules/index.html`
+    (Document Hub order: ① Functional · ② Non-Functional · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive).
+  - Screens (mockups = the approved look): `docs/design/erp-v2-ui-first/mockups/`.
+  - Anything marked historical/legacy/archive (old functional-spec module pages, root cross-cutting duplicates) is
+    REFERENCE ONLY — never build from it. If two docs disagree, the module package wins.
 - <!-- Add rules Pond answers repeatedly here: e.g. Lot number format, units of measure, timezone -->
 
 ## Retro Gate (after every feature)

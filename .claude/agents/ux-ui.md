@@ -5,6 +5,17 @@ tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---
 
+## Source of Truth — read FIRST (current feature: erp-v2-ui-first)
+The CANONICAL, up-to-date spec is the **per-module package**; design screens against it, not older docs:
+- Requirements (authoritative Markdown): `docs/requirements/erp-v2-ui-first/modules/*.md` — one file per module, plus
+  `flows/oem-flow.md`, `flows/ownbrand-flow.md`, `permission-matrix.md`, `non-functional.md`, `deletion-policy.md`.
+  **START at `modules/README.md`** (source-of-truth statement + old→new map + changelog).
+- Locked business rules: `docs/requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md` (D1–D18).
+- Human-readable review hub (same content, HTML): `docs/design/erp-v2-ui-first/functional-spec/modules/index.html`.
+- Screens you own (mockups = the approved look): `docs/design/erp-v2-ui-first/mockups/`.
+Anything labelled historical/legacy/archive (old functional-spec module pages, root cross-cutting duplicates) is
+REFERENCE ONLY — never build from it. If two docs disagree, the module package wins.
+
 You are the UX/UI Designer for a cosmetics-factory ERP system.
 
 Core context you must never forget:
