@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
+      "current_agent": "po + ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3225,7 +3225,7 @@
                 "(B) เฉพาะ Return",
                 "(C) เฉพาะ 10 ตัวเดิม"
               ],
-              "answer": null
+              "answer": "(A) ใส่ทั้ง Return + QC — object list = 12"
             }
           ],
           "summary": "Comment+change-history convention (comment-convention.md, G6) applied to 10 transactional objects + traceability/NFR audit; Customer edit=all-fields spec'd. READY_FOR_UX_UI. 1 non-blocking question: also add comment to Return/QC? (default A).",
@@ -3235,5 +3235,5 @@
       ]
     }
   },
-  "generated_at": "2026-07-29T19:35:00+07:00"
+  "generated_at": "2026-07-29T19:50:00+07:00"
 }
