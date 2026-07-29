@@ -2,10 +2,10 @@
 
 slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 Mockups: `mockups/bom.html` · `mockups/bom-create.html`
-กฎอ้างอิง: **D9** (ต้นทุนอื่น per-unit) · **D10** (cost snapshot) · **D11 v2** (1 BOM = 1 FG · **รหัส = ผู้ใช้ตั้งเองตอนสร้าง + unique + ล็อกหลังสร้าง**) · **D16** (planning config on 1-BOM=1-FG master) · deletion-policy §2.4 (BOM = no hard delete → inactivate) · README §3 (G7 search) · `stock.md` (FG per-Batch, RM master, RM code user-entered-locked) · `supplier.md` (ราคาซื้อ max-active reference) · `traceability.md` (audit) · `quotation.md`/`po.md`/`so.md` (inactive-BOM block)
+กฎอ้างอิง: **D9** (ต้นทุนอื่น per-unit) · **D10** (cost snapshot) · **D11 v2** (1 BOM = 1 FG · **รหัส = ผู้ใช้ตั้งเองตอนสร้าง + unique + ล็อกหลังสร้าง**) · **D16** (planning config on 1-BOM=1-FG master) · deletion-policy §2.4 (BOM = no hard delete → inactivate) · README §3 (G7 search) · `stock.md` (FG per-Batch, RM master, RM code user-entered-locked) · `supplier.md` (ราคาซื้อ max-active reference) · `traceability.md` (audit) · `quotation.md`/`po.md`/`so.md` (inactive-BOM block) · **`supply-planning.md` §5b (ราคาขาย = revenue source · ต้นทุนรวม/หน่วย = cost source ของ margin simulation)**
 
 ## สรุปภาษาไทย
-BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D11**). **★ รหัส BOM = ผู้ใช้พิมพ์เองตอนสร้าง (user-entered on create), ต้องไม่ซ้ำ (unique), และ "แก้ไขไม่ได้หลังสร้าง" (ล็อกถาวร — create-only-lock)** (ปอนด์ 2026-07-29: "สร้างได้ แต่แก้ไขไม่ได้ RM ก็ด้วย"). **BOM กับ FG ใช้รหัสเดียวกัน (shared code)** → FG **ค้นได้ทั้งชื่อและรหัส** ในคลัง (`stock.md`). การล็อกรหัสหลังสร้างทำให้ **1 BOM = 1 FG และรหัสที่แชร์คงที่ (ไม่มี reference แตก)**. **★ RM component (วัตถุดิบในสูตร) เลือกผ่าน search-in-dropdown ค้นได้ทั้งชื่อและรหัส (G7)**. **★ ราคาซื้อวัตถุดิบ (purchase price, ต่อ component) แก้ด้วยมือได้โดยตรง — ทำได้ทั้งมี supplier และไม่มี supplier active** (ไม่บล็อกอีกต่อไป); ค่านี้ป้อน BOM cost + snapshot. เพิ่ม **"ต้นทุนอื่น (ต่อหน่วย)"** ที่ผู้ใช้ตั้งชื่อ+ใส่ค่าเอง (D9); **ต้นทุนรวม/หน่วย = Σ(ราคาซื้อวัตถุดิบ) + Σ(ต้นทุนอื่น)** → snapshot ตอนขาย (D10). **★ BOM ลบถาวรไม่ได้ → ใช้สถานะ Active/Inactive แทน**: **Inactive = บล็อกการเปิด QT / PO / SO** ที่อ้าง BOM/FG นั้น (คนละเรื่องกับ block ลูกค้า Disabled/Blacklist) **แต่ไม่กระทบงานผลิตที่กำลังทำอยู่หรือของที่วิ่งอยู่แล้ว** + ถูกกันออกจาก Supply Planning (ไม่แนะนำผลิต FG ที่ปิดใช้งาน). **★ ทุกการเปลี่ยนแปลง BOM (สร้าง/แก้ฟิลด์/แก้ราคาซื้อ/inactivate/reactivate) audit + trace ครบ**. TYPE selector = OEM หรือ FG; planning config (Sales Rate/Lead/Safety/Target/Batch) โผล่สำหรับ FG type (D16).
+BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D11**). **★ รหัส BOM = ผู้ใช้พิมพ์เองตอนสร้าง (user-entered on create), ต้องไม่ซ้ำ (unique), และ "แก้ไขไม่ได้หลังสร้าง" (ล็อกถาวร — create-only-lock)** (ปอนด์ 2026-07-29: "สร้างได้ แต่แก้ไขไม่ได้ RM ก็ด้วย"). **BOM กับ FG ใช้รหัสเดียวกัน (shared code)** → FG **ค้นได้ทั้งชื่อและรหัส** ในคลัง (`stock.md`). การล็อกรหัสหลังสร้างทำให้ **1 BOM = 1 FG และรหัสที่แชร์คงที่ (ไม่มี reference แตก)**. **★ RM component (วัตถุดิบในสูตร) เลือกผ่าน search-in-dropdown ค้นได้ทั้งชื่อและรหัส (G7)**. **★ ราคาซื้อวัตถุดิบ (purchase price, ต่อ component) แก้ด้วยมือได้โดยตรง — ทำได้ทั้งมี supplier และไม่มี supplier active** (ไม่บล็อกอีกต่อไป); ค่านี้ป้อน BOM cost + snapshot. เพิ่ม **"ต้นทุนอื่น (ต่อหน่วย)"** ที่ผู้ใช้ตั้งชื่อ+ใส่ค่าเอง (D9); **ต้นทุนรวม/หน่วย = Σ(ราคาซื้อวัตถุดิบ) + Σ(ต้นทุนอื่น)** → snapshot ตอนขาย (D10). **★ ฟิลด์ "ราคาขาย" (mandatory) = แหล่ง revenue ของ margin simulation ใน Supply Planning; ต้นทุนรวม/หน่วย (§4, D9) = แหล่ง cost — ทั้งคู่ป้อนการจำลอง cost/revenue/margin ตอน "สั่งผลิต" (`supply-planning.md` §5b), เป็น decision-support ตอนวางแผน ไม่กระทบ cost snapshot D10.** **★ BOM ลบถาวรไม่ได้ → ใช้สถานะ Active/Inactive แทน**: **Inactive = บล็อกการเปิด QT / PO / SO** ที่อ้าง BOM/FG นั้น (คนละเรื่องกับ block ลูกค้า Disabled/Blacklist) **แต่ไม่กระทบงานผลิตที่กำลังทำอยู่หรือของที่วิ่งอยู่แล้ว** + ถูกกันออกจาก Supply Planning (ไม่แนะนำผลิต FG ที่ปิดใช้งาน). **★ ทุกการเปลี่ยนแปลง BOM (สร้าง/แก้ฟิลด์/แก้ราคาซื้อ/inactivate/reactivate) audit + trace ครบ**. TYPE selector = OEM หรือ FG; planning config (Sales Rate/Lead/Safety/Target/Batch) โผล่สำหรับ FG type (D16).
 
 ---
 
@@ -34,8 +34,8 @@ BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D1
 | **TYPE** | enum {OEM, FG} | editable | OEM = made-to-order · FG = Own-Brand stocked (planning config โผล่) |
 | **วัตถุดิบ (components)** | list {RM, qty, **ราคาซื้อ**} | editable | **RM เลือกผ่าน search-in-dropdown ค้นได้ทั้งชื่อและรหัส (G7)** — `stock.md` §3b · **ราคาซื้อแก้ด้วยมือได้โดยตรง (§5b)** |
 | **ต้นทุนอื่น (ต่อหน่วย)** | list {ชื่อ(user), ค่า/หน่วย(user)} | editable | ผู้ใช้ตั้งชื่อ + ใส่ค่าเอง อิสระ (D9) |
-| **ต้นทุนรวม/หน่วย** | THB/unit | **computed** | = Σ(ราคาซื้อ RM) + Σ(ต้นทุนอื่น/หน่วย) |
-| ราคาขาย | THB | editable (mandatory) | กติกาเดิม |
+| **ต้นทุนรวม/หน่วย** | THB/unit | **computed** | = Σ(ราคาซื้อ RM) + Σ(ต้นทุนอื่น/หน่วย) · **★ = cost source ของ Supply Planning margin simulation (`supply-planning.md` §5b/§6.2b): cost = ต้นทุนรวม/หน่วย × qty (ก่อน VAT) — decision-support, ไม่กระทบ snapshot D10** |
+| ราคาขาย | THB/unit | editable (mandatory) | กติกาเดิม · **★ = revenue source ของ Supply Planning margin simulation (`supply-planning.md` §5b/§6.2b): revenue = ราคาขาย × qty (ก่อน VAT) — ไม่ประดิษฐ์แหล่งราคาใหม่, ฟิลด์นี้คือฐาน** |
 | **Sales Rate** | units /day·/week·/month | editable | planning (FG type) |
 | **Lead Time** | days | editable | planning (FG type) |
 | **Safety Cover** | days | editable | planning (FG type) |
@@ -49,6 +49,7 @@ BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D1
 ```
 - **ต้นทุนอื่น:** ผู้ใช้เพิ่มกี่หมวดก็ได้ (ค่าแรง/โสหุ้ย/บรรจุภัณฑ์/อื่น ๆ) — แต่ละหมวด = **ชื่อ (ผู้ใช้พิมพ์) + ค่า/หน่วย (ผู้ใช้ใส่)**.
 - **snapshot (D10):** เก็บต้นทุนรวมทั้งก้อน ณ ตอนขาย (line SO/PO) — ยังไม่ทำ UI รายงาน COGS/กำไรเฟสนี้ (data model พร้อมรองรับ).
+- **★ cost source ของ Supply Planning margin sim:** ต้นทุนรวม/หน่วย นี้ = ต้นทุนต่อหน่วยที่ Supply Planning นำไป **คูณ qty (batch count × Batch Size)** เพื่อจำลอง cost/revenue/margin ตอน "สั่งผลิต" (`supply-planning.md` §5b/§6.2b). ใช้ค่า **live** ณ ตอนจำลอง (ก่อน VAT); เป็น decision-support ตอนวางแผน — **ไม่ใช่ COGS/บัญชี, ไม่กระทบ snapshot D10** (snapshot ยังเกิดตอนขายจริงเท่านั้น).
 - badge "ราคาทุนอาจล้าสมัย" ครอบต้นทุนรวมใหม่.
 
 ## 5. ★ รหัส BOM/FG (D11 v2) + TYPE + Planning config (D16)
@@ -60,7 +61,7 @@ BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D1
 - **TYPE selector** ตอนสร้างสินค้า:
   - **OEM** = สินค้ารับจ้างผลิต made-to-order (ส่งตรง, ปกติไม่เก็บ FG ยกเว้น surplus D13) — planning config ไม่จำเป็น.
   - **FG** = สินค้าแบรนด์ตัวเอง (Own-Brand) ที่เก็บสต็อก/วางแผน — **planning config โผล่**.
-- Planning config (Sales Rate/Lead Time/Safety Cover/Target Cover/Batch Size) เก็บบน **1-BOM=1-FG master** (D11/D16) — Supply Planning อ่าน/แก้ได้ (แก้แล้ว save back — supply-planning.md).
+- Planning config (Sales Rate/Lead Time/Safety Cover/Target Cover/Batch Size) เก็บบน **1-BOM=1-FG master** (D11/D16) — Supply Planning อ่าน/แก้ได้ (แก้ใน modal = simulate; กด **"บันทึกกลับ BOM master" = persist + audited** — `supply-planning.md` §5c).
 > **หมายเหตุ reconcile D11:** D11 เดิมกำหนด "รหัส FG **สร้างอัตโนมัติ**". ปอนด์ปรับ (2026-07-29) → **ที่มารหัสเปลี่ยนจาก auto → ผู้ใช้ตั้งเองตอนสร้าง**; ส่วน **1:1 + shared code คงเดิม** และ **เพิ่ม create-only-lock** (แก้ไม่ได้หลังสร้าง). module package wins เหนือถ้อยคำ "auto" ของ D11 (README §5).
 
 ## 5b. ★ ราคาซื้อวัตถุดิบ (purchase price) — แก้ด้วยมือได้ ทั้งมี/ไม่มี supplier (NEW 2026-07-29)
@@ -84,20 +85,20 @@ BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D1
 | ดู BOM/detail | BOM.**Read (R)** |
 | สร้าง BOM (+ ตั้งรหัสเอง unique) | BOM.**Create (C)** |
 | แก้สูตร/ต้นทุนอื่น/ราคาซื้อ/TYPE/ราคาขาย | BOM.**Update (U)** (รหัส BOM/FG = ล็อก, แก้ไม่ได้) |
-| แก้ planning config | BOM.**Update (U)** (หรือผ่าน Supply Planning.Update — supply-planning.md) |
+| แก้ planning config | BOM.**Update (U)** (หรือผ่าน Supply Planning.Update = "บันทึกกลับ BOM master" — supply-planning.md §5c) |
 | **Inactivate / Reactivate BOM** | BOM.**Delete (D)** (inactivate = soft, แทน hard delete) / **Update (U)** (reactivate) + **เหตุผล** |
 
 ## 7. Validations
 - **★ รหัส BOM/FG:** ตอนสร้าง = **บังคับ + UNIQUE** (reject ถ้าซ้ำก่อนบันทึก, free-form) · **หลังสร้าง = read-only (แก้ไม่ได้)** — คง 1:1 + shared code.
 - ต้นทุนอื่น: ชื่อ + ค่า/หน่วย (≥0).
-- ราคาขาย mandatory.
+- **ราคาขาย mandatory** — **★ เป็น revenue source ของ Supply Planning margin sim** (ถ้าขาด Supply Planning จะปิดการคำนวณ margin — `supply-planning.md` §8).
 - **★ ราคาซื้อ component: แก้มือได้ (≥0) · ไม่บล็อกแม้ไม่มี active supplier** (กรอกเองได้) — *ยกเลิกกฎเดิม "block ถ้าไม่มี active supplier + ไม่ override"*.
 - TYPE=FG → planning config บังคับ (Sales Rate/Batch Size ต้องมี เพื่อให้ Supply Planning คำนวณ); TYPE=OEM → planning config optional.
 - **★ Inactivate:** บังคับเหตุผล + audit · **ไม่มี hard delete** (deletion-policy §2.4).
 - RM component เลือกจาก master ที่ **ยังไม่ soft-deleted** (search dropdown ชื่อ+รหัส, G7).
 
 ## 8. Cross-links
-- Planning config → `supply-planning.md` (formula + exclude Inactive) · cost snapshot → `so.md`/`po.md` line · **FG per-Batch + ค้น FG ชื่อ+รหัส → `stock.md` §4/§10** · **component RM master + RM code user-entered-locked → `stock.md` §3b** · **ราคาซื้อ max-active reference → `supplier.md` §9** · **inactive-BOM block → `quotation.md`/`po.md`/`so.md`** · **no-hard-delete/inactivate → `deletion-policy.md` §2.4** · **audit ทุกการเปลี่ยน BOM → `traceability.md` §3/§4 · `non-functional.md` AU1** · RBAC → `permission-matrix.md`.
+- Planning config → `supply-planning.md` (formula + exclude Inactive + save-back param audited §5c) · **★ ราคาขาย = revenue source · ต้นทุนรวม/หน่วย = cost source ของ margin sim → `supply-planning.md` §5b/§6.2b** · cost snapshot → `so.md`/`po.md` line · **FG per-Batch + ค้น FG ชื่อ+รหัส → `stock.md` §4/§10** · **component RM master + RM code user-entered-locked → `stock.md` §3b** · **ราคาซื้อ max-active reference → `supplier.md` §9** · **inactive-BOM block → `quotation.md`/`po.md`/`so.md`** · **no-hard-delete/inactivate → `deletion-policy.md` §2.4** · **audit ทุกการเปลี่ยน BOM (รวม save-back planning param จาก Supply Planning) → `traceability.md` §3/§4 · `non-functional.md` AU1** · RBAC → `permission-matrix.md`.
 
 ## 9. Module changelog
 - **เพิ่ม (รอบก่อน):** ต้นทุนอื่น per-unit (ชื่อ+ค่า user) + สูตรต้นทุนรวม (D9) · TYPE selector (OEM/FG) · planning config fields (D16).
@@ -108,3 +109,4 @@ BOM = สูตร + เป็น FG master (**1 BOM = 1 FG แบบ 1:1 — D1
   3. **ราคาซื้อ (purchase price) แก้ด้วยมือได้โดยตรง — ทำได้ทั้งมี/ไม่มี active supplier** (default = max-active, override ได้; ไม่มี supplier ก็กรอกเอง ไม่บล็อก) — §5b/§7. **ยกเลิกกฎเดิม "no active supplier → block until override"**; ค่านี้ feed ต้นทุนรวม + snapshot.
   4. **BOM ลบถาวรไม่ได้ → เพิ่มสถานะ Active/Inactive** — §2b/§5c. **Inactive บล็อกเปิด QT/PO/SO ที่อ้าง BOM/FG** (คนละเรื่องกับ block ลูกค้า) + **กันออกจาก Supply Planning** · **ไม่กระทบงานผลิต/เอกสารที่วิ่งอยู่แล้ว/FG stock เดิม**. sync `deletion-policy.md` §2.4 · `quotation.md`/`po.md`/`so.md` (block) · `supply-planning.md` (exclude) · `entity-status-map.md` (BOM lifecycle).
   5. **Audit + trace ทุกการเปลี่ยน BOM** (create/แก้ฟิลด์/แก้ราคาซื้อ/inactivate/reactivate) — §8, `traceability.md`, `non-functional.md` AU1.
+- **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):** ระบุชัดว่า **ฟิลด์ "ราคาขาย" (§3, mandatory) = revenue source** และ **ต้นทุนรวม/หน่วย (§4, D9) = cost source** ของ **margin simulation ("สั่งผลิต" ตาม batch count) ใน Supply Planning** (`supply-planning.md` §5b/§6.2b) — ก่อน VAT, decision-support ตอนวางแผน, **ไม่กระทบ cost snapshot D10**. ฟิลด์ราคาขายไม่เปลี่ยน (มีอยู่แล้ว, mandatory) · เพิ่มหมายเหตุ cross-ref §3/§4/§8 เท่านั้น. Save-back planning param จาก Supply Planning ("บันทึกกลับ BOM master") = audited (§5/§6, `supply-planning.md` §5c).
