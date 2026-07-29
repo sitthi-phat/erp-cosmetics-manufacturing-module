@@ -139,6 +139,13 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--text2)}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
+.cmodal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:70;overflow:auto;padding:32px 16px}
+.cmodal-bg.open{display:block}
+.cmodal{max-width:520px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.cmodal-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.cmodal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+.cmodal-b{padding:20px}
+.cmodal-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class="active"><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <a href="quotation-list.html">ใบเสนอราคา</a> › <b>QT-202607-000010</b></div></div>
@@ -168,6 +175,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <a class="btn btn-primary" href="po-create.html" style="width:100%;justify-content:center;margin-bottom:10px">➡️ Convert to PO (ออก PO เลขใหม่)</a>
      <div class="notify" style="margin-bottom:10px">ยืนยัน → ตั้ง QT = <b>ตกลง (Agreed)</b> (immutable) + เก็บลิงก์ QT↔PO → เปิด <b>po-create ที่ prefill</b> line/จำนวน/ราคา → กรอกวันที่ต้องการรับของ → บันทึก = <b>PO เลขใหม่</b></div>
      <div style="display:flex;gap:8px"><button class="btn btn-sm" style="flex:1;justify-content:center">✎ แก้ (เวอร์ชันใหม่)</button><button class="btn btn-sm btn-danger" style="flex:1;justify-content:center">ปฏิเสธ</button></div>
+     <div style="border-top:1px dashed var(--border);margin:14px 0 12px"></div>
+     <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="openCancel()">🗑 ยกเลิกใบเสนอราคา</button>
+     <div class="notify" style="margin-top:10px;background:#FCEAEA;border-color:#F2C2C2;color:#8F2020">ยกเลิกได้ <b>ทุกสถานะ</b> (ร่าง/ส่งแล้ว/ตกลง/ปฏิเสธ) · ต้องระบุ <b>เหตุผล (บังคับ)</b> → บันทึกลง activity-log + ตั้ง QT = <b>ยกเลิก</b> · <b>เลข QT คงอยู่ (gapless · ไม่ลบจริง)</b> · <b>ไม่กระทบ PO</b> ที่เคยแปลงไป (PO อ้าง QT แบบ loose reference — ไม่มี cascade)</div>
      <div class="notify" style="margin-top:12px">🔗 <b>PO ที่แปลง:</b> ยังไม่แปลง — กด Convert เพื่อออก PO เลขใหม่ แล้วลิงก์จะปรากฏที่นี่ · ตัวอย่างที่แปลงแล้ว: <a href="po-detail.html">QT-000008 → PO-202607-000181</a></div>
    </div></div>
    <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline">
@@ -175,7 +185,22 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <div class="t"><div class="th">แก้เป็น v2 + ส่งลูกค้า</div><div class="tm">28/07 09:10 · สมหญิง</div><div class="tc">ลดราคาเซรั่ม (v1 → v2)</div></div>
      <div class="t"><div class="th">ส่งให้ลูกค้า (Sent) v1</div><div class="tm">26/07 14:25 · สมหญิง</div></div>
      <div class="t"><div class="th">สร้างร่าง (Draft)</div><div class="tm">26/07 14:20 · สมหญิง</div></div>
-   </div></div></div>
+   </div>
+   <div class="tiny" style="margin-top:10px;color:var(--text2)">เมื่อกด "ยกเลิกใบเสนอราคา" → ระบบเพิ่ม entry <b>"ยกเลิก (Cancelled) + เหตุผล"</b> ไว้บนสุดของ timeline นี้ (ใคร/เมื่อ/ทำไม) และป้ายสถานะหัวเรื่องเปลี่ยนเป็น <span class="badge b-neutral" style="height:20px">ยกเลิก (Cancelled)</span></div>
+   </div></div>
   </div>
  </div>
-</div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+</div></div></div><div class="cmodal-bg" id="cancelModal" onclick="if(event.target===this)closeCancel()"><div class="cmodal">
+  <div class="cmodal-h"><h3>ยกเลิกใบเสนอราคา · QT-202607-000010</h3><button class="cmodal-x" onclick="closeCancel()" title="ปิด">✕</button></div>
+  <div class="cmodal-b">
+    <div class="alert alert-warn" style="font-size:13px;margin-bottom:14px"><span class="ai">⚠️</span><div>ยกเลิกได้จากทุกสถานะ (ปัจจุบัน = <b>ตกลง/Agreed</b>) · การกระทำนี้ตั้ง QT = <b>ยกเลิก (Cancelled)</b> แต่ <b>เลข QT ยังคงอยู่</b> (gapless, ไม่ลบจริง) และบันทึกลง activity-log</div></div>
+    <div class="field"><label>เหตุผลการยกเลิก <span class="req">*</span></label><textarea class="inp" rows="3" placeholder="ระบุเหตุผล เช่น ลูกค้ายกเลิกโครงการ / เสนอราคาผิดสเปก / ทำใบใหม่แทน…"></textarea><div class="help">บังคับกรอก — บันทึกลง activity-log (ใคร/เมื่อ/ทำไม)</div></div>
+    <div class="alert alert-info" style="font-size:13px;margin-bottom:0"><span class="ai">🔗</span><div><b>ไม่กระทบ PO ที่แปลงไปแล้ว:</b> PO อ้าง QT แบบ loose reference เท่านั้น → <b>ไม่มี cascade</b> · PO ที่เปิดจากใบนี้เดินสายต่อได้ตามปกติ</div></div>
+  </div>
+  <div class="cmodal-f"><button class="btn" onclick="closeCancel()">ปิด</button><button class="btn btn-danger" onclick="closeCancel()">🗑 ยืนยันยกเลิก + บันทึกเหตุผล</button></div>
+</div></div>
+<script>
+function openCancel(){document.getElementById('cancelModal').classList.add('open')}
+function closeCancel(){document.getElementById('cancelModal').classList.remove('open')}
+</script>
+<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
