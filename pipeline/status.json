@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "po + ux-ui",
-      "status": "IN_PROGRESS",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3297,9 +3297,40 @@
           "summary": "SETTINGS MODULE DONE (spec+screens): role 3-state+filter+user-list+remove+disable/soft-delete/restore (old 'move users first' removed); user search name/username; password modes+confirm-twice+show/hide+edit-hidden; Google link; login basic-vs-Google+first-login modal; VAT/Company/Audit Admin-only 403. FOLLOW-UP flagged (not this round): delete-user -> bulk-reassign-customers screen (US-SET-02 edge) needs its own spec+mockup.",
           "overridden_by": null,
           "updated_at": "2026-07-30T01:00:00+07:00"
+        },
+        {
+          "agent": "po + ux-ui",
+          "phase": "production-module + delete-sale",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "Production 2-tab queue (search/filter/group-by-PO/SO, PO/SO modal, actual>=ordered, lot FIFO, QC-gated พร้อมส่ง+popup, Loss button, confirm popups, ไปหน้า QC deep-link) spec+screens; HTTP-verified",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Stock Adjust lot/FIFO (STK-1) spec+screen",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "delete-Sale -> customers blank; bulk-reassign rule+screen removed (US-SET-02 simplified)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/production.html",
+            "docs/design/erp-v2-ui-first/mockups/stock.html",
+            "docs/design/erp-v2-ui-first/mockups/qc.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "PRODUCTION MODULE DONE (spec+screens): 2-tab queue grouped by PO/SO, over/under-prod actual>=ordered, QC-gated พร้อมส่ง, Loss button, confirm popups, lot FIFO, ไปหน้า QC deep-link, PO-edit->follow-up. Stock Adjust lot/FIFO done. delete-Sale->blank applied (bulk-reassign cancelled). Minor optional UX: add 'ลูกค้าจะไม่มีผู้ดูแล (Sale ว่าง)' confirm text on settings delete-user.",
+          "overridden_by": null,
+          "updated_at": "2026-07-30T02:20:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-30T02:00:00+07:00"
+  "generated_at": "2026-07-30T02:25:00+07:00"
 }
