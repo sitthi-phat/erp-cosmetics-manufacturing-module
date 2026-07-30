@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "current_agent": "po + ux-ui",
+      "status": "WAITING_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3407,9 +3407,47 @@
           "summary": "G9 permission-code label suffix COMPLETE (spec+sweep+9 resolutions+2 fixes). Also closed the doc-completeness gap Pond raised (every requirement in md + linked HTML view; PO def now enforces it).",
           "overridden_by": null,
           "updated_at": "2026-07-30T07:40:00+07:00"
+        },
+        {
+          "agent": "po + ux-ui",
+          "phase": "customer-shipping-route-dn",
+          "status": "MODULE_DONE",
+          "gate_checklist": [
+            {
+              "item": "Customer: 2 addresses (registered+shipping)+same-checkbox; contact is-receiver flag (name+phone required); spec+screens",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Shipping Route (RT replaces SHP, Q1=A): list/search/create-button, create page (driver=user, phone*, vehicle*x5, plate, depart), add-PO/SO/DN modal (ready-to-ship only), status actions + เสร็จสิ้น per-DN outcome + cancel, RT+DN G8 popup, order-detail modal; spec+screens",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "DN: 6 statuses, no-direct-create, search+filter, print DN+Invoice, comment G6, status-edit gated A; spec+screens",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "PO/SO delivery status reflects DN status across po/so/home/dashboard (rollup=latest active DN); dashboard stale statuses fixed; HTTP-verified",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
+            "docs/design/erp-v2-ui-first/mockups/customer-create.html",
+            "docs/requirements/erp-v2-ui-first/modules/shipping.md",
+            "docs/requirements/erp-v2-ui-first/modules/delivery-note.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "CUSTOMER + SHIPPING(Route/RT) + DN DONE (spec deep-detailed + screens, HTTP-verified). RT replaces SHP (Q1=A). Recovered cleanly from a mid-task 500. Non-blocking TODO: (1) sidebar label 'การจัดส่ง'->'รอบจัดส่ง (Route)' on ~35 untouched mockups (cosmetic, shared component in real app); (2) refresh notification-panel seed line using new DN vocabulary (old 'ถูกปฏิเสธ').",
+          "overridden_by": null,
+          "updated_at": "2026-07-30T11:30:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-30T11:00:00+07:00"
+  "generated_at": "2026-07-30T11:35:00+07:00"
 }
