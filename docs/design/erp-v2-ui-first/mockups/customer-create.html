@@ -156,7 +156,12 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <div class="field"><label>ชื่อลูกค้า / บริษัท <span class="req">*</span></label><input class="inp" placeholder="เช่น บริษัท ..... จำกัด"></div></div>
     <div class="grid2"><div class="field"><label>เลขผู้เสียภาษี (13 หลัก)</label><input class="inp tnum" placeholder="0-0000-00000-00-0" maxlength="17"></div>
      <div class="field"><label>เบอร์โทร <span class="req">*</span></label><input class="inp tnum" placeholder="0x-xxx-xxxx"></div></div>
-    <div class="field"><label>ที่อยู่จดทะเบียน <span class="req">*</span></label><textarea class="inp" rows="2" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์"></textarea></div>
+    <!-- ===== CUS-1 · ที่อยู่ 2 ชุด (registered + shipping) · customer.md §3/§9b ===== -->
+    <div class="field"><label>ที่อยู่ลูกค้า (จดทะเบียน / ออกเอกสาร) <span class="req">*</span></label><textarea class="inp" id="regAddr" rows="2" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์" oninput="if(document.getElementById('sameAddr').classList.contains('on'))document.getElementById('shipAddr').value=this.value"></textarea><div class="help">ใช้กับใบแจ้งหนี้/ใบกำกับภาษี (คู่กับเลขผู้เสียภาษี)</div></div>
+    <div class="field" style="margin-bottom:0"><label>ที่อยู่จัดส่งสินค้า (shipping address)</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;margin-bottom:8px" onclick="sameAddress(this)"><span class="chk on" id="sameAddr">✓</span> ใช้ที่อยู่เดียวกับที่อยู่ลูกค้า</label>
+      <textarea class="inp" id="shipAddr" rows="2" placeholder="ที่อยู่สำหรับส่งของ (อาจต่างจากที่อยู่จดทะเบียน)" disabled style="background:#F4F6F8;color:var(--text2)"></textarea>
+      <div class="help">ที่อยู่นี้จะไปแสดงใน <b>modal PO/SO/DN บนหน้ารอบจัดส่ง (Route)</b> และ <b>หัวใบส่งของ (DN)</b> · ติ๊กออกเพื่อกรอกที่อยู่จัดส่งแยก</div></div>
     <div class="field" style="margin-bottom:0"><label>ประเภทงาน (TYPE) <span class="req">*</span> <span class="tiny">เลือกได้ทั้งคู่</span></label>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on" onclick="this.classList.toggle('on')">✓ OEM (รับจ้างผลิต)</span><span class="chip" onclick="this.classList.toggle('on')">Own-Brand (แบรนด์ลูกค้า)</span></div>
       <div class="help">เลือกอย่างน้อย 1 · ใช้ทำรายงาน + เตือน (ไม่บล็อก) เมื่อเปิด order ผิดสาย · ลูกค้าเป็นได้ทั้ง OEM และ Own-Brand</div></div>
@@ -166,6 +171,10 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
      <div class="field"><label>ตำแหน่ง / แผนก</label><input class="inp" placeholder="เช่น ฝ่ายจัดซื้อ"></div></div>
     <div class="grid2"><div class="field"><label>เบอร์โทรผู้ติดต่อ <span class="req">*</span></label><input class="inp tnum" placeholder="08x-xxx-xxxx"></div>
      <div class="field"><label>อีเมล</label><input class="inp" placeholder="name@company.co.th"></div></div>
+    <!-- ===== CUS-2 · เป็นคนรับสินค้า (is receiver) ===== -->
+    <div class="field" style="margin-bottom:0"><label style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="var s=document.getElementById('recvSw0');s.classList.toggle('off');document.getElementById('recvHint0').style.display=s.classList.contains('off')?'none':'flex'"><span class="switch off" id="recvSw0"></span> <span>📦 ผู้ติดต่อหลักคนนี้ เป็นคนรับสินค้า (is receiver)</span></label>
+      <div class="help">เปิดสวิตช์ = ชื่อ + เบอร์ผู้ติดต่อ <b>บังคับกรอกครบ</b> (ผู้ติดต่อหลักต้องมีชื่อ+เบอร์อยู่แล้ว) · ผู้รับสินค้าไปแสดงในรอบจัดส่ง (Route) + หัวใบส่งของ (DN)</div>
+      <div id="recvHint0" class="alert alert-warn" style="display:none;margin:10px 0 0"><span class="ai">📦</span><div>ตั้งเป็น <b>ผู้รับสินค้า</b> → ชื่อ + เบอร์ต้องครบทั้งคู่ (HARD validation)</div></div></div>
   </div></div>
   <div class="card"><div class="card-h"><h3>การดูแล & เงื่อนไข</h3></div><div class="card-b">
     <div class="grid3"><div class="field"><label>Sale ที่ดูแล <span class="req">*</span> <span class="tiny">(ค้นได้)</span></label><div class="searchbox" style="max-width:none"><span class="si">🔍</span><input class="inp" placeholder="ค้น/เลือก Sale…"></div></div>
@@ -174,4 +183,6 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
     <div class="alert alert-info" style="font-size:13px"><span class="ai">ℹ️</span><div>สถานะเริ่มต้น = <b>ผู้สนใจ (Lead)</b> → เปลี่ยนเป็น <b>ลูกค้าประจำ</b> อัตโนมัติเมื่อมี PO ใบแรก + ข้อมูลครบ (C1)</div></div>
   </div></div>
   <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="customers.html">ยกเลิก</a><button class="btn btn-primary">บันทึกลูกค้าใหม่ (C)</button></div>
- </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ </div></div>
+<script>function sameAddress(el){var c=el.querySelector('.chk');c.classList.toggle('on');var on=c.classList.contains('on');c.textContent=on?'✓':' ';var s=document.getElementById('shipAddr');s.disabled=on;s.style.background=on?'#F4F6F8':'#fff';s.style.color=on?'var(--text2)':'var(--text)';if(on)s.value=document.getElementById('regAddr').value;}</script>
+</div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

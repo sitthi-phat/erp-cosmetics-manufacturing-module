@@ -149,8 +149,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">ฝ่ายขาย Own-Brand</div></div></div></div></div>
   <div class="content">
 
- <div class="pagehead"><div><h1>SO-202607-000030 &nbsp;<span class="badge b-warning">พร้อมจัดส่ง</span></h1><div class="sub">Own-Brand · <b>ขายจากสต็อก</b> · ร้านสวยใส · ยืนยัน 28/07/2569 · จอง FG แล้ว (รอตัด FIFO ตอนจัดส่ง)</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="so-list.html">← ย้อนกลับ</a><a class="btn" href="delivery-note.html">📦 สร้างใบจัดส่ง (DN) (C)</a></div></div>
- <div class="card"><div class="card-b"><div class="flow"><div class="s done"><span class="n">✓</span>ร่าง</div><div class="line"></div><div class="s done"><span class="n">✓</span>ยืนยัน (จอง FG)</div><div class="line"></div><div class="s cur"><span class="n">3</span>พร้อมจัดส่ง (ตัด FG FIFO)</div><div class="line"></div><div class="s"><span class="n">4</span>ส่ง/DN</div><div class="line"></div><div class="s"><span class="n">5</span>ใบแจ้งหนี้/ชำระ</div></div>
+ <div class="pagehead"><div><h1>SO-202607-000030 &nbsp;<span class="badge b-neutral">อยู่ระหว่างการเตรียม</span> <span class="tiny">(สะท้อน DN)</span></h1><div class="sub">Own-Brand · <b>ขายจากสต็อก</b> · ร้านสวยใส · อยู่ในรอบ <a href="shipping.html">RT-20260730-0003</a> · ใบจัดส่ง <a href="delivery-note.html">DN-20260730-00204</a></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="so-list.html">← ย้อนกลับ</a><a class="btn" href="delivery-note.html">📦 ดูใบจัดส่ง (DN)</a></div></div>
+ <div class="card"><div class="card-b"><div class="flow"><div class="s done"><span class="n">✓</span>ร่าง</div><div class="line"></div><div class="s done"><span class="n">✓</span>ยืนยัน (จอง FG)</div><div class="line"></div><div class="s done"><span class="n">✓</span>พร้อมจัดส่ง</div><div class="line"></div><div class="s cur"><span class="n">4</span>อยู่ระหว่างจัดส่ง (สะท้อน DN)</div><div class="line"></div><div class="s"><span class="n">5</span>ส่งสำเร็จ</div></div>
+   <div class="tiny" style="margin-top:6px;color:var(--text3)">หลัง "พร้อมจัดส่ง" สถานะจัดส่ง = <b>สะท้อนจากใบจัดส่ง (DN)</b> ที่ผูก · <b>DN สร้างผ่านรอบ (Route) เท่านั้น — ไม่มีปุ่มสร้าง DN ตรง</b> (so.md §4 / delivery-note.md)</div>
    <div class="alert alert-info" style="margin-top:16px;font-size:13px"><span class="ai">ℹ️</span><div>SO ขายจากสต็อก <b>ข้ามขั้นผลิต</b> · <b>DN/ใบแจ้งหนี้อ้าง SO ได้</b> (ไม่ใช่แค่ PO) · ตอนกด "พร้อมจัดส่ง" ระบบตัด FG <b>FIFO ราย Batch</b> ตามที่จองไว้</div></div></div></div>
  <div class="split">
   <div>
@@ -162,9 +163,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   </div>
   <div>
    <div class="card"><div class="card-h"><h3>การดำเนินการ</h3></div><div class="card-b">
-     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px">✓ พร้อมจัดส่ง (ตัด FG FIFO) (U)</button>
+     <a class="btn btn-primary" href="delivery-note.html" style="width:100%;justify-content:center;margin-bottom:10px">📦 ดูใบจัดส่ง (DN-…00204)</a>
      <button class="btn btn-danger" style="width:100%;justify-content:center">ยกเลิก SO (คืนจอง FG) (D)</button>
-     <div class="notify" style="margin-top:12px">📦 กด "พร้อมจัดส่ง" → ตัด FG on_hand FIFO ราย Batch → เข้าคิว <a href="shipping.html">จัดส่ง</a> → ออก <b>DN อ้าง SO</b> → <a href="invoice-detail.html">ใบแจ้งหนี้อ้าง SO</a></div>
+     <div class="notify" style="margin-top:12px">📦 SO นี้เข้ารอบ <a href="shipping.html">RT-20260730-0003</a> แล้ว → มีใบจัดส่ง <a href="delivery-note.html">DN อ้าง SO</a> · <b>ตัด FG FIFO ราย Batch ตอน DN "ส่งสำเร็จ"</b> · สถานะจัดส่งของ SO สะท้อนจาก DN (so.md §4) · DN สร้างผ่านรอบเท่านั้น</div>
    </div></div>
    <div class="card"><div class="card-h"><h3>ประวัติ (Trace)</h3></div><div class="card-b"><div class="timeline">
      <div class="t"><div class="th">ยืนยัน SO → จอง FG 75 หน่วย</div><div class="tm">28/07 10:20 · อารดา</div><div class="tc">FG-101 ×50 (B-…101-1) · FG-150 ×25 (B-…150-1)</div></div>

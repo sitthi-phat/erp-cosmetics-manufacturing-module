@@ -151,12 +151,18 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  <div class="pagehead"><div><h1>เพิ่มผู้ติดต่อ</h1><div class="sub">ลูกค้า: <b>บริษัท เดอร์มา แคร์ จำกัด</b> (CUS-00000021) · เพิ่มผู้ติดต่อได้ไม่จำกัด</div></div><a class="btn btn-ghost" href="customer-detail.html">← ย้อนกลับ</a></div>
  <div style="max-width:720px">
   <div class="card"><div class="card-h"><h3>ข้อมูลผู้ติดต่อใหม่</h3></div><div class="card-b">
-    <div class="grid2"><div class="field"><label>ชื่อผู้ติดต่อ <span class="req">*</span></label><input class="inp" placeholder="เช่น คุณสมศรี"></div>
+    <div class="grid2"><div class="field"><label>ชื่อผู้ติดต่อ <span class="req" id="reqName">*</span></label><input class="inp" id="cName" placeholder="เช่น คุณสมศรี"></div>
      <div class="field"><label>ตำแหน่ง / แผนก</label><input class="inp" placeholder="เช่น ฝ่ายจัดซื้อ / บัญชี / คลัง"></div></div>
-    <div class="grid2"><div class="field"><label>เบอร์โทร <span class="req">*</span></label><input class="inp tnum" placeholder="08x-xxx-xxxx"></div>
+    <div class="grid2"><div class="field"><label>เบอร์โทร <span class="req" id="reqPhone">*</span></label><input class="inp tnum" id="cPhone" placeholder="08x-xxx-xxxx"></div>
      <div class="field"><label>อีเมล</label><input class="inp" placeholder="name@company.co.th"></div></div>
-    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><span class="chk">&nbsp;</span> ตั้งเป็นผู้ติดต่อหลัก</label><div class="help">ผู้ติดต่อหลักจะถูกใช้เป็นค่าเริ่มต้นในเอกสาร PO / ใบจัดส่ง</div></div>
-    <div class="field"><label>หมายเหตุ</label><textarea class="inp" rows="2" placeholder="เช่น ติดต่อได้เฉพาะช่วงบ่าย"></textarea></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="var c=this.querySelector('.chk');c.classList.toggle('on');c.textContent=c.classList.contains('on')?'✓':' '"><span class="chk">&nbsp;</span> ตั้งเป็นผู้ติดต่อหลัก</label><div class="help">ผู้ติดต่อหลักจะถูกใช้เป็นค่าเริ่มต้นในเอกสาร PO / ใบจัดส่ง</div></div>
+    <!-- ===== CUS-2 · เป็นคนรับสินค้า (is receiver) — ติด flag = ชื่อ+เบอร์บังคับ (customer.md §9b HARD validation) ===== -->
+    <div class="field" style="margin-bottom:0"><label style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="toggleReceiver(this)"><span class="switch off" id="recvSw"></span> <span>📦 เป็นคนรับสินค้า (is receiver)</span></label>
+      <div class="help">เปิดสวิตช์นี้ถ้าผู้ติดต่อคนนี้เป็น "ผู้รับสินค้า" ตอนจัดส่ง — <b>ชื่อ + เบอร์จะกลายเป็นข้อมูลบังคับกรอกครบทั้งคู่</b> (จะไปแสดงในรอบจัดส่ง Route + หัวใบส่งของ DN) · ผู้ติดต่อหลายคนเป็นผู้รับสินค้าได้</div>
+      <div id="recvAlert" class="alert alert-warn" style="display:none;margin:10px 0 0"><span class="ai">📦</span><div>ผู้ติดต่อนี้ถูกตั้งเป็น <b>ผู้รับสินค้า</b> → <b>ชื่อ และ เบอร์โทร ต้องกรอกให้ครบทั้งคู่</b> ไม่งั้นบันทึกไม่ได้ (error: <i>"ผู้รับสินค้าต้องระบุชื่อและเบอร์ให้ครบ"</i>)</div></div>
+    </div>
+    <div class="field" style="margin-top:16px"><label>หมายเหตุ</label><textarea class="inp" rows="2" placeholder="เช่น ติดต่อได้เฉพาะช่วงบ่าย"></textarea></div>
   </div></div>
+  <script>function toggleReceiver(el){var sw=el.querySelector('.switch')||document.getElementById('recvSw');sw.classList.toggle('off');var on=!sw.classList.contains('off');document.getElementById('recvAlert').style.display=on?'flex':'none';}</script>
   <div style="position:sticky;bottom:0;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 20px;display:flex;justify-content:flex-end;gap:12px"><a class="btn" href="customer-detail.html">ยกเลิก</a><button class="btn btn-primary">บันทึกผู้ติดต่อ (U)</button></div>
  </div></div></div></div><nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
