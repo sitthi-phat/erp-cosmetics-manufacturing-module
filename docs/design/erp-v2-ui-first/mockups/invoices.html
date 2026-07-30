@@ -29,7 +29,7 @@ h1{font-size:24px;font-weight:600;line-height:1.3}h2{font-size:20px;font-weight:
 .userbox{display:flex;align-items:center;gap:8px}.userbox .nm{font-size:13px;font-weight:500;line-height:1.2}.userbox .rl{font-size:11px;color:var(--text3)}
 .content{padding:24px;flex:1}
 .pagehead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;flex-wrap:wrap}
-.pagehead .sub{color:var(--text2);margin-top:4px;font-size:13px;max-width:640px}
+.pagehead .sub{color:var(--text2);margin-top:4px;font-size:13px;max-width:680px}
 .card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 1px 3px rgba(16,25,40,.06);margin-bottom:20px}
 .card-h{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .card-b{padding:20px}.card-h h3{font-size:16px}
@@ -48,7 +48,7 @@ h1{font-size:24px;font-weight:600;line-height:1.3}h2{font-size:20px;font-weight:
 .toolbar .l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.toolbar .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .count{background:var(--primary-bg);color:var(--primary);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
 .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table.tbl{width:100%;border-collapse:collapse;background:#fff;min-width:520px}
+table.tbl{width:100%;border-collapse:collapse;background:#fff;min-width:820px}
 .tbl th{text-align:left;font-size:12px;font-weight:600;color:var(--text2);padding:12px 16px;border-bottom:1px solid var(--border);background:#FAFBFC;white-space:nowrap}
 .tbl td{padding:13px 16px;border-bottom:1px solid var(--border2);font-size:14px;vertical-align:middle}
 .tbl tr:hover td{background:#FAFCFC}.tbl .num{text-align:right;font-variant-numeric:tabular-nums}.tbl .strong{font-weight:600}.tbl .id{font-size:12px;color:var(--text3)}
@@ -57,6 +57,7 @@ table.tbl{width:100%;border-collapse:collapse;background:#fff;min-width:520px}
 .inp,.sel,textarea.inp{width:100%;height:40px;border:1px solid var(--border);border-radius:var(--radius);padding:0 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--text)}
 textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .inp:focus,.sel:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg)}.inp::placeholder{color:var(--text3)}
+.inp[readonly]{background:#F4F6F8;color:var(--text3);cursor:default}
 .help{font-size:12px;color:var(--text3);margin-top:5px}.help.err{color:var(--error)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px}
 .sel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237B8794' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
@@ -122,6 +123,14 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
+.caret{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;width:20px;transition:transform .15s;display:inline-block}
+.caret.open{transform:rotate(90deg);color:var(--primary)}
+.subrow td{background:#FAFBFC !important;padding:0 16px 0 40px}
+.subrow .sub-inner{padding:10px 0 12px}
+.subrow .vh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--border2);border-radius:8px;background:#fff;margin-top:6px;font-size:13px}
+.daterange{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.daterange .inp{height:38px}.daterange .sel{height:38px}
+.divider{width:1px;height:22px;background:var(--border);margin:0 4px}
 @media(max-width:991px){
  .sider{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .2s;box-shadow:2px 0 12px rgba(0,0,0,.2)}
  body.nav-open .sider{transform:translateX(0)}
@@ -153,36 +162,173 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .svm-list{margin-top:12px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
 .svm-list .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border2);font-size:13px}
 .svm-list .r:last-child{border-bottom:none}.svm-list .r b{font-variant-numeric:tabular-nums}
-</style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class="active"><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
+</style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>รอบจัดส่ง (Route)</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class="active"><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>ใบแจ้งหนี้</b></div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
    <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">6</span></button>
  <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (6)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
- <div class="noti-item"><span class="di">🔒</span><div><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · แจ้ง Stock</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · จาก PO ยืนยัน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🔁</span><div><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · จาก GR-008 รับไม่ครบ</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000170 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">↩️</span><div><a href="po-detail.html">DN-123 (PO-175) ถูกปฏิเสธ → raise Sale (ติดต่อลูกค้า)</a><div class="tm">วันนี้ 11:40 · จัดส่ง</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
+ <div class="noti-item"><span class="di">⏰</span><div><a href="invoice-detail.html">INV-2026-000133 เกินกำหนดชำระ 5 วัน (กลอรี่ · PO-173)</a><div class="tm">วันนี้ 08:00 · แจ้ง Finance+Sale</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🧾</span><div><a href="invoice-detail.html">ออกใบแจ้งหนี้ INV-2026-000135 (บิวตี้ เอเชีย · PO-176)</a><div class="tm">วันนี้ 09:15 · การเงิน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📦</span><div><a href="delivery-note.html">DN-20260730-00123 ส่งสำเร็จ → เริ่มนับเครดิต (PO-175)</a><div class="tm">วันนี้ 11:40 · จัดส่ง</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000170 พร้อมจัดส่ง — เข้าคิวรอจัดรอบ</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line)</a><div class="tm">5 นาทีที่แล้ว · จาก PO ยืนยัน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
  <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">บัญชี/การเงิน</div></div></div></div></div>
   <div class="content">
- <div class="pagehead"><div><h1>ใบแจ้งหนี้ / ใบกำกับภาษี</h1><div class="sub">ออกได้ตั้งแต่ PO <b>ยืนยันแล้ว (Confirmed / ส่งเข้าผลิต)</b> เป็นต้นไป · แสดง stage การผลิตควบคู่ · เตือนลูกหนี้ค้างจ่ายพร้อมจำนวนวัน · <span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600">🧾 เลข INV: (ระบบออกให้เมื่อบันทึก)</span></div></div><button class="btn btn-primary" onclick="openSave()">➕ ออกใบแจ้งหนี้ (C)</button></div>
- <div class="alert alert-info"><span class="ai">⏰</span><div><b>ใกล้ครบกำหนดชำระ:</b> INV-2026-000135 (บิวตี้ เอเชีย · PO-176) ส่งของแล้ว 08/07 · เครดิต 30 วัน ครบ 07/08 · ยังไม่เกินกำหนด <a href="invoice-detail.html">ดู</a></div></div>
+ <div class="pagehead"><div><h1>ใบแจ้งหนี้ / ใบกำกับภาษี</h1><div class="sub">ค้น <b>PO / SO / Invoice</b> แล้วออกใบแจ้งหนี้ได้ <b>ทุกสถานะ</b> (เฟสนี้ไม่ล็อกสถานะ) · <b>1 PO/SO มีใบ active ได้ทีละ 1 ใบ</b> — ใบที่ยกเลิกเก็บเป็นประวัติ · เลข INV ออกเมื่อกดบันทึก · เตือนลูกหนี้เกินกำหนดพร้อมจำนวนวัน</div></div>
+   <span class="pill" style="background:#EEF1F4;color:var(--text2);font-weight:600;align-self:center">🧾 เลข INV: (ระบบออกให้เมื่อบันทึก)</span></div>
+
+ <!-- INV-1: overdue alert -->
+ <div class="alert alert-err"><span class="ai">⏰</span><div><b>เกินกำหนดชำระ:</b> INV-2026-000133 (กลอรี่ คอสเมติก · PO-173) ส่งของแล้ว 20/07 · เครดิต 30 วัน ครบ 19/07 · <b>เกิน 5 วัน</b> — แจ้งเตือน Finance+Sale แล้ว <a href="invoice-detail.html">เปิดใบ</a></div></div>
+
  <div class="card"><div class="card-b">
-   <div class="toolbar"><div class="l"><div class="searchbox"><span class="si">🔍</span><input class="inp" placeholder="ค้นเลขที่ / ลูกค้า / PO"></div></div><div class="r"><span class="chip on">ทั้งหมด</span><span class="chip">รอชำระ</span><span class="chip">เกินกำหนด</span><span class="chip">ชำระแล้ว</span></div></div>
-   <div class="tblwrap"><table class="tbl"><thead><tr><th>เลขที่</th><th>ลูกค้า</th><th class="num">ยอดรวม</th><th>stage การผลิต (PO)</th><th>การชำระ</th><th></th></tr></thead><tbody>
-    <tr><td class="strong">INV-2026-000135 <span class="tiny">v1</span></td><td>บิวตี้ เอเชีย</td><td class="num strong tnum">16,050</td><td><span class="badge b-success">ส่งถึงแล้ว (PO-176)</span></td><td><span class="badge b-warning">รอชำระ · ครบ 07/08</span></td><td class="num"><a href="invoice-detail.html">เปิด</a></td></tr>
-    <tr><td class="strong">INV-2026-000133 <span class="tiny">v1</span></td><td>กลอรี่</td><td class="num strong tnum">51,360</td><td><span class="badge b-success">ส่งถึงแล้ว (PO-173)</span></td><td><span class="badge b-warning">รอชำระ</span></td><td class="num"><a href="invoice-detail.html">เปิด</a></td></tr>
-    <tr><td class="strong">INV-2026-000132 <span class="tiny">v1</span></td><td>บิวตี้ เอเชีย</td><td class="num strong tnum">96,300</td><td><span class="badge b-success">ส่งถึงแล้ว (PO-172)</span></td><td><span class="badge b-warning">รอชำระ</span></td><td class="num"><a href="invoice-detail.html">เปิด</a></td></tr>
+   <!-- INV-1 · search: customer / contact / PO-SO-INV number + creation date-range with date-type dropdown (G2) -->
+   <div class="toolbar">
+     <div class="l"><div class="searchbox" style="max-width:400px"><span class="si">🔍</span><input class="inp" placeholder="ค้น: ชื่อลูกค้า / ชื่อผู้ติดต่อ / เลข PO / SO / Invoice"></div></div>
+     <div class="r daterange">
+       <span class="tiny">ช่วงวันที่สร้าง:</span>
+       <select class="sel" style="width:170px" title="เลือกแกนวันที่ (G2)"><option>วันที่สร้าง PO</option><option>วันที่สร้าง SO</option><option>วันที่สร้าง Invoice</option></select>
+       <input class="inp" type="date" style="width:150px" value="2026-07-01"><span class="tiny">ถึง</span><input class="inp" type="date" style="width:150px" value="2026-07-30">
+       <button class="btn btn-sm btn-primary">ค้นหา</button>
+     </div>
+   </div>
+   <!-- INV-2 · filter: billing/overdue + active/void -->
+   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+     <span class="chip on">ทั้งหมด</span>
+     <span class="chip">รอชำระ</span>
+     <span class="chip">เกินกำหนด</span>
+     <span class="chip">ชำระแล้ว</span>
+     <span class="chip">ยังไม่มีใบ</span>
+     <span class="divider"></span>
+     <span class="chip on">ใบ active</span>
+     <span class="chip">ประวัติ (ยกเลิก/void)</span>
+   </div>
+
+   <div class="tblwrap"><table class="tbl"><thead><tr><th style="width:34px"></th><th>PO / SO</th><th>ลูกค้า / ผู้ติดต่อ</th><th>stage (จริง)</th><th>ใบแจ้งหนี้ (active)</th><th>การชำระ</th><th class="num">ยอดรวม</th><th></th></tr></thead><tbody>
+
+     <!-- Row 1: has active invoice + void history (expandable) -->
+     <tr>
+       <td><button class="caret" onclick="toggleHist('h1',this)">▶</button></td>
+       <td class="strong"><a href="po-detail.html">PO-202607-000176</a></td>
+       <td>บิวตี้ เอเชีย<div class="tiny">คุณมานี (จัดซื้อ)</div></td>
+       <td><span class="badge b-success">ส่งสำเร็จ</span></td>
+       <td><a href="invoice-detail.html">INV-2026-000135</a></td>
+       <td><span class="badge b-warning">รอชำระ · ครบ 07/08</span></td>
+       <td class="num strong tnum">16,050</td>
+       <td class="num rowact"><a class="btn btn-sm" href="invoice-detail.html">เปิด</a></td>
+     </tr>
+     <tr id="h1" class="subrow" style="display:none"><td colspan="8"><div class="sub-inner">
+       <div class="tiny" style="font-weight:600">ประวัติใบที่ยกเลิก (void) ของ PO-176 — เก็บเลข gapless เป็นประวัติ ไม่นับยอด</div>
+       <div class="vh"><div><b>INV-2026-000119</b> <span class="badge b-neutral plain" style="height:20px">ยกเลิก (void)</span> · ออก 05/07 · ยกเลิก 06/07 โดย สมศรี</div><div class="tiny">เหตุผล: ที่อยู่ออกเอกสารผิด → ออกใบใหม่แทน · <a href="invoice-detail.html">ดู</a></div></div>
+     </div></td></tr>
+
+     <!-- Row 2: active invoice OVERDUE -->
+     <tr>
+       <td></td>
+       <td class="strong"><a href="po-detail.html">PO-202607-000173</a></td>
+       <td>กลอรี่ คอสเมติก<div class="tiny">คุณเอก (บัญชี)</div></td>
+       <td><span class="badge b-success">ส่งสำเร็จ</span></td>
+       <td><a href="invoice-detail.html">INV-2026-000133</a></td>
+       <td><span class="badge b-error">เกินกำหนด · 5 วัน</span></td>
+       <td class="num strong tnum">51,360</td>
+       <td class="num rowact"><a class="btn btn-sm" href="invoice-detail.html">เปิด</a></td>
+     </tr>
+
+     <!-- Row 3: Own-Brand SO, paid -->
+     <tr>
+       <td></td>
+       <td class="strong"><a href="so-detail.html">SO-202607-000030</a> <span class="badge b-neutral plain" style="height:20px">Own-Brand</span></td>
+       <td>ร้านสวยใส<div class="tiny">คุณนล (เจ้าของ)</div></td>
+       <td><span class="badge b-success">ส่งสำเร็จ</span></td>
+       <td><a href="invoice-detail.html">INV-2026-000134</a></td>
+       <td><span class="badge b-success">ชำระแล้ว</span></td>
+       <td class="num strong tnum">24,610</td>
+       <td class="num rowact"><a class="btn btn-sm" href="invoice-detail.html">เปิด</a></td>
+     </tr>
+
+     <!-- Row 4: NO active invoice — create (stage = กำลังผลิต; no status lock) -->
+     <tr>
+       <td></td>
+       <td class="strong"><a href="po-detail.html">PO-202607-000177</a></td>
+       <td>เดอร์มา แคร์<div class="tiny">คุณอร (จัดซื้อ)</div></td>
+       <td><span class="badge b-processing">กำลังผลิต</span></td>
+       <td class="muted">ยังไม่มีใบแจ้งหนี้</td>
+       <td class="muted">—</td>
+       <td class="num strong tnum">16,050</td>
+       <td class="num rowact"><button class="btn btn-sm btn-primary" onclick="openCreate('PO-202607-000177','บริษัท เดอร์มา แคร์ จำกัด','16,050.00')">🧾 สร้างใบแจ้งหนี้ (C)</button></td>
+     </tr>
+
+     <!-- Row 5: NO active invoice — create even when stage = ร่าง (demonstrates no status gate) -->
+     <tr>
+       <td></td>
+       <td class="strong"><a href="po-detail.html">PO-202607-000180</a></td>
+       <td>ลักซ์ บิวตี้<div class="tiny">คุณกิต (จัดซื้อ)</div></td>
+       <td><span class="badge b-neutral">ร่าง</span></td>
+       <td class="muted">ยังไม่มีใบแจ้งหนี้</td>
+       <td class="muted">—</td>
+       <td class="num strong tnum">8,560</td>
+       <td class="num rowact"><button class="btn btn-sm btn-primary" onclick="openCreate('PO-202607-000180','บริษัท ลักซ์ บิวตี้ จำกัด','8,560.00')">🧾 สร้างใบแจ้งหนี้ (C)</button></td>
+     </tr>
+
+     <!-- Row 6: active exists — attempting new is BLOCKED -->
+     <tr>
+       <td></td>
+       <td class="strong"><a href="po-detail.html">PO-202607-000172</a></td>
+       <td>บิวตี้ เอเชีย<div class="tiny">คุณมานี (จัดซื้อ)</div></td>
+       <td><span class="badge b-success">ส่งสำเร็จ</span></td>
+       <td><a href="invoice-detail.html">INV-2026-000132</a></td>
+       <td><span class="badge b-warning">รอชำระ</span></td>
+       <td class="num strong tnum">96,300</td>
+       <td class="num rowact"><a class="btn btn-sm" href="invoice-detail.html">เปิด</a><button class="btn btn-sm" onclick="openBlocked('PO-202607-000172','INV-2026-000132')" title="มีใบ active อยู่แล้ว">+ ออกใบใหม่</button></td>
+     </tr>
+
    </tbody></table></div>
-   <div class="pager"><span class="tiny">แสดง 1–3 จาก 3 รายการ</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn ">2</button><button class="pgbtn ">3</button><button class="pgbtn">›</button></div></div>
- </div></div></div></div></div>
-<!-- ===== G8/NS-B confirmation popup (INV · ออกตอน "ออกใบแจ้งหนี้") — same reusable block ===== -->
-<div class="svm-bg" id="saveModal" onclick="if(event.target===this)closeSave()"><div class="svm">
-  <div class="svm-h"><h3>✅ ออกใบแจ้งหนี้สำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeSave()" title="ปิด">✕</button></div>
+   <div class="pager"><span class="tiny">แสดง 1–6 จาก 6 รายการ · 20/หน้า</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">2</button><button class="pgbtn">›</button></div></div>
+ </div></div>
+
+ <div class="notify">🧾 <b>วิธีใช้:</b> ค้น PO/SO/Invoice ด้านบน → แถวที่ <b>ยังไม่มีใบแจ้งหนี้</b> กด "สร้างใบแจ้งหนี้ (C)" ได้ทันที (ระบบดึงข้อมูลลูกค้ามาให้ · ออกเลขตอนบันทึก) · แถวที่ <b>มีใบ active แล้ว</b> จะออกใบใหม่ไม่ได้จนกว่าจะยกเลิกใบเดิม (1 PO/SO = 1 ใบ active) · กด ▶ เพื่อดูประวัติใบที่ยกเลิก</div>
+  </div></div></div>
+
+<!-- ===== INV-3 · create-when-none modal (pull customer data + number-on-save placeholder) ===== -->
+<div class="svm-bg" id="createModal" onclick="if(event.target===this)closeM('createModal')"><div class="svm">
+  <div class="svm-h"><h3>🧾 สร้างใบแจ้งหนี้ (C) — <span id="cRef">PO-…</span></h3><button class="svm-x" onclick="closeM('createModal')" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="alert alert-info" style="margin-bottom:16px"><span class="ai">ℹ️</span><div>เฟสนี้ <b>ไม่ล็อกสถานะ</b> — ออกใบจาก PO/SO ที่ค้นเจอได้ทุกสถานะ · ระบบ <b>ดึงข้อมูลลูกค้า</b> (ชื่อ / ที่อยู่ออกเอกสาร / เลขภาษี / เครดิต) มาเป็นค่าเริ่มต้นบนใบ — แก้ได้ในใบหลังสร้าง (per-invoice override ไม่กระทบข้อมูลลูกค้าต้นทาง)</div></div>
+    <div class="field"><label>เลขใบแจ้งหนี้ (INV)</label><input class="inp" readonly value="(ระบบออกให้เมื่อบันทึก)"><div class="help">เลข gapless ออกตอนกด "สร้างใบแจ้งหนี้" สำเร็จเท่านั้น — ร่างที่ไม่บันทึกไม่กินเลข (G8)</div></div>
+    <div class="svm-list">
+      <div class="r"><span class="muted">อ้างอิง</span><b id="cRef2">PO-…</b></div>
+      <div class="r"><span class="muted">ลูกค้า (ดึงจากข้อมูลลูกค้า)</span><b id="cCust">—</b></div>
+      <div class="r"><span class="muted">เครดิต (ค่าเริ่มต้นลูกค้า)</span><b>60 วัน</b></div>
+      <div class="r"><span class="muted">VAT (ยึดตามวันที่ในใบ)</span><b>7%</b></div>
+      <div class="r"><span class="muted">ยอดรวมทั้งสิ้น (จาก PO/SO)</span><b class="tnum" id="cTotal">—</b></div>
+    </div>
+  </div>
+  <div class="svm-f"><button class="btn" onclick="closeM('createModal')">ยกเลิก</button><button class="btn btn-primary" onclick="doSave()">💾 สร้างใบแจ้งหนี้ (C)</button></div>
+</div></div>
+
+<!-- ===== G8/NS-B confirmation popup (INV · ออกตอน "สร้างใบแจ้งหนี้") — reusable ===== -->
+<div class="svm-bg" id="saveModal" onclick="if(event.target===this)closeM('saveModal')"><div class="svm">
+  <div class="svm-h"><h3>✅ สร้างใบแจ้งหนี้สำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeM('saveModal')" title="ปิด">✕</button></div>
   <div class="svm-b">
     <div class="svm-num"><span class="ic">🧾</span><div><div class="lb">เลขใบแจ้งหนี้ (INV) · gapless ต่อปี · ออกตอนบันทึก</div><div class="no">INV-2026-000136</div></div></div>
-    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>ลูกค้า</dt><dd>บริษัท บิวตี้ เอเชีย จำกัด</dd><dt>อ้างอิง</dt><dd>PO-202607-000177</dd><dt>ยอดรวมทั้งสิ้น</dt><dd class="tnum">16,050.00 บาท</dd></dl>
-    <div class="notify" style="margin-top:12px">ℹ️ เลขไม่โชว์ก่อนบันทึก · ร่างที่ไม่บันทึกไม่กินเลข (gapless) · แก้เวอร์ชัน/void = <b>ใช้เลขเดิม</b> (NS-D/NS6)</div>
+    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>ลูกค้า</dt><dd id="sCust">บริษัท เดอร์มา แคร์ จำกัด</dd><dt>อ้างอิง</dt><dd id="sRef">PO-202607-000177</dd><dt>ยอดรวมทั้งสิ้น</dt><dd class="tnum"><span id="sTotal">16,050.00</span> บาท</dd></dl>
+    <div class="notify" style="margin-top:12px">ℹ️ เลขไม่โชว์ก่อนบันทึก · ร่างที่ไม่บันทึกไม่กินเลข (gapless) · ใบนี้เป็น <b>ใบ active</b> ของ PO/SO นี้ · ยกเลิก/void = <b>ใช้เลขเดิม</b> (NS5/NS6) · พร้อมพิมพ์ได้ทันที</div>
   </div>
-  <div class="svm-f"><a class="btn" href="invoice-detail.html">👁 ดูรายละเอียด</a><a class="btn" href="invoice-print.html">🖨 พิมพ์ใบกำกับภาษี (R)</a><button class="btn btn-primary" onclick="closeSave()">เสร็จสิ้น</button></div>
+  <div class="svm-f"><a class="btn" href="invoice-detail.html">👁 ดูรายละเอียด</a><a class="btn" href="invoice-print.html">🖨 พิมพ์ใบกำกับภาษี (R)</a><button class="btn btn-primary" onclick="closeM('saveModal')">เสร็จสิ้น</button></div>
 </div></div>
-<script>function openSave(){document.getElementById('saveModal').classList.add('open')}
-function closeSave(){document.getElementById('saveModal').classList.remove('open')}</script>
-<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+
+<!-- ===== INV-4 · blocked: active invoice already exists ===== -->
+<div class="svm-bg" id="blockModal" onclick="if(event.target===this)closeM('blockModal')"><div class="svm">
+  <div class="svm-h"><h3>⛔ ออกใบใหม่ไม่ได้</h3><button class="svm-x" onclick="closeM('blockModal')" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="alert alert-err" style="margin-bottom:0"><span class="ai">⛔</span><div><b><span id="bRef">PO-…</span> มีใบแจ้งหนี้ active อยู่แล้ว (<span id="bInv">INV-…</span>)</b><div style="margin-top:6px">1 PO/SO มีใบ active ได้ทีละ 1 ใบเท่านั้น — ต้อง <b>ยกเลิกใบเดิม (void)</b> ก่อน จึงจะออกใบใหม่แทนได้ (void ใบเดิม → ใบใหม่กลายเป็น active) · <b>ยังไม่มีเลข INV ใหม่ถูกออก</b></div></div></div>
+  </div>
+  <div class="svm-f"><button class="btn" onclick="closeM('blockModal')">ปิด</button><a class="btn btn-danger" href="invoice-detail.html">🚫 ไปยกเลิกใบเดิมก่อน</a></div>
+</div></div>
+
+<script>
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+function toggleHist(id,btn){var r=document.getElementById(id);var open=r.style.display==='none';r.style.display=open?'table-row':'none';btn.classList.toggle('open',open)}
+function openCreate(ref,cust,total){document.getElementById('cRef').textContent=ref;document.getElementById('cRef2').textContent=ref;document.getElementById('cCust').textContent=cust;document.getElementById('cTotal').textContent=total;
+ document.getElementById('sRef').textContent=ref;document.getElementById('sCust').textContent=cust;document.getElementById('sTotal').textContent=total;openM('createModal')}
+function doSave(){closeM('createModal');openM('saveModal')}
+function openBlocked(ref,inv){document.getElementById('bRef').textContent=ref;document.getElementById('bInv').textContent=inv;openM('blockModal')}
+</script>
+<nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="delivery-note.html"><span class="mi">📦</span>DN</a><a href="invoices.html" class="active"><span class="mi">💳</span>ใบแจ้งหนี้</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>

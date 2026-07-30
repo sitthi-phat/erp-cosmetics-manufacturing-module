@@ -129,6 +129,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .svm-f{padding:14px 20px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
 .daterange{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .daterange .inp{height:38px}.daterange .sel{height:38px}
+.svm-num{display:flex;align-items:center;gap:12px;background:var(--primary-bg);border:1px solid #Bfe3e1;border-radius:10px;padding:14px 16px}
+.svm-num .ic{font-size:22px}.svm-num .lb{font-size:12px;color:#0B5754}
+.svm-num .no{font-size:22px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1.25}
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="home.html" class=""><span class="ico">🏠</span>หน้าหลัก</a><a href="dashboard.html" class=""><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>รอบจัดส่ง (Route)</a><a href="delivery-note.html" class="active"><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>ใบจัดส่ง (DN)</b></div></div>
@@ -195,9 +198,9 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="svm-b">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
       <span id="dnBadge" class="badge b-neutral">อยู่ระหว่างการเตรียม</span>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="dnActions">
         <button class="btn btn-sm" onclick="window.print()">🖨 พิมพ์ DN (R)</button>
-        <button class="btn btn-sm" onclick="window.print()">🧾 พิมพ์ Invoice (R)</button>
+        <span id="dnInvBtn"></span>
       </div>
     </div>
     <dl class="kv" style="grid-template-columns:130px 1fr;gap:10px 16px">
@@ -208,7 +211,8 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
       <dt>👤 ผู้รับสินค้า</dt><dd>คุณเอก · 081-234-5678</dd>
       <dt>วันที่ต้องการรับ</dt><dd>31/07/2569</dd>
     </dl>
-    <div class="help" style="margin-top:10px">🖨 พิมพ์ DN ใช้ <b>ที่อยู่จัดส่ง + ผู้รับ</b> · พิมพ์ Invoice ใช้ <b>ที่อยู่จดทะเบียน + เลขภาษี</b> (จากข้อมูลลูกค้า + รายการจาก PO/SO)</div>
+    <div class="help" style="margin-top:10px">🖨 พิมพ์ DN ใช้ <b>ที่อยู่จัดส่ง + ผู้รับ</b> · Invoice ใช้ <b>ที่อยู่จดทะเบียน + เลขภาษี</b> (จากข้อมูลลูกค้า + รายการจาก PO/SO)</div>
+    <div class="notify" id="dnInvNote" style="margin-top:10px">🔗 <b>ใบแจ้งหนี้ = ใบเดียวต่อ PO/SO</b> — ไม่ว่าจะสร้าง/พิมพ์จากหน้านี้หรือหน้า <a href="invoices.html">ใบแจ้งหนี้</a> ก็คือ <b>ใบ active เดียวกัน</b> (ไม่เกิดใบซ้ำ) · ยังไม่มีใบ = สร้างใหม่ (C) · มีใบแล้ว = พิมพ์ใบเดิม (R)</div>
 
     <!-- DN-4 · comment (G6) per DN — edit anytime, keep history -->
     <div class="cmt" style="border-top:1px dashed var(--border);margin:16px 0 0;padding-top:16px">
@@ -230,11 +234,30 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
   <div class="svm-f"><button class="btn" onclick="closeM('dnModal')">ปิด</button><button class="btn btn-primary">💾 บันทึกสถานะ DN (A)</button></div>
 </div></div>
 
+<!-- ===== DN-unify · create-invoice G8 popup (opened when PO/SO has NO active invoice) — same invoice appears in Invoice module ===== -->
+<div class="svm-bg" id="dnInvModal" onclick="if(event.target===this)closeM('dnInvModal')"><div class="svm">
+  <div class="svm-h"><h3>✅ สร้างใบแจ้งหนี้สำเร็จ — ระบบออกเลขให้แล้ว</h3><button class="svm-x" onclick="closeM('dnInvModal')" title="ปิด">✕</button></div>
+  <div class="svm-b">
+    <div class="svm-num"><span class="ic">🧾</span><div><div class="lb">เลขใบแจ้งหนี้ (INV) · gapless · ออกตอนบันทึก (G8)</div><div class="no" id="dnInvNo">INV-2026-000143</div></div></div>
+    <dl class="kv" style="margin-top:14px;grid-template-columns:130px 1fr"><dt>อ้างอิง</dt><dd id="dnInvRef">PO-202607-000170</dd><dt>ที่มา</dt><dd>สร้างจากหน้าใบจัดส่ง (DN)</dd></dl>
+    <div class="notify" style="margin-top:12px">🔗 <b>ใบเดียวต่อ PO/SO</b> — ใบนี้เป็นใบ active เดียวกันที่โผล่ในโมดูล <a href="invoices.html">ใบแจ้งหนี้</a> · เข้าจากหน้า DN หรือหน้า Invoice = ใบเดียวกัน (ไม่เกิดใบซ้ำ) · ระบบดึงข้อมูลลูกค้ามาให้ · แก้ในใบได้ (per-invoice override)</div>
+  </div>
+  <div class="svm-f"><a class="btn" href="invoice-detail.html">👁 ดูรายละเอียด</a><a class="btn" href="invoice-print.html">🖨 พิมพ์ Invoice (R)</a><button class="btn btn-primary" onclick="closeM('dnInvModal')">เสร็จสิ้น</button></div>
+</div></div>
+
 <script>
 function openM(id){document.getElementById(id).classList.add('open')}
 function closeM(id){document.getElementById(id).classList.remove('open')}
+/* DN-unify: which DN's PO/SO already has an ACTIVE invoice (else = none → show create) */
+var dnActiveInv={'DN-20260730-00120':'INV-2026-000131','DN-20260730-00123':'INV-2026-000140','DN-20260730-00124':'INV-2026-000142','DN-20260729-00090':'INV-2026-000129'};
+var dnRef={'DN-20260730-00203':'PO-202607-000170','DN-20260730-00204':'SO-202607-000030','DN-20260730-00120':'PO-202607-000166','DN-20260730-00123':'PO-202607-000175','DN-20260730-00124':'PO-202607-000178','DN-20260729-00098':'PO-202607-000160','DN-20260729-00090':'PO-202607-000158','DN-20260729-00071':'PO-202607-000150'};
 function openDN(no,st){document.getElementById('dnTitle').textContent=no;var b=document.getElementById('dnBadge');b.textContent=st;
  var map={'อยู่ระหว่างการเตรียม':'b-neutral','อยู่ระหว่างจัดส่ง':'b-processing','ส่งสำเร็จ':'b-success','ลูกค้าเลื่อนส่ง':'b-warning','ลูกค้ายกเลิก':'b-error','ลูกค้ายังไม่กำหนดวันรับใหม่':'b-warning','void':'b-neutral plain'};
- b.className='badge '+(map[st]||'b-neutral');openM('dnModal');}
+ b.className='badge '+(map[st]||'b-neutral');
+ /* DN-unify invoice button: no active invoice → สร้าง (C); has active → พิมพ์ (R) ใบเดิม */
+ var inv=dnActiveInv[no],el=document.getElementById('dnInvBtn'),ref=dnRef[no]||'';
+ if(inv){el.innerHTML='<button class="btn btn-sm" onclick="window.print()">🧾 พิมพ์ Invoice (R)</button> <span class="badge b-success plain" style="height:24px">ใบ active: '+inv+'</span>';}
+ else{el.innerHTML='<button class="btn btn-sm btn-primary" onclick="document.getElementById(\'dnInvRef\').textContent=\''+ref+'\';openM(\'dnInvModal\')">🧾 สร้างใบแจ้งหนี้ (C)</button>';}
+ openM('dnModal');}
 </script>
 <nav class="mobilebar"><a href="home.html"><span class="mi">🏠</span>หน้าหลัก</a><a href="shipping.html"><span class="mi">🚚</span>Route</a><a href="delivery-note.html" class="active"><span class="mi">📦</span>DN</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
