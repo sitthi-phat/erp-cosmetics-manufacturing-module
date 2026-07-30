@@ -1,16 +1,16 @@
 # Module — Settings (RUCDAA + Users + VAT + Company + Audit)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs functional-spec `settings.html` US-SET-01..05 + rbac-deletion + 3 new modules in RUCDAA · **★ Settings module review 2026-07-29: role search/filter/user-list/remove-user/disable+soft-delete · user search + password modes + Google link · Admin-only VAT/Company/Audit** · **★ Sale delete → customers unassigned/blank (ปอนด์ 2026-07-29, resolve US-SET-02)**)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Audit-log review r12 2026-07-30**) · **AUTHORITATIVE SPEC** (absorbs functional-spec `settings.html` US-SET-01..05 + rbac-deletion + 3 new modules in RUCDAA · **★ Settings module review 2026-07-29: role search/filter/user-list/remove-user/disable+soft-delete · user search + password modes + Google link · Admin-only VAT/Company/Audit** · **★ Sale delete → customers unassigned/blank (ปอนด์ 2026-07-29, resolve US-SET-02)**)
 Mockups: `mockups/settings.html` · `mockups/login.html` (login basic-vs-Google choice)
-กฎอ้างอิง: **D14** (RUCDAA generic) · rbac-deletion (soft-delete baseline) · `permission-matrix.md` (capability→action) · `platform.md` (login local+Google + session) · `invoice.md` (VAT/ข้อมูลบริษัท) · `non-functional.md` (auth/audit) · `deletion-policy.md` §2.14 (Role) · **`deletion-policy.md` §2.15 (Sale delete → ลูกค้า unassigned)** · `customer.md` §3/§5 (Sale ที่ดูแล = nullable) · `traceability.md` (audit source เดียว) · README §3
+กฎอ้างอิง: **D14** (RUCDAA generic) · rbac-deletion (soft-delete baseline) · `permission-matrix.md` (capability→action) · `platform.md` (login local+Google + session) · `invoice.md` (VAT/ข้อมูลบริษัท) · `non-functional.md` (auth/audit — **AU1 non-read + login**) · `deletion-policy.md` §2.14 (Role) · **`deletion-policy.md` §2.15 (Sale delete → ลูกค้า unassigned)** · `customer.md` §3/§5 (Sale ที่ดูแล = nullable) · `traceability.md` (audit source เดียว — **§3 entity Auth/login + §5b sample**) · README §3
 
 ## สรุปภาษาไทย
-Settings 5 หน้าจอ: **1) Role & สิทธิ์** (RUCDAA 6 ระดับต่อ module: Read/Update/Create/Delete/Approve/**Admin bit** = force override; role ไม่จำกัดจำนวน) — **★ ค้นหา role · กรองสถานะ Active/Disabled/Deleted · ดูรายชื่อผู้ใช้ในแต่ละ role + ถอด user ออกจาก role ได้ · ปิดใช้งาน role (Disable = พักชั่วคราว) และลบ role (Soft-delete = เก็บกู้คืนได้) — ทั้งสองแบบ member เสีย permission ของ role นั้น**. **2) ผู้ใช้** (สร้าง/ผูก Google/เปิด-ปิด/เปลี่ยน role/**ลบ→ลูกค้าที่ดูแลกลายเป็นไม่มีผู้ดูแล (Sale ว่าง) อัตโนมัติ ไม่ต้อง bulk-reassign**) — **★ ค้นหาผู้ใช้จากชื่อ-สกุลหรือ username · ตั้งรหัสผ่าน 2 โหมด (ต้องเปลี่ยนเมื่อเข้าครั้งแรก / ตั้งถาวร) · กรอกรหัส 2 ครั้ง (ยืนยัน) + ปุ่มดู/ซ่อนรหัส · หน้าแก้ไขไม่โชว์รหัสเดิม (ตั้งใหม่เท่านั้น) · ผูก Google account → ตอน login ผู้ใช้เลือก basic auth หรือ Google**. **3) Config VAT** **4) ข้อมูลบริษัท** **5) Audit log** — **★ ทั้งสามแท็บนี้เข้าถึงได้เฉพาะสิทธิ์ Admin (Admin bit) เท่านั้น**. **★ ลบ Sale ไม่ต้อง reassign ลูกค้าก่อนแล้ว** — เมื่อลบ ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง)" อัตโนมัติ, reassign ภายหลังด้วยมือ (supersede กฎเดิม "bulk-reassign required"; ไม่มีหน้า bulk-reassign). **★ ลบ/ปิด role ไม่ต้องย้าย user ออกก่อนแล้ว** (member เสีย permission อัตโนมัติ — supersede กฎเดิม "block until users moved"). auth: local + Google · session 24 ชม. + reset 06:00. **RUCDAA matrix ต้องมีแถว module ใหม่: Quotation, SO, Supply Planning**. **การเปลี่ยนแปลงทุกอย่างใน Settings ถูก audit + โผล่ trace**.
+Settings 5 หน้าจอ: **1) Role & สิทธิ์** (RUCDAA 6 ระดับต่อ module: Read/Update/Create/Delete/Approve/**Admin bit** = force override; role ไม่จำกัดจำนวน) — **★ ค้นหา role · กรองสถานะ Active/Disabled/Deleted · ดูรายชื่อผู้ใช้ในแต่ละ role + ถอด user ออกจาก role ได้ · ปิดใช้งาน role (Disable = พักชั่วคราว) และลบ role (Soft-delete = เก็บกู้คืนได้) — ทั้งสองแบบ member เสีย permission ของ role นั้น**. **2) ผู้ใช้** (สร้าง/ผูก Google/เปิด-ปิด/เปลี่ยน role/**ลบ→ลูกค้าที่ดูแลกลายเป็นไม่มีผู้ดูแล (Sale ว่าง) อัตโนมัติ ไม่ต้อง bulk-reassign**) — **★ ค้นหาผู้ใช้จากชื่อ-สกุลหรือ username · ตั้งรหัสผ่าน 2 โหมด (ต้องเปลี่ยนเมื่อเข้าครั้งแรก / ตั้งถาวร) · กรอกรหัส 2 ครั้ง (ยืนยัน) + ปุ่มดู/ซ่อนรหัส · หน้าแก้ไขไม่โชว์รหัสเดิม (ตั้งใหม่เท่านั้น) · ผูก Google account → ตอน login ผู้ใช้เลือก basic auth หรือ Google**. **3) Config VAT** **4) ข้อมูลบริษัท** **5) Audit log** — **★ ทั้งสามแท็บนี้เข้าถึงได้เฉพาะสิทธิ์ Admin (Admin bit) เท่านั้น**. **★ ลบ Sale ไม่ต้อง reassign ลูกค้าก่อนแล้ว** — เมื่อลบ ลูกค้าที่ดูแลกลายเป็น "ไม่มีผู้ดูแล (Sale ว่าง)" อัตโนมัติ, reassign ภายหลังด้วยมือ (supersede กฎเดิม "bulk-reassign required"; ไม่มีหน้า bulk-reassign). **★ ลบ/ปิด role ไม่ต้องย้าย user ออกก่อนแล้ว** (member เสีย permission อัตโนมัติ — supersede กฎเดิม "block until users moved"). auth: local + Google · session 24 ชม. + reset 06:00. **RUCDAA matrix ต้องมีแถว module ใหม่: Quotation, SO, Supply Planning**. **การเปลี่ยนแปลงทุกอย่างใน Settings ถูก audit + โผล่ trace**. **★★★★ r12 (2026-07-30 — ปอนด์ Audit-log review): Audit log = บันทึก "ทุกกิจกรรมที่ไม่ใช่การอ่าน" ในทุก module รวม login/logout** (create/update/delete-void-cancel/approve/status-change/config/password-reset/role-user-change/stock-movement/comment-edit + **login/logout/first-login change**; การอ่าน/ดู/ค้น = ไม่บันทึก) · **หน้า Audit log: ค้นด้วย user id/username + ช่วงวันที่ของกิจกรรม + filter ตาม module** · คอลัมน์ = เวลา/ผู้ใช้/module/**action(event)**/object ref/**old→new** (ถ้ามี)/เหตุผล · retention 1 ปี · Admin only.
 
 ---
 
 ## 1. Purpose
-ศูนย์กลาง config การเข้าถึง (RBAC generic) + จัดการผู้ใช้/รหัสผ่าน/Google link/ลบอย่างปลอดภัย (ลบ Sale → ลูกค้าที่ดูแลกลายเป็นไม่มีผู้ดูแล/Sale ว่าง อัตโนมัติ, ไม่มีงานตกค้างที่ break) + ตั้ง VAT/ข้อมูลบริษัทสำหรับเอกสารภาษี (Admin only) + audit log ทั้งระบบ (Admin only).
+ศูนย์กลาง config การเข้าถึง (RBAC generic) + จัดการผู้ใช้/รหัสผ่าน/Google link/ลบอย่างปลอดภัย (ลบ Sale → ลูกค้าที่ดูแลกลายเป็นไม่มีผู้ดูแล/Sale ว่าง อัตโนมัติ, ไม่มีงานตกค้างที่ break) + ตั้ง VAT/ข้อมูลบริษัทสำหรับเอกสารภาษี (Admin only) + audit log ทั้งระบบ (Admin only — **ทุกกิจกรรม non-read + login**).
 
 ## 2. Screens (5 แท็บ)
 | แท็บ | บทบาท | สิทธิ์เข้าถึง |
@@ -19,7 +19,7 @@ Settings 5 หน้าจอ: **1) Role & สิทธิ์** (RUCDAA 6 ระ
 | ผู้ใช้ | สร้าง/ผูก Google/เปิด-ปิด/เปลี่ยน role/**ลบ→ลูกค้าที่ดูแลกลายเป็น Sale ว่าง (unassigned)** · **★ ค้นหาชื่อ-สกุล/username · password mode + confirm-twice + show/hide · edit ไม่โชว์รหัสเดิม** | ดู = Settings.R · จัดการ = Settings.Admin |
 | Config VAT | อัตรา + effective date + ประวัติ | **★ Admin only** |
 | ข้อมูลบริษัท | ชื่อ/เลขภาษี 13 หลัก/ที่อยู่/เบอร์/อีเมล/logo | **★ Admin only** |
-| Audit log | field-level (filter/search/sort/pagination) — source เดียวกับ Traceability | **★ Admin only** |
+| Audit log | **ทุกกิจกรรม non-read ทุก module + login/logout** · **ค้น user id/username + ช่วงวันที่กิจกรรม + filter module** · คอลัมน์ เวลา/ผู้ใช้/module/action(event)/object ref/old→new/เหตุผล · sort/pagination — source เดียวกับ Traceability | **★ Admin only** |
 
 ## 3. Fields
 | ฟิลด์ | ชนิด | editable/computed | หมายเหตุ |
@@ -33,7 +33,7 @@ Settings 5 หน้าจอ: **1) Role & สิทธิ์** (RUCDAA 6 ระ
 | **Google account link** | {linked email / ยังไม่ผูก} | editable (action) | **★ ผูก/ยกเลิกผูก → ตอน login เลือก basic หรือ Google** (platform.md) |
 | VAT {อัตรา%, effective date, ผู้ตั้ง} | list | editable | ยึด invoice date · ไม่ทับซ้อน · **Admin only** |
 | ข้อมูลบริษัท | {ชื่อ, เลขภาษี 13 หลัก, ที่อยู่, เบอร์, อีเมล, logo} | editable | เลขภาษี = ตัวเลข 13 หลัก · **Admin only** |
-| audit row | {เวลา, ผู้ทำ, module, entity, field, จาก→เป็น, เหตุผล} | computed | **Admin only** |
+| **audit row** | {เวลา, ผู้ใช้ (id/username), module, **action(event)**, object ref (entity+id), field, จาก→เป็น, เหตุผล} | computed | **Admin only** · **★ r12: action/event = create/update/delete-void-cancel/approve/status-change/config/password-reset/role-user-change/stock-movement/comment-edit/`login`/`logout`/first-login-change** · login/logout ไม่มี object ref/field/old→new |
 
 ## 4. RUCDAA bits (D14)
 R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** (config/force override/undelete + **★ gate VAT/Company/Audit**). **Module ในระบบ (รวมใหม่):** Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Warehouse/Stock · Production · QC · Shipping · Invoice · PR · Supplier · Settings/User-Role. (ดู `permission-matrix.md`).
@@ -59,6 +59,23 @@ R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** 
 - **สิทธิ์:** ลบ Sale/User = **Settings.D** (Settings.Admin สำหรับจัดการ user โดยรวม) · reassign ภายหลัง = **Customer.Approve**.
 - authoritative cross-ref = `deletion-policy.md` §2.15 · `customer.md` §3/§5.
 
+## 4d. ★★★★ Audit-log coverage — every NON-READ activity + login (r12, ปอนด์ 2026-07-30)
+- **ขอบเขต:** **ทุกกิจกรรมที่ "ไม่ใช่การอ่าน" ในทุก module ต้องถูกบันทึก audit** — ครอบ:
+  - **create** (เปิดเอกสาร/record/master ใหม่ + การออกเลข G8)
+  - **update** (แก้ค่า field ใด ๆ + comment edit)
+  - **delete / void / cancel** (soft-delete, void เอกสาร, ยกเลิก)
+  - **approve** (อนุมัติ / สิทธิ์ระดับสูง เช่น Blacklist, reopen, reassign, **แก้สถานะ DN โดยตรง**)
+  - **status change** (ทุกการเปลี่ยนสถานะในสายงาน: PO/SO/PRD/Batch/QC/Route/DN/Invoice/PR/GR)
+  - **config change** (VAT, ข้อมูลบริษัท, permission-matrix)
+  - **password reset / set** (event เท่านั้น — ไม่เก็บค่า)
+  - **role / user change** (create/edit/disable/enable/soft-delete/restore role · create/edit/สลับ Active/เปลี่ยน role/Google link-unlink/ลบ user)
+  - **stock movement** (GR(+)/consume(−)/loss/adjust/FG-in/surplus/return(−) — append-only ledger + reason + source, D15)
+  - **★ login / logout** (login สำเร็จ + **login ล้มเหลว** + logout + first-login password change · ช่องทาง basic/Google) — **PO reasonable decision:** บันทึกทั้งสำเร็จและล้มเหลว (security); ปอนด์ override ได้.
+- **★ การอ่าน / ดู / ค้น / เปิดหน้า / print-view = ไม่ audit** (read = ไม่บันทึก). *(หมายเหตุ: print/แชร์ PDF ถือเป็น read-derived — ไม่ audit เว้นแต่ปอนด์สั่งเพิ่มภายหลัง.)*
+- **retention:** online **1 ปี** แล้ว Super User manual purge/archive (คงเดิม, AU2).
+- **การเข้าถึงหน้า Audit log:** **Admin bit เท่านั้น** (A8) — trace ผ่าน module เดิมยังใช้ Read ของ module นั้น.
+- authoritative NFR = `non-functional.md` AU1/AU2 · source เดียวกับ `traceability.md` (§3 entity Auth/login + §4/§9 non-read audit).
+
 ## 5. User Stories (absorbed + ★ delta) + AC สรุป
 - **US-SET-01 (Must) — Role & สิทธิ์ + ★ search/filter/user-list/disable/soft-delete:** สร้าง role "หัวหน้าคลัง" (Stock=R,U,C; Production=R; อื่นว่าง) → บันทึก matrix 6 ช่องต่อทุก module; ผู้ใช้ role นี้เห็น Stock+Production, สร้าง/แก้ Stock ได้ แต่ลบ/approve ไม่ได้.
   - **★ Search/Filter:** ค้น role ตามชื่อ + filter สถานะ **Active / Disabled / Deleted**.
@@ -76,7 +93,13 @@ R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** 
   - **Error:** รหัส 2 ครั้งไม่ตรง → "รหัสผ่านยืนยันไม่ตรงกัน"; username ซ้ำ → "username นี้ถูกใช้แล้ว"; ไม่มีสิทธิ์ Admin/Delete → ไม่ลบ + error. **(ไม่มี error "ต้อง reassign ก่อน" อีกต่อไป.)**
 - **US-SET-03 (Must) — Config VAT + effective + ประวัติ (★ Admin only):** เพิ่ม VAT 7% effective 01/01/2569 → บันทึก + ประวัติ (อัตรา/วันมีผล/ผู้ตั้ง); ใบกำกับยึด invoice date. **Edge:** หลายรายการตามช่วง → ออกใบปี 2568 ใช้อัตราที่ครอบวันนั้น; เปลี่ยน VAT ใหม่ไม่กระทบใบเก่า. **Error:** effective date ว่าง/ทับซ้อน → error "ต้องระบุวันที่มีผลที่ไม่ทับซ้อน" · **ไม่มี Admin bit → ไม่เห็นแท็บ / 403**.
 - **US-SET-04 (Should) — ข้อมูลบริษัท (★ Admin only):** กรอกชื่อ/เลขภาษี 13 หลัก/ที่อยู่/เบอร์/อีเมล + upload logo → ปรากฏบน invoice-print. **Edge:** ไม่มี logo → placeholder (ตัว "E") — ยังพิมพ์ได้. **Error:** เลขภาษีไม่ครบ 13 หลัก/มีตัวอักษร → error "เลขประจำตัวผู้เสียภาษีต้องเป็นตัวเลข 13 หลัก" · **ไม่มี Admin bit → ไม่เห็นแท็บ / 403**.
-- **US-SET-05 (Should) — Audit log (★ Admin only):** กรอง ผู้ใช้/module/ช่วงวันที่ + คำค้น → ตารางคอลัมน์ (เวลา/ผู้ทำ/module/entity/field/จาก→เป็น/เหตุผล) + pagination + sort เวลา. **Edge:** เป็นมุมมองรวมของ field-audit เดียวกับ Traceability; คลิกแถว → deep link ไป trace; retention 1 ปี, purge/archive=Super User. **Error:** **ไม่มี Admin bit → 403 / ไม่เห็นแท็บ** (เปลี่ยนจากเดิม Read → **Admin only**, ข้อมูลไวต่อความปลอดภัย).
+- **US-SET-05 (Must — ★★★★ r12 upgraded) — Audit log (★ Admin only): ทุกกิจกรรม non-read + login, ค้น user/username + ช่วงวัน + filter module.**
+  - **ขอบเขตข้อมูล:** ตาราง audit บันทึก **ทุกกิจกรรมที่ไม่ใช่การอ่าน ในทุก module + login/logout** (§4d) — **การอ่าน/ดู/ค้น ไม่ถูกบันทึก**.
+  - **★ Search:** ค้นด้วย **user id / username** (ผู้ทำกิจกรรม) + **ช่วงวันที่ของกิจกรรม (date-range)** + **filter ตาม module** (dropdown module). (คงคำค้นอิสระ + filter entity/field ตาม Traceability ได้.)
+  - **★ Columns:** **เวลา · ผู้ใช้ (id/username) · module · action/event · object ref (entity+id) · field · จาก→เป็น (old→new, ถ้ามี) · เหตุผล** + pagination (20/หน้า, G1) + sort เวลา (default ใหม่→เก่า).
+  - **AC ตัวอย่าง:** filter module=Shipping + user="somsak" + ช่วง 01–07/08/2569 → เห็น "แก้สถานะ DN-…-119: อยู่ระหว่างจัดส่ง→ส่งสำเร็จ (A, comment '...')"; filter module=Settings → เห็น "reset password user 'noi'"; ไม่ filter module + action=login → เห็น row "login สำเร็จ (Google)" / "login ล้มเหลว (basic)".
+  - **Edge:** เป็นมุมมองรวมของ field-audit เดียวกับ Traceability; คลิกแถว → deep link ไป trace (ถ้า object มี genealogy); login/logout row ไม่มี old→new/deep-link; retention 1 ปี, purge/archive=Super User.
+  - **Error:** **ไม่มี Admin bit → 403 / ไม่เห็นแท็บ** (Admin only, ข้อมูลไวต่อความปลอดภัย).
 
 ## 6. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required |
@@ -87,7 +110,7 @@ R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** 
 | reassign ลูกค้าที่กลายเป็น Sale ว่าง (ภายหลัง) | **Customer.Approve (A)** (customer.md §8) |
 | **★ ดู/แก้ VAT** | Settings.**Admin only** (เปลี่ยนจาก U) |
 | **★ ดู/แก้ ข้อมูลบริษัท** | Settings.**Admin only** (เปลี่ยนจาก U) |
-| **★ ดู Audit log** | Settings.**Admin only** (เปลี่ยนจาก R) |
+| **★ ดู Audit log (ทุกกิจกรรม non-read + login)** | Settings.**Admin only** (เปลี่ยนจาก R) |
 
 ## 7. Validations
 - **★ ลบ/ปิด role: ทำได้แม้มีสมาชิก** — member เสีย permission ของ role นั้นโดยกลไก (supersede กฎเดิม "block until users moved"). ถอด user ราย ๆ ได้จาก role's user list (optional).
@@ -97,20 +120,22 @@ R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** 
 - VAT: effective date ไม่ว่าง + ไม่ทับซ้อน; ยึด invoice date; เปลี่ยนใหม่ไม่กระทบใบเก่า. **(Admin only)**
 - เลขภาษี = ตัวเลข 13 หลัก. **(Admin only)**
 - **★ Audit = Admin only** (เดิม Read Settings) — ข้อมูลไวต่อความปลอดภัย.
+- **★★★★ r12: Audit บันทึกเฉพาะกิจกรรม non-read + login/logout** — การอ่าน/ดู/ค้นไม่บันทึก (ป้องกัน log ท่วม + สื่อความชัด).
 
 ## 8. Pagination / Search
 - **★ role list:** ค้นหาชื่อ role + filter สถานะ (Active/Disabled/Deleted) · role's user list 20/หน้า (G1).
 - **★ user list:** ค้นหา **ชื่อ-สกุล / username** · 20/หน้า (G1).
-- audit log: 20/หน้า (G1) · filter (ผู้ใช้/module/ช่วงวัน) + search + sort เวลา (G2).
+- **★★★★ audit log:** 20/หน้า (G1) · **ค้น user id/username + ช่วงวันที่กิจกรรม + filter module** (+ entity/field/คำค้น) + sort เวลา (G2).
 
 ## 9. Formulas / rules
 - VAT lookup = อัตราที่ effective ครอบ invoice date.
 - audit = field-audit table เดียวกับ Traceability (source เดียว) · **★ ทุกการเปลี่ยน Settings ถูก audit + โผล่ trace:** role create/disable/enable/soft-delete/restore/permission-matrix edit/remove-user-from-role · user create/edit/**password set/reset**/สลับ Active/เปลี่ยน role/**Google link-unlink**/**ลบ (+ การล้าง assigned-Sale ของลูกค้าที่ดูแลให้เป็นว่าง)** · VAT edit · company edit (ใคร/เมื่อ/เดิม→ใหม่ ตามที่เก็บได้; รหัสผ่านเก็บ event ไม่เก็บค่า).
+- **★★★★ r12 — audit ทั้งระบบ = ทุกกิจกรรม non-read ทุก module + login/logout** (§4d): create/update/delete-void-cancel/approve/status-change/config/password-reset/role-user/stock-movement/comment-edit + login(สำเร็จ/ล้มเหลว)/logout/first-login-change. **การอ่าน/ดู/ค้น = ไม่ audit.** login/logout row = entity Auth, ไม่มี old→new.
 - **★ Effective permission = union ของ grant จาก role ที่ Active เท่านั้น** — role Disabled/Deleted ไม่ contribute.
 - auth (NFR): local + Google · session 24 ชม. + reset 06:00 (+ warning ก่อนตัด — ดู `platform.md`) · **★ password mode + first-login-change + Google link provisioning — ดู `platform.md` §login, `non-functional.md` §2**.
 
 ## 10. Cross-links
-- สิทธิ์ Read → เห็น module + dashboard แผนก + noti (`dashboard.md`/`platform.md`). **★ login basic-vs-Google choice + first-login password change + session → `platform.md` §2/§4**. VAT/ข้อมูลบริษัท → `invoice.md`. Audit ↔ `traceability.md` (source เดียว). **★ role soft-delete/disable + supersede move-users → `deletion-policy.md` §2.14**. **★ ลบ Sale → ลูกค้า unassigned (blank) → `deletion-policy.md` §2.15 · `customer.md` §3/§5**. capability→action → `permission-matrix.md`. **★ password modes / Google link / Settings audit → `non-functional.md` §2/§3**.
+- สิทธิ์ Read → เห็น module + dashboard แผนก + noti (`dashboard.md`/`platform.md`). **★ login basic-vs-Google choice + first-login password change + session → `platform.md` §2/§4**. VAT/ข้อมูลบริษัท → `invoice.md`. Audit ↔ `traceability.md` (source เดียว — **§3 entity Auth/login · §5b sample · §4/§9 non-read**). **★ role soft-delete/disable + supersede move-users → `deletion-policy.md` §2.14**. **★ ลบ Sale → ลูกค้า unassigned (blank) → `deletion-policy.md` §2.15 · `customer.md` §3/§5**. capability→action → `permission-matrix.md`. **★ password modes / Google link / Settings audit + ★★★★ non-read+login audit → `non-functional.md` §2/§3 (AU1/AU2/A8)**.
 
 ## 11. Module changelog
 - **Absorbed:** functional-spec `settings.html` US-SET-01..05 (15 AC) + rbac-deletion กติกา verbatim ในความหมาย.
@@ -122,4 +147,5 @@ R Read · U Update · C Create · D Delete(soft/void) · A Approve · **Admin** 
   4. **★ Admin-only gating:** **VAT / ข้อมูลบริษัท / Audit-log = Admin bit เท่านั้น** (VAT/Company เดิม U→Admin; Audit เดิม R→Admin) (§2/§6/§7).
   5. **★ Audit ทุกการเปลี่ยน Settings** (role/user/password/Google-link/VAT/company) → field-audit + trace (§9). sync `non-functional.md` AU1.
 - **★ DECIDED (2026-07-29 — ปอนด์, resolve US-SET-02 flag):** **ลบ Sale ไม่บังคับ bulk-reassign อีกต่อไป** → เมื่อลบ Sale ลูกค้าที่ดูแลกลายเป็น **"ไม่มีผู้ดูแล (Sale ว่าง / unassigned)" อัตโนมัติ**; reassign ภายหลังด้วยมือ (Customer.Approve). **★ SUPERSEDE กฎเดิม "Sale delete → bulk reassign required" + ถอดสเต็ป/หน้า bulk-reassign ออกจาก US-SET-02.** เพิ่ม §4c dedicated · แก้ §2 (แท็บผู้ใช้) · §5 US-SET-02 edge/error · §6 actions · §7 validations · §9 audit · sync `deletion-policy.md` §2.15 · `customer.md` §3/§5 · `permission-matrix.md` §3. **หน้า UX bulk-reassign follow-up = ยกเลิก (ไม่ต้องทำ).**
+- **★★★★ DECIDED (2026-07-30 — Audit-log review r12, ปอนด์):** **(1)** Audit = บันทึก **ทุกกิจกรรม non-read ในทุก module + login/logout** (§4d ใหม่: create/update/delete-void-cancel/approve/status-change/config/password-reset/role-user/stock-movement/comment-edit + login สำเร็จ/ล้มเหลว/logout/first-login-change; การอ่าน/ดู/ค้น = ไม่ audit). **(2)** หน้า Audit log: **ค้น user id/username + ช่วงวันที่กิจกรรม + filter module** (§2/§5 US-SET-05 upgraded Should→Must). **(3)** Columns เพิ่ม **action/event + object ref** (เวลา/ผู้ใช้/module/action/object ref/field/old→new/เหตุผล — §3). **(4)** reconcile retention 1 ปี + Admin-only (§4d/§7). sync `non-functional.md` AU1 · `traceability.md` §3/§4/§5b/§9 · `permission-matrix.md` (audit view = Ad, คงเดิม). **PO reasonable decision:** login ล้มเหลว = audit ด้วย (security) — ปอนด์ override ได้.
 - **คงเดิม:** Admin bit=force override · VAT effective/invoice date · เลขภาษี 13 หลัก · audit source เดียว · auth local+Google + session 24h/06:00.
