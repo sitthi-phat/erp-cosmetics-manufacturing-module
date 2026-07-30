@@ -53,10 +53,10 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp"><span class="dot"></span> งานขาย / Order</div>
 <div class="tocgrid">
-  <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · ★ ที่อยู่ลูกค้า+ที่อยู่จัดส่ง · ★ ผู้ติดต่อ=คนรับสินค้า · QT/PO history</div></a>
+  <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · ★ ที่อยู่ลูกค้า+ที่อยู่จัดส่ง · ★ ผู้ติดต่อ=คนรับสินค้า · ★ invoice pull+per-invoice override · QT/PO history</div></a>
   <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO · ยกเลิกได้ทุกสถานะ</div></a>
-  <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · ★ สถานะจัดส่ง=สะท้อน DN (§4b)</div></a>
-  <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก (สถานะจัดส่ง=สะท้อน DN) · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
+  <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · ★ สถานะจัดส่ง=สะท้อน DN (§4b) · ★ billing=ใบ active (§4c)</div></a>
+  <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก (สถานะจัดส่ง=สะท้อน DN · billing=ใบ active) · (ข) ผลิตเก็บสต็อก auto-PR</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> คลัง &amp; จัดซื้อ</div>
@@ -79,8 +79,8 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="grp"><span class="dot"></span> จัดส่ง &amp; การเงิน</div>
 <div class="tocgrid">
   <a class="mod" href="shipping.html"><div class="mt">Shipping / Route ★</div><div class="md">รอบ = Route (RT-) · คนขับ/ประเภทรถ · modal เพิ่ม PO/SO/DN · สถานะ เตรียมจัดของ→ออกไปส่ง→เสร็จสิ้น(สรุป DN)</div></a>
-  <a class="mod" href="delivery-note.html"><div class="mt">Delivery Note (DN) ★ใหม่</div><div class="md">DN 6 สถานะ · สร้างตรงไม่ได้ (ผ่าน Route) · print DN/Invoice · comment · ★ แก้สถานะ DN โดยตรง = A · PO สะท้อน DN</div></a>
-  <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน</div><div class="md">ออกตั้งแต่ Confirmed · VAT effective date · overdue · void</div></a>
+  <a class="mod" href="delivery-note.html"><div class="mt">Delivery Note (DN) ★ใหม่</div><div class="md">DN 6 สถานะ · สร้างตรงไม่ได้ (ผ่าน Route) · print DN · ★ สร้าง/พิมพ์ Invoice = ใบ active เดียวกัน (DN-unify) · comment · แก้สถานะ DN = A · PO สะท้อน DN</div></a>
+  <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน ★r13</div><div class="md">★ ค้น PO/SO/INV (ลูกค้า/ผู้ติดต่อ/เลข/ช่วงวัน) · ★ 1 PO/SO หลายใบ active ทีละใบ · สร้างเมื่อยังไม่มี (เฟสนี้ไม่ล็อกสถานะ) · G8+print-ready · ★ pull+per-invoice override · VAT invoice date · overdue(DN) · void</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> ระบบ (System) &amp; การเข้าถึง</div>
@@ -94,16 +94,16 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="grp"><span class="dot"></span> Global Rules &amp; Conventions (cross-cutting · governance)</div>
 <div class="refnote">📎 กติกากลาง cross-cutting — <b>นิยามครั้งเดียว</b> ที่นี่ แล้วอ้างจากทุก module ที่เกี่ยวข้อง (ไม่เขียนซ้ำ) · authority ให้ UX/UI ไป apply.</div>
 <div class="tocgrid">
-  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9) · ★ แก้สถานะ DN = A</div></a>
+  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9) · ★ แก้สถานะ DN = A · ★ Invoice สร้าง=C/void=D/override=U/print=R</div></a>
   <a class="meta mod" href="comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
-  <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch)</div></a>
+  <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch) · ★ Invoice void=เลขเดิม/ใบใหม่=เลขใหม่</div></a>
 </div>
 
 <!-- ===== (2) NON-FUNCTIONAL ===== -->
 <div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
 <div class="tocgrid">
   <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-RT-/jobs J1–J8 (+J8 Low digest)/notification (+FG→Low)/global search/responsive/reliability</div></a>
-  <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
+  <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ INV void-only · Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
   <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain · ★ Route/DN</div></a>
 </div>
 
@@ -123,7 +123,8 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="ref mod" href="../list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-30 · Route/DN r11</footer>
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-30 · Route/DN r11 · Invoice r13</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>
+</content>

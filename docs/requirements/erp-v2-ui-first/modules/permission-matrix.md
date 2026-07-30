@@ -1,10 +1,10 @@
 # Permission Matrix — Capability → Module → Action (consolidated)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
-กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30 · + Invoice actions r13 2026-07-30**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
+กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)** · **★★★★★ r13 (2026-07-30): Invoice — สร้าง = C (รวมสร้างจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (per-invoice override) = U · พิมพ์ = R**
 
 ## สรุปภาษาไทย
-RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)"). **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R). **★★★★ r12 (confirm, ไม่มี functional change):** **ดู Audit log (มุมมองรวมทุกกิจกรรม non-read + login/logout ใน Settings) = Settings.Admin only → (Ad)** — ยืนยันตามที่ระบุอยู่แล้วในตาราง §3 (VAT/Company/Audit = Admin); trace ผ่าน module เดิมยังใช้ **Read (R)** ของ module นั้น.
+RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)"). **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R). **★★★★ r12 (confirm):** **ดู Audit log = Settings.Admin only → (Ad)**; trace ผ่าน module เดิมยังใช้ **Read (R)** ของ module นั้น. **★★★★★ r13 (Invoice review):** ยืนยัน/เพิ่ม action ของ Invoice — **สร้างใบแจ้งหนี้ = Invoice.C (รวมสร้างจากหน้า DN, DN-unify)** · **ยกเลิก/void ใบ = Invoice.D** · **แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override) = Invoice.U** · **พิมพ์ = Invoice.R**.
 
 ---
 
@@ -12,9 +12,9 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 | bit (internal) | public code (suffix) | ความหมาย |
 |---|---|---|
 | **R** Read | **(R)** | ดู/ค้น/รายงาน · **พิมพ์/แชร์ PDF (ไม่ mutate) · print DN/Invoice** · **★★★★ trace ผ่าน module (genealogy + field-audit ของ module ที่มีสิทธิ์ Read)** |
-| **U** Update | **(U)** | แก้ข้อมูล/เปลี่ยนสถานะปกติ · **แก้ sub-record (ผู้ติดต่อ/comment/threshold) · แก้ Route/เปลี่ยนสถานะ Route** |
-| **C** Create | **(C)** | สร้างเอกสาร/record/master ใหม่ · **สร้าง Route + gen DN** |
-| **D** Delete | **(D)** | soft-delete / void / **ปิดใช้งาน (inactivate)** |
+| **U** Update | **(U)** | แก้ข้อมูล/เปลี่ยนสถานะปกติ · **แก้ sub-record (ผู้ติดต่อ/comment/threshold) · แก้ Route/เปลี่ยนสถานะ Route · แก้ข้อมูลลูกค้าบนใบแจ้งหนี้ (per-invoice override)** |
+| **C** Create | **(C)** | สร้างเอกสาร/record/master ใหม่ · **สร้าง Route + gen DN · สร้างใบแจ้งหนี้ (รวมจากหน้า DN)** |
+| **D** Delete | **(D)** | soft-delete / void / **ปิดใช้งาน (inactivate)** · **ยกเลิก/void ใบแจ้งหนี้** |
 | **A** Approve | **(A)** | อนุมัติ/สิทธิ์ระดับสูง (Blacklist, reassign, reopen) · **★ แก้สถานะ DN โดยตรง** |
 | **Admin** | **(Ad)** | จัดการ config/force override/undelete/restore · **★ gate VAT/Company/Audit** · **★★★★ ดู Audit-log viewer รวม (r12)** |
 
@@ -29,7 +29,7 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 ## 1b. ★ G9 — Permission-code suffix on every permissioned control (GLOBAL RULE)
 > ทุก **actionable control ที่ถูก permission-gate** (ปุ่ม / เมนู / row-action / tab-action) **ต้องแสดงรหัส permission เป็น suffix ต่อท้าย label**.
 
-**รูปแบบ:** `‹label› (‹code›)` — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `แก้สถานะ DN (A)` · `ดู Audit log (Ad)`.
+**รูปแบบ:** `‹label› (‹code›)` — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `แก้สถานะ DN (A)` · `ดู Audit log (Ad)` · `สร้างใบแจ้งหนี้ (C)` · `ยกเลิกใบ (D)`.
 
 **กติกา:**
 1. **รหัส 6 ตัว: R · C · U · D · A · Ad** (ตาม §1). ห้ามคิดรหัสใหม่.
@@ -100,9 +100,14 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 | | **★ แก้สถานะ DN โดยตรง (จากหน้า DN)** | Shipping.**A** + comment | **(A)** |
 | | แก้ comment DN | Shipping.U | **(U)** |
 | | print DN | Shipping.R | **(R)** |
-| | print Invoice (จากหน้า DN) | Invoice.R | **(R)** |
-| **Invoice** | ออก invoice (อ้าง PO หรือ SO) | Invoice.C | **(C)** |
+| | **★ สร้างใบแจ้งหนี้จากหน้า DN (ถ้ายังไม่มีใบ active — DN-unify)** | Invoice.**C** | **(C)** |
+| | print Invoice (จากหน้า DN · ใบ active) | Invoice.R | **(R)** |
+| **Invoice** | ดู list/detail + ค้น PO/SO/INV | Invoice.R | (R) *(ละได้)* |
+| | **สร้างใบแจ้งหนี้ (อ้าง PO หรือ SO · รวมสร้างจากหน้า DN — DN-unify)** | Invoice.C | **(C)** |
 | | รับชำระ/อัปเดตสถานะชำระ | Invoice.U | **(U)** |
+| | **★ แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override)** | Invoice.U | **(U)** |
+| | แก้ comment (แก้ในที่) | Invoice.U | **(U)** |
+| | **★ ยกเลิก/void ใบแจ้งหนี้ (+ เหตุผล)** | Invoice.D | **(D)** |
 | | **พิมพ์ invoice / ใบกำกับ (print PDF)** | Invoice.**R** | **(R)** |
 | **PR** | ดู list/detail | PR.R | (R) *(ละได้)* |
 | | เปิด PR ด้วยมือ | PR.C | **(C)** |
@@ -154,6 +159,14 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **archive audit เป็น text file = Super User เท่านั้น** (ไม่ใช่ 1 ใน 6 public code; เป็น system-level Super User).
 - อ้างอิง: `traceability.md` §6 · `settings.md` §4d/US-SET-05 · `non-functional.md` A8/AU2.
 
+**★★★★★ r13 (2026-07-30) — Invoice controls (settled, PO Invoice review):**
+- **สร้างใบแจ้งหนี้ (อ้าง PO/SO) = Invoice.C → (C)** — **รวมการสร้างจากหน้า DN** (DN-unify: ยังไม่มีใบ active → สร้าง; มีแล้ว → พิมพ์ R). **1 PO/SO มีใบ active ทีละใบ** (`invoice.md` §4b).
+- **แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override) = Invoice.U → (U)** — snapshot บนใบ, ไม่กระทบ customer master.
+- **ยกเลิก/void ใบแจ้งหนี้ (+ เหตุผล) = Invoice.D → (D)** — เอกสารการค้า void-only, เลข gapless คงอยู่ (deletion §2.8).
+- **รับชำระ/อัปเดตสถานะชำระ + แก้ comment = Invoice.U → (U)** · **พิมพ์ใบ/ใบกำกับ = Invoice.R → (R)**.
+- **เฟสนี้ไม่ล็อกสถานะตอนสร้างใบ** (Confirmed-gate = deferred, `invoice.md` §7) — ไม่กระทบ permission (ยังเป็น Invoice.C).
+- อ้างอิง: `invoice.md` §6 · `delivery-note.md` §5/§9.
+
 ## 4. หมายเหตุ (D14)
 - **surplus (D13)** = auto → ไม่มี permission แยก → ไม่มี suffix.
 - **★ Quotation:** print/share = Quotation.R → (R); Convert-to-PO ตั้ง QT=Confirmed.
@@ -164,7 +177,9 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **★ ลบ Sale/User:** = Settings.D → ลูกค้า unassigned อัตโนมัติ; reassign = Customer.Approve.
 - **★★★ r11 Route/DN:** **แก้สถานะ DN โดยตรง = Shipping.Approve (A)** (ปอนด์สั่ง) · สร้าง Route + gen DN = Shipping.C · แก้ Route/สถานะ Route = Shipping.U · print DN/Invoice = R. **คนขับ (driver) = system user** (ค้นชื่อ/username) — ไม่ใช่ capability แยก.
 - **★★★★ r12 Trace/Audit:** **ดู Audit log (มุมมองรวม non-read + login) = Settings.Admin only (Ad)** · trace ผ่าน module = Read (R) ของ module ต้นทาง · archive = Super User. ไม่มีสิทธิ์ใหม่ — เป็นการยืนยัน mapping เดิม.
+- **★★★★★ r13 Invoice:** **สร้างใบ = C (รวมจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (override) = U · รับชำระ/comment = U · พิมพ์ = R.** ใบ active ทีละใบต่อ PO/SO (`invoice.md` §4b); เฟสนี้ไม่ล็อกสถานะตอนสร้าง (ไม่กระทบ permission).
 - **★ G9:** ทุกปุ่มที่ permission-gate แสดงรหัสตาม Suffix; รหัส 6 ตัว (R/C/U/D/A/Ad).
 
 ## 5. Cross-links
-ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) · scope §7.1 · README §3 G9 + §8 · §3.1.
+ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A · สร้าง/พิมพ์ Invoice)** · **★★★★★ `invoice.md` §6 (สร้าง=C/void=D/override=U/print=R)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) · scope §7.1 · README §3 G9 + §8 · §3.1.
+</content>

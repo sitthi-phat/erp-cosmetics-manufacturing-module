@@ -1,11 +1,11 @@
 # Module — Purchase Order (PO, OEM)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ DN→PO status link 2026-07-30**)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ DN→PO status link 2026-07-30 · + Invoice one-active link 2026-07-30**)
 Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detail.html`
-กฎอ้างอิง: entity-status-map §1.2/§1.3 (2 ราง) · stock-reservation (จอง→ตัดจริง Option A) · D3 · D13 · D18 · README §3 (**G8**) · **`customer.md` §4.1/§4.2 (follow-up flag reuse + hard block Disabled/Blacklist)** · **`bom.md` §5c (inactive-BOM block)** · **`quotation.md` §6 (Convert-to-PO → QT=Confirmed, prefill 2 ทาง)** · **`production.md` §5c/§7.6 (edit-PO from production, under-production)** · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลขออกตอนบันทึก)** · **★ `delivery-note.md` §8 / `shipping.md` §4b (PO delivery status = สะท้อนจาก DN)**
+กฎอ้างอิง: entity-status-map §1.2/§1.3 (2 ราง) · stock-reservation (จอง→ตัดจริง Option A) · D3 · D13 · D18 · README §3 (**G8**) · **`customer.md` §4.1/§4.2 (follow-up flag reuse + hard block Disabled/Blacklist)** · **`bom.md` §5c (inactive-BOM block)** · **`quotation.md` §6 (Convert-to-PO → QT=Confirmed, prefill 2 ทาง)** · **`production.md` §5c/§7.6 (edit-PO from production, under-production)** · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลขออกตอนบันทึก)** · **★ `delivery-note.md` §8 / `shipping.md` §4b (PO delivery status = สะท้อนจาก DN)** · **★ `invoice.md` §4b (billing rail = สะท้อนใบ active; 1 PO หลายใบ active ทีละใบ)**
 
 ## สรุปภาษาไทย
-ใบสั่งซื้อ OEM (รับจ้างผลิต, made-to-order). Create ("เปิดใบสั่งซื้อใหม่") เพิ่ม **customer search dropdown** (โชว์สถานะ+credit term, ดู detail แบบ modal แล้วกลับไม่เสีย state). **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน PO ไม่ได้ (HARD block)**. **★ BOM/FG ที่ถูกตั้ง Inactive = เปิด PO ไม่ได้ (HARD block, `bom.md` §5c)**. line = BOM/วัตถุดิบตรง (RM-direct ยังผ่านขั้นผลิต D3). ยืนยัน PO = จองวัตถุดิบ (Reserve); ขาด → เตือน + auto PR (ไม่บล็อก). **★ เลข PO ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออกเลข gapless ตอนบันทึกสำเร็จ + popup ยืนยันแสดงเลข PO + สรุป (G8 · `numbering-on-save.md`)** (รวมกรณี prefill จาก QT). รองรับ **origin ref "created from QT-…"** — มาจาก QT ที่ **ยืนยัน (Confirmed)** แล้ว, prefill ได้ **2 ทาง**; **loose reference → ไม่มี cascade** สองทาง. ผลิตเกิน → surplus เข้า FG ตอน "พร้อมส่ง" (D13). **★ การแก้ PO (ทุกที่ รวมจากบริบทการผลิต — under-production ที่ลดจำนวนสั่งให้ = ผลิตจริง) → raise ⚑ "ต้องติดตาม" ที่ลูกค้า (reuse Customer follow-up flag) ให้ Sale เห็น + audit ละเอียดระดับ field.** 2 ราง: fulfilment + billing (credit term 30/60/90 default 60). **★★ ใหม่ (2026-07-30): สถานะจัดส่งของ PO = LINKED จากสถานะ DN** — PO แสดงสถานะของตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อนสถานะ DN** (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) — **ทุกจอที่โชว์สถานะ PO ต้องใช้ logic นี้** (§4b). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบสั่งซื้อ OEM (รับจ้างผลิต, made-to-order). Create ("เปิดใบสั่งซื้อใหม่") เพิ่ม **customer search dropdown** (โชว์สถานะ+credit term, ดู detail แบบ modal แล้วกลับไม่เสีย state). **★ ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน PO ไม่ได้ (HARD block)**. **★ BOM/FG ที่ถูกตั้ง Inactive = เปิด PO ไม่ได้ (HARD block, `bom.md` §5c)**. line = BOM/วัตถุดิบตรง (RM-direct ยังผ่านขั้นผลิต D3). ยืนยัน PO = จองวัตถุดิบ (Reserve); ขาด → เตือน + auto PR (ไม่บล็อก). **★ เลข PO ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออกเลข gapless ตอนบันทึกสำเร็จ + popup ยืนยันแสดงเลข PO + สรุป (G8 · `numbering-on-save.md`)** (รวมกรณี prefill จาก QT). รองรับ **origin ref "created from QT-…"** — มาจาก QT ที่ **ยืนยัน (Confirmed)** แล้ว, prefill ได้ **2 ทาง**; **loose reference → ไม่มี cascade** สองทาง. ผลิตเกิน → surplus เข้า FG ตอน "พร้อมส่ง" (D13). **★ การแก้ PO (ทุกที่ รวมจากบริบทการผลิต — under-production ที่ลดจำนวนสั่งให้ = ผลิตจริง) → raise ⚑ "ต้องติดตาม" ที่ลูกค้า (reuse Customer follow-up flag) ให้ Sale เห็น + audit ละเอียดระดับ field.** 2 ราง: fulfilment + billing (credit term 30/60/90 default 60). **★★ ใหม่ (2026-07-30): สถานะจัดส่งของ PO = LINKED จากสถานะ DN** — PO แสดงสถานะของตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อนสถานะ DN** (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) — **ทุกจอที่โชว์สถานะ PO ต้องใช้ logic นี้** (§4b). **★★ ใหม่ (2026-07-30 — Invoice review): 1 PO ออกใบแจ้งหนี้ได้หลายใบตลอดอายุ แต่ "active" ทีละ 1 ใบ** — ราง billing ของ PO = **สะท้อนใบ active** (ใบ void = ประวัติ, ไม่นับยอด · `invoice.md` §4b). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -17,7 +17,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 |---|---|
 | `po-list.html` | list PO + filter สถานะ (**รวมสถานะจัดส่งที่สะท้อนจาก DN — §4b**) + **search เลข PO / ช่วงวันที่สร้าง** (G2) + 20/หน้า (G1) + คอลัมน์ "🔗 จาก QT-…" ถ้ามี |
 | `po-create.html` | เปิด PO ใหม่ (customer dropdown, line BOM/RM, material check + reserve, origin QT optional, **ช่อง comment**) · **★ ช่องเลข PO = "(ระบบออกให้เมื่อบันทึก)" (G8)** |
-| `po-detail.html` | 2 ราง (fulfilment/billing) + PRD ต่อ line + เปลี่ยนสถานะ + surplus/actual qty (ผ่าน production) + **edit PO (→follow-up+audit §5.2)** + **สถานะจัดส่งสะท้อนจาก DN (§4b)** + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
+| `po-detail.html` | 2 ราง (fulfilment/billing) + PRD ต่อ line + เปลี่ยนสถานะ + surplus/actual qty (ผ่าน production) + **edit PO (→follow-up+audit §5.2)** + **สถานะจัดส่งสะท้อนจาก DN (§4b)** + **ราง billing = ใบ active (§4c)** + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
@@ -29,7 +29,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 | วันที่ต้องการรับของ | date | editable | กรอกตอน create (รวมกรณี prefill จาก QT) · ใช้เป็นแกนค้น "ช่วงวันที่ต้องการรับของ" ในคิวผลิต (production.md §6) · **★ ใช้จัดเรียง candidate ในหน้า Route (shipping.md §5)** |
 | credit term (rางบิล) | enum {30,60,90} วัน default 60 | editable | default จากลูกค้า, override รายใบแจ้งหนี้ได้ |
 | **สถานะ fulfilment** | enum (§4/§4b) | mostly auto | Draft→Confirmed→In Production→**พร้อมจัดส่ง**→**[สะท้อน DN: อยู่ระหว่างการเตรียม→อยู่ระหว่างจัดส่ง→ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่]**→Cancelled |
-| สถานะ billing | enum | Finance/auto | Not Invoiced→Invoiced→Paid→Overdue |
+| สถานะ billing | enum | Finance/auto | Not Invoiced→Invoiced→Paid→Overdue · **★ สะท้อนใบ active (§4c)** |
 | ยอดรวม + VAT | THB | computed | |
 | **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** |
 
@@ -37,7 +37,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **Fulfilment (ช่วงของ PO เอง):** ร่าง (Draft) → **ยืนยันแล้ว (Confirmed)** [→ line เข้าคิว "รอรับงาน" + **จองวัตถุดิบ** (reserve, Option A)] → กำลังผลิต (In Production) → **พร้อมส่ง/พร้อมจัดส่ง (Ready to Ship)** · ยกเลิก (Cancelled)→reopen (คงเลข).
 - **★ PO → พร้อมส่ง (Ready to Ship) = roll-up:** เกิดเมื่อ **ทุก PRD ของ PO กด "พร้อมส่ง" ครบ** (production.md §4/§5b) — จำนวนสั่งส่งลูกค้า, ส่วนเกิน→FG.
 - **★★ หลัง "พร้อมจัดส่ง" = สะท้อนสถานะ DN (§4b)** — ไม่ใช่ enum แยกของ PO อีกต่อไป (เดิมมี In Delivery/Delivered ที่เป็น enum ของ PO เอง; ตอนนี้สถานะจัดส่ง = mirror DN).
-- **Billing:** ยังไม่วางบิล → วางบิลแล้ว (ออก invoice ได้ตั้งแต่ Confirmed) → ชำระแล้ว · เกินกำหนด (Overdue).
+- **Billing:** ยังไม่วางบิล → วางบิลแล้ว (**ออก invoice ได้ในเฟสนี้โดยไม่ล็อกสถานะ — `invoice.md` §7**) → ชำระแล้ว · เกินกำหนด (Overdue เมื่อ **DN ส่งสำเร็จ** + เลยเครดิต + ยังไม่จ่าย). **★ ราง billing = สะท้อนใบ active (§4c).**
 - **จอง/ตัดจริง:** Confirmed = จอง; **เริ่มผลิต = ตัดจริง (Consume, เลือก lot มี stock; หลาย lot = FIFO — production.md §5d, Option A)**. Cancel = release ที่ยังไม่ consume.
 - **Surplus (D13):** ฝ่ายผลิตกรอก actual produced qty (≥ ordered); ตอน "พร้อมส่ง" ส่วนเกิน → FG stock (remark, ไม่ approve).
 > **หมายเหตุ vs QT:** "PO Confirmed" (fulfilment ราง) ≠ "QT Confirmed (ยืนยัน)". เมื่อสร้าง PO จริง PO เริ่มที่ **Draft**.
@@ -65,6 +65,13 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - *(ถ้าอนาคตอนุญาตแตก PO เป็นหลาย DN พร้อมกัน — จะนิยาม rollup แบบ aggregate เพิ่ม; ปัจจุบันไม่มีเคสนั้น.)*
 
 **★ บังคับใช้ทุกจอที่โชว์สถานะ PO:** **po-list · po-detail · dashboard · คิวงานผลิต (production queue) · home** — ทุกที่ต้องแสดงสถานะจัดส่งด้วย combined logic นี้ (ไม่ใช้ enum เดิม In Delivery/Delivered). sync `entity-status-map.md` §1.2 · `delivery-note.md` §8 · `so.md` §4 (SO ก็สะท้อน DN เช่นกัน).
+
+## 4c. ★★ PO billing rail = สะท้อน "ใบแจ้งหนี้ active" (Invoice review — ปอนด์ 2026-07-30)
+> **1 PO ออกใบแจ้งหนี้ได้หลายใบตลอดอายุ แต่มี "active" ทีละ 1 ใบ** (`invoice.md` §4b).
+- **ราง billing ของ PO (Not Invoiced/Invoiced/Paid/Overdue) = สะท้อนสถานะของใบ active ปัจจุบัน**. ใบที่ **void/ยกเลิก = ประวัติ** — ไม่ขับ billing และไม่นับยอด.
+- **ยังไม่มีใบ active** (ยังไม่ออก หรือ void ใบเดิมไปแล้ว) → billing = **Not Invoiced** → ออกใบใหม่ได้ (`invoice.md` §4b · po-detail มีปุ่ม/ลิงก์ "ออก/ดูใบแจ้งหนี้").
+- **Overdue** = ใบ active + **DN ส่งสำเร็จ** + เลยเครดิต + ยังไม่จ่าย (J3).
+- po-detail แสดง **ใบ active + ลิงก์ประวัติใบที่ void** (trace). authoritative model = `invoice.md` §4b.
 
 ## 5. ★ Create flow (delta)
 1. เปิด `po-create` → **customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail แบบ modal แล้วกลับ **ไม่เสีย state ฟอร์ม**). **★ ช่องเลข PO บนหน้านี้ = read-only "(ระบบออกให้เมื่อบันทึก)" (G8/NS1).**
@@ -102,9 +109,9 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 | **แก้ไข comment (แก้ในที่)** | PO.**Update (U)** (เก็บประวัติ auto) |
 | ยกเลิก/reopen PO | PO.**Delete/Approve (D/A)** + comment |
 | force override สถานะ (ข้ามลำดับ) | PO.**Admin** + เหตุผล |
-| ออก invoice (billing) | Invoice.**Create (C)** (Finance) |
+| **ออก invoice (billing · อ้าง PO · ใบ active) / ยกเลิก(void) ใบ** | Invoice.**Create (C)** / Invoice.**Delete (D)** (Finance · `invoice.md` §6) |
 | เปิด modal ลูกค้า | Customer.**Read (R)** |
-> surplus (D13) = auto ตอนพร้อมส่ง ไม่มี permission แยก (แจ้ง remark). **สถานะจัดส่งของ PO = สะท้อนจาก DN (§4b) — ไม่มีปุ่มเปลี่ยนสถานะจัดส่งบน PO โดยตรง; ควบคุมผ่าน Route/DN (shipping.md/delivery-note.md).**
+> surplus (D13) = auto ตอนพร้อมส่ง ไม่มี permission แยก (แจ้ง remark). **สถานะจัดส่งของ PO = สะท้อนจาก DN (§4b) — ไม่มีปุ่มเปลี่ยนสถานะจัดส่งบน PO โดยตรง; ควบคุมผ่าน Route/DN (shipping.md/delivery-note.md).** **ราง billing = สะท้อนใบ active (§4c) — ควบคุมผ่านโมดูล Invoice.**
 
 ## 7. Validations
 - ต้องมีลูกค้า + ≥1 line + ราคา/หน่วย.
@@ -115,6 +122,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - ยกเลิก = บังคับ comment; reopen = คงเลข PO เดิม (Draft).
 - **★ การแก้ PO (ทุกที่ รวมจากการผลิต) → raise ⚑ follow-up ลูกค้า + audit ละเอียดระดับ field เสมอ (§5.2).** **under-production:** การลดจำนวนสั่งให้ = จำนวนผลิตจริง = การแก้ PO → follow-up + audit (production.md §5c).
 - **★ สถานะจัดส่ง = สะท้อน DN (§4b)** — ทุกจอที่โชว์สถานะ PO ต้องใช้ combined logic (ห้าม hardcode enum In Delivery/Delivered เดิม).
+- **★ billing = สะท้อนใบ active (§4c)** — 1 PO มีใบ active ทีละ 1 ใบ; ใบ void ไม่นับ (`invoice.md` §4b).
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit.
 
 ## 8. Pagination / Search
@@ -126,6 +134,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **Inactive BOM/FG block → `bom.md` §5c · `deletion-policy.md` §2.4.**
 - **★ เลขออกตอนบันทึก (G8) → `numbering-on-save.md` · gapless → `non-functional.md` §5 (D-F2).**
 - **★★ PO delivery status = สะท้อน DN → `delivery-note.md` §8 · `shipping.md` §4b · entity-status-map §1.2/§1.10 · `so.md` §4.**
+- **★★ PO billing = สะท้อนใบ active (1 PO หลายใบ, active ทีละใบ) → `invoice.md` §4b/§7 · ออก/ยกเลิกใบ = `invoice.md` §6.**
 - **Comment + change-history → `comment-convention.md` · field-audit (PO edit + comment) → `traceability.md` §4 / `non-functional.md` AU1.**
 
 ## 10. Module changelog
@@ -137,4 +146,6 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **★ เพิ่ม (2026-07-29 — BOM module review):** hard block เปิด/ยืนยัน PO เมื่อ BOM/FG Inactive.
 - **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):** **§5.2 Edit PO → raise ⚑ follow-up ลูกค้า (reuse) + audit ละเอียดระดับ field (who/when/old→new)** — รวมการแก้จากบริบทการผลิต โดยเฉพาะ **under-production (ลดจำนวนสั่งให้ = ผลิตจริง)** (production.md §5c/§7.6). อัปเดต fulfilment status "พร้อมส่ง (Ready to Ship)" = roll-up เมื่อทุก PRD พร้อมส่ง (§4). CONSUME = เลือก lot มี stock; หลาย lot = FIFO (§4).
 - **★★ เพิ่ม (2026-07-30 — DN→PO status link, ปอนด์ Module C):** **§4b — สถานะจัดส่งของ PO = สะท้อนจากสถานะ DN** (PO แสดงสถานะตัวเองถึงพร้อมจัดส่ง แล้ว mirror DN: อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) + **rollup = DN ล่าสุด (active)** + **บังคับใช้ทุกจอ (po-list/po-detail/dashboard/production queue/home)**. แทน enum เดิม In Delivery/Delivered. §2/§3/§4/§6/§7/§8/§9, ref `delivery-note.md` §8 · `shipping.md` §4b · entity-status-map §1.2.
+- **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** **§4c — PO billing rail = สะท้อนใบแจ้งหนี้ active** (1 PO หลายใบ, active ทีละใบ; ใบ void = ประวัติ ไม่นับยอด) · **ออก invoice เฟสนี้ไม่ล็อกสถานะ** (`invoice.md` §7) · Overdue = DN ส่งสำเร็จ + เลยเครดิต · §6 เพิ่ม void ใบ = Invoice.D. §2/§3/§4/§6/§7/§9, ref `invoice.md` §4b/§6/§7.
 - **คงเดิม:** 2 ราง, reserve/consume (Option A), surplus (D13), RM-direct (D3).
+</content>

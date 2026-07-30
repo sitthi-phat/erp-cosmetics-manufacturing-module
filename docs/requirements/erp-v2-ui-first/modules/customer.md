@@ -1,11 +1,11 @@
 # Module — Customer (ลูกค้า)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ address & receiver-contact delta 2026-07-30**)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ address & receiver-contact delta 2026-07-30 · + invoice per-invoice-override note 2026-07-30**)
 Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/customer-create.html` · `mockups/contact-create.html`
-กฎอ้างอิง: entity-status-map §1.1 (**status enum r2 = 5 สถานะ + follow-up flag แยก** — ★ DECIDED ปอนด์ยืนยัน 2026-07-29: ถอด "Follow-up") · deletion-policy §2.1/§2.6 · **deletion-policy §2.15 (ลบ Sale → ลูกค้า unassigned/blank)** · README §3 (G1–G5) · README §2.2 (credit term) · `invoice.md` (financial roll-up) · **`po.md` §5.2 (PO edit → raise follow-up)** · **`production.md` §7.6 (edit-PO from production)** · **`settings.md` §4c/§5 US-SET-02 (delete Sale → unassign)** · **★ `shipping.md` §5 / `delivery-note.md` §5/§7 (ที่อยู่จัดส่ง + ผู้รับสินค้า แสดงใน Route/DN)**
+กฎอ้างอิง: entity-status-map §1.1 (**status enum r2 = 5 สถานะ + follow-up flag แยก** — ★ DECIDED ปอนด์ยืนยัน 2026-07-29: ถอด "Follow-up") · deletion-policy §2.1/§2.6 · **deletion-policy §2.15 (ลบ Sale → ลูกค้า unassigned/blank)** · README §3 (G1–G5) · README §2.2 (credit term) · **`invoice.md` §3/§4b/§7 (financial roll-up = ใบ active/ไม่รวม void · pull ข้อมูลลูกค้า → per-invoice override)** · **`po.md` §5.2 (PO edit → raise follow-up)** · **`production.md` §7.6 (edit-PO from production)** · **`settings.md` §4c/§5 US-SET-02 (delete Sale → unassign)** · **★ `shipping.md` §5 / `delivery-note.md` §5/§7 (ที่อยู่จัดส่ง + ผู้รับสินค้า แสดงใน Route/DN)**
 
 ## สรุปภาษาไทย
-โมดูลลูกค้า: เพิ่ม **TYPE = OEM และ/หรือ Own-Brand** (เป็นได้ทั้งคู่) · **Credit term ระดับลูกค้า 30/60/90 default 60** (override รายใบได้). **★ 3 เรื่องใหม่ (ปอนด์ 2026-07-29):** (1) หน้า detail โชว์ **สรุปการเงินลูกค้า** = ยอดซื้อรวม / จ่ายมาแล้ว / ยังไม่จ่าย(ค้างชำระ) — คำนวณจากใบแจ้งหนี้+การรับชำระ, THB, read-only. (2) **"ต้องติดตาม (needs follow-up)" แยกเป็น flag อิสระ** (boolean + เหตุผล + ใคร/เมื่อ) **ควบคู่ได้กับทุกสถานะ** — **★ DECIDED (ปอนด์ยืนยัน 2026-07-29 · ตัวเลือก A): ถอด "Follow-up" ออกจาก status enum** เหลือ Lead/Active/Inactive/Disabled/Blacklist. **★ flag ถูก raise จาก cross-module cascade ได้ รวม "PO ถูกแก้ไข (รวมจากบริบทการผลิต — under-production)" ให้ Sale เห็น (po.md §5.2 / production.md §7.6).** (3) **Disabled/Blacklist = บล็อกการเปิดงานขายทั้งหมด (QT/PO/SO) แบบ HARD block**. **★ 1 เรื่องใหม่ (Customer add-on):** **หน้า EDIT ลูกค้าต้องแก้ได้ครบทุกฟิลด์ = ชุดเดียวกับตอน Create**; financial summary ยัง read-only; ทุกการแก้ลง audit. หน้า detail โชว์ **QT history + PO history**. **★ 1 เรื่องใหม่ (ปอนด์ 2026-07-29 — resolve US-SET-02):** **"Sale ที่ดูแล (assigned Sale)" = NULLABLE/ว่างได้** — ลูกค้าไม่มีผู้ดูแลเป็นสถานะที่ถูกต้อง; **เมื่อลบ Sale → ฟิลด์นี้ถูกล้างเป็นว่างอัตโนมัติ (ไม่บังคับ bulk-reassign)** → reassign ภายหลังด้วยมือผ่านหน้าแก้ไข; ทุกการเปลี่ยน audit-logged. **★★ ใหม่ล่าสุด (Module A — ปอนด์ 2026-07-30):** เพิ่ม **(A1) ที่อยู่ 2 ชุดแยกกัน** — **"ที่อยู่ลูกค้า (registered/ออกเอกสาร)"** และ **"ที่อยู่จัดส่งสินค้า (shipping address)"** (อาจต่างกัน; ที่อยู่จัดส่งไปโผล่บน modal PO/SO/DN ในหน้า Route + หัวใบส่งของ DN). **(A2) ผู้ติดต่อ (contact) เพิ่ม flag "เป็นคนรับสินค้า (is receiver)"** — เมื่อ flag=true **ชื่อ AND เบอร์ ของผู้ติดต่อนั้นบังคับกรอกครบ** (validation).
+โมดูลลูกค้า: เพิ่ม **TYPE = OEM และ/หรือ Own-Brand** (เป็นได้ทั้งคู่) · **Credit term ระดับลูกค้า 30/60/90 default 60** (override รายใบได้). **★ 3 เรื่องใหม่ (ปอนด์ 2026-07-29):** (1) หน้า detail โชว์ **สรุปการเงินลูกค้า** = ยอดซื้อรวม / จ่ายมาแล้ว / ยังไม่จ่าย(ค้างชำระ) — คำนวณจากใบแจ้งหนี้+การรับชำระ, THB, read-only. (2) **"ต้องติดตาม (needs follow-up)" แยกเป็น flag อิสระ** (boolean + เหตุผล + ใคร/เมื่อ) **ควบคู่ได้กับทุกสถานะ** — **★ DECIDED (ปอนด์ยืนยัน 2026-07-29 · ตัวเลือก A): ถอด "Follow-up" ออกจาก status enum** เหลือ Lead/Active/Inactive/Disabled/Blacklist. **★ flag ถูก raise จาก cross-module cascade ได้ รวม "PO ถูกแก้ไข (รวมจากบริบทการผลิต — under-production)" ให้ Sale เห็น (po.md §5.2 / production.md §7.6).** (3) **Disabled/Blacklist = บล็อกการเปิดงานขายทั้งหมด (QT/PO/SO) แบบ HARD block**. **★ 1 เรื่องใหม่ (Customer add-on):** **หน้า EDIT ลูกค้าต้องแก้ได้ครบทุกฟิลด์ = ชุดเดียวกับตอน Create**; financial summary ยัง read-only; ทุกการแก้ลง audit. หน้า detail โชว์ **QT history + PO history**. **★ 1 เรื่องใหม่ (ปอนด์ 2026-07-29 — resolve US-SET-02):** **"Sale ที่ดูแล (assigned Sale)" = NULLABLE/ว่างได้** — ลูกค้าไม่มีผู้ดูแลเป็นสถานะที่ถูกต้อง; **เมื่อลบ Sale → ฟิลด์นี้ถูกล้างเป็นว่างอัตโนมัติ (ไม่บังคับ bulk-reassign)** → reassign ภายหลังด้วยมือผ่านหน้าแก้ไข; ทุกการเปลี่ยน audit-logged. **★★ ใหม่ (Module A — ปอนด์ 2026-07-30):** เพิ่ม **(A1) ที่อยู่ 2 ชุดแยกกัน** — **"ที่อยู่ลูกค้า (registered/ออกเอกสาร)"** และ **"ที่อยู่จัดส่งสินค้า (shipping address)"** (อาจต่างกัน; ที่อยู่จัดส่งไปโผล่บน modal PO/SO/DN ในหน้า Route + หัวใบส่งของ DN). **(A2) ผู้ติดต่อ (contact) เพิ่ม flag "เป็นคนรับสินค้า (is receiver)"** — เมื่อ flag=true **ชื่อ AND เบอร์ ของผู้ติดต่อนั้นบังคับกรอกครบ** (validation). **★★ ใหม่ (Invoice review — ปอนด์ 2026-07-30):** ตอน **สร้างใบแจ้งหนี้** ระบบ **pull ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี** จาก master นี้เป็นค่าเริ่มต้น **แต่แก้ได้เฉพาะบนใบ (per-invoice override, snapshot) — ไม่แก้ค่า master** (`invoice.md` §3); financial summary ยึดใบ **active/ไม่รวม void** (`invoice.md` §4b).
 
 ---
 
@@ -41,20 +41,20 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
 |---|---|---|---|
 | รหัสลูกค้า `CUS-{NNNNNN}` | string | computed (auto) | gapless · **แก้ไม่ได้** |
-| ชื่อบริษัท | text | editable (create + **edit**) | ใช้ค้นใน customer dropdown (G4) + **ค้นในคิวผลิต (production.md §6)** |
+| ชื่อบริษัท | text | editable (create + **edit**) | ใช้ค้นใน customer dropdown (G4) + **ค้นในคิวผลิต (production.md §6)** · **★ ใบแจ้งหนี้ pull ชื่อนี้ตอนสร้าง → แก้บนใบได้ (override, ไม่แก้ master) — `invoice.md` §3** |
 | **TYPE** | multi-select {OEM, Own-Brand} | editable (create + **edit**) | **เลือกได้ทั้งคู่** · **mismatch = เตือนไม่บล็อก** |
 | สถานะ | enum **5 สถานะ** | editable (create + **edit**; บาง state auto/ต้อง Approve) | **Lead/Active/Inactive/Disabled/Blacklist** (entity-status-map §1.1 r2) · **★ DECIDED: ถอด "Follow-up" ออกจาก enum → flag แยก (§12)** |
 | **⚑ ต้องติดตาม (follow-up flag)** | boolean | editable (create + **edit**) | **แยกอิสระจาก status — co-exist กับทุกสถานะ** · เปิด flag = **บังคับกรอกเหตุผล** · เก็บ ใคร/เมื่อ (audit) · **★ raise ได้จาก cross-module (เช่น PO ถูกแก้ไข — §4.1)** |
 | เหตุผลต้องติดตาม (follow-up reason) | text | editable (เมื่อ flag=true) | เช่น "ติดเงิน/ค้างชำระ", "PO-xxx ถูกแก้ไข" · แสดงบน badge/tooltip |
 | **Credit term (ระดับลูกค้า)** | enum {30, 60, 90} วัน | editable (create + **edit**) | **DEFAULT = 60** · override รายใบแจ้งหนี้ยังได้ |
 | **Sale ที่ดูแล (assigned Sale / owner)** | ref user · **NULLABLE (ว่างได้)** | editable (reassign, Approve) · **สามารถล้างเป็นว่าง** | **★ ว่าง (unassigned) = สถานะที่ถูกต้อง** — ลูกค้าไม่มีผู้ดูแลได้ · **★ ถูกล้างเป็นว่างอัตโนมัติเมื่อลบ Sale ที่ดูแล** (deletion-policy §2.15 / settings.md §4c) · reassign = Sale Manager/Admin (§5) · **ทุกการเปลี่ยน (มอบหมาย/ล้าง/auto-clear) = audit-logged** |
-| ผู้ติดต่อ (contacts) | list {ชื่อ, เบอร์, อีเมล, หลัก?, **เป็นคนรับสินค้า (is receiver)?**} | editable (create + **edit**) | ต้องมีผู้ติดต่อหลัก 1 คน · **ชื่อ/เบอร์ผู้ติดต่อใช้ค้นในคิวผลิต (production.md §6) + ค้น PO/SO/DN บนหน้า Route (shipping.md §5)** · **★ เพิ่ม flag "เป็นคนรับสินค้า" ต่อผู้ติดต่อ — §9b** |
+| ผู้ติดต่อ (contacts) | list {ชื่อ, เบอร์, อีเมล, หลัก?, **เป็นคนรับสินค้า (is receiver)?**} | editable (create + **edit**) | ต้องมีผู้ติดต่อหลัก 1 คน · **ชื่อ/เบอร์ผู้ติดต่อใช้ค้นในคิวผลิต (production.md §6) + ค้น PO/SO/DN บนหน้า Route (shipping.md §5) + ค้นบนหน้า Invoice (invoice.md §8)** · **★ เพิ่ม flag "เป็นคนรับสินค้า" ต่อผู้ติดต่อ — §9b** |
 | **★ เป็นคนรับสินค้า (is receiver)** (ต่อผู้ติดต่อ) | boolean | editable (create + **edit**) | ระบุว่าผู้ติดต่อคนนี้คือผู้รับสินค้าตอนจัดส่ง · **เมื่อ flag=true → ชื่อ AND เบอร์ ของผู้ติดต่อนั้น "บังคับกรอกครบทั้งคู่" (§9b)** · **ผู้รับสินค้า(ชื่อ+เบอร์) + ที่อยู่จัดส่ง แสดงใน modal รายละเอียด PO/SO/DN บนหน้า Route + หัวใบส่งของ (shipping.md §5 / delivery-note.md §5/§7)** · มีได้หลายคน (ผู้ติดต่อหลายคนติด flag ได้) |
 | เบอร์โทรบริษัท | phone | editable (create + **edit**) | ใช้ค้นใน customer dropdown (G4) |
-| **★ ที่อยู่ลูกค้า (registered address / ที่อยู่ออกเอกสาร)** | text | editable (create + **edit**) | ที่อยู่จดทะเบียน/ออกเอกสาร (ใช้กับใบแจ้งหนี้/ใบกำกับ, คู่กับเลขภาษี) · **แยกฟิลด์จากที่อยู่จัดส่ง** |
+| **★ ที่อยู่ลูกค้า (registered address / ที่อยู่ออกเอกสาร)** | text | editable (create + **edit**) | ที่อยู่จดทะเบียน/ออกเอกสาร (ใช้กับใบแจ้งหนี้/ใบกำกับ, คู่กับเลขภาษี) · **แยกฟิลด์จากที่อยู่จัดส่ง** · **★ ใบแจ้งหนี้ pull ค่านี้ตอนสร้าง → แก้บนใบได้ (per-invoice override, ไม่แก้ master) — `invoice.md` §3** |
 | **★ ที่อยู่จัดส่งสินค้า (shipping address)** | text | editable (create + **edit**) | ที่อยู่สำหรับส่งของ (อาจต่างจากที่อยู่จดทะเบียน) · option **"ใช้ที่อยู่เดียวกับที่อยู่ลูกค้า"** (copy) · **แสดงใน modal PO/SO/DN บนหน้า Route + หัวใบส่งของ DN (shipping.md §5 / delivery-note.md §5/§7)** |
-| เลขภาษี (Tax ID) | text | editable (create + **edit**) | ใช้ออกเอกสาร (คู่กับที่อยู่ลูกค้า) |
-| **ยอดซื้อรวม (total purchased)** | THB | **computed (read-only)** | Σ grand total ใบแจ้งหนี้ (ไม่รวม void) — §7 |
+| เลขภาษี (Tax ID) | text | editable (create + **edit**) | ใช้ออกเอกสาร (คู่กับที่อยู่ลูกค้า) · **★ ใบแจ้งหนี้ pull ค่านี้ตอนสร้าง → แก้บนใบได้ (per-invoice override, ไม่แก้ master) — `invoice.md` §3** |
+| **ยอดซื้อรวม (total purchased)** | THB | **computed (read-only)** | Σ grand total ใบแจ้งหนี้ active (ไม่รวม void) — §7 |
 | **จ่ายมาแล้ว (total paid)** | THB | **computed (read-only)** | Σ การรับชำระ — §7 |
 | **ยังไม่จ่าย / ค้างชำระ (outstanding)** | THB | **computed (read-only)** | = ยอดซื้อรวม − จ่ายมาแล้ว — §7 |
 
@@ -101,13 +101,13 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 ## 7. ★ Financial summary (บน customer-detail — computed roll-up)
 | ฟิลด์ | นิยาม / ที่มา | หน่วย |
 |---|---|---|
-| **ยอดซื้อรวม (Total purchased)** | Σ grand total (รวม VAT) ของใบแจ้งหนี้ทั้งหมดของลูกค้า (ไม่รวม void) | THB |
+| **ยอดซื้อรวม (Total purchased)** | Σ grand total (รวม VAT) ของใบแจ้งหนี้ **active** ทั้งหมดของลูกค้า (**ไม่รวม void** — `invoice.md` §4b) | THB |
 | **จ่ายมาแล้ว (Total paid)** | Σ ยอดรับชำระ (invoice.md §6) | THB |
 | **ยังไม่จ่าย / ค้างชำระ (Outstanding)** | = ยอดซื้อรวม − จ่ายมาแล้ว | THB |
 
 - **read-only/computed ล้วน** (รวมในโหมด edit ก็ยัง read-only — §2b).
-- **ขอบเขต:** ยึด **ใบแจ้งหนี้ (Invoice)** เป็นฐาน.
-- **Cross-link:** `invoice.md` (§4/§6/§9).
+- **ขอบเขต:** ยึด **ใบแจ้งหนี้ (Invoice) ที่ active** เป็นฐาน (1 PO/SO = 1 ใบ active; ใบ void ไม่นับ — `invoice.md` §4b).
+- **Cross-link:** `invoice.md` (§4b/§6/§9).
 
 ## 8. Actions & Permissions (per-action, D14/§7.1)
 | ปุ่ม/action | Permission required (Customer module) |
@@ -124,6 +124,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 | soft-delete ลูกค้า | Customer.**Delete (D)** + comment |
 | กู้คืน (undelete) | Customer.**Admin** |
 | เปิด modal detail จากหน้า order | Customer.**Read (R)** |
+> **หมายเหตุ:** การแก้ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี **บนใบแจ้งหนี้** (per-invoice override) = สิทธิ์ **Invoice.Update (U)** ไม่ใช่ Customer.U — ไม่กระทบ master นี้ (`invoice.md` §6).
 
 ## 9. Validations
 - TYPE ต้องเลือกอย่างน้อย 1.
@@ -142,7 +143,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 - ผู้ติดต่อที่ **ไม่ได้** ติด flag ผู้รับสินค้า → กติกาเดิม (เบอร์/อีเมล optional เว้นแต่เป็นผู้ติดต่อหลัก).
 - ติด flag ผู้รับสินค้าได้ **หลายคน** (ไม่จำกัด 1 คน). ผู้ติดต่อหลัก (primary) กับผู้รับสินค้า (receiver) เป็น flag คนละตัว — คน ๆ เดียวเป็นได้ทั้งคู่.
 - **ที่อยู่จัดส่ง:** ถ้าเลือก option "ใช้ที่อยู่เดียวกับที่อยู่ลูกค้า" → copy ค่าที่อยู่ลูกค้ามาเป็นที่อยู่จัดส่ง (แก้ต่อได้). ทั้งสองที่อยู่ = free-text.
-- **การใช้งานปลายทาง:** ที่อยู่จัดส่ง + ผู้รับสินค้า(ชื่อ+เบอร์) จะถูกดึงไปแสดงใน **modal รายละเอียด PO/SO/DN บนหน้า Route (shipping.md §5)** และ **หัวใบส่งของ DN (delivery-note.md §5/§7)**.
+- **การใช้งานปลายทาง:** ที่อยู่จัดส่ง + ผู้รับสินค้า(ชื่อ+เบอร์) จะถูกดึงไปแสดงใน **modal รายละเอียด PO/SO/DN บนหน้า Route (shipping.md §5)** และ **หัวใบส่งของ DN (delivery-note.md §5/§7)**. **ที่อยู่ลูกค้า (registered) + เลขภาษี** จะถูก **pull ไปตั้งต้นบนใบแจ้งหนี้** (แก้บนใบได้ per-invoice override — `invoice.md` §3).
 
 ## 10. Pagination / Search (global)
 - ทุก list/history: **20/หน้า** (G1).
@@ -151,7 +152,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 - **Customer search dropdown (G4)** — ใช้ซ้ำบน quotation/po/so-create: ค้น **เบอร์โทร / ชื่อบริษัท / ชื่อผู้ติดต่อ / เบอร์ผู้ติดต่อ**; แสดง **สถานะ + credit term (+ ⚑)**; **Disabled/Blacklist = เลือกไม่ได้ (§4.2)**.
 
 ## 11. Cross-links
-- **Financial summary → `invoice.md` (§4/§6/§9).**
+- **Financial summary (ใบ active/ไม่รวม void) + pull ข้อมูลลูกค้า → per-invoice override → `invoice.md` (§3/§4b/§6/§9).**
 - Credit term → `po.md`/`so.md` · README §2.2.
 - Customer dropdown + **hard block Disabled/Blacklist** → `quotation.md` §5/§8, `po.md` §5/§7, `so.md` §5/§8.
 - **★ Follow-up flag reuse (cross-module raise) → `po.md` §5.2 (PO edit) · `production.md` §7.6 (edit-PO from production).**
@@ -171,4 +172,6 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 - **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):** **follow-up flag ถูก raise จาก cross-module cascade เพิ่ม "PO ถูกแก้ไข (รวมจากบริบทการผลิต — under-production)"** ให้ Sale เห็น (§3/§4.1/§5/§8/§9/§11, ref `po.md` §5.2 / `production.md` §7.6). ใช้กลไก flag เดิม (reuse) — ไม่ใช่สถานะ, ไม่บล็อก.
 - **★ เพิ่ม (2026-07-29 — ปอนด์, resolve US-SET-02):** **"Sale ที่ดูแล (assigned Sale)" = NULLABLE/ว่างได้** · "ไม่มีผู้ดูแล (unassigned)" = valid state (ไม่บล็อกงานขาย) · **★ เมื่อลบ Sale → ฟิลด์นี้ถูกล้างเป็นว่างอัตโนมัติ (ไม่บังคับ bulk-reassign, ไม่มีหน้า bulk-reassign)** · reassign ภายหลังด้วยมือ (Customer.Approve) · filter รายชื่อลูกค้าเพิ่มตัวเลือก "ไม่มีผู้ดูแล" · ทุกการเปลี่ยน audit-logged. เพิ่ม §4.3 · แก้ field Sale (§3) · §2/§2b/§5/§8/§9/§10/§11 · sync `deletion-policy.md` §2.15 · `settings.md` §4c/§5.
 - **★★ เพิ่ม (2026-07-30 — Module A, ปอนด์):** **(A1) ที่อยู่ 2 ชุดแยกกัน** — "ที่อยู่ลูกค้า (registered/ออกเอกสาร)" + "ที่อยู่จัดส่งสินค้า (shipping)" (+ option "ใช้ที่อยู่เดียวกัน"); ที่อยู่จัดส่งไปแสดงใน modal PO/SO/DN บนหน้า Route + หัวใบส่งของ DN. **(A2) ผู้ติดต่อเพิ่ม flag "เป็นคนรับสินค้า (is receiver)"** — ติด flag = ชื่อ+เบอร์บังคับครบ (§9b, HARD validation); มีได้หลายคน; ผู้รับสินค้าไปแสดงใน Route modal + หัว DN. อัปเดต §1/§2/§2b/§3/§8/§9/§9b/§11/§12, ref `shipping.md` §5 · `delivery-note.md` §5/§7. **แยกจากฟิลด์ "ที่อยู่/เลขภาษี" เดิม (split เป็น ที่อยู่ลูกค้า + เลขภาษี + ที่อยู่จัดส่ง).**
+- **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** note **per-invoice override** — ตอนสร้างใบแจ้งหนี้ระบบ pull ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี จาก master นี้ **แต่แก้ได้เฉพาะบนใบ (snapshot, Invoice.U) ไม่กระทบ master** · financial summary = ใบ **active/ไม่รวม void** (§3/§7/§8/§9b/§11, ref `invoice.md` §3/§4b/§6).
 - **คงเดิม:** TYPE (OEM/Own-Brand, both) · credit term preset 30/60/90 default 60 · management-history · QT/PO history · customer search dropdown (G4).
+</content>
