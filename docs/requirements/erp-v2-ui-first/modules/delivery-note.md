@@ -68,7 +68,7 @@ Mockups: `mockups/delivery-note.html`
 - **หลังจากนั้น PO สะท้อนสถานะ DN:** `อยู่ระหว่างการเตรียม · อยู่ระหว่างจัดส่ง · ส่งสำเร็จ · ลูกค้าเลื่อนส่ง · ลูกค้ายกเลิก(การส่ง) · ลูกค้ายังไม่กำหนดวันรับใหม่`.
 - **นิยาม authoritative + rollup (1 PO หลาย DN) = `po.md` §4b** · **SO = `so.md` §4**. **rollup = DN ล่าสุด (active); DN เก่าที่ re-route/void = ประวัติ (ไม่ขับสถานะ).**
 - **DN void จาก Route ยกเลิก → PO/SO กลับไปแสดง "พร้อมจัดส่ง"** (ไม่มี DN active — §4/§7).
-- **ทุก module/จอที่โชว์สถานะ PO ต้องใช้ logic เดียวกันนี้:** po-list · po-detail · dashboard · คิวงานผลิต (production queue) · home. ระบุเป็น rule ที่ `po.md` §4b + entity-status-map §1.2.
+- **ทุก module/จอที่โชว์สถานะ PO ต้องใช้ logic เดียวกันนี้:** po-list · po-detail · dashboard · คิวงานผลิต (production queue). ระบุเป็น rule ที่ `po.md` §4b + entity-status-map §1.2.
 
 ## 9. Actions & Permissions (D14 / G9)
 | ปุ่ม/action | Permission required | Suffix (G9) |
@@ -108,4 +108,3 @@ Mockups: `mockups/delivery-note.html`
 - **★ เพิ่ม (2026-07-30 — Q1=A lock, ปอนด์):** §4/§7 DN void เมื่อ Route ถูกยกเลิกทั้งรอบ (shipping.md §4d) — คงเลขเป็นประวัติ, order กลับคิว "พร้อมจัดส่ง"; §5 print data-source ชัด (DN = shipping addr+receiver · Invoice = registered addr+tax id); §8 rollup = DN ล่าสุด + DN void → PO/SO กลับ "พร้อมจัดส่ง". Route rename SHP→RT = Q1=A DECIDED.
 - **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** **§5/§9/§10/§12 DN-unify** — ปุ่ม "สร้าง/พิมพ์ Invoice" บนหน้า DN = ทำงานบน **ใบ active เดียวกันของ PO/SO** (ยังไม่มีใบ = สร้าง Invoice.C + G8; มีแล้ว = พิมพ์ Invoice.R) → **ใบเดียวกันโผล่ในโมดูล Invoice ไม่เกิดใบซ้ำ**; Invoice pull ข้อมูลลูกค้า + per-invoice override (`invoice.md` §3/§4b/§5). ref `invoice.md`.
 - **หมายเหตุ HTML view:** `delivery-note.html` (functional-spec view) + `_render.js` map + ลิงก์ใน index.html (COMPLETENESS RULE).
-</content>

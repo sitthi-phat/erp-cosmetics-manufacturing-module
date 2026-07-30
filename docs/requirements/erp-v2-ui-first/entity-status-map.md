@@ -88,7 +88,7 @@
 > force override = Admin + เหตุผล + trace
 > **Create-time gate (r6/r8):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** · **BOM/FG Inactive ไม่ได้** (HARD block)
 > **★ r9 — แก้ PO (po.md §5.2):** การแก้ PO ทุกครั้ง **รวมจากบริบทการผลิต (under-production)** → **raise ⚑ follow-up ที่ลูกค้า + audit ละเอียดระดับ field** · แก้จำนวน line → ปรับ reservation (delta)
-> **★★ r11 — สถานะจัดส่ง = LINKED จาก DN (`modules/po.md` §4b):** PO แสดงสถานะตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อน (reflect) สถานะ DN** (ตารางด้านบน 6 ค่า) — **ไม่ใช่ enum อิสระ** (แทน In Delivery/Delivered เดิม). **rollup = DN ล่าสุด (active); Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง" (shipping §4d).** **บังคับใช้ทุกจอ: po-list/po-detail/dashboard/production queue/home.** **SO (ก) เช่นเดียวกัน** (`modules/so.md` §4).
+> **★★ r11 — สถานะจัดส่ง = LINKED จาก DN (`modules/po.md` §4b):** PO แสดงสถานะตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อน (reflect) สถานะ DN** (ตารางด้านบน 6 ค่า) — **ไม่ใช่ enum อิสระ** (แทน In Delivery/Delivered เดิม). **rollup = DN ล่าสุด (active); Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง" (shipping §4d).** **บังคับใช้ทุกจอ: po-list/po-detail/dashboard/production queue.** **SO (ก) เช่นเดียวกัน** (`modules/so.md` §4).
 > **หมายเหตุ vs QT (r7):** "PO Confirmed" ≠ "QT Confirmed". สร้าง PO จาก QT → PO เริ่ม **ร่าง (Draft)**.
 
 ### 1.3 PO — ราง Billing · หน้า: invoices / invoice-detail / po-detail
@@ -309,7 +309,7 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 | จุด | สถานะ | รายการแก้ (ให้ UX/UI) |
 |---|---|---|
 | **★★★ r11 Shipping→Route + DN rewrite** | ⚠ ต้องแก้ | **shipping.html:** Route list (ค้นคนขับ/username/route-id + ช่วงวันชนิดวัน + คอลัมน์ RouteID/วันสร้าง/วันออกส่ง/จำนวน PO-SO/Status + ปุ่ม "สร้าง Route"); create/update Route (คนขับ/เบอร์\*/route/ประเภทรถ\*/ทะเบียน/วัน-เวลา + modal เพิ่ม PO/SO/DN เรียงตามวันต้องการรับ + modal รายละเอียด order แสดง ที่อยู่จัดส่ง/ผู้รับ + status actions + "เสร็จสิ้น" บังคับสรุป DN); เลข RT/DN ตอนบันทึก + popup DN ต่อ PO/SO. **delivery-note.html:** DN 6 สถานะ + ค้น (คนขับ/username/route-id/วันชนิดวัน · PO-SO · วันลูกค้าต้องการรับ) + filter สถานะ + print DN/Invoice + comment + แก้สถานะตรง (A). (ดู `modules/shipping.md`/`modules/delivery-note.md`) |
-| **★★★ r11 PO/SO delivery status = mirror DN (ทุกจอ)** | ⚠ ต้องแก้ | po-list/po-detail/so-list/so-detail/dashboard/production-queue/home: แสดงสถานะจัดส่งด้วย combined logic (สถานะ PO เอง → พร้อมจัดส่ง → สะท้อน DN 6 ค่า) — เลิกใช้ In Delivery/Delivered เดิม (ดู `modules/po.md` §4b) |
+| **★★★ r11 PO/SO delivery status = mirror DN (ทุกจอ)** | ⚠ ต้องแก้ | po-list/po-detail/so-list/so-detail/dashboard/production-queue: แสดงสถานะจัดส่งด้วย combined logic (สถานะ PO เอง → พร้อมจัดส่ง → สะท้อน DN 6 ค่า) — เลิกใช้ In Delivery/Delivered เดิม (ดู `modules/po.md` §4b) |
 | **★★★ r11 Customer address + receiver-contact** | ⚠ ต้องแก้ | customer-create/detail: 2 ช่องที่อยู่ (ลูกค้า/จัดส่ง) + option "ใช้ที่อยู่เดียวกัน"; contact เพิ่ม checkbox "เป็นคนรับสินค้า" (ติด = ชื่อ+เบอร์บังคับ) (ดู `modules/customer.md` §3/§9b) |
 | **★★ r10 QC-gated stock-in + GR object + ตรวจแบตช์ sub-tabs** | ⚠ ต้องแก้ | qc/goods-receipt/stock (คงตามรอบก่อน) |
 | **★ Production queue 2 tabs + management page (r9)** | ⚠ ต้องแก้ | production.html (คงตามรอบก่อน) |
@@ -330,3 +330,4 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 - **★★★ r11 Shipping/Route + DN (2026-07-30): ไม่มีคำถามค้าง — Q1=A DECIDED (ปอนด์ 2026-07-30)** —
   - **Q1 = A (LOCKED) — RT แทน SHP ทั้งหมด (drop SHP):** รอบจัดส่งเดิม `SHP-{YYYYMMDD}-{NNNN}` (locked D-F5) → รอบ = "Route" รหัส `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน); ระบบยังไม่ deploy ไม่มีข้อมูลจริงต้อง migrate → เลิกใช้ SHP ทั้งระบบ. (`modules/shipping.md` §12)
   - **settled (PO reasonable decision, override ได้):** DN 6 สถานะ (supersede ชุดเดิม 4); "เสร็จสิ้น" = action บังคับสรุป DN + comment; **PO/SO delivery status = mirror DN, rollup = DN ล่าสุด (active)** (1 DN = 1 PO เต็ม → ไม่มีหลาย DN active พร้อมกัน); Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง"; DN สร้างตรงไม่ได้; แก้สถานะ DN ตรง = สิทธิ์ A.
+- **★★★★ r14 Home removed → Dashboard landing (2026-07-30): ไม่มีคำถามค้าง** — โมดูล Home ถูกตัดทิ้ง; หน้าแรกหลัง login = Dashboard (per-department Read-scoped, `modules/dashboard.md`/`modules/platform.md`). อ้าง "home" ในรายการหน้าจอ (§1.2 / §4 mirror-DN) ถูกตัดออกแล้ว.

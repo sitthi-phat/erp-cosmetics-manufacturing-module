@@ -64,7 +64,7 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **กติกา:** **สถานะจัดส่งของ PO = สถานะของ DN ล่าสุด (active/current) ของ PO นั้น**. DN เก่าที่ถูกแทนด้วยรอบใหม่ไม่ขับสถานะ PO (คงเป็นประวัติบน trace).
 - *(ถ้าอนาคตอนุญาตแตก PO เป็นหลาย DN พร้อมกัน — จะนิยาม rollup แบบ aggregate เพิ่ม; ปัจจุบันไม่มีเคสนั้น.)*
 
-**★ บังคับใช้ทุกจอที่โชว์สถานะ PO:** **po-list · po-detail · dashboard · คิวงานผลิต (production queue) · home** — ทุกที่ต้องแสดงสถานะจัดส่งด้วย combined logic นี้ (ไม่ใช้ enum เดิม In Delivery/Delivered). sync `entity-status-map.md` §1.2 · `delivery-note.md` §8 · `so.md` §4 (SO ก็สะท้อน DN เช่นกัน).
+**★ บังคับใช้ทุกจอที่โชว์สถานะ PO:** **po-list · po-detail · dashboard · คิวงานผลิต (production queue)** — ทุกที่ต้องแสดงสถานะจัดส่งด้วย combined logic นี้ (ไม่ใช้ enum เดิม In Delivery/Delivered). sync `entity-status-map.md` §1.2 · `delivery-note.md` §8 · `so.md` §4 (SO ก็สะท้อน DN เช่นกัน).
 
 ## 4c. ★★ PO billing rail = สะท้อน "ใบแจ้งหนี้ active" (Invoice review — ปอนด์ 2026-07-30)
 > **1 PO ออกใบแจ้งหนี้ได้หลายใบตลอดอายุ แต่มี "active" ทีละ 1 ใบ** (`invoice.md` §4b).
@@ -145,7 +145,6 @@ Mockups: `mockups/po-list.html` · `mockups/po-create.html` · `mockups/po-detai
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + เก็บประวัติ.
 - **★ เพิ่ม (2026-07-29 — BOM module review):** hard block เปิด/ยืนยัน PO เมื่อ BOM/FG Inactive.
 - **★ เพิ่ม (2026-07-29 — Production module review, ปอนด์):** **§5.2 Edit PO → raise ⚑ follow-up ลูกค้า (reuse) + audit ละเอียดระดับ field (who/when/old→new)** — รวมการแก้จากบริบทการผลิต โดยเฉพาะ **under-production (ลดจำนวนสั่งให้ = ผลิตจริง)** (production.md §5c/§7.6). อัปเดต fulfilment status "พร้อมส่ง (Ready to Ship)" = roll-up เมื่อทุก PRD พร้อมส่ง (§4). CONSUME = เลือก lot มี stock; หลาย lot = FIFO (§4).
-- **★★ เพิ่ม (2026-07-30 — DN→PO status link, ปอนด์ Module C):** **§4b — สถานะจัดส่งของ PO = สะท้อนจากสถานะ DN** (PO แสดงสถานะตัวเองถึงพร้อมจัดส่ง แล้ว mirror DN: อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) + **rollup = DN ล่าสุด (active)** + **บังคับใช้ทุกจอ (po-list/po-detail/dashboard/production queue/home)**. แทน enum เดิม In Delivery/Delivered. §2/§3/§4/§6/§7/§8/§9, ref `delivery-note.md` §8 · `shipping.md` §4b · entity-status-map §1.2.
+- **★★ เพิ่ม (2026-07-30 — DN→PO status link, ปอนด์ Module C):** **§4b — สถานะจัดส่งของ PO = สะท้อนจากสถานะ DN** (PO แสดงสถานะตัวเองถึงพร้อมจัดส่ง แล้ว mirror DN: อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) + **rollup = DN ล่าสุด (active)** + **บังคับใช้ทุกจอ (po-list/po-detail/dashboard/production queue)**. แทน enum เดิม In Delivery/Delivered. §2/§3/§4/§6/§7/§8/§9, ref `delivery-note.md` §8 · `shipping.md` §4b · entity-status-map §1.2.
 - **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** **§4c — PO billing rail = สะท้อนใบแจ้งหนี้ active** (1 PO หลายใบ, active ทีละใบ; ใบ void = ประวัติ ไม่นับยอด) · **ออก invoice เฟสนี้ไม่ล็อกสถานะ** (`invoice.md` §7) · Overdue = DN ส่งสำเร็จ + เลยเครดิต · §6 เพิ่ม void ใบ = Invoice.D. §2/§3/§4/§6/§7/§9, ref `invoice.md` §4b/§6/§7.
 - **คงเดิม:** 2 ราง, reserve/consume (Option A), surplus (D13), RM-direct (D3).
-</content>

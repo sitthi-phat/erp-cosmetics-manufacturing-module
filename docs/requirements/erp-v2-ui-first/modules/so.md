@@ -40,7 +40,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ DN→SO
          (หรือ ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่)
      → Invoice (อ้าง SO · ใบ active) → ชำระ · ยกเลิก SO = คืนจอง FG
 ```
-> **★★ SO (ก) delivery status = LINKED จาก DN status** — เหมือน PO (`po.md` §4b / `delivery-note.md` §8): SO แสดงสถานะตัวเองถึง "พร้อมส่ง" แล้วสะท้อนสถานะ DN. **rollup = DN ล่าสุด (active).** **บังคับใช้ทุกจอที่โชว์สถานะ SO** (so-list/so-detail/dashboard/home). sync entity-status-map §1.10.
+> **★★ SO (ก) delivery status = LINKED จาก DN status** — เหมือน PO (`po.md` §4b / `delivery-note.md` §8): SO แสดงสถานะตัวเองถึง "พร้อมส่ง" แล้วสะท้อนสถานะ DN. **rollup = DN ล่าสุด (active).** **บังคับใช้ทุกจอที่โชว์สถานะ SO** (so-list/so-detail/dashboard). sync entity-status-map §1.10.
 > **★★ SO (ก) billing = สะท้อนใบแจ้งหนี้ active** — 1 SO หลายใบ active ทีละใบ; ใบ void = ประวัติ (`invoice.md` §4b).
 
 ### (ข) Produce-to-stock
@@ -129,4 +129,3 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ DN→SO
 - **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):** produce-to-stock SO จากปุ่ม **"สั่งผลิต" ใน Supply Planning (D8 v2)** พกจำนวน batch (batch count) → จำนวนผลิต = batch count × Batch Size — §3/§6/§8/§10, ref `supply-planning.md` §5/§5b.
 - **★★ เพิ่ม (2026-07-30 — DN→SO status link, ปอนด์ Module C):** **SO (ก) สถานะจัดส่ง = สะท้อนจากสถานะ DN** (เหมือน PO §4b): SO แสดงสถานะตัวเองถึง "พร้อมส่ง" แล้ว mirror DN (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่); rollup = DN ล่าสุด; บังคับใช้ทุกจอที่โชว์สถานะ SO. §2/§3/§4/§5/§7/§8/§10, ref `delivery-note.md` §8 · `po.md` §4b. โหมด (ข) ไม่มี DN → ไม่สะท้อน.
 - **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** **SO (ก) billing = สะท้อนใบแจ้งหนี้ active** (1 SO หลายใบ, active ทีละใบ; ใบ void = ประวัติ) · Invoice pull ข้อมูลลูกค้า + per-invoice override · เฟสนี้ไม่ล็อกสถานะตอนสร้างใบ · สร้าง/พิมพ์ Invoice จากหน้า DN = ใบ active เดียวกัน (DN-unify) · §5 step5/§7/§8/§10, ref `invoice.md` §4b/§6/§7 · `delivery-note.md` §5. โหมด (ข) ไม่มี Invoice.
-</content>

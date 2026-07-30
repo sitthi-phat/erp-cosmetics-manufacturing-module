@@ -96,10 +96,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp"><span class="dot"></span> ระบบ (System) &amp; การเข้าถึง</div>
 <div class="tocgrid">
-  <a class="mod" href="modules/home.html"><div class="mt">Home / งานที่รอ</div><div class="md">task inbox ตามสิทธิ์ · quick actions · onboarding · source เดียวกับ dashboard/noti</div></a>
-  <a class="mod" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile)</div><div class="md">event/state · date filter · drill+deep link · ใกล้หมด=Available</div></a>
+  <a class="mod" href="modules/dashboard.html"><div class="mt">Dashboard ×7 (29 tile) ★landing</div><div class="md">★ หน้าแรกหลัง login · แต่ละแผนกเห็นงานประจำวันของตนตามสิทธิ์ Read · event/state · date-range รายแผนก · drill+deep link · ใกล้หมด=Available <br>(Home ถูกตัดทิ้ง 2026-07-30)</div></a>
   <a class="mod" href="modules/settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">RUCDAA + Admin bit · user+bulk reassign · VAT · company · audit</div></a>
-  <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login · notification outbox+read-bit (+FG→Low) · global search · shell/นำทาง</div></a>
+  <a class="mod" href="modules/platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login→Dashboard · notification outbox+read-bit (+FG→Low) · global search · shell/นำทาง</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> Global Rules &amp; Conventions (cross-cutting · governance)</div>
@@ -107,7 +106,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="mod meta" href="modules/permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9)</div></a>
   <a class="mod meta" href="modules/comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
-  <a class="mod meta" href="modules/numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/SHP·Invoice·PRD·Batch)</div></a>
+  <a class="mod meta" href="modules/numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch)</div></a>
 </div>
 
 <!-- ========================= (2) NON-FUNCTIONAL ========================= -->
@@ -159,7 +158,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp" style="color:var(--text2)">functional-spec module pages เดิม (US-XxX · absorbed แล้ว)</div>
 <div class="tocgrid">
-  <a class="mod legacy" href="home.html"><div class="mt">Home (legacy)</div><div class="md">US-HOME-01..03 → modules/home</div></a>
+  <a class="mod legacy" href="home.html"><div class="mt">Home (legacy · module ตัดทิ้ง 2026-07-30)</div><div class="md">US-HOME-01..03 — โมดูล Home ถูกตัดทิ้ง; หน้าแรก = modules/dashboard (historical page เท่านั้น)</div></a>
   <a class="mod legacy" href="dashboard.html"><div class="mt">Dashboard (legacy)</div><div class="md">US-DSH-01..04 + 7 dept → modules/dashboard</div></a>
   <a class="mod legacy" href="platform.html"><div class="mt">Platform (legacy)</div><div class="md">US-PLT-01..05 → modules/platform</div></a>
   <a class="mod legacy" href="customer.html"><div class="mt">ลูกค้า (legacy)</div><div class="md">US-CUS-01..04 → modules/customer</div></a>
@@ -186,5 +185,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 </details>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-29 · IA: ① Functional (grouped by app sidebar + flows + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-30 · IA: ① Functional (grouped by app sidebar + flows + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า · Home removed → Dashboard landing</footer>
 </div></body></html>

@@ -16,7 +16,7 @@
       'so.md': 'so.html', 'stock.md': 'stock.html', 'bom.md': 'bom.html',
       'production.md': 'production.html', 'supply-planning.md': 'supply-planning.html',
       'oem-flow.md': 'oem-flow.html', 'ownbrand-flow.md': 'ownbrand-flow.html',
-      'home.md': 'home.html', 'dashboard.md': 'dashboard.html',
+      'dashboard.md': 'dashboard.html',
       'goods-receipt.md': 'goods-receipt.html', 'pr.md': 'pr.html',
       'supplier.md': 'supplier.html', 'qc.md': 'qc.html', 'shipping.md': 'shipping.html',
       'delivery-note.md': 'delivery-note.html',
