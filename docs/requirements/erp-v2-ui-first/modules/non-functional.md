@@ -1,10 +1,10 @@
 # Non-Functional Requirements (NFR) — ESSENCE Hub System
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN r11 2026-07-30**) · **AUTHORITATIVE NFR SPEC**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN r11 2026-07-30 · Q1=A LOCKED**) · **AUTHORITATIVE NFR SPEC**
 ที่มา (locked): `brief.md` §5/§8 · ADR-000..009 · `scheduled-jobs.html` (J1–J7) · architecture · `entity-status-map.md` §1.6/§1.8/**§1.9/§1.10 (Route/DN r11)** · `stock-reservation.md` (Option A) · `deletion-policy.md` · scope D1–D18 · README §2/§3 · **`supply-planning.md` §5.1/§5c** · **`comment-convention.md`** · **`numbering-on-save.md` (G8)** · **`stock.md` §2b/§3b/§6** · **`bom.md` §5/§5c** · **`supplier.md` §10** · **`settings.md` §4b/§5/§6** · **`production.md` §5/§7 + `po.md` §5.2/§4b** · **`goods-receipt.md` §4/§9 + `qc.md` §4.1** · **★ `shipping.md` + `delivery-note.md` (Route/DN)**
 
 ## สรุปภาษาไทย
-รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว. ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + QT/SO/Supply-Planning), **Auth/Session** (local+Google, 24h + เตะออก 06:00, RBAC generic RUCDAA+Admin bit — D14), **Audit** (field-level, retention 1 ปี; ทุก stock movement มี reason+source; GR object lifecycle + credit on QC pass; production action; PO edit; comment ทุก object; **★ Route/DN lifecycle + DN status-edit(A)**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL), **Data/Format** (Asia/Bangkok, พ.ศ./UTC, **gapless + number-on-save G8**; RM/BOM/FG code user-entered+lock, THB, VAT ตาม invoice date; **★ รอบจัดส่ง `RT-…` แทน `SHP-…` — Q1 รอปอนด์**), **Scheduled Jobs J1–J8**, **Notification outbox+read-bit** (FG→Low), **global search**, **responsive**, **soft-delete + reference-guard**, **reliability/integrity**. ทุกข้อ derive จากค่าที่ล็อก — ไม่มีการเดา.
+รวม **ข้อกำหนดที่ไม่ใช่ฟังก์ชัน (NFR)** ทั้งหมดของ ESSENCE Hub ไว้ที่เดียว. ครอบ: **Performance** (หน้า <2s max 3s, 50 concurrent, >200 PO/วัน + GR>50/วัน + QT/SO/Supply-Planning), **Auth/Session** (local+Google, 24h + เตะออก 06:00, RBAC generic RUCDAA+Admin bit — D14), **Audit** (field-level, retention 1 ปี; ทุก stock movement มี reason+source; GR object lifecycle + credit on QC pass; production action; PO edit; comment ทุก object; **★ Route/DN lifecycle + DN status-edit(A)**), **Backup/Infra** (GCP Cloud Run + Cloud SQL MySQL), **Data/Format** (Asia/Bangkok, พ.ศ./UTC, **gapless + number-on-save G8**; RM/BOM/FG code user-entered+lock, THB, VAT ตาม invoice date; **★ รอบจัดส่ง `RT-…` แทน `SHP-…` (Q1=A DECIDED 2026-07-30, drop SHP)**), **Scheduled Jobs J1–J8**, **Notification outbox+read-bit** (FG→Low), **global search**, **responsive**, **soft-delete + reference-guard**, **reliability/integrity**. ทุกข้อ derive จากค่าที่ล็อก — ไม่มีการเดา.
 
 ---
 
@@ -52,10 +52,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/D
 | # | NFR | รายละเอียด (locked) |
 |---|---|---|
 | D-F1 | Timezone | **Asia/Bangkok** · แสดง **พ.ศ.** / เก็บ **UTC** |
-| D-F2 | Gapless numbering **+ ★ number-on-save (G8)** | **ต่อปี/เดือน (RT/DN = ต่อวัน)** — PO/**QT-**/**SO-**/PR/GR/PRD/Batch/DN/INV/**RT (★ เดิม SHP — Q1)** (ADR-008) · void/**ยกเลิก GR** ไม่ทำให้เลขหาย · **★ เลขออก "ตอนบันทึกสำเร็จ" ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)")** — ร่างที่ไม่บันทึก **ไม่กินเลข** · บันทึก → ออกเลข atomic + **popup ยืนยัน "เลข + summary (+ ลิงก์ดู/พิมพ์)"** · **หลายเลขต่อการบันทึก (GR+Lot · ★ RT+DN) → popup แสดงครบ (NS7)** · แก้/เวอร์ชันใหม่/void = เลขเดิม · **PRD/Batch = ออกเลขตอน action** · **PR auto = ไม่มี popup** · **QC record + master code = นอกขอบเขต G8**. รายละเอียด `numbering-on-save.md` |
+| D-F2 | Gapless numbering **+ ★ number-on-save (G8)** | **ต่อปี/เดือน (RT/DN = ต่อวัน)** — PO/**QT-**/**SO-**/PR/GR/PRD/Batch/DN/INV/**RT (RT แทน SHP, Q1=A DECIDED — drop SHP)** (ADR-008) · void/**ยกเลิก GR** ไม่ทำให้เลขหาย · **★ เลขออก "ตอนบันทึกสำเร็จ" ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)")** — ร่างที่ไม่บันทึก **ไม่กินเลข** · บันทึก → ออกเลข atomic + **popup ยืนยัน "เลข + summary (+ ลิงก์ดู/พิมพ์)"** · **หลายเลขต่อการบันทึก (GR+Lot · ★ RT+DN) → popup แสดงครบ (NS7)** · แก้/เวอร์ชันใหม่/void = เลขเดิม · **PRD/Batch = ออกเลขตอน action** · **PR auto = ไม่มี popup** · **QC record + master code = นอกขอบเขต G8**. รายละเอียด `numbering-on-save.md` |
 | D-F3 | Currency/VAT | **THB** · VAT ตาม **invoice date** · ตัวหนังสือไทย · **★ margin simulation ใน Supply Planning = ก่อน VAT** |
 | D-F4 | สถานะ/UI | ป้ายสถานะ**ภาษาไทย**เสมอ · **dropdown search: RM/FG ชื่อ+รหัส, Lot dropdown (+FIFO) · BOM component · Supplier price-matrix · customer dropdown (G4) · Supply Planning FG · Return RM ในล็อต (G7)** · Settings role/user · Production queue · **★ r10: stock "Good Receipt (RM)" tab ค้น GR/Lot/Supplier/ชื่อ+รหัส RM + วันที่รับ + filter สถานะ · qc ตรวจรับ/ตรวจแบตช์ (sub-tab OEM/Own-Brand)** · **★★★ r11: Route list ค้นคนขับ/username/route-id + ช่วงวันชนิดวัน (สร้าง/ออกไปส่ง) · DN list ค้น คนขับ/username/route-id/PO-SO/วันลูกค้าต้องการรับ + filter สถานะ DN (6)** |
-| D-F5 | เลขเอกสาร / รหัส master | `PO-…` · `QT-…` · `SO-…` · `INV-…` · `GR-…` · **`RT-{YYYYMMDD}-{NNNN}` (★ เดิม `SHP-…` — Q1 vs SHP: PO เสนอ RT แทน SHP)** · `DN-{YYYYMMDD}-{NNNNN}` · Batch `B-{PO}-{line}-{run}` · **★ ทั้งหมดออกตอนบันทึก (G8/D-F2)** · **★ RM code = user-entered + unique + create-only-lock** · **★ FG/BOM code = user-entered (shared, 1:1) + unique + create-only-lock** |
+| D-F5 | เลขเอกสาร / รหัส master | `PO-…` · `QT-…` · `SO-…` · `INV-…` · `GR-…` · **`RT-{YYYYMMDD}-{NNNN}` (RT แทน SHP, Q1=A DECIDED 2026-07-30 — drop SHP)** · `DN-{YYYYMMDD}-{NNNNN}` · Batch `B-{PO}-{line}-{run}` · **★ ทั้งหมดออกตอนบันทึก (G8/D-F2)** · **★ RM code = user-entered + unique + create-only-lock** · **★ FG/BOM code = user-entered (shared, 1:1) + unique + create-only-lock** |
 
 ## 6. Scheduled / Background Jobs (J1–J8) — locked + scope update
 | Job | ความถี่ | ทำอะไร | แจ้งเตือน | idempotent |
@@ -92,7 +92,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/D
 - **ไม่มี hard delete** · master = soft-delete · **BOM = inactivate** · **★ Role = Disable / Soft-delete** · เอกสารการค้า = void/cancel (**gapless — เลขที่ออกแล้วคงอยู่, G8/NS5**; **★ r10: ยกเลิก GR = void gapless เฉพาะก่อน credit**; **★ r11: ยกเลิก Route = void; DN คงเป็นประวัติ**) · reference-guard · audit + comment บังคับ · undelete = Admin.
 
 ## 11. Reliability / Integrity
-| # | NFR | รายละเอียด (locked) |
+| # | NFR | รายละเอียด |
 |---|---|---|
 | R1 | Append-only ledger | stock ledger เป็นความจริง — recompute ได้ (ADR-001) |
 | R2 | Nightly integrity | J6 เทียบ 2 cache |
@@ -101,7 +101,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/D
 | R5 | Transactional outbox | noti event (รวม FG→Low, QC ตรวจรับ Lot ผ่าน, **★ r11 DN ส่งสำเร็จ**) เขียนใน tx เดียวกับ ledger · **★ number-on-save (G8) ออกเลข atomic (รวม RT+DN) ใน tx เดียวกับการบันทึก** |
 
 ## 12. Open question (NFR)
-- **★ Q1 (r11) — RT vs SHP numbering:** ดู `shipping.md` §12 / entity-status-map §5. เอกสารเขียนด้วยสมมติฐาน "RT แทน SHP"; รอปอนด์ยืนยัน. (ไม่กระทบกลไก gapless/atomic — เป็นการตั้งชื่อ prefix.)
+- **★ Q1 (r11) — RT vs SHP numbering: DECIDED (Q1=A, ปอนด์ 2026-07-30) — RT แทน SHP ทั้งหมด (drop SHP).** ดู `shipping.md` §12. (ไม่กระทบกลไก gapless/atomic — เป็นการตั้งชื่อ prefix.)
 - อื่น ๆ: **ไม่มี open question ค้าง** (G8/r10/production/PO edit/adjust Lot-FIFO/BOM save-back/margin sim = คงเดิม).
 
 ## 13. Cross-links
@@ -111,5 +111,5 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/D
 - **Consolidated + updated:** NFR ทั้งหมด → NFR module เดียว.
 - **★ DECIDED (2026-07-29):** Supply Planning proactive Low alerting + J8.
 - **★ เพิ่ม (2026-07-29 — Quotation/comment/Stock/BOM/Supplier/Settings/Production/Supply Planning/number-on-save/QC+GR reviews):** (คงตามรอบก่อน — commit history)
-- **★★★ เพิ่ม (2026-07-30 — Route/DN r11, ปอนด์ Module B/C):** **D-F2/D-F5** รอบจัดส่ง `SHP-…` → **`RT-…`** (Q1 รอปอนด์) · RT/DN = gapless ต่อวัน; RT+DN popup NS7 · **AU1/AU3/AU4** Route/DN lifecycle + DN status-edit(A) + comment DN บังคับ + ตัด FG ตอน DN "ส่งสำเร็จ" audit · **A4/A5/A7** DN status-edit = Shipping.A, DN = module แยก, คนขับ = system user · **§6/§7/§9/§10/R4/R5** Route "เสร็จสิ้น" = action (ไม่ auto-close) · DN noti events (ส่งสำเร็จ/เลื่อน/ยกเลิก/ยังไม่กำหนดวัน) แทน Delivered/Rejected/Postponed · dispatch = DN ส่งสำเร็จ · **J3** overdue trigger = DN ส่งสำเร็จ · **D-F4** Route/DN list search · **§12** Q1 open. ยึด `shipping.md`/`delivery-note.md`/entity-status-map §1.9/§1.10.
+- **★★★ เพิ่ม (2026-07-30 — Route/DN r11, ปอนด์ Module B/C):** **D-F2/D-F5** รอบจัดส่ง `SHP-…` → **`RT-…`** (Q1=A DECIDED — RT แทน SHP, drop SHP) · RT/DN = gapless ต่อวัน; RT+DN popup NS7 · **AU1/AU3/AU4** Route/DN lifecycle + DN status-edit(A) + comment DN บังคับ + ตัด FG ตอน DN "ส่งสำเร็จ" audit · **A4/A5/A7** DN status-edit = Shipping.A, DN = module แยก, คนขับ = system user · **§6/§7/§9/§10/R4/R5** Route "เสร็จสิ้น" = action (ไม่ auto-close) · DN noti events (ส่งสำเร็จ/เลื่อน/ยกเลิก/ยังไม่กำหนดวัน) แทน Delivered/Rejected/Postponed · dispatch = DN ส่งสำเร็จ · **J3** overdue trigger = DN ส่งสำเร็จ · **D-F4** Route/DN list search · **§12** Q1=A LOCKED. ยึด `shipping.md`/`delivery-note.md`/entity-status-map §1.9/§1.10.
 - **ไม่มีตัวเลขประดิษฐ์.**

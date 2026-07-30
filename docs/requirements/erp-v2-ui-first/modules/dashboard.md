@@ -1,11 +1,11 @@
 # Module — Dashboard รายแผนก (×7)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 · **AUTHORITATIVE SPEC** (absorbs functional-spec `dashboard.html` US-DSH-01..04 + 7 dept stories, 29 tiles)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Shipping tiles → Route/DN r11 2026-07-30**) · **AUTHORITATIVE SPEC** (absorbs functional-spec `dashboard.html` US-DSH-01..04 + 7 dept stories, 29 tiles)
 Mockups: `mockups/dashboard.html`
-กฎอ้างอิง: po-spec-depth-audit §2.2 (นิยาม tile) · status-journeys §12 · stock-reservation (Available/valuation) · RUCDAA Read scope · README §3 (G1–G3)
+กฎอ้างอิง: po-spec-depth-audit §2.2 (นิยาม tile) · status-journeys §12 · stock-reservation (Available/valuation) · RUCDAA Read scope · README §3 (G1–G3) · **`delivery-note.md` §7 (DN 6 สถานะ) · `po.md` §4b (PO/SO สะท้อน DN)**
 
 ## สรุปภาษาไทย
-Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shipping(4) · Finance(4) · Admin(4) = 29 tile**. เห็นแผนกใด = **ยึด permission Read ของ module นั้นล้วน ๆ** (ไม่เกี่ยวชื่อ role); มีหลายแผนกสลับด้วย tab/selector. แต่ละ tile ระบุชนิด **event (ในช่วง)** = นับเหตุการณ์ตาม date-filter หรือ **state (ตอนนี้)** = snapshot ไม่ขึ้นกับช่วง. filter default = เดือนนี้ (วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง). auto-refresh 15s (default, คง view/drill/filter). ทุก tile drill-down → list + pagination + deep link พร้อม context. **"ใกล้หมด" เทียบ Available (on_hand−Reserved) เฉพาะที่ตั้ง threshold** · **มูลค่าสต็อก = Σ(on_hand ต่อ lot × ราคาซื้อล่าสุดของ lot) ไม่หัก Reserved** (COGS นอก scope). ตัวเลขต้องตรงกับ Home task inbox + noti ของ user คนเดียวกัน.
+Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shipping(4) · Finance(4) · Admin(4) = 29 tile**. เห็นแผนกใด = **ยึด permission Read ของ module นั้นล้วน ๆ** (ไม่เกี่ยวชื่อ role); มีหลายแผนกสลับด้วย tab/selector. แต่ละ tile ระบุชนิด **event (ในช่วง)** = นับเหตุการณ์ตาม date-filter หรือ **state (ตอนนี้)** = snapshot ไม่ขึ้นกับช่วง. filter default = เดือนนี้ (วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง). auto-refresh 15s (default, คง view/drill/filter). ทุก tile drill-down → list + pagination + deep link พร้อม context. **"ใกล้หมด" เทียบ Available (on_hand−Reserved) เฉพาะที่ตั้ง threshold** · **มูลค่าสต็อก = Σ(on_hand ต่อ lot × ราคาซื้อล่าสุดของ lot) ไม่หัก Reserved** (COGS นอก scope). **★ r11: Shipping tiles ใช้ DN 6 สถานะใหม่ + Route (`RT-…`, ไม่มี SHP).** ตัวเลขต้องตรงกับ Home task inbox + noti ของ user คนเดียวกัน.
 
 ---
 
@@ -51,13 +51,13 @@ Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shi
 | ผ่าน QC | count(qc_record.result=ผ่าน ในช่วง; รวม lot+batch) | event | รายการ/ชนิด → qc |
 | รอทำใบคืน | count(lot.qc_status=ระงับ AND ยังไม่มี return_doc) | **state** | lot เสีย → return |
 
-### 3.5 Shipping (4) · Read Shipping
+### 3.5 Shipping (4) · Read Shipping · **★ r11 Route/DN**
 | tile | สูตร | ชนิด | drill |
 |---|---|---|---|
-| รอจัดส่ง | count(PO.fulfil=พร้อมจัดส่ง; **รวม PO ที่มี postpone_flag**) | **state** | PO/ลูกค้า/Postpone → shipping |
-| กำลังนำส่ง | count(DN.status=กำลังนำส่ง) | **state** | SHP/DN → delivery-note |
-| ส่งถึงแล้ว | count(DN→ส่งถึงแล้ว ในช่วง) | event | DN → delivery-note |
-| เลื่อน/ปฏิเสธ | count(DN→ถูกปฏิเสธ หรือ เลื่อน ในช่วง) | event | PO/เหตุ → delivery-note |
+| รอจัดส่ง | count(PO/SO delivery-status=พร้อมจัดส่ง — ยังไม่มี DN active; **รวม order ที่ DN=ลูกค้าเลื่อนส่ง/ลูกค้ายังไม่กำหนดวันรับใหม่ รอ re-route**) | **state** | PO/SO/ลูกค้า/เหตุ → shipping |
+| กำลังจัดส่ง | count(DN.status ∈ {อยู่ระหว่างการเตรียม, อยู่ระหว่างจัดส่ง}) | **state** | Route/DN → delivery-note |
+| ส่งสำเร็จ | count(DN→ส่งสำเร็จ ในช่วง) | event | DN → delivery-note |
+| เลื่อน/ยกเลิก | count(DN→ลูกค้าเลื่อนส่ง หรือ ลูกค้ายกเลิก หรือ ลูกค้ายังไม่กำหนดวันรับใหม่ ในช่วง) | event | PO/SO/เหตุ → delivery-note |
 
 ### 3.6 Finance (4) · Read Finance/Invoice
 | tile | สูตร | ชนิด | drill |
@@ -80,7 +80,7 @@ Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shi
 - **US-DSH-02 (Must) — drill-down → list + pagination + deep link พร้อม context:** กด tile → list เบื้องหลัง + คอลัมน์ที่กำหนด + pagination; คลิกแถว → module ปลายทางพร้อม context. tile=0 → empty state "ไม่มีรายการ". drill รายการที่ไม่มีสิทธิ์ Read ปลายทาง → 403.
 - **US-DSH-03 (Must) — date filter presets + custom + event/state:** default เดือนนี้ · presets วันนี้/สัปดาห์นี้/เดือนนี้/กำหนดเอง (เดือน-ปี หรือ range). เปลี่ยนช่วง → tile **event** รีคำนวณพร้อมกัน, tile **state** คงค่า snapshot. custom + คง drill ที่เปิดอยู่ (ไม่เด้งปิด). เริ่ม>สิ้นสุด = error "ช่วงวันที่ไม่ถูกต้อง" + **ไม่ยิง query**.
 - **US-DSH-04 (Must) — เห็นแผนกตาม Read + สลับ:** ตัวสลับแสดงเฉพาะแผนกที่มี Read (ยึด permission ล้วน). 1 แผนก = ไม่มีตัวสลับ; มีครบ = 7 แผนก. URL แผนกที่ไม่มีสิทธิ์ = 403.
-- **7 dept stories (SALE/STK/PRD/QC/SHP/FIN/ADM):** ตาราง §3 = นิยาม/สูตร/ชนิด/drill ครบทุก tile + AC happy/edge/error ต่อแผนก (เช่น มูลค่าสต็อก on_hand ไม่หักจอง; ใกล้หมด=Available เฉพาะ threshold; คิวงานแยกรอรับงาน/ในสายผลิต; รับชำระ=ยอดเงิน; ผู้ใช้ไม่นับ soft-delete).
+- **7 dept stories (SALE/STK/PRD/QC/SHP/FIN/ADM):** ตาราง §3 = นิยาม/สูตร/ชนิด/drill ครบทุก tile + AC happy/edge/error ต่อแผนก (เช่น มูลค่าสต็อก on_hand ไม่หักจอง; ใกล้หมด=Available เฉพาะ threshold; คิวงานแยกรอรับงาน/ในสายผลิต; รับชำระ=ยอดเงิน; ผู้ใช้ไม่นับ soft-delete; **★ r11 Shipping = DN 6 สถานะ/Route**).
 
 ## 5. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required |
@@ -98,6 +98,7 @@ Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shi
 - drill → list + pagination + deep link · tile=0 → empty state.
 - **ใกล้หมด = Available (on_hand−Reserved) ≤ threshold, เฉพาะที่ตั้ง (null=ไม่นับ)**.
 - **มูลค่าสต็อก = Σ(on_hand ต่อ lot × ราคาซื้อล่าสุดของ lot), ไม่หัก Reserved, COGS นอก scope**.
+- **★ r11 Shipping tiles = ยึด DN 6 สถานะ (delivery-note.md §7) + PO/SO delivery status สะท้อน DN (po.md §4b)** · Route = `RT-…` (ไม่มี SHP).
 - สิทธิ์ = Read bit ของ module (ไม่เกี่ยวชื่อ role) · ไม่มี = ไม่อยู่ในตัวสลับ + URL ตรง 403.
 
 ## 7. Pagination / Search
@@ -107,11 +108,13 @@ Dashboard 7 แผนก: **Sale(5) · Stock(4) · Production(4) · QC(4) · Shi
 - ใกล้หมด: `Available = on_hand − Reserved`; นับเมื่อ `Available ≤ threshold` และ `threshold ≠ null`.
 - มูลค่าสต็อก: `Σ_lot (on_hand_lot × last_buy_price_lot)` (lot ติดลบ = ค่าติดลบ) — ตรงกับ `stock.md` US-STK-05.
 - คิวงานผลิต: `count(รอรับงาน) + count(PRD ∈ active-production states)`.
+- **★ r11 กำลังจัดส่ง:** `count(DN.status ∈ {อยู่ระหว่างการเตรียม, อยู่ระหว่างจัดส่ง})` · **ส่งสำเร็จ:** `count(DN→ส่งสำเร็จ ในช่วง)` · **เลื่อน/ยกเลิก:** `count(DN→ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่ ในช่วง)`.
 - รับชำระ = `Σ ยอดรับชำระในช่วง` (เงิน, ไม่ใช่ count).
 
 ## 9. Cross-links
-- ตัวเลขตรงกับ `home.md` (task inbox) + `platform.md` (noti badge, source เดียว). ใกล้หมด/มูลค่า ↔ `stock.md` (3 ยอด). tile ↔ module ปลายทางทุกอัน. สิทธิ์ Read ↔ `permission-matrix.md`.
+- ตัวเลขตรงกับ `home.md` (task inbox) + `platform.md` (noti badge, source เดียว). ใกล้หมด/มูลค่า ↔ `stock.md` (3 ยอด). tile ↔ module ปลายทางทุกอัน. สิทธิ์ Read ↔ `permission-matrix.md`. **★ Shipping tiles ↔ `delivery-note.md` §7 / `shipping.md` §4 / `po.md` §4b.**
 
 ## 10. Module changelog
 - **Absorbed:** functional-spec `dashboard.html` US-DSH-01..04 + 7 dept stories (11 stories, 33 AC, 29 tile) verbatim ในความหมาย.
+- **★ UPDATED (2026-07-30 — Route/DN r11):** Shipping (4) tiles ใช้ **DN 6 สถานะใหม่** — "กำลังนำส่ง"→**"กำลังจัดส่ง"** (อยู่ระหว่างการเตรียม+อยู่ระหว่างจัดส่ง), "ส่งถึงแล้ว"→**"ส่งสำเร็จ"**, "เลื่อน/ปฏิเสธ"→**"เลื่อน/ยกเลิก"** (ลูกค้าเลื่อนส่ง/ยกเลิก/ยังไม่กำหนดวัน); "รอจัดส่ง" = PO/SO delivery-status พร้อมจัดส่ง + order รอ re-route; **drill = Route/DN → delivery-note (ไม่มี SHP)**. §3.5/§6/§8/§9.
 - **คงเดิม:** event/state typing · ใกล้หมด=Available · มูลค่า=on_hand ไม่หักจอง · Read-scope visibility · single-source count.

@@ -1,6 +1,6 @@
 # Entity Status Map — ESSENCE Hub System (แผนที่สถานะฉบับเดียวจบ)
 
-เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก** · **r7 (2026-07-29): เพิ่ม §1.1b Quotation (QT) lifecycle — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** · **r7.1 (2026-07-29): REVERT — ถอด "ส่งแล้ว (Sent)" + sent-date** · **r8 (2026-07-29): เพิ่ม §1.1c BOM lifecycle (Active/Inactive) + RM/BOM/FG code = user-entered+unique+create-only-lock** · **★ r9 (2026-07-29): Production module review — PRD "พร้อมส่ง (Ready to Ship)" เป็น action ที่ QC-gated + capture surplus; PO/SO = พร้อมส่ง เมื่อ PRD ครบ; actual qty ≥ ordered; consume/adjust lot = เลือก lot มี stock/FIFO; authoritative = `modules/production.md`/`modules/po.md`/`modules/stock.md`** · **★★ r10 (2026-07-29): QC + GR/Stock flow review — (a) §1.8 GR object lifecycle + QC-GATED STOCK-IN; (b) §1.4 Batch QC ไม่ผ่าน → PRD Rework** · **★★★ r11 (2026-07-30): Shipping/Route + DN rewrite — §1.9 Shipment→Route (`RT-…`, 4 สถานะ เตรียมจัดของ/กำลังออกไปส่ง/เสร็จสิ้น/ยกเลิก); §1.10 DN 6 สถานะใหม่ (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่); §1.2 PO/SO delivery status = สะท้อนจาก DN (rule กลาง, ทุกจอ); authoritative = `modules/shipping.md`/`modules/delivery-note.md`/`modules/po.md` §4b. ★ RT vs SHP numbering = open Q1 (PO เสนอ RT แทน SHP).**
+เอกสารสำหรับปอนด์ (+ BA/Engineer/QA เป็น source of truth เรื่อง lifecycle) · เขียนโดย PO · 2026-07-09 (ปรับ r4.1) · **r5 (2026-07-10): เพิ่มชั้น Stock Reservation — รายละเอียดเต็มที่ `stock-reservation.md`** · **r6 (2026-07-29): Customer §1.1 → 5 สถานะ + "ต้องติดตาม" เป็น flag แยก** · **r7 (2026-07-29): เพิ่ม §1.1b Quotation (QT) lifecycle — reseat "ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** · **r7.1 (2026-07-29): REVERT — ถอด "ส่งแล้ว (Sent)" + sent-date** · **r8 (2026-07-29): เพิ่ม §1.1c BOM lifecycle (Active/Inactive) + RM/BOM/FG code = user-entered+unique+create-only-lock** · **★ r9 (2026-07-29): Production module review — PRD "พร้อมส่ง (Ready to Ship)" เป็น action ที่ QC-gated + capture surplus; PO/SO = พร้อมส่ง เมื่อ PRD ครบ; actual qty ≥ ordered; consume/adjust lot = เลือก lot มี stock/FIFO; authoritative = `modules/production.md`/`modules/po.md`/`modules/stock.md`** · **★★ r10 (2026-07-29): QC + GR/Stock flow review — (a) §1.8 GR object lifecycle + QC-GATED STOCK-IN; (b) §1.4 Batch QC ไม่ผ่าน → PRD Rework** · **★★★ r11 (2026-07-30): Shipping/Route + DN rewrite — §1.9 Shipment→Route (`RT-…`, 4 สถานะ เตรียมจัดของ/กำลังออกไปส่ง/เสร็จสิ้น/ยกเลิก); §1.10 DN 6 สถานะใหม่ (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่); §1.2 PO/SO delivery status = สะท้อนจาก DN (rule กลาง, ทุกจอ); authoritative = `modules/shipping.md`/`modules/delivery-note.md`/`modules/po.md` §4b. ★ RT แทน SHP (Q1=A DECIDED 2026-07-30, drop SHP).**
 เป็น **ความจริงหลัก** เรื่อง entity/สถานะ/ใครเปลี่ยน/cascade · `status-journeys.md` อ้างอิงเอกสารนี้ (sync แล้ว ไม่ให้มี 2 ความจริง)
 
 ## สรุปภาษาไทย
@@ -11,7 +11,7 @@
 **★ r8 BOM:** lifecycle Active/Inactive · Inactive = HARD block เปิด QT/PO/SO + กันออก Supply Planning · รหัส BOM/FG/RM = user-entered+unique+create-only-lock.
 **★ r9 Production (2026-07-29):** **PRD "พร้อมส่ง (Ready to Ship)" = action ที่ฝ่ายผลิตกด (ไม่ auto)** โดย **QC ผ่านเป็น precondition (gate)** · การกด = capture surplus (D13) + ตั้ง Ready to Ship · **ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง** · **actual ต้อง ≥ ordered** · **consume/loss/adjust lot = เลือก lot มี stock; หลาย lot = FIFO** · confirm popup ทุก status change. authoritative = `modules/production.md`.
 **★★ r10 QC + GR/Stock flow (2026-07-29):** **RM เข้าสต็อกเมื่อ QC ตรวจรับ "ผ่าน" เท่านั้น** — GR สร้าง GR object + Lot รอตรวจ (ยังไม่ credit) → QC ผ่าน → credit + FIFO retro-link · GR object 4 สถานะ (§1.8) · Batch QC ไม่ผ่าน → PRD Rework (§1.4). authoritative = `modules/goods-receipt.md`/`modules/qc.md`/`modules/stock.md`.
-**★★★ r11 Shipping/Route + DN (2026-07-30):** รอบจัดส่ง **Shipment → "Route" (`RT-…`)** 4 สถานะ (เตรียมจัดของ→กำลังออกไปส่ง→เสร็จสิ้น/ยกเลิก); **DN 6 สถานะใหม่**; **"เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment**; **★ PO/SO delivery status = สะท้อนจาก DN (ทุกจอ)**. authoritative = `modules/shipping.md`/`modules/delivery-note.md`/`modules/po.md` §4b. **★ RT vs SHP numbering = open Q1.**
+**★★★ r11 Shipping/Route + DN (2026-07-30):** รอบจัดส่ง **Shipment → "Route" (`RT-…`)** 4 สถานะ (เตรียมจัดของ→กำลังออกไปส่ง→เสร็จสิ้น/ยกเลิก); **DN 6 สถานะใหม่**; **"เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment**; **★ PO/SO delivery status = สะท้อนจาก DN (ทุกจอ)**. authoritative = `modules/shipping.md`/`modules/delivery-note.md`/`modules/po.md` §4b. **★ RT แทน SHP (Q1=A DECIDED, drop SHP).**
 
 ---
 
@@ -88,7 +88,7 @@
 > force override = Admin + เหตุผล + trace
 > **Create-time gate (r6/r8):** เปิด/ยืนยัน PO ให้ลูกค้า **Disabled/Blacklist ไม่ได้** · **BOM/FG Inactive ไม่ได้** (HARD block)
 > **★ r9 — แก้ PO (po.md §5.2):** การแก้ PO ทุกครั้ง **รวมจากบริบทการผลิต (under-production)** → **raise ⚑ follow-up ที่ลูกค้า + audit ละเอียดระดับ field** · แก้จำนวน line → ปรับ reservation (delta)
-> **★★ r11 — สถานะจัดส่ง = LINKED จาก DN (`modules/po.md` §4b):** PO แสดงสถานะตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อน (reflect) สถานะ DN** (ตารางด้านบน 6 ค่า) — **ไม่ใช่ enum อิสระ** (แทน In Delivery/Delivered เดิม). **rollup = DN ล่าสุด (active).** **บังคับใช้ทุกจอ: po-list/po-detail/dashboard/production queue/home.** **SO (ก) เช่นเดียวกัน** (`modules/so.md` §4).
+> **★★ r11 — สถานะจัดส่ง = LINKED จาก DN (`modules/po.md` §4b):** PO แสดงสถานะตัวเองถึง "พร้อมจัดส่ง" แล้ว **สะท้อน (reflect) สถานะ DN** (ตารางด้านบน 6 ค่า) — **ไม่ใช่ enum อิสระ** (แทน In Delivery/Delivered เดิม). **rollup = DN ล่าสุด (active); Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง" (shipping §4d).** **บังคับใช้ทุกจอ: po-list/po-detail/dashboard/production queue/home.** **SO (ก) เช่นเดียวกัน** (`modules/so.md` §4).
 > **หมายเหตุ vs QT (r7):** "PO Confirmed" ≠ "QT Confirmed". สร้าง PO จาก QT → PO เริ่ม **ร่าง (Draft)**.
 
 ### 1.3 PO — ราง Billing · หน้า: invoices / invoice-detail / po-detail
@@ -189,14 +189,14 @@ event บันทึกรับเข้า → **gen Lot รายบรร�
 - **★ partial:** บาง line ผ่าน (credit แล้ว) บาง line ไม่ผ่าน → GR "ไม่ผ่าน" + breakdown ราย line.
 
 ### 1.9 ★★★ Route (รอบจัดส่ง) · `RT-{YYYYMMDD}-{NNNN}` · หน้า: shipping / delivery-note · **r11 (2026-07-30)**
-**authoritative = `modules/shipping.md` (Module B).** **★ เดิม = "Shipment `SHP-…`"; r11 rename → "Route `RT-…`" (★ RT vs SHP = open Q1 — PO เสนอ RT แทน SHP).**
+**authoritative = `modules/shipping.md` (Module B).** **★ เดิม "Shipment `SHP-…`" → "Route `RT-…`" (renamed, Q1=A DECIDED 2026-07-30 — RT แทน SHP, drop SHP).**
 
 | สถานะ Route | ใครเปลี่ยน | เกิดตอน / ผลต่อ DN |
 |---|---|---|
 | **เตรียมจัดของ (Preparing)** | auto (สร้าง Route จาก order พร้อมจัดส่ง) | สร้างรอบ → gen DN · **DN ทุกใบ = อยู่ระหว่างการเตรียม** |
 | **กำลังออกไปส่ง (Out for delivery)** | Shipping (action) | หลังจัดของ → ตั้งวันที่ route ออกไปส่ง · **DN ทุกใบ = อยู่ระหว่างจัดส่ง** |
 | **เสร็จสิ้น (Completed)** | Shipping (action) | **บังคับสรุปผลราย DN ทุกใบ + comment (G6)** — ส่งสำเร็จ/เลื่อน/ยกเลิก/ยังไม่กำหนดวัน |
-| **ยกเลิก (Cancelled)** | Shipping (action, กดได้ทุกเมื่อ + เหตุผล) | ยกเลิกรอบ · order กลับคิว "พร้อมจัดส่ง" ถ้ายังไม่ dispatch |
+| **ยกเลิก (Cancelled)** | Shipping (action, กดได้ทุกเมื่อ + เหตุผล) | ยกเลิกรอบ · DN ในรอบ void; order ที่ยังไม่ dispatch กลับคิว "พร้อมจัดส่ง" (shipping §4d) |
 > **★ เลข RT + ทุก DN ในรอบ ออกตอน "สร้างรอบ" สำเร็จ (G8/NS7).** "ส่งบางส่วน (Partially)" = ป้าย reconcile/สรุป ไม่ใช่ lifecycle status. **ปิดรอบด้วย action "เสร็จสิ้น" (ไม่ auto-close เดิม).**
 > **หัวรอบ (ฟิลด์):** คนขับ (ค้นชื่อ/username, = system user) · เบอร์คนขับ\* · Route/เส้นทาง · ประเภทรถ\* {รถกระบะ/รถเก๋ง/มอเตอร์ไซด์/10 ล้อ/6 ล้อ} · ทะเบียนรถ · วัน-เวลาออกรอบ. **Route มี comment (G6).**
 
@@ -236,6 +236,7 @@ event บันทึกรับเข้า → **gen Lot รายบรร�
 | **10** | **★★ r11 DN → ส่งสำเร็จ** (Shipping, Route "เสร็จสิ้น" / แก้ตรง A) | ตัด FG FIFO; **PO/SO สะท้อน "ส่งสำเร็จ"**; เริ่มนับ overdue | delivery-note, po-detail, stock | Finance + Sale |
 | **11** | **★★ r11 DN → ลูกค้ายกเลิก / ยังไม่กำหนดวันรับใหม่** (Shipping) | **PO/SO สะท้อนสถานะนั้น**; (ยังไม่กำหนดวัน = ฝากของ) | delivery-note, po-list, shipping | Sale |
 | **12** | **★★ r11 DN → ลูกค้าเลื่อนส่ง** (Shipping, บังคับ next date) | **PO/SO สะท้อน "ลูกค้าเลื่อนส่ง"**; order ค้างคิว รอ re-route (gen DN ใหม่รอบหน้า) | delivery-note, shipping | Shipping |
+| **12b** | **★★ r11 Route ยกเลิก (ก่อน dispatch)** (Shipping) | DN ในรอบ void; **order (PO/SO) ที่ยังไม่ dispatch กลับคิว "พร้อมจัดส่ง"** (เลือกเข้ารอบใหม่ได้) — shipping §4d | shipping, delivery-note, po-detail, so-detail | — |
 | 13 | **ออก Invoice** (Finance) | PO billing=วางบิลแล้ว; + Customer financial summary อัปเดต | invoices, po-detail, customer-detail | — |
 | 14 | **Overdue** (scheduler) | billing=เกินกำหนด; auto ตั้ง flag ⚑ เหตุ "ค้างชำระ" | invoices, dashboard, customer-detail | Finance + Sale |
 | 15 | **PO วัตถุดิบขาด** (ตอนเปิด PO) | เตือน(ไม่บล็อก, เทียบ available) + gen PR | po-create, purchase-request | Stock + Production |
@@ -300,7 +301,7 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
                                               billing = วางบิลแล้ว → ชำระแล้ว / เกินกำหนด
 ```
 **★ เส้นวัตถุดิบ (ขนาน · r10):** PO วัตถุดิบขาด → **PR** → [Stock] **Goods Receipt** → **GR object (QC ตรวจสอบ) + Lot รอตรวจ (ยังไม่ credit)** → [QC] **ตรวจรับ**: **ผ่าน → บวก stock + FIFO retro-link + Lot พร้อมใช้** · **ไม่ผ่าน → ไม่บวก + Lot ระงับ** → ใช้ผลิต Batch
-**★★★ หมายเหตุ Route/DN r11:** รอบ = "Route" (`RT-…`, ★Q1 vs SHP); "เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment; DN 6 สถานะ; **PO/SO delivery status = mirror DN ทุกจอ**; DN สร้างตรงไม่ได้; แก้สถานะ DN ตรง = สิทธิ์ A.
+**★★★ หมายเหตุ Route/DN r11:** รอบ = "Route" (`RT-…`, RT แทน SHP Q1=A DECIDED); "เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment; DN 6 สถานะ; **PO/SO delivery status = mirror DN ทุกจอ**; DN สร้างตรงไม่ได้; แก้สถานะ DN ตรง = สิทธิ์ A; Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง".
 
 ---
 
@@ -326,6 +327,6 @@ PO = ยืนยันแล้ว (Confirmed) ──auto──► แต่ล
 - **r4 (3 ข้อ): ตอบครบแล้ว ✅**
 - **Deletion Policy: ตอบครบ 7 ข้อ ✅**
 - **★ r5–r10: ไม่มีคำถามค้าง** (Reservation Option A · Customer 5+flag · Quotation Confirmed · BOM Active/Inactive · Production พร้อมส่ง QC-gated · QC-gated stock-in + GR object) — settled รอบก่อน.
-- **★★★ r11 Shipping/Route + DN (2026-07-30): มี open Q1** —
-  - **Q1 (GENUINE) — RT vs SHP numbering:** รอบจัดส่งเดิม `SHP-{YYYYMMDD}-{NNNN}` (locked D-F5). ปอนด์ให้รอบเป็น "Route" รหัส `RT-…`. **PO เสนอ (ตัวเลือก A): RT แทน SHP ทั้งหมด** (rename, `RT-{YYYYMMDD}-{NNNN}` gapless ต่อวัน, ไม่มีข้อมูลจริงต้อง migrate). **ตัวเลือก B:** RT อยู่ร่วมกับ SHP (2 เลข). เอกสารเขียนด้วยสมมติฐาน A ไว้ก่อน — รอปอนด์ยืนยัน. (`modules/shipping.md` §12)
-  - **settled (PO reasonable decision, override ได้):** DN 6 สถานะ (supersede ชุดเดิม 4); "เสร็จสิ้น" = action บังคับสรุป DN + comment; **PO/SO delivery status = mirror DN, rollup = DN ล่าสุด (active)** (1 DN = 1 PO เต็ม → ไม่มีหลาย DN active พร้อมกัน); DN สร้างตรงไม่ได้; แก้สถานะ DN ตรง = สิทธิ์ A.
+- **★★★ r11 Shipping/Route + DN (2026-07-30): ไม่มีคำถามค้าง — Q1=A DECIDED (ปอนด์ 2026-07-30)** —
+  - **Q1 = A (LOCKED) — RT แทน SHP ทั้งหมด (drop SHP):** รอบจัดส่งเดิม `SHP-{YYYYMMDD}-{NNNN}` (locked D-F5) → รอบ = "Route" รหัส `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน); ระบบยังไม่ deploy ไม่มีข้อมูลจริงต้อง migrate → เลิกใช้ SHP ทั้งระบบ. (`modules/shipping.md` §12)
+  - **settled (PO reasonable decision, override ได้):** DN 6 สถานะ (supersede ชุดเดิม 4); "เสร็จสิ้น" = action บังคับสรุป DN + comment; **PO/SO delivery status = mirror DN, rollup = DN ล่าสุด (active)** (1 DN = 1 PO เต็ม → ไม่มีหลาย DN active พร้อมกัน); Route ยกเลิกก่อน dispatch → order กลับ "พร้อมจัดส่ง"; DN สร้างตรงไม่ได้; แก้สถานะ DN ตรง = สิทธิ์ A.

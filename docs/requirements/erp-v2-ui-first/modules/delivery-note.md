@@ -1,11 +1,11 @@
 # Module — Delivery Note (DN · ใบจัดส่ง)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-30 · **AUTHORITATIVE SPEC (Module C — DN แยกจาก Route)**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-30 · **AUTHORITATIVE SPEC (Module C — DN แยกจาก Route · Q1=A LOCKED)**
 Mockups: `mockups/delivery-note.html`
-กฎอ้างอิง: entity-status-map §1.10 (DN lifecycle) · **`shipping.md` (Module B — Route ที่ gen DN)** · **`po.md` §4b (PO delivery status = สะท้อนจาก DN)** · **`so.md` §4 (SO เช่นเดียวกัน)** · `invoice.md` (ส่งสำเร็จ→เริ่มนับเครดิต · print Invoice) · `customer.md` §3/§9b (ที่อยู่จัดส่ง + ผู้รับสินค้า) · stock (FG FIFO ตอน dispatch, D16) · README §3 (**G6/G8/G9**) · **`comment-convention.md`** · **`numbering-on-save.md` (G8 — เลข DN ออกพร้อม Route, NS7)** · **`permission-matrix.md` (แก้สถานะ DN = A)**
+กฎอ้างอิง: entity-status-map §1.10 (DN lifecycle) · **`shipping.md` (Module B — Route ที่ gen DN · §4b เสร็จสิ้น · §4d ยกเลิกรอบ)** · **`po.md` §4b (PO delivery status = สะท้อนจาก DN)** · **`so.md` §4 (SO เช่นเดียวกัน)** · `invoice.md` (ส่งสำเร็จ→เริ่มนับเครดิต · print Invoice) · `customer.md` §3/§9b (ที่อยู่จัดส่ง + ผู้รับสินค้า) · stock (FG FIFO ตอน dispatch, D16) · README §3 (**G6/G8/G9**) · **`comment-convention.md`** · **`numbering-on-save.md` (G8 — เลข DN ออกพร้อม Route, NS7)** · **`permission-matrix.md` (แก้สถานะ DN = A)**
 
 ## สรุปภาษาไทย
-ใบจัดส่ง **DN = 1 ใบต่อ 1 PO/SO** — **สร้างตรงไม่ได้ เกิดผ่าน Route process เท่านั้น** (`shipping.md`). **สถานะ DN 6 สถานะ:** **อยู่ระหว่างการเตรียม** (Route ถูกสร้าง/เพิ่ม PO-SO เข้ารอบ+บันทึก) → **อยู่ระหว่างจัดส่ง** (Route → กำลังออกไปส่ง) → **ส่งสำเร็จ** / **ลูกค้าเลื่อนส่ง** (บังคับวันนัดถัดไป) / **ลูกค้ายกเลิก** / **ลูกค้ายังไม่กำหนดวันรับใหม่ (ฝากที่เราไว้ก่อน)** (4 ตัวหลังเกิดใน Route "เสร็จสิ้น" process). **ค้น DN ด้วย:** ชื่อคนขับ/username คนขับ/route id (+ ช่วงวันที่ พร้อม dropdown ชนิดวัน = วันที่สร้าง route/วันที่ route ออกไป) · **ด้วย PO/SO** (ถ้ายังไม่มี DN → ช่อง DN ว่าง) · **ด้วยวันที่ลูกค้าต้องการรับ** · **filter สถานะ DN**. **พิมพ์ได้ 2 อย่าง: พิมพ์ DN** (จากข้อมูลลูกค้า+PO/SO) และ **พิมพ์ Invoice** (จากข้อมูลลูกค้า+PO/SO). **มีช่องหมายเหตุต่อ DN (comment, G6)**. **แก้สถานะ DN ได้โดยตรงจากหน้า DN — ต้องมีสิทธิ์ A (Approve)** (G9 suffix). **★ สถานะจัดส่งของ PO = LINKED จากสถานะ DN** — PO แสดงสถานะของตัวเองถึง "พร้อมจัดส่ง" แล้วสะท้อนสถานะ DN (`po.md` §4b) — **ทุกจอที่โชว์สถานะ PO ต้องใช้ logic นี้**.
+ใบจัดส่ง **DN = 1 ใบต่อ 1 PO/SO** — **สร้างตรงไม่ได้ เกิดผ่าน Route process เท่านั้น** (`shipping.md`). **สถานะ DN 6 สถานะ:** **อยู่ระหว่างการเตรียม** (Route ถูกสร้าง/เพิ่ม PO-SO เข้ารอบ+บันทึก) → **อยู่ระหว่างจัดส่ง** (Route → กำลังออกไปส่ง) → **ส่งสำเร็จ** / **ลูกค้าเลื่อนส่ง** (บังคับวันนัดถัดไป) / **ลูกค้ายกเลิก** / **ลูกค้ายังไม่กำหนดวันรับใหม่ (ฝากที่เราไว้ก่อน)** (4 ตัวหลังเกิดใน Route "เสร็จสิ้น" process). **(นอกจากนี้ ถ้า Route ถูกยกเลิกทั้งรอบ → DN = void เป็นประวัติ, ไม่ใช่สถานะจัดส่งของลูกค้า — shipping.md §4d).** **ค้น DN ด้วย:** ชื่อคนขับ/username คนขับ/route id (+ ช่วงวันที่ พร้อม dropdown ชนิดวัน = วันที่สร้าง route/วันที่ route ออกไป) · **ด้วย PO/SO** (ถ้ายังไม่มี DN → ช่อง DN ว่าง) · **ด้วยวันที่ลูกค้าต้องการรับ** · **filter สถานะ DN**. **พิมพ์ได้ 2 อย่าง: พิมพ์ DN** (จากข้อมูลลูกค้า+PO/SO) และ **พิมพ์ Invoice** (จากข้อมูลลูกค้า+PO/SO). **มีช่องหมายเหตุต่อ DN (comment, G6)**. **แก้สถานะ DN ได้โดยตรงจากหน้า DN — ต้องมีสิทธิ์ A (Approve)** (G9 suffix). **★ สถานะจัดส่งของ PO = LINKED จากสถานะ DN** — PO แสดงสถานะของตัวเองถึง "พร้อมจัดส่ง" แล้วสะท้อนสถานะ DN (`po.md` §4b) — **ทุกจอที่โชว์สถานะ PO ต้องใช้ logic นี้**.
 
 ---
 
@@ -25,7 +25,7 @@ Mockups: `mockups/delivery-note.html`
 | PO/SO ต้นทาง | ref PO หรือ SO | computed | 1:1 |
 | ลูกค้า | ref customer | computed | ชื่อ + **ที่อยู่จัดส่ง + ผู้รับสินค้า(ชื่อ+เบอร์)** (customer.md §3/§9b) — โผล่บนหัว DN |
 | วันที่ลูกค้าต้องการรับ (desired receive date) | date | computed (จาก PO/SO) | แกนค้น "วันที่ลูกค้าต้องการรับ" |
-| สถานะ DN | enum (6 — §4) | editable (Route process **หรือ** แก้ตรง A) | §4 |
+| สถานะ DN | enum (6 — §7) | editable (Route process **หรือ** แก้ตรง A) | §7 · void ถ้า Route ยกเลิก (§4) |
 | **next delivery date (วันนัดส่งครั้งถัดไป)** | date | editable | **บังคับเมื่อสถานะ = ลูกค้าเลื่อนส่ง** |
 | **★ หมายเหตุ DN (comment)** | free-text (ช่องเดียว/DN), editable (แก้ในที่/overwrite) | **แก้ทุกครั้งเก็บประวัติ + โผล่ trace — `comment-convention.md`** · **บังคับกรอกเมื่ออัปเดตสถานะใน "เสร็จสิ้น" process (shipping.md §4b)** |
 
@@ -33,11 +33,13 @@ Mockups: `mockups/delivery-note.html`
 - **ไม่มีหน้า create DN** — DN ถูก gen **อัตโนมัติตอน "สร้าง Route" (shipping.md §5)** ราย order ในรอบ (1 DN ต่อ 1 PO/SO).
 - ค้นด้วย PO/SO ที่ **ยังไม่มี DN** → แสดงผล **DN = ว่าง (blank)** (order นั้นยังไม่เข้ารอบ).
 - order ที่ re-route (หลังเลื่อน/ยกเลิก/ยังไม่กำหนดวัน) → รอบใหม่ gen **DN ใบใหม่**; DN เดิมคงสถานะสุดท้ายเป็นประวัติ.
+- **★ Route ที่ gen DN ถูกยกเลิกทั้งรอบ (shipping.md §4d) → DN = void** (คงเลขเป็นประวัติ, G8/NS5) — **ไม่ใช่สถานะจัดส่งของลูกค้า**; order (PO/SO) ที่ยังไม่ dispatch **กลับคิว "พร้อมจัดส่ง"** (เข้ารอบใหม่ได้ = gen DN ใบใหม่).
 
 ## 5. Print DN + Print Invoice
 - **พิมพ์ DN (print DN):** สร้างจาก **ข้อมูลลูกค้า (ชื่อ/ที่อยู่จัดส่ง/ผู้รับ+เบอร์) + PO/SO (รายการ/จำนวน)** — Shipping.**Read (R)**.
 - **พิมพ์ Invoice (print Invoice):** สร้างจาก **ข้อมูลลูกค้า (ที่อยู่ออกเอกสาร/เลขภาษี) + PO/SO** — Invoice.**Read (R)** · ยึดกติกา `invoice.md`.
 - ต้องมี DN แล้วจึงพิมพ์ได้ (order ที่ยังไม่เข้ารอบ = ไม่มีปุ่มพิมพ์ / error "ยังไม่มีใบจัดส่งสำหรับ PO/SO นี้").
+- **★ แหล่งข้อมูล (data source):** print DN ใช้ **ที่อยู่จัดส่ง (shipping address)** + **ผู้รับสินค้า** จาก `customer.md` §9b · print Invoice ใช้ **ที่อยู่ลูกค้า (registered) + เลขภาษี** จาก `customer.md` §3 · รายการ/จำนวน/ราคา จาก PO/SO ต้นทาง.
 
 ## 6. ★ Comment + แก้สถานะ DN โดยตรง
 - **Comment ต่อ DN (G6):** ช่องเดียว/DN · แก้ในที่ · เก็บประวัติครบ (`comment-convention.md`) · **คนละฟิลด์กับ next delivery date**.
@@ -55,12 +57,14 @@ Mockups: `mockups/delivery-note.html`
 | **ลูกค้ายกเลิก (Cancelled)** | Route "เสร็จสิ้น" process → การส่งถูกยกเลิก |
 | **ลูกค้ายังไม่กำหนดวันรับใหม่ (ฝากที่เราไว้ก่อน) (Awaiting-new-date)** | Route "เสร็จสิ้น" process → ของฝากไว้ที่เรา รอลูกค้ากำหนดวัน |
 > ทั้ง 6 สถานะเข้าถึงได้ผ่าน (a) Route "เสร็จสิ้น" process (shipping.md §4b) หรือ (b) แก้ตรงบนหน้า DN (สิทธิ์ A, §6).
+> **★ นอกเหนือ 6 สถานะข้างต้น (void):** ถ้า **Route ที่ gen DN ถูก "ยกเลิก" ทั้งรอบ (shipping.md §4d)** → DN = **void** (คงเลขเป็นประวัติ, ไม่ขับสถานะจัดส่งของ PO/SO); order ที่ยังไม่ dispatch กลับคิว "พร้อมจัดส่ง". void ≠ "ลูกค้ายกเลิก" (ลูกค้ายกเลิก = ผลการส่งราย DN ที่ตั้งใจ; void = ทั้งรอบถูกล้ม).
 
 ## 8. ★ PO/SO delivery status = LINKED จาก DN status (rule กลาง)
 > **กติกา (บังคับทุกจอที่แสดงสถานะ PO/SO):** สถานะ **จัดส่ง** ของ PO/SO ไม่ใช่ enum แยกอิสระหลัง "พร้อมจัดส่ง" — มันคือ **การสะท้อน (reflect) สถานะของ DN ที่ผูกอยู่**.
 - **PO แสดงสถานะของตัวเอง** จนถึง **พร้อมจัดส่ง**: `ร่าง · ยืนยันแล้ว-รอรับงาน · กำลังผลิต · … (สถานะ PO อื่น) … · พร้อมจัดส่ง`.
 - **หลังจากนั้น PO สะท้อนสถานะ DN:** `อยู่ระหว่างการเตรียม · อยู่ระหว่างจัดส่ง · ส่งสำเร็จ · ลูกค้าเลื่อนส่ง · ลูกค้ายกเลิก(การส่ง) · ลูกค้ายังไม่กำหนดวันรับใหม่`.
-- **นิยาม authoritative + rollup (1 PO หลาย DN) = `po.md` §4b** · **SO = `so.md` §4**.
+- **นิยาม authoritative + rollup (1 PO หลาย DN) = `po.md` §4b** · **SO = `so.md` §4**. **rollup = DN ล่าสุด (active); DN เก่าที่ re-route/void = ประวัติ (ไม่ขับสถานะ).**
+- **DN void จาก Route ยกเลิก → PO/SO กลับไปแสดง "พร้อมจัดส่ง"** (ไม่มี DN active — §4/§7).
 - **ทุก module/จอที่โชว์สถานะ PO ต้องใช้ logic เดียวกันนี้:** po-list · po-detail · dashboard · คิวงานผลิต (production queue) · home. ระบุเป็น rule ที่ `po.md` §4b + entity-status-map §1.2.
 
 ## 9. Actions & Permissions (D14 / G9)
@@ -86,7 +90,7 @@ Mockups: `mockups/delivery-note.html`
 - **ค้นด้วย:** ชื่อคนขับ / username คนขับ / route id (+ **ช่วงวันที่ พร้อม dropdown ชนิดวัน = {วันที่สร้าง route · วันที่ route ออกไปส่ง}**) · **PO/SO** (ไม่มี DN → DN ว่าง) · **วันที่ลูกค้าต้องการรับ** · **filter สถานะ DN** (6 ค่า).
 
 ## 12. Cross-links
-- **Route ที่ gen DN → `shipping.md` (Module B) §4b/§5.**
+- **Route ที่ gen DN → `shipping.md` (Module B) §4b/§4d/§5.**
 - **PO/SO delivery status reflect DN → `po.md` §4b · `so.md` §4 · entity-status-map §1.2/§1.10.**
 - print Invoice / ส่งสำเร็จ→เริ่มนับเครดิต → `invoice.md`.
 - ที่อยู่จัดส่ง + ผู้รับสินค้า (หัว DN) → `customer.md` §3/§9b.
@@ -96,4 +100,5 @@ Mockups: `mockups/delivery-note.html`
 
 ## 13. Module changelog
 - **★★ NEW (2026-07-30 — Module C, ปอนด์):** แยก DN เป็น module เอกสารของตัวเอง (เดิม fold ใน shipping.md). **DN status 6 สถานะใหม่** (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) แทนชุดเดิม (กำลังนำส่ง/ส่งถึงแล้ว/ถูกปฏิเสธ/เลื่อนส่ง). **สร้าง DN ตรงไม่ได้ (Route เท่านั้น).** **ค้น DN** (คนขับ/username/route-id/ช่วงวันชนิดวัน · PO/SO · วันที่ลูกค้าต้องการรับ) + **filter สถานะ**. **print DN + print Invoice.** **comment ต่อ DN (G6).** **★ แก้สถานะ DN โดยตรง = สิทธิ์ A (Approve).** **★ PO delivery status = linked จาก DN status (rule กลาง §8, authoritative `po.md` §4b).** sync `shipping.md` · `po.md` §4b · `so.md` §4 · entity-status-map §1.10 · `permission-matrix.md` · `traceability.md` · `numbering-on-save.md` · `non-functional.md` D-F5.
+- **★ เพิ่ม (2026-07-30 — Q1=A lock, ปอนด์):** §4/§7 DN void เมื่อ Route ถูกยกเลิกทั้งรอบ (shipping.md §4d) — คงเลขเป็นประวัติ, order กลับคิว "พร้อมจัดส่ง"; §5 print data-source ชัด (DN = shipping addr+receiver · Invoice = registered addr+tax id); §8 rollup = DN ล่าสุด + DN void → PO/SO กลับ "พร้อมจัดส่ง". Route rename SHP→RT = Q1=A DECIDED (ไม่มี SHP ในสเปก).
 - **หมายเหตุ HTML view:** เพิ่ม `delivery-note.html` (functional-spec view) + `_render.js` map + ลิงก์ใน index.html (COMPLETENESS RULE).

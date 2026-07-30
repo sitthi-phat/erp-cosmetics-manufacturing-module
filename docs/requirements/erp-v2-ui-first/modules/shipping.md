@@ -1,11 +1,11 @@
 # Module — Shipping / Route (การจัดส่ง: รอบจัดส่ง = Route + DN)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-30 · **AUTHORITATIVE SPEC** (absorbs functional-spec `shipping.html` US-SHP-01..03 · **★ Module B rewrite: Shipment→Route (RT-) + new lifecycle**)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-30 · **AUTHORITATIVE SPEC** (absorbs functional-spec `shipping.html` US-SHP-01..03 · **★ Module B rewrite: Shipment→Route (RT-) + new lifecycle · Q1=A LOCKED**)
 Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 กฎอ้างอิง: entity-status-map §1.9 (Route/รอบ) / §1.10 (DN) · `po.md` §4/§4b (พร้อมจัดส่ง→ตัด FG/dispatch · PO สะท้อนสถานะ DN) · `so.md` §4/§5 · `invoice.md` (ส่งสำเร็จ→เริ่มนับเครดิต) · stock (FG FIFO ตอน dispatch, D16) · README §3 (**G6/G8**) · **`comment-convention.md`** · **`numbering-on-save.md` (G8 — เลข Route + DN ออกตอนสร้างรอบ, NS7)** · **`delivery-note.md` (Module C — DN detail/search/status/print)** · **`customer.md` §3/§9b (ที่อยู่จัดส่ง + ผู้รับสินค้า)**
 
 ## สรุปภาษาไทย
-จัดส่งเป็น **2 ชั้น**: **รอบจัดส่ง = "Route" (Route Information, รหัส `RT-…`)** รวมหลาย DN + คนขับ/เบอร์/route/ประเภทรถ/ทะเบียน · **DN = 1 ใบต่อ 1 PO/SO เสมอ** (Module C = `delivery-note.md`). **★ RT = ตัวระบุรอบ (round identifier) — reconcile กับเลขรอบเดิม `SHP-…`: PO เสนอ "RT แทน SHP (rename)" เป็นค่าแนะนำ, `RT-{YYYYMMDD}-{NNNN}` gapless ต่อวัน — ★ รอปอนด์ยืนยัน (Q1, §12).** **Route LIST:** ค้นด้วย **ชื่อคนขับ / username คนขับ / route id** + **ช่วงวันที่ พร้อม dropdown ชนิดวันที่ (วันที่สร้าง route / วันที่ route ออกไปส่ง)** · คอลัมน์ **RouteID · วันที่สร้าง · วันที่ออกไปส่ง · จำนวน PO/SO · Status** · ปุ่ม **"สร้าง Route"** มุมขวาบน · row มี **edit action** (เปลี่ยนสถานะ/comment/เพิ่ม-แก้ SO/PO). **Route STATUS:** **เตรียมจัดของ** (ตอนสร้าง) → **กำลังออกไปส่ง** (action หลังจัดของ) → **เสร็จสิ้น** (action หลังส่ง — **บังคับอัปเดตสถานะ DN แต่ละใบ + comment ต่อ DN (G6)**) · **ยกเลิก** (ได้ทุกเมื่อ). **หน้าสร้าง/แก้ Route:** คนขับ (ค้นชื่อ/username, คนขับ = system user) · **เบอร์ติดต่อคนขับ \*** · Route/เส้นทาง · **ประเภทรถ \*** (รถกระบะ/รถเก๋ง/มอเตอร์ไซด์/10 ล้อ/6 ล้อ) · ทะเบียนรถ · วัน-เวลาออกรอบ. **เพิ่ม PO/SO/DN:** modal ค้นด้วย code/ชื่อลูกค้า/ชื่อผู้ติดต่อ/เบอร์ผู้ติดต่อ, list เรียงตามวันที่ต้องการรับ (เร็ว→ช้า), ค้นทุกสถานะแต่ **เลือกได้เฉพาะ "พร้อมจัดส่ง"**, filter สถานะ default = พร้อมจัดส่ง. **บันทึกสร้างรอบ → Route = เตรียมจัดของ + G8 popup แสดงเลข Route + สรุป + เลข DN ที่ gen (PO/SO ใบไหนได้ DN ใด)**. คลิก PO/SO/DN → modal แสดง **ชื่อลูกค้า / ที่อยู่จัดส่ง / เบอร์ผู้รับ**. **★ Route มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติครบ (G6).**
+จัดส่งเป็น **2 ชั้น**: **รอบจัดส่ง = "Route" (Route Information, รหัส `RT-…`)** รวมหลาย DN + คนขับ/เบอร์/route/ประเภทรถ/ทะเบียน · **DN = 1 ใบต่อ 1 PO/SO เสมอ** (Module C = `delivery-note.md`). **★ รอบจัดส่ง = "Route" รหัส `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน) — DECIDED (Q1=A, ปอนด์ 2026-07-30): RT แทน SHP ทั้งหมด (drop SHP; ระบบยังไม่ deploy จึงไม่มีข้อมูลต้อง migrate). SHP → RT (renamed, Q1=A).** **Route LIST:** ค้นด้วย **ชื่อคนขับ / username คนขับ / route id** + **ช่วงวันที่ พร้อม dropdown ชนิดวันที่ (วันที่สร้าง route / วันที่ route ออกไปส่ง)** · คอลัมน์ **RouteID · วันที่สร้าง · วันที่ออกไปส่ง · จำนวน PO/SO · Status** · ปุ่ม **"สร้าง Route"** มุมขวาบน · row มี **edit action** (เปลี่ยนสถานะ/comment/เพิ่ม-แก้ SO/PO). **Route STATUS:** **เตรียมจัดของ** (ตอนสร้าง) → **กำลังออกไปส่ง** (action หลังจัดของ) → **เสร็จสิ้น** (action หลังส่ง — **บังคับอัปเดตสถานะ DN แต่ละใบ + comment ต่อ DN (G6)**) · **ยกเลิก** (ได้ทุกเมื่อ). **หน้าสร้าง/แก้ Route:** คนขับ (ค้นชื่อ/username, คนขับ = system user) · **เบอร์ติดต่อคนขับ \*** · Route/เส้นทาง · **ประเภทรถ \*** (รถกระบะ/รถเก๋ง/มอเตอร์ไซด์/10 ล้อ/6 ล้อ) · ทะเบียนรถ · วัน-เวลาออกรอบ. **เพิ่ม PO/SO/DN:** modal ค้นด้วย code/ชื่อลูกค้า/ชื่อผู้ติดต่อ/เบอร์ผู้ติดต่อ, list เรียงตามวันที่ต้องการรับ (เร็ว→ช้า), ค้นทุกสถานะแต่ **เลือกได้เฉพาะ "พร้อมจัดส่ง"**, filter สถานะ default = พร้อมจัดส่ง. **บันทึกสร้างรอบ → Route = เตรียมจัดของ + G8 popup แสดงเลข Route + สรุป + เลข DN ที่ gen (PO/SO ใบไหนได้ DN ใด)**. คลิก PO/SO/DN → modal แสดง **ชื่อลูกค้า / ที่อยู่จัดส่ง / เบอร์ผู้รับ**. **★ Route มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติครบ (G6).**
 
 ---
 
@@ -22,7 +22,7 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 ## 3. Fields (Route)
 | ฟิลด์ | ชนิด | editable/computed | หมายเหตุ |
 |---|---|---|---|
-| **RouteID `RT-{YYYYMMDD}-{NNNN}`** | string | computed | **★ ออกตอน "สร้าง Route" สำเร็จ + popup (G8/NS2, NS7)** · **★ reconcile SHP: PO เสนอ RT แทน SHP — Q1 §12** |
+| **RouteID `RT-{YYYYMMDD}-{NNNN}`** | string | computed | **★ ออกตอน "สร้าง Route" สำเร็จ + popup (G8/NS2, NS7)** · **RT แทน SHP (renamed, Q1=A DECIDED 2026-07-30)** |
 | **คนขับ (driver)** | ref user (search ชื่อ/username) | editable | **คนขับ = system user** · ค้นด้วยชื่อ **หรือ** username |
 | **เบอร์ติดต่อคนขับ \*** | phone | editable | **บังคับ (required)** |
 | **Route / เส้นทาง** | text | editable | ชื่อ/คำอธิบายเส้นทาง |
@@ -43,7 +43,7 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 | **เตรียมจัดของ (Preparing)** | **auto เมื่อสร้าง Route สำเร็จ** | DN ทุกใบ = **อยู่ระหว่างการเตรียม** |
 | **กำลังออกไปส่ง (Out for delivery)** | **action** (หลังจัดของ PO/SO เสร็จ) → ตั้งวันที่ route ออกไปส่ง | DN ทุกใบ = **อยู่ระหว่างจัดส่ง** |
 | **เสร็จสิ้น (Completed)** | **action** (หลังส่ง) — **บังคับอัปเดตสถานะ DN แต่ละใบ (§4b)** | DN แต่ละใบ = ส่งสำเร็จ / ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่ |
-| **ยกเลิก (Cancelled)** | **action — กดได้ทุกเมื่อ** (บังคับเหตุผล) | DN ในรอบ = ยกเลิกรอบ (order กลับสู่คิว "พร้อมจัดส่ง" ถ้ายังไม่ dispatch) |
+| **ยกเลิก (Cancelled)** | **action — กดได้ทุกเมื่อ** (บังคับเหตุผล) | DN ในรอบ = ยกเลิกรอบ (order กลับสู่คิว "พร้อมจัดส่ง" ถ้ายังไม่ dispatch — §4d) |
 
 > **หมายเหตุ vs โมเดลเดิม:** เดิมมีสถานะ "จบรอบ (Closed) auto/ส่งบางส่วน (Partially)". **ตอนนี้ปิดรอบด้วย action "เสร็จสิ้น" ที่ผู้ใช้กด (พร้อมสรุปผลราย DN)** แทน auto-close. มุมมอง "ส่งบางส่วน" ยังคงเป็น **ป้าย reconcile/สรุป** (breakdown ราย DN ในรอบ) ไม่ใช่ lifecycle status.
 
@@ -64,6 +64,13 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 - **Route (รอบ) มีช่อง comment เดียว** · แก้ในที่ (overwrite) · ทุกครั้งเก็บ **ใคร/เมื่อ/เดิม→ใหม่** ผ่าน field-audit เดิม; หน้า shipping แสดง **ค่าปัจจุบัน + "ประวัติการแก้ไข comment"**.
 - การแก้ = activity-log event + **โผล่บน trace** (entity=Route, field=`comment`). **DN comment = แยกช่อง (Module C).**
 
+## 4d. ★ Route ยกเลิก (Cancel) — ผลต่อ DN + order (settled)
+- กด **"ยกเลิก Route"** ได้ **ทุกเมื่อ** (จากสถานะ เตรียมจัดของ **หรือ** กำลังออกไปส่ง) — **บังคับเหตุผล (comment)** · สิทธิ์ Shipping.**Update (U)** (§6).
+- **DN ทุกใบในรอบ = ยกเลิก (void)** — คงเลข DN ไว้เป็นประวัติ (G8/NS5) · ไม่ถือเป็นสถานะจัดส่งของลูกค้า (ต่างจาก "ลูกค้ายกเลิก" ที่เป็นผลการส่ง §4b).
+- **order (PO/SO) ที่ยังไม่ dispatch** (DN ยังไม่เคยเป็น "ส่งสำเร็จ") → **ปล่อยกลับสู่คิว "พร้อมจัดส่ง"** = เลือกเข้ารอบใหม่ได้อีก (รอบใหม่ gen DN ใบใหม่). **PO/SO delivery status = กลับไปแสดง "พร้อมจัดส่ง"** (ไม่มี DN active ขับสถานะ — po.md §4b).
+- **order ที่ dispatch แล้ว** (มี DN "ส่งสำเร็จ" ในรอบ) → **ไม่กลับคิว** (สายจัดส่งปิดไปแล้ว); การยกเลิกรอบ **ไม่ย้อน FG ที่ตัดไปแล้ว** — การเอาของคืน = ผ่าน Return.
+- ยกเลิก Route = **void gapless** (`non-functional.md` §10) · audit ครบ ใคร/เมื่อ/เหตุผล (`traceability.md` §4).
+
 ## 5. ★ Create/Update Route flow (delta)
 1. กด **"สร้าง Route (C)"** (มุมขวาบน list) → หน้า create.
 2. กรอกหัวรอบ: **คนขับ** (search-in-dropdown ค้น **ชื่อ หรือ username**; คนขับเป็น system user) · **เบอร์ติดต่อคนขับ \*** · **Route/เส้นทาง** · **ประเภทรถ \*** (5 ตัวเลือก) · **ทะเบียนรถ** · **วัน-เวลาออกรอบ**. **★ ช่องเลข Route/DN = read-only "(ระบบออกให้เมื่อบันทึก)" (G8/NS1).**
@@ -76,8 +83,14 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
    - Route = **เตรียมจัดของ**.
    - **★ gen DN ราย order + ออกเลข Route + ทุก DN แบบ gapless ตอนบันทึกสำเร็จ (G8/NS2, NS7)**.
    - **★ popup ยืนยันแสดง: (ก) เลข Route (เด่นชัด) + (ข) สรุปรอบ (คนขับ/route/ประเภทรถ/จำนวน order) + (ค) เลข DN ทุกใบที่ gen พร้อมระบุ "PO/SO ใบไหนได้ DN เลขใด" + (ง) ลิงก์ดู/พิมพ์ DN** (NS7 — หลายเลข/บันทึกเดียว).
+   - **★ ทันทีที่ DN เกิด: PO/SO ที่ผูกเปลี่ยน delivery status เป็น "อยู่ระหว่างการเตรียม"** (สะท้อนจาก DN — po.md §4b / so.md §4).
 5. **คลิก PO/SO/DN ในรอบ → modal รายละเอียด** แสดง key info: **ชื่อลูกค้า · ที่อยู่จัดส่ง (shipping address) · เบอร์ผู้รับสินค้า (receiver phone)** (จาก `customer.md` §3/§9b) + code + วันที่ต้องการรับ. กลับได้ไม่เสีย state (G3).
-6. **Update Route (row edit action):** เปิด Route เดิม → **เปลี่ยนสถานะ (จัดของ→ออกไปส่ง→เสร็จสิ้น/ยกเลิก) · แก้ comment · เพิ่ม/แก้ SO/PO ในรอบ** (เพิ่ม order = gen DN ใหม่ในรอบ; เอา order ออกได้ก่อน dispatch).
+6. **Update Route (row edit action):** เปิด Route เดิม → **เปลี่ยนสถานะ (จัดของ→ออกไปส่ง→เสร็จสิ้น/ยกเลิก) · แก้ comment · เพิ่ม/แก้ SO/PO ในรอบ** (เพิ่ม order = gen DN ใหม่ในรอบ; เอา order ออกได้ก่อน dispatch → order กลับคิว "พร้อมจัดส่ง", DN ที่ยัง "อยู่ระหว่างการเตรียม" ถูก void).
+
+### 5.1 ★ Own-Brand SO ผ่าน Route (เหมือน PO ทุกประการ)
+- **SO โหมด (ก) ที่สถานะ "พร้อมส่ง (Ready to Ship)"** เข้ารอบได้เหมือน PO — modal เพิ่ม order ค้น/เลือก SO ได้ด้วย code `SO-…` / ชื่อลูกค้า / ผู้ติดต่อ.
+- gen **DN อ้าง SO** (1 DN = 1 SO), lifecycle DN + สถานะจัดส่ง SO = สะท้อน DN เหมือน PO (`so.md` §4).
+- ตัด **FG FIFO ราย Batch** ตอน DN "ส่งสำเร็จ" (D16). **SO โหมด (ข) ผลิตเก็บสต็อก = ไม่เข้ารอบ** (ไม่มีขั้นจัดส่ง/DN).
 
 ## 6. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required | Suffix (G9) |
@@ -97,6 +110,7 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 - **★ เบอร์ติดต่อคนขับ + ประเภทรถ = บังคับ (required)** ตอนสร้าง/แก้ Route.
 - **★ เลข Route + ทุก DN ในรอบ ออกตอน "สร้างรอบ" สำเร็จเท่านั้น (G8/NS2, NS7) — สร้างรอบไม่สำเร็จ = ไม่ออกเลข (NS4).**
 - **★ "เสร็จสิ้น" = ต้องอัปเดตสถานะ DN ทุกใบให้ครบ + comment ต่อ DN (G6)** · **ลูกค้าเลื่อนส่ง → บังคับกรอกวันนัดถัดไป**.
+- **★ ยกเลิก Route = บังคับเหตุผล; DN ในรอบ void; order ที่ยังไม่ dispatch กลับคิวพร้อมจัดส่ง (§4d).**
 - print DN/Invoice ต้องมี DN แล้ว (DN สร้างผ่านรอบเท่านั้น — ห้ามสร้าง DN ตรง, delivery-note.md §4).
 - **★ comment รอบ (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (CC2/CC3).
 
@@ -121,12 +135,12 @@ Mockups: `mockups/shipping.html` · `mockups/delivery-note.html`
 ## 11. Module changelog
 - **Absorbed:** functional-spec `shipping.html` US-SHP-01..03 (9 AC) verbatim ในความหมาย.
 - **★★ REWRITE (2026-07-30 — Module B, ปอนด์):** รอบจัดส่ง **Shipment → "Route" (Route Information, `RT-…`)**; **สถานะใหม่ เตรียมจัดของ → กำลังออกไปส่ง → เสร็จสิ้น / ยกเลิก** (แทน รับเข้ารอบ/กำลังนำส่ง/จบรอบ/ส่งบางส่วน); **"เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment (G6)**; หน้าสร้าง/แก้ Route เพิ่มฟิลด์ **คนขับ(ค้นชื่อ/username) · เบอร์คนขับ\* · Route · ประเภทรถ\*(5) · ทะเบียนรถ · วัน-เวลาออกรอบ**; **modal เพิ่ม PO/SO/DN** (เรียงตามวันที่ต้องการรับ, ค้น code/ลูกค้า/ผู้ติดต่อ/เบอร์, เลือกได้เฉพาะพร้อมจัดส่ง, filter default พร้อมจัดส่ง); **modal รายละเอียด order แสดง ชื่อลูกค้า/ที่อยู่จัดส่ง/เบอร์ผู้รับ**; **Route list** ค้นคนขับ/username/route-id + ช่วงวันที่ (dropdown ชนิดวัน) + คอลัมน์ RouteID/วันสร้าง/วันออกส่ง/จำนวน PO-SO/Status + ปุ่ม "สร้าง Route". **★ เลข RT + ทุก DN ออกตอนสร้างรอบ + popup แสดงเลข DN ต่อ PO/SO (G8/NS7).** อัปเดต §2–§11 · sync `entity-status-map.md` §1.9/§1.10 · `delivery-note.md` (Module C ใหม่) · `po.md` §4b · `so.md` §4 · `customer.md` §3/§9b · `numbering-on-save.md` · `permission-matrix.md` · `traceability.md` §3.
-- **★ RT vs SHP numbering = Q1 (§12) — ★ รอปอนด์ยืนยัน** (ค่าแนะนำ: RT แทน SHP).
+- **★ RT vs SHP numbering = DECIDED (Q1=A, ปอนด์ 2026-07-30): RT แทน SHP ทั้งหมด (drop SHP)** — §12. (เดิมเป็น open question; ปอนด์เคาะ ตัวเลือก A.)
+- **★ เพิ่ม (2026-07-30 — Q1=A lock, ปอนด์):** §4d Route ยกเลิก — ผลต่อ DN (void) + order (กลับคิวพร้อมจัดส่งถ้ายังไม่ dispatch); §5.1 Own-Brand SO ผ่าน Route (เหมือน PO); §5 step 4 ระบุ PO/SO → "อยู่ระหว่างการเตรียม" ทันทีที่ DN เกิด.
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting):** ช่อง comment แก้ในที่ + เก็บประวัติ (Route) — ยึด `comment-convention.md`.
 - **คงเดิม:** 2 ชั้น (รอบ + DN) · 1 DN=1 order · DN รองรับทั้ง PO (OEM) และ SO (Own-Brand) · FG ตัด FIFO ราย Batch ตอน dispatch.
 
-## 12. ★ Open question (Module B)
-- **Q1 — RT vs SHP numbering (GENUINE, รอปอนด์):** รอบจัดส่งเดิมมีเลข `SHP-{YYYYMMDD}-{NNNN}` (locked, D-F5). ตอนนี้ปอนด์ให้รอบเป็น "Route" รหัส `RT-…`.
-  - **ตัวเลือก A (PO แนะนำ):** **RT แทน SHP ทั้งหมด** — รอบเปลี่ยนชื่อเป็น "Route", เลข `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน แบบเดิม), เลิกใช้ SHP (ระบบยังไม่ deploy → ไม่มีข้อมูลจริงต้อง migrate).
-  - **ตัวเลือก B:** **RT อยู่ร่วมกับ SHP** — รอบมี 2 เลข (SHP = เลขเอกสารรอบ + RT = route identifier).
-  - **ผลต่อเอกสาร:** numbering-on-save §4 · entity-status-map §1.9 · non-functional D-F5 · glossary. เอกสารชุดนี้เขียนด้วย **สมมติฐานตัวเลือก A** ไว้ก่อน; ถ้าปอนด์เลือก B จะปรับ delta เล็ก.
+## 12. ★ DECIDED — Q1=A (RT แทน SHP, ปอนด์ 2026-07-30)
+- **Q1 = A (LOCKED, ปอนด์ 2026-07-30):** รอบจัดส่ง = **"Route" รหัส `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน)** — **RT แทน SHP ทั้งหมด, drop SHP.** เดิมรอบจัดส่งมีเลข `SHP-{YYYYMMDD}-{NNNN}` (locked, D-F5); ระบบยังไม่ deploy จึงไม่มีข้อมูลจริงต้อง migrate → เลิกใช้ SHP ทั้งระบบ.
+- **Historical note เท่านั้น:** SHP → RT (renamed, Q1=A). ไม่มี SHP reference คงเหลือในสเปกอีก.
+- **ไม่มี open question ค้างในโมดูลนี้.**
