@@ -1,10 +1,10 @@
 # Requirement Package (Per-Module) — ESSENCE Hub System
 
-slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONICAL & COMPLETE SINGLE SOURCE OF TRUTH** สำหรับ BA / QA / Tech-Lead
-สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** (existing-good absorb + delta ใหม่) · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29)
+slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-30 · **CANONICAL & COMPLETE SINGLE SOURCE OF TRUTH** สำหรับ BA / QA / Tech-Lead
+สถานะ: consolidation ของ requirement ที่กระจัดกระจาย → per-module ที่โครงสร้างสม่ำเสมอ **ครบทุก module + NFR + Deletion Policy** · reconciled กับ D1–D18 + fold คำสั่งใหม่ของปอนด์ (2026-07-29 · **+ Customer/Route/DN 3-module review 2026-07-30**)
 
 ## สรุปภาษาไทย
-เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub — ทุก module มี .md ที่เป็น **spec ปัจจุบันเต็ม**. Document Hub จัดเป็น **① Functional** · **② Non-Functional** (`non-functional.md` + `deletion-policy.md` + **`traceability.md`**) · **③ Reference** · ④ Architecture · ⑤ Mockups · **⑥ Archive**. **★ ปอนด์เคาะรอบก่อน (2026-07-29):** traceability → Non-Functional · Reference หมวดเอง · Supply Planning proactive Low · Quotation ยกเลิกได้ทุกสถานะ · Customer/Quotation/PO/Stock/Supplier/BOM/Settings · **Production (คิวงานผลิต)** · **Supply Planning** · **QC + GR/Stock flow (QC-gated stock-in)**. **★★ NEW — 2 คำสั่งปอนด์ (2026-07-29):** **(1) Return module:** เพิ่ม **RM selector (บังคับ) บน return-create** เพราะ **1 Lot ถือได้หลาย RM** (lot = `{supplier prefix}{YYMM}`) → ผู้ใช้เลือกว่าคืน RM ตัวใดในล็อต (search-in-dropdown ชื่อ+รหัส G7); จำนวนคืนหักจากคงเหลือของ (lot, RM); + list search ด้วย Lot/Supplier/ชื่อ RM/รหัส RM. **(2) ★ NEW Global Rule G8 — เลขเอกสารออกตอนบันทึก (number-on-save):** create ทุกใบ **ไม่โชว์เลขล่วงหน้า** (แสดง "(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · ป้องกันเลขหาย (ร่างที่ไม่บันทึกไม่กินเลข). Apply: **Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR** + ขยายไป **DN/SHP · Invoice · PRD · Batch** (นิยามครั้งเดียวที่ `numbering-on-save.md`, อ้างจากแต่ละ module). **★★★ NEW ล่าสุด — Global Rule G9 (permission-code suffix):** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)". **รหัสสาธารณะ 6 ตัวเป๊ะ: R/C/U/D/A/Ad** (Ad=Admin; **ไม่มี Archive แยก** — undelete/restore/force-override = ส่วนของ Admin). `permission-matrix.md` §3 มี **คอลัมน์ Suffix ต่อ action ต่อ module** เป็น authority ให้ UX/UI ไป append. **★ Doc-completeness (2026-07-29):** ตอนนี้ **ทุกไฟล์ `.md` ในชุดนี้มี HTML review view ครบ 1:1 + ลิงก์ในหน้า Modules index** — เติม `comment-convention.html` (G6) และ `numbering-on-save.html` (G8) ที่ก่อนหน้ายังไม่มี view/ลิงก์.
+เอกสารชุดนี้คือ **แหล่งความจริงล่าสุดแบบราย module ที่ครบถ้วน (single source of truth)** ของทั้งระบบ ESSENCE Hub. **★★★ NEW — 3 modules ที่ปอนด์รีวิว (2026-07-30, ผูกกันแน่น):** **(A) Customer** — เพิ่ม **ที่อยู่ลูกค้า (registered)** และ **ที่อยู่จัดส่งสินค้า (shipping)** แยกกัน + ผู้ติดต่อมี flag **"เป็นคนรับสินค้า (is receiver)"** (ติด flag = ชื่อ+เบอร์บังคับ). **(B) การจัดส่ง (Shipping)** — รอบจัดส่งเป็น **"Route" รหัส `RT-…`** (★ reconcile SHP: PO เสนอ RT แทน SHP — **Q1 รอปอนด์**); Route list ค้นคนขับ/username/route-id + ช่วงวันชนิดวัน + ปุ่ม "สร้าง Route"; หน้าสร้าง/แก้ (คนขับ=user, เบอร์\*, ประเภทรถ\*×5, ทะเบียน, วัน-เวลา) + modal เพิ่ม PO/SO/DN (เรียงตามวันต้องการรับ, เลือกได้เฉพาะพร้อมจัดส่ง) + modal รายละเอียด order แสดง ที่อยู่จัดส่ง/ผู้รับ; **สถานะ เตรียมจัดของ→กำลังออกไปส่ง→เสร็จสิ้น(บังคับสรุปผลราย DN + comment G6)/ยกเลิก**; บันทึกสร้างรอบ → G8 popup เลข RT + ทุก DN. **(C) ใบจัดส่ง DN** — module เอกสารแยก; **6 สถานะใหม่** (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่); สร้างตรงไม่ได้ (ผ่าน Route); ค้น (คนขับ/username/route-id/PO-SO/วันลูกค้าต้องการรับ) + filter สถานะ; **print DN + print Invoice**; comment (G6); **★ แก้สถานะ DN โดยตรง = สิทธิ์ A (Approve, G9)**; **★ PO/SO delivery status = LINKED จาก DN status — ทุกจอที่โชว์สถานะ PO ต้องใช้ logic นี้ (po.md §4b)**. **คงกฎเดิม:** 2-tier Route/DN · G8 number-on-save · G6 comment · G9 permission-code · entity-status-map. **★ ทุกไฟล์ `.md` มี HTML review view + ลิงก์ในหน้า index — รอบนี้เพิ่ม `delivery-note.md`→`delivery-note.html` (view + _render map + index link ครบ).**
 
 ---
 
@@ -13,31 +13,31 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-29 · **CANONI
 ```
 docs/requirements/erp-v2-ui-first/modules/
   README.md                  ← ไฟล์นี้ (index + D-rule spine + changelog + source-of-truth + old→new map + global rules)
-  permission-matrix.md       ← capability → module → action/button → ★ Suffix (G9)
-  comment-convention.md      ← ★ กติกากลาง comment + change-history (CC1–CC7) · 12 object · อ้างโดยทุก module ธุรกรรม
-  numbering-on-save.md        ← ★ NEW กติกากลาง G8 = เลขเอกสารออกตอนบันทึก (NS1–NS7) · อ้างโดยทุก create flow
+  permission-matrix.md       ← capability → module → action/button → ★ Suffix (G9) · ★ แก้สถานะ DN = A
+  comment-convention.md      ← ★ กติกากลาง comment + change-history (CC1–CC7) · 12 object (Shipment→Route)
+  numbering-on-save.md        ← ★ กติกากลาง G8 = เลขเอกสารออกตอนบันทึก (NS1–NS7) · DN+Route (RT)
 
   # System-wide / Governance (Non-Functional bucket ใน Hub)
-  non-functional.md          ← NFR รวม (★ +GR QC-gated stock-in audit · +number-on-save G8)
+  non-functional.md          ← NFR รวม (★ +Route/DN r11 · RT numbering · DN status-edit A)
   deletion-policy.md         ← soft-delete/void baseline + entity
-  traceability.md            ← trace/audit governance (★ +GR object lifecycle + credit on QC pass)
+  traceability.md            ← trace/audit governance (★ +Route/DN entity + DN status-edit A audit)
 
   # Platform & Navigation
   platform.md · home.md · dashboard.md
 
   # Sales & Customer
-  customer.md · quotation.md · po.md · so.md
+  customer.md (★ +ที่อยู่ลูกค้า/ที่อยู่จัดส่ง + ผู้ติดต่อ=คนรับสินค้า) · quotation.md · po.md (★ +§4b สถานะจัดส่ง=สะท้อน DN) · so.md (★ +สถานะจัดส่ง=สะท้อน DN)
 
   # Supply Planning & Production (Functional · ผลิต&คุณภาพ)
   bom.md · supply-planning.md
-  production.md              ← คิวผลิต 2 แท็บ + management page + comment (PRD+Batch) · ★ PRD/Batch เลขใน confirm popup (G8)
-  qc.md                      ← ★ (A) ตรวจรับ RM = QC-gate เข้าสต็อก · (B) ตรวจแบตช์ 2 sub-tab OEM/Own-Brand · comment placement
+  production.md              ← คิวผลิต 2 แท็บ + management page + comment
+  qc.md                      ← ตรวจรับ RM (QC-gate) + ตรวจแบตช์ 2 sub-tab
 
   # Inventory & Procurement (Functional · คลัง&จัดซื้อ)
-  stock.md (★ +แท็บ "Good Receipt (RM)" · Adjust อ้าง Lot/FIFO · GR credit on QC pass · GR/Lot เลขตอนบันทึก G8) · goods-receipt.md (★ GR object + QC-gated stock-in · GR+Lot number-on-save G8) · pr.md · supplier.md · return.md (★ +RM selector · +list search)
+  stock.md · goods-receipt.md · pr.md · supplier.md · return.md
 
   # Fulfilment & Finance
-  shipping.md (★ SHP+DN number-on-save G8) · invoice.md (★ INV number-on-save G8)
+  shipping.md (★★★ Module B — Route `RT-…` + สร้างรอบ + modal + status actions) · delivery-note.md (★★★ Module C ใหม่ — DN 6 สถานะ + search + print DN/Invoice + comment + แก้สถานะ A) · invoice.md
 
   # System
   settings.md
@@ -45,53 +45,29 @@ docs/requirements/erp-v2-ui-first/modules/
   flows/  oem-flow.md · ownbrand-flow.md
 ```
 
-HTML review view: `docs/design/erp-v2-ui-first/functional-spec/modules/index.html` · Hub `functional-spec/index.html` จัด ① Functional / ② Non-Functional / ③ Reference / ④ Architecture / ⑤ Mockups / ⑥ Archive.
-**★ Doc-completeness (2026-07-29): ทุกไฟล์ `.md` ในชุดนี้มี HTML review view ครบ 1:1 + ลิงก์ในหน้า Modules index** (render จาก .md ผ่าน `_render.js`). แต่ละ .md → view (ตัวอย่าง): `README.md`→`package-overview.html` · `permission-matrix.md`→`permission-matrix.html` · **`comment-convention.md`→`comment-convention.html` (G6, เพิ่งเติมให้ครบ)** · **`numbering-on-save.md`→`numbering-on-save.html` (G8, เพิ่งเติมให้ครบ)** · `flows/oem-flow.md`→`oem-flow.html` · `flows/ownbrand-flow.md`→`ownbrand-flow.html` · (module อื่นชื่อไฟล์เดียวกัน). กติกากลาง 3 ตัว (permission-matrix + comment-convention + numbering-on-save) จัดอยู่กลุ่ม **"Global Rules & Conventions"** ในหน้า index.
+HTML review view: `docs/design/erp-v2-ui-first/functional-spec/modules/index.html` · Hub `functional-spec/index.html`.
+**★ Doc-completeness: ทุกไฟล์ `.md` มี HTML review view ครบ 1:1 + ลิงก์ในหน้า Modules index** (render จาก .md ผ่าน `_render.js`). **★ รอบนี้เพิ่ม `delivery-note.md`→`delivery-note.html`** (สร้าง view + เพิ่ม map ใน `_render.js` + ลิงก์ในกลุ่ม "จัดส่ง & การเงิน" ของ index.html + shipping.html view rename เป็น "Shipping / Route" + nav ชี้ delivery-note).
 
 ---
 
-## 2. D-Rule Spine (ยังคงเป็นแกน — พร้อม DELTA ที่ปอนด์แก้ 2026-07-29)
-
-D1–D18 ยังเป็นกฎแกน (ดูฉบับเต็ม `scope-oem-ownbrand-supply-planning.md` §1). **จุดที่อัปเดต:**
-
-### 2.1 ★ D8 v2 — ปุ่ม "สั่งผลิต" ใน Supply Planning
-กด "สั่งผลิต" → พาไปหน้า SO produce-to-stock (ไม่เลือกลูกค้า) แบบ PRE-FILL → เข้าสาย production. **★ ผู้ใช้ระบุ "จำนวน batch" เองใน modal → prefill จำนวน = batch count × Batch Size**. ดู `supply-planning.md` §5/§5b, `so.md` §6.
-
-### 2.2 ★ Credit Term — ระดับลูกค้า 30/60/90 · DEFAULT 60
-per-invoice override ยังทำได้. ดู `customer.md`/`invoice.md`.
-
-### 2.3 ★ D18 reseat — QT "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" · REVERTED Sent
-"Convert to PO" = QT = "ยืนยัน (Confirmed)" ทันที · **REVERTED: ถอด "ส่งแล้ว (Sent)" + sent-date**. authoritative = `quotation.md` · entity-status-map §1.1b.
-
-### 2.4 ★★ D11 v2 — รหัส BOM/FG + RM = ผู้ใช้ตั้งเองตอนสร้าง + ล็อก
-1 BOM = 1 FG (1:1, shared) · รหัส user-entered on create + unique + **create-only-lock** · **RM ก็ด้วย**. authoritative = `bom.md` §5 · `stock.md` §3b.
-
-### 2.5 ★★ D13 reinforce — Production review (2026-07-29)
-**"พร้อมส่ง (Ready to Ship)" = action ที่ฝ่ายผลิตกด (ไม่ auto), QC-gated** → capture surplus · **ทุก PRD พร้อมส่ง → PO/SO พร้อมส่ง** · **actual ≥ ordered เสมอ** · **consume/loss/adjust lot = เลือก lot มี stock; หลาย lot = FIFO**. authoritative = `production.md` · `po.md` §5.2 · `stock.md` §5.1 · entity-status-map §1.4 (r9).
-
-### 2.6 ★★ D9/D10 clarify — Supply Planning margin simulation (2026-07-29)
-Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั่งผลิต" (ก่อน VAT, decision-support ไม่ใช่ COGS; D10 snapshot คงเดิม). authoritative = `supply-planning.md` §5b/§6.2b · `bom.md` §3/§4.
-
-### 2.7 ★★ D12/D16 clarify — QC + GR/Stock flow review (2026-07-29)
-**RM เข้าสต็อกเมื่อ QC ตรวจรับ "ผ่าน" เท่านั้น** — Goods Receipt สร้าง **GR object + Lot รอตรวจ (ยังไม่ credit)**; **QC ผ่าน → `GR (+)` credit + ชดเชยติดลบ + FIFO retro-link ที่จุดนี้** · **ไม่ผ่าน → ไม่เข้าสต็อก + Lot ระงับ**. GR object 4 สถานะ (QC ตรวจสอบ/ผ่าน/ไม่ผ่าน/ยกเลิก). authoritative = `goods-receipt.md` §4/§9 · `qc.md` §4.1 · `stock.md` §2b/§6 · entity-status-map §1.6/§1.8 (r10).
-
-> D1–D7, D14–D17 **ไม่เปลี่ยน**. D8 → D8 v2. D9/D10 = clarify. D11 → D11 v2. D13 = reinforce. D18 = reseat. **D12/D16 = clarify (RM credit gated on QC pass, gr object).**
+## 2. D-Rule Spine (คงเป็นแกน — พร้อม DELTA)
+D1–D18 ยังเป็นกฎแกน (`scope-oem-ownbrand-supply-planning.md` §1). จุดอัปเดตหลัก (คงตามรอบก่อน): **D8 v2** (สั่งผลิต batch-count) · **credit 60** · **D18 reseat** (QT Confirmed) · **D11 v2** (BOM/FG+RM code user-entered lock) · **D13 reinforce** (พร้อมส่ง QC-gated) · **D9/D10** (margin sim) · **D12/D16** (QC-gated stock-in). **★★★ 2026-07-30:** Route/DN rewrite ไม่แตะ D-rule แต่ implement D1/D16 (DN อ้าง PO/SO · FG FIFO per-Batch ตอน dispatch = DN "ส่งสำเร็จ").
 
 ---
 
-## 3. GLOBAL Rules (บังคับทุก module — ปอนด์สั่ง 2026-07-29)
+## 3. GLOBAL Rules (บังคับทุก module)
 
 | # | กติกา | รายละเอียด |
 |---|---|---|
-| **G1 Pagination** | list/history ทุกอัน **20 แถว/หน้า + pagination** | ทุก list + **★ stock "Good Receipt (RM)" tab + คิว QC (ตรวจรับ/ตรวจแบตช์)** |
-| **G2 Date-range search** | ค้น **เลขเอกสาร** หรือ **ช่วงวันที่** | quotation/PO/SO/GR/PR/invoice/shipping list + production queue + audit + **★ GR (RM) tab (received-date range) · Return (RT/date)** |
-| **G3 Drill + back คงสถานะ** | กลับ **ไม่เสีย state เดิม** | dashboard drill · PO/SO detail modal · Supply Planning FG modal |
+| **G1 Pagination** | list/history ทุกอัน **20 แถว/หน้า + pagination** | ทุก list + **★ Route list · DN list** |
+| **G2 Date-range search** | ค้น **เลขเอกสาร** หรือ **ช่วงวันที่** | quotation/PO/SO/GR/PR/invoice list + production queue + audit + **★ Route/DN list (ช่วงวันชนิดวัน = สร้าง route / route ออกไปส่ง)** |
+| **G3 Drill + back คงสถานะ** | กลับ **ไม่เสีย state เดิม** | dashboard drill · detail modal · **★ Route add-order modal + order detail modal** |
 | **G4 Customer search dropdown** | quotation/po/so-create | ค้นเบอร์/บริษัท/ผู้ติดต่อ · Disabled/Blacklist hard block |
 | **G5 Permission-per-action** | ทุกปุ่มระบุ capability | `permission-matrix.md` · **★ แสดงรหัสเป็น suffix ตาม G9** |
-| **★ G6 Comment + change-history** | ทุก object ธุรกรรมมี **ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ** | **12 object** · กติกากลาง = **`comment-convention.md`** · **★ r10: comment/feedback ของ Batch แสดงในบริบท Batch นั้น** |
-| **★ G7 Search-in-dropdown (RM/FG/Lot/component)** | RM/Lot/FG + BOM component + supplier price-matrix + **★ Return RM-in-lot** | **RM & FG ค้นชื่อ+รหัส** · **Lot ค้น dropdown (Loss+Adjust+option "FIFO")** · **★ Return: เลือก RM ในล็อต ค้นชื่อ+รหัส** |
-| **★ G8 Document number on SAVE** | **create ทุกใบ: ไม่โชว์เลขล่วงหน้า → ออกเลข gapless ตอนบันทึกสำเร็จ + popup ยืนยัน (เลข + summary + ลิงก์ดู/พิมพ์)** · ร่างที่ไม่บันทึกไม่กินเลข | กติกากลาง = **`numbering-on-save.md`** (NS1–NS7) · **Apply:** Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR · **Extend:** DN/SHP · Invoice · PRD · Batch · **นอกขอบเขต:** QC record + master code |
-| **★ G9 Permission-code suffix** | **ทุก actionable control ที่ permission-gate แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)" · read-only ละ (R) ได้ | **รหัสสาธารณะ 6 ตัว: R/C/U/D/A/Ad** (Ad=Admin; **ไม่มี Archive แยก**) · cross-module = แสดงครบ เช่น "แปลงเป็น PO (U+C)" · authority = **`permission-matrix.md` §1b (G9) + §3 คอลัมน์ Suffix** |
+| **★ G6 Comment + change-history** | ทุก object ธุรกรรมมี **ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ** | **12 object** (Shipment→**Route**) · `comment-convention.md` · **★ comment DN บังคับตอน status-update** |
+| **★ G7 Search-in-dropdown** | RM/FG/Lot/component + Return RM-in-lot | ค้นชื่อ+รหัส · **★ Route driver ค้นชื่อ/username** |
+| **★ G8 Document number on SAVE** | create ทุกใบ: ไม่โชว์เลขล่วงหน้า → ออกเลข gapless ตอนบันทึก + popup ยืนยัน · ร่างที่ไม่บันทึกไม่กินเลข | `numbering-on-save.md` (NS1–NS7) · **★ Route (RT) + ทุก DN ออกพร้อมกันตอนสร้างรอบ (NS7)** |
+| **★ G9 Permission-code suffix** | ทุก actionable control ที่ permission-gate แสดงรหัสสิทธิ์เป็น suffix | รหัส 6 ตัว: R/C/U/D/A/Ad · **★ แก้สถานะ DN = (A)** · authority = `permission-matrix.md` §3 |
 
 > NFR ระดับระบบ รวมที่ `non-functional.md`.
 
@@ -102,119 +78,99 @@ Supply Planning modal จำลอง **cost/revenue/margin** ตอน "สั�
 | หัวข้อ | คำตัดสิน | เอกสาร |
 |---|---|---|
 | **Convert-to-PO** | QT = **Confirmed ทันที** + loose link | `quotation.md` · `po.md` · oem-flow |
-| **SO (ก) ขายจากสต็อก** | จอง FG → พร้อมส่ง → ตัด FG FIFO → DN/Invoice | `so.md` · `shipping.md` |
-| **SO (ข) ผลิตเก็บสต็อก** | BOM check → production; RM ขาด auto-PR; QC ผ่าน → FG เข้าคลัง | `so.md` |
+| **SO (ก)/(ข)** | จอง FG→พร้อมส่ง→ตัด FIFO→DN/Invoice · ผลิตเก็บสต็อก auto-PR | `so.md` · `shipping.md` |
 | **★ Comment convention** | **12 object** มีช่อง comment เดียว แก้ในที่ + เก็บประวัติ | `comment-convention.md` |
-| **★ Customer Edit / follow-up flag** | Edit ครบทุกฟิลด์ · flag ⚑ แยกจาก enum (5 สถานะ) · raise จาก PO edit | `customer.md` · entity-status-map §1.1 |
-| **★ Delete Sale → customers unassigned** | ลบ Sale → ลูกค้า unassigned อัตโนมัติ · ไม่ bulk-reassign | `settings.md` US-SET-02 · `customer.md` §4.3 · `deletion-policy.md` §2.15 |
-| **★ Stock — RM code / Loss-Adjust / BOM=FG** | RM code user-set+UNIQUE+ล็อก · Loss(−)/Adjust(+) · Adjust อ้าง Lot/FIFO · audit ทุก movement | `stock.md` · `bom.md` · `traceability.md` |
-| **★★ Supplier / BOM / Settings module reviews** | price-matrix dropdown+audit · code lock+Active/Inactive+audit · role disable/soft-delete+Admin-only | `supplier.md` · `bom.md` · `settings.md` |
-| **★★ Production module review** | คิว 2 แท็บ · 1 PO หลาย PRD · actual≥ordered · QC-gate พร้อมส่ง · lot-FIFO · loss · ไปหน้า QC · edit-PO→follow-up | `production.md` · `stock.md` · `po.md` §5.2 · `qc.md` · entity-status-map r9 |
-| **★★ Supply Planning module review** | list+expand+modal · FG search ชื่อ/รหัส/RM · สั่งผลิต batch-count + cost/revenue/margin sim · simulate vs save-back · sell-price settled | `supply-planning.md` · `bom.md` · `so.md` · `traceability.md` · `non-functional.md` |
-| **★★ QC + GR/Stock flow review (2026-07-29 — settled)** | **★ QC-gated stock-in:** RM ไม่เข้าสต็อกทันที · GR สร้าง GR object + Lot รอตรวจ · **QC ผ่าน → credit + ชดเชยติดลบ + FIFO retro-link** · **ไม่ผ่าน → ไม่เข้า + Lot ระงับ** · **GR object 4 สถานะ + ส่งกลับ QC/ยกเลิก** · **แท็บ "Good Receipt (RM)" ใน stock** · **ตรวจแบตช์ 2 sub-tab OEM/Own-Brand** · **Batch QC ไม่ผ่าน → Rework** · **comment ในบริบท Batch** | `qc.md` (primary) · `goods-receipt.md` · `stock.md` §2b/§6 · `entity-status-map.md` §1.4/§1.6/§1.8 (r10) · `traceability.md` §3/§4/§9 · `non-functional.md` |
-| **★★ NEW — Return module: RM selector + list search (2026-07-29)** | **1 Lot ถือได้หลาย RM** (lot = `{supplier prefix}{YYMM}`) → return-create **บังคับเลือก RM ในล็อต (search-in-dropdown ชื่อ+รหัส G7)**; จำนวนคืน ≤ คงเหลือของ (lot, RM); ตัด stock + ledger `return (−)` source ผูก Lot+RM+Supplier+RT; **list ค้น Lot/Supplier/ชื่อ RM/รหัส RM (+ RT/date)** | `return.md` · `goods-receipt.md` §3 (lot naming) · `stock.md` §6 |
-| **★★ NEW — G8 Document number on SAVE (2026-07-29)** | create **ไม่โชว์เลขล่วงหน้า** ("(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · ร่างที่ไม่บันทึกไม่กินเลข · หลายเลข/บันทึก (GR+Lot · SHP+DN) → popup แสดงครบ · **Apply:** Lot/GR/QT/SO/PO/PR · **Extend:** DN/SHP·Invoice·PRD·Batch · **นอกขอบเขต:** QC record + master code | **`numbering-on-save.md` (G8/NS1–NS7)** · quotation/so/po/pr/goods-receipt/stock/shipping/invoice/production · `non-functional.md` D-F2 |
-| **★★★ NEW — G9 Permission-code suffix (2026-07-29)** | ทุกปุ่ม/action ที่ permission-gate **แสดงรหัสสิทธิ์ต่อท้าย label** · **รหัส 6 ตัว: R/C/U/D/A/Ad** (RUCDAA+Admin reconciled → Ad=Admin; **ไม่มี Archive แยก** — undelete/restore/force-override = Ad) · cross-module แสดงครบ ("แปลงเป็น PO (U+C)") · read-only ละ (R) ได้ | **`permission-matrix.md` §1 (reconcile) · §1b (G9 rule) · §3 (คอลัมน์ Suffix ต่อ module/action)** · README §3 (G9) · §8 (UX/UI sweep) |
+| **★ Customer Edit / follow-up flag / financial summary** | Edit ครบทุกฟิลด์ · flag ⚑ แยก enum · financial roll-up | `customer.md` · entity-status-map §1.1 |
+| **★ Delete Sale → customers unassigned** | ลบ Sale → ลูกค้า unassigned อัตโนมัติ | `settings.md` US-SET-02 · `customer.md` §4.3 |
+| **★★ Stock/Supplier/BOM/Settings/Production/Supply Planning/QC+GR reviews** | (settled รอบก่อน — commit history) | ราย module |
+| **★★ Return RM selector + G8 number-on-save + G9 permission-code** | (settled รอบก่อน) | `return.md` · `numbering-on-save.md` · `permission-matrix.md` |
+| **★★★ NEW — Customer address + receiver-contact (2026-07-30)** | **ที่อยู่ลูกค้า (registered) + ที่อยู่จัดส่ง (shipping) แยกกัน** (+ option "ใช้ที่อยู่เดียวกัน") · **ผู้ติดต่อ flag "เป็นคนรับสินค้า" → ชื่อ+เบอร์บังคับ** · ทั้งคู่ไปแสดงบน Route modal + หัว DN | `customer.md` §3/§9b · `shipping.md` §5 · `delivery-note.md` §5/§7 |
+| **★★★ NEW — Shipping = Route (`RT-…`) rewrite (2026-07-30)** | รอบ = Route; สถานะ เตรียมจัดของ→กำลังออกไปส่ง→เสร็จสิ้น(สรุป DN + comment)/ยกเลิก; หน้าสร้าง/แก้ + modal เพิ่ม PO/SO/DN + status actions; G8 popup RT+DN; **★ RT vs SHP = Q1 รอปอนด์** | `shipping.md` · entity-status-map §1.9 · `numbering-on-save.md` |
+| **★★★ NEW — DN module (2026-07-30)** | DN 6 สถานะ; สร้างตรงไม่ได้; ค้น + filter; print DN/Invoice; comment (G6); **★ แก้สถานะ DN โดยตรง = A**; **★ PO/SO status = สะท้อน DN (ทุกจอ)** | `delivery-note.md` · `po.md` §4b · `so.md` §4 · entity-status-map §1.10 · `permission-matrix.md` |
 
 **หมายเหตุ:** Quotation ทำ material check แต่ **ไม่ auto-open PR**.
 
 ---
 
 ## 5. ★ Source-of-Truth Statement (ประกาศชัด)
-
 1. **`modules/*.md` = AUTHORITATIVE spec ปัจจุบันของทุก module + NFR + Deletion Policy + Traceability** — ชุดเดียวที่ BA/QA/TL ยึด.
-2. แต่ละ .md เป็น **spec เต็ม**. `non-functional.md` = NFR authoritative · `deletion-policy.md` = deletion authoritative · `traceability.md` = trace/audit governance · **`comment-convention.md` = comment convention authoritative** · **`numbering-on-save.md` = number-on-save (G8) convention authoritative** · **`permission-matrix.md` = RBAC capability + G9 permission-code suffix authoritative**.
-3. **เอกสารเก่า** = **historical reference** → Hub ⑥ Archive (collapsed).
-4. **เอกสารหลักการเชิงลึก** (`entity-status-map`, `status-journeys`, `stock-reservation`, `scope` D1–D18, `mock-data-spec`, ADRs, `scheduled-jobs`, `rtm`, `glossary`, `list-conventions`) = **authoritative reference** → Hub ③ Reference. **★ entity-status-map §1.1=customer · §1.1b=QT · §1.1c=BOM · §1.4/§1.6 (r9)=Production/Stock · §1.8 (r10)=GR object — sync กับ module spec.** **เมื่อถ้อยคำ D-rule ที่ล็อก (scope) ต่างจาก module spec → module package wins.**
+2. แต่ละ .md = **spec เต็ม**. governance authoritative: `non-functional.md` · `deletion-policy.md` · `traceability.md` · `comment-convention.md` (G6) · `numbering-on-save.md` (G8) · `permission-matrix.md` (RBAC+G9).
+3. **เอกสารเก่า** = historical reference → Hub ⑥ Archive.
+4. **เอกสารหลักการเชิงลึก** (`entity-status-map` **§1.9/§1.10 = Route/DN r11**, `status-journeys`, `stock-reservation`, scope D1–D18, ...) = authoritative reference → Hub ③. **module package wins ถ้าขัดกัน.**
 5. **RTM/Traceability คงครบ.**
-6. **Navigation IA (Document Hub):** ① Functional · ② Non-Functional · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ 🗄 Archive.
-7. **★ HTML review view = 1:1 ต่อทุก .md** (render จาก .md ผ่าน `_render.js`, ไม่ทำสำเนา content ซ้ำ) — เป็นเพียง "หน้าอ่าน" ของ .md เดียวกัน; ถ้าเนื้อหาต่างกันเมื่อไร **`.md` คือฉบับจริง**.
+6. **Navigation IA:** ① Functional · ② Non-Functional · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive.
+7. **★ HTML review view = 1:1 ต่อทุก .md** (render จาก .md ผ่าน `_render.js`). **★ delivery-note.md ได้ view + link ครบรอบนี้.**
 
 ---
 
 ## 6. ★ Map: เอกสารเก่า → ครอบคลุมโดย module ใด
-
 | เอกสารเก่า | ครอบคลุมโดย module (authoritative) | หมายเหตุ |
 |---|---|---|
-| functional-spec BA pages | โมดูลชื่อเดียวกันใน `modules/` (stock → stock+goods-receipt) | absorbed เต็ม · เก่าอยู่ ⑥ Archive |
-| `list-conventions.html` | **G1–G3 (README §3)** + Pagination/Search ทุก module | มาตรฐาน list |
-| `continuity.html` | **platform.md** (noti) + cross-links | cascade reference |
-| `brief.md` · ADR-000..009 · `scheduled-jobs.html` · entity-status-map §1.6 · stock-reservation | **non-functional.md** (J8 · A6/A7/A8) | NFR รวม+อัปเดต |
-| ADR-008 gapless numbering | **`numbering-on-save.md` (G8)** + `non-functional.md` D-F2 | ★ number-on-save = พฤติกรรม create ของทุกใบ |
-| root `deletion-policy.md` · `rbac-deletion.html` | **deletion-policy.md** + **settings.md** / **permission-matrix.md** | fold + entity ใหม่ |
-| `functional-spec/traceability.html` | **traceability.md** — Hub ② Non-Functional | classification เปลี่ยน |
-
-> **Archive (Hub ⑥):** functional-spec module pages (16), `rbac-deletion.html`, root `docs/deletion-policy.html`, `docs/po-reviews.html` — collapsed, superseded.
+| functional-spec `shipping.html` (Shipment+DN รวม) | `shipping.md` (Route) + **`delivery-note.md` (DN แยก)** | ★ split เป็น 2 module (B/C) |
+| functional-spec BA pages อื่น | โมดูลชื่อเดียวกันใน `modules/` | absorbed เต็ม · เก่าอยู่ ⑥ Archive |
+| `SHP-…` numbering (glossary/ADR-008) | **`RT-…` (numbering-on-save + non-functional D-F5)** | ★ rename — Q1 รอปอนด์ |
 
 ---
 
 ## 7. Changelog — supersede / แก้ / ปอนด์เคาะ
-
 | เอกสาร/รายการ | สถานะ | เหตุผล |
 |---|---|---|
-| functional-spec module pages (16) + root deletion-policy + rbac-deletion | **superseded (Archive)** | absorbed/folded → module package |
-| NFR ใน brief/ADR/scheduled-jobs | **consolidated** | → `non-functional.md` |
-| **★ Traceability / Reference classification** | **DECIDED 2026-07-29** | Hub placement |
-| **★ Supply Planning proactive alerting** | **DECIDED 2026-07-29** | real-time + J8 digest |
-| **★ Quotation / Customer / Comment / Stock / Supplier / BOM / Settings reviews** | **DECIDED 2026-07-29 · settled** | (ดูรอบก่อน) |
-| **★ Delete Sale → customers unassigned · US-SET-02 simplified** | **DECIDED 2026-07-29 · settled** | ลบ Sale → unassigned; ไม่ bulk-reassign |
-| **★★ Production (คิวงานผลิต) module review** | **DECIDED 2026-07-29 · settled (no open Q)** | คิว 2 แท็บ · 1 PO หลาย PRD · actual≥ordered · QC-gate พร้อมส่ง · lot-FIFO · loss · ไปหน้า QC · edit-PO→follow-up · Adjust Lot/FIFO |
-| **★★ Supply Planning module review** | **DECIDED 2026-07-29 · settled (no open Q)** | list+expand+modal · FG search ชื่อ/รหัส/RM · สั่งผลิต batch-count + cost/revenue/margin sim · simulate vs save-back · sell-price settled |
-| **★★ QC + GR/Stock flow review** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | QC-gated stock-in · GR object lifecycle + ส่งกลับ QC/ยกเลิก · stock "Good Receipt (RM)" tab · ตรวจแบตช์ 2 sub-tab · Batch fail→Rework · comment placement (ดูรอบก่อน) |
-| **★★ NEW — Return module: RM selector + list search** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **1 Lot หลาย RM** (lot = `{supplier prefix}{YYMM}`) → return-create **บังคับเลือก RM ในล็อต (search-in-dropdown ชื่อ+รหัส, G7)**; จำนวนคืน ≤ คงเหลือของ (lot, RM); ตัด stock + ledger `return (−)` source ผูก **Lot+RM+Supplier+RT**; **list ค้น Lot/Supplier/ชื่อ RM/รหัส RM** (+ RT/date). อัปเดต `return.md` (§2/§3/§5/§6/§7/§8/§9/§10/§11) · `stock.md` §6/§8 (return source) · `non-functional.md` AU3/D-F4. |
-| **★★ NEW — G8 Document number on SAVE (number-on-save)** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **create ไม่โชว์เลขล่วงหน้า** (แสดง "(ระบบออกให้เมื่อบันทึก)") → **บันทึกสำเร็จ → ออกเลข gapless + popup ยืนยัน เลข+summary (+ ลิงก์ดู/พิมพ์)** · **ร่างที่ไม่บันทึกไม่กินเลข** (ป้องกัน gap) · **หลายเลข/บันทึก (GR+Lot · SHP+DN) → popup แสดงครบ (NS7)** · แก้/เวอร์ชันใหม่/void = เลขเดิม (NS6). **Apply (ปอนด์-listed):** Lot/GR (รับเข้าคลัง) · QT · SO · PO · PR. **Extend (propose → apply):** DN/SHP · Invoice · PRD · Batch (PRD/Batch = ออกตอน action → เลขใน confirm popup, NS1 N/A; Batch เลข derived; PR auto = ไม่มี popup). **นอกขอบเขต:** QC record + master code. NEW `numbering-on-save.md` (G8/NS1–NS7) · อ้างจาก quotation/so/po/pr/goods-receipt/stock/shipping/invoice/production create flow · `non-functional.md` D-F2/D-F5/AU1/§6/§9/§10/R5 · README §3 (G8). |
-| **★★★ NEW — G9 Permission-code suffix on labels (2026-07-29)** | **DECIDED 2026-07-29 (ปอนด์) · settled (no open Q)** | **ปอนด์ General Key Feature:** ทุก actionable control ที่ permission-gate **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (บันทึก (C) · อนุมัติ (A) · ตั้งค่า VAT (Ad)). **★ Code-set reconciliation:** โมเดลภายในเดิม = **RUCDAA + Admin**; ตัว **A ตัวที่สองของ RUCDAA = Admin** (ไม่ใช่ "Archive") → **6 รหัสสาธารณะ = R/C/U/D/A/Ad** เป๊ะ; **ไม่มี capability Archive แยก** — งาน undelete/restore/force-override/undelete-role อยู่ใต้ **Admin = (Ad)**. เพิ่ม **คอลัมน์ Suffix ต่อ action ต่อ module** ใน `permission-matrix.md` §3 (customer/quotation/po/so/supply-planning/bom/stock/production/qc/shipping/invoice/**pr**/**supplier**/settings) เป็น authority ให้ UX/UI ไป append. อัปเดต `permission-matrix.md` (§1 reconcile · §1b G9 rule · §3 Suffix · §4/§5) · README §3 (G9 row + G5 cross-ref) · §8 (UX/UI sweep task). |
-| **★ Doc-completeness fix — HTML review views + hub links (2026-07-29)** | **DONE 2026-07-29 · PO audit (docs เท่านั้น, ไม่แตะ mockups)** | **Gap:** `comment-convention.md` (G6) + `numbering-on-save.md` (G8) มี .md แต่ **ยังไม่มี HTML review view + ไม่ถูกลิงก์ในหน้า index**. **Fix:** สร้าง `comment-convention.html` + `numbering-on-save.html` (shell เดียวกับ deletion-policy.html · data-src ชี้ .md · `_render.js` เดิม) · เพิ่ม 2 filename→view ใน `_render.js` map (cross-link resolve) · ลิงก์ทั้งคู่จาก `modules/index.html` **กลุ่มใหม่ "Global Rules & Conventions"** (ข้าง permission-matrix) + จาก Document Hub `functional-spec/index.html` (กลุ่มเดียวกัน). **ผล: ทุก .md → มี view + hub link ครบ 1:1** (G9 permission-code ก่อนหน้า landed แล้ว). audit ยืนยัน flows (oem/ownbrand) + ทุก module + convention มี view + ลิงก์ครบ. |
-| `scope-…` D8/credit · U4 · stock-reservation Q1 | คงตามรอบก่อน | D8 v2 · credit 60 · Option A |
+| (รายการรอบก่อน — Quotation/Customer/Stock/Supplier/BOM/Settings/Production/Supply Planning/QC+GR/Return/G8/G9/doc-completeness) | **settled** | commit history |
+| **★★★ NEW — Customer address + receiver-contact (Module A)** | **DECIDED 2026-07-30 (ปอนด์) · settled** | **ที่อยู่ลูกค้า (registered) + ที่อยู่จัดส่ง (shipping) แยกกัน** (split จาก "ที่อยู่/เลขภาษี" เดิม → ที่อยู่ลูกค้า + เลขภาษี + ที่อยู่จัดส่ง) · **ผู้ติดต่อ flag "เป็นคนรับสินค้า" → ชื่อ+เบอร์บังคับครบ (HARD validation §9b)** · ทั้งคู่แสดงบน Route modal + หัว DN. อัปเดต `customer.md` §1/§2/§2b/§3/§8/§9/§9b/§11/§12. |
+| **★★★ NEW — Shipping → Route (`RT-…`) rewrite (Module B)** | **DECIDED 2026-07-30 (ปอนด์) · settled ยกเว้น Q1** | รอบ Shipment → **Route (`RT-…`)**; สถานะใหม่ 4 ตัว (เตรียมจัดของ/กำลังออกไปส่ง/เสร็จสิ้น/ยกเลิก); **"เสร็จสิ้น" = action บังคับสรุปผลราย DN + comment (G6)**; Route list (ค้นคนขับ/username/route-id + ช่วงวันชนิดวัน + คอลัมน์ + ปุ่มสร้าง Route + row edit); หน้าสร้าง/แก้ (คนขับ=user ค้นชื่อ/username · เบอร์\* · route · ประเภทรถ\*×5 · ทะเบียน · วัน-เวลา); modal เพิ่ม PO/SO/DN (เรียงตามวันต้องการรับ, ค้น code/ลูกค้า/ผู้ติดต่อ/เบอร์, เลือกได้เฉพาะพร้อมจัดส่ง, filter default พร้อมจัดส่ง); modal รายละเอียด order = ชื่อลูกค้า/ที่อยู่จัดส่ง/เบอร์ผู้รับ; **G8 popup RT + ทุก DN (PO/SO ใบไหนได้ DN ใด)**. อัปเดต `shipping.md` (rewrite) · entity-status-map §1.9 · `numbering-on-save.md` · `comment-convention.md` · `non-functional.md`. **★ Q1: RT vs SHP numbering — รอปอนด์.** |
+| **★★★ NEW — Delivery Note (DN) module (Module C)** | **DECIDED 2026-07-30 (ปอนด์) · settled** | DN = module เอกสารแยก (`delivery-note.md`, HTML view ใหม่). **DN 6 สถานะ** (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) แทนชุดเดิม 4; **สร้าง DN ตรงไม่ได้ (Route เท่านั้น)**; ค้น (คนขับ/username/route-id/PO-SO/วันลูกค้าต้องการรับ) + filter สถานะ; **print DN + print Invoice**; comment (G6, บังคับตอน status-update); **★ แก้สถานะ DN โดยตรง = Shipping.Approve (A)**; **★★ PO/SO delivery status = LINKED จาก DN status (rule กลาง, ทุกจอ: po-list/po-detail/dashboard/production queue/home)** — `po.md` §4b + `so.md` §4. **Rollup = DN ล่าสุด (active)** (1 DN=1 PO เต็ม). อัปเดต `delivery-note.md` (ใหม่) · `po.md` §4b · `so.md` §4 · entity-status-map §1.2/§1.10 + cascade 9–12/25 + r11 · `permission-matrix.md` · `traceability.md` §3/§4 · `numbering-on-save.md` · `non-functional.md`. |
+| **★ Doc-completeness — delivery-note view (2026-07-30)** | **DONE (docs เท่านั้น)** | สร้าง `delivery-note.html` (shell เดียวกับ shipping.html · data-src ชี้ delivery-note.md) · เพิ่ม map ใน `_render.js` · ลิงก์ใน `modules/index.html` (กลุ่ม จัดส่ง & การเงิน) · shipping.html rename เป็น "Shipping / Route" + nav → delivery-note. **ทุก .md → view + link ครบ 1:1.** |
 
 ---
 
 ## 8. งานส่งต่อ UX/UI (สรุป)
 
-**punch-list เดิม + delta รอบก่อน:** customer · quotation · po/so · stock/GR/return · bom · production · supply-planning · dashboard/home/platform · qc/shipping/invoice/traceability/settings · pagination/search + customer dropdown. (คงตามรอบก่อน — commit history)
+**punch-list เดิม + delta รอบก่อน:** (คงตามรอบก่อน — commit history)
 
-> **★★ QC + GR/Stock flow review — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2026-07-29 · `qc.html` + `goods-receipt.html` + `stock.html` + `production.html`):** (QC-1/QC-2/QC-3 · GR-1 · STK-2 · PRD-fail — คงตามรอบก่อน, commit history)
-
-> **★★ NEW รอบนี้ (2026-07-29) — UI ที่ UX/UI ต้องเพิ่ม/แก้ (2 คำสั่งปอนด์):**
+> **★★★ NEW รอบนี้ (2026-07-30) — 3 modules (Customer/Route/DN) ที่ UX/UI ต้องเพิ่ม/แก้:**
 >
-> **(A) Return module — `return.html` (create + list):**
-> - **(RET-1) RM selector บน return-create (บังคับ):** หลังเลือก Lot (→ supplier auto) เพิ่ม **ช่องเลือกวัตถุดิบ (RM) ในล็อตนั้น** = **search-in-dropdown ค้นชื่อ+รหัส RM (G7)**; ตัวเลือกจำกัดเฉพาะ RM ที่ยังมีคงเหลือใน lot (on_hand ของ (lot, RM) > 0) + แสดงคงเหลือของ RM ตัวนั้นเป็นเพดานจำนวนคืน. ลำดับฟิลด์: Lot → supplier(auto) → **RM** → จำนวน → เหตุผลการคืน(บังคับ) → comment.
-> - **(RET-2) validation:** จำนวนคืน **≤ คงเหลือของ RM ที่เลือกในล็อต** (ต่อ (lot, RM) ไม่ใช่ทั้ง lot); ไม่เลือก RM = error "ต้องเลือกวัตถุดิบที่จะคืนในล็อตนี้".
-> - **(RET-3) list search:** เพิ่มค้นด้วย **Lot / Supplier / ชื่อ RM / รหัส RM** (คง RT/ช่วงวันที่เดิม) — RM = search-in-dropdown (ชื่อ+รหัส).
-> - ยึด `return.md` §2/§3/§5/§8/§9.
+> **(A) Customer — `customers.html` · `customer-create.html` · `customer-detail.html` · `contact-create.html`:**
+> - **(CUS-1) ที่อยู่ 2 ช่อง:** แยก **"ที่อยู่ลูกค้า (registered/ออกเอกสาร)"** + **"ที่อยู่จัดส่งสินค้า (shipping)"** (บน create/edit/detail) + checkbox/option **"ใช้ที่อยู่เดียวกับที่อยู่ลูกค้า"** (copy). แยกจากช่อง "ที่อยู่/เลขภาษี" เดิม (→ ที่อยู่ลูกค้า + เลขภาษี + ที่อยู่จัดส่ง).
+> - **(CUS-2) ผู้ติดต่อ = คนรับสินค้า:** เพิ่ม **checkbox "เป็นคนรับสินค้า (is receiver)"** ต่อผู้ติดต่อ (contact-create + edit). ติด flag = **ชื่อ+เบอร์บังคับครบ** (validation error ถ้าว่าง). ติดได้หลายคน. detail แสดงป้าย "คนรับสินค้า" ต่อผู้ติดต่อ.
+> - ยึด `customer.md` §3/§9b.
 >
-> **(B) Number-on-save (G8) — ทุกหน้า create ที่ออกเลข:**
-> - **(NS-A) ซ่อนเลขล่วงหน้าบน create:** ช่อง "เลขเอกสาร" บนหน้าสร้าง แสดงเป็น **read-only placeholder "(ระบบออกให้เมื่อบันทึก)"** (ไม่มีเลขจริง). ครอบ: **goods-receipt (GR+Lot) · quotation-create (QT) · so-create (SO) · po-create (PO) · pr-create (PR)** + extend **shipping create-round (SHP+DN) · invoice ออกใบ (INV)**.
-> - **(NS-B) popup ยืนยันหลังบันทึกสำเร็จ:** เด้ง **confirmation popup** แสดง **(ก) เลขที่ออกให้ (เด่นชัด)** + **(ข) สรุปเอกสาร** (คู่ค้า/ลูกค้า/supplier · จำนวนรายการ · ยอดรวม/ปริมาณ ตามชนิด) + **(ค) ลิงก์ "ดูรายละเอียด"/"พิมพ์"** ตามที่มี. **หลายเลขต่อการบันทึก → popup แสดงครบ:** goods-receipt = **GR + ทุก Lot** (+ ย้ำ "ยังไม่เข้าสต็อก รอ QC"); shipping = **SHP + ทุก DN** ในรอบ (NS7).
-> - **(NS-C) PRD/Batch (production):** ไม่มีฟอร์ม create ที่โชว์ช่องเลข → **แสดงเลขที่ออกให้ใน confirm popup ของ action เดิม** — **"รับงาน" → เลข PRD**, **"เริ่มผลิต" → เลข Batch** (fold เข้ากับ confirm popup เดิม §7.7 ของ production, ไม่ทำ popup ซ้อนใหม่).
-> - **(NS-D) พฤติกรรม:** ปิด/ยกเลิกร่างก่อนบันทึก = ไม่ออกเลข; แก้/เวอร์ชันใหม่/void = เลขเดิม (ไม่มี popup ออกเลข).
-> - ยึด `numbering-on-save.md` (G8/NS1–NS7) + create flow ของแต่ละ module (quotation §5 · po §5 · so §5/§6 · pr §5 · goods-receipt §5 · shipping §5 · invoice §5 · production §7.7).
+> **(B) Shipping / Route — `shipping.html`:**
+> - **(RT-1) Route LIST:** ค้น **ชื่อคนขับ/username/route id** + **ช่วงวันที่ + dropdown ชนิดวัน (สร้าง route / route ออกไปส่ง)** · คอลัมน์ **RouteID · วันที่สร้าง · วันที่ออกไปส่ง · จำนวน PO/SO · Status** · ปุ่ม **"สร้าง Route (C)" มุมขวาบน** · row **edit action** (สถานะ/comment/เพิ่ม-แก้ SO/PO).
+> - **(RT-2) Create/Update Route:** ฟิลด์ **คนขับ (search-in-dropdown ชื่อ/username, = system user) · เบอร์ติดต่อคนขับ\* · Route/เส้นทาง · ประเภทรถ\*** {รถกระบะ/รถเก๋ง/มอเตอร์ไซด์/รถ 10 ล้อ/รถ 6 ล้อ} **· ทะเบียนรถ · วัน-เวลาออกรอบ**. ช่องเลข Route/DN = **"(ระบบออกให้เมื่อบันทึก)" (G8)**.
+> - **(RT-3) modal เพิ่ม PO/SO/DN:** candidate list **เรียงตามวันที่ต้องการรับ เร็ว→ช้า** · ค้น **code/ชื่อลูกค้า/ชื่อผู้ติดต่อ/เบอร์ผู้ติดต่อ** (ค้นทุกสถานะ) · **เลือกได้เฉพาะ "พร้อมจัดส่ง"** · **filter สถานะ default = พร้อมจัดส่ง**.
+> - **(RT-4) status actions:** เตรียมจัดของ (auto ตอนสร้าง) → **กำลังออกไปส่ง** (ปุ่ม) → **เสร็จสิ้น** (ปุ่ม — **บังคับสรุปผลราย DN ทุกใบ + comment; เลื่อนส่ง=บังคับ next date**) · **ยกเลิก** (ทุกเมื่อ).
+> - **(RT-5) G8 popup:** บันทึกสร้างรอบ → popup **เลข RT + สรุป + เลข DN ทุกใบ (ระบุ PO/SO ใบไหนได้ DN ใด) + ลิงก์ดู/พิมพ์**.
+> - **(RT-6) modal รายละเอียด order:** คลิก PO/SO/DN → แสดง **ชื่อลูกค้า / ที่อยู่จัดส่ง / เบอร์ผู้รับ** (จาก customer).
+> - ยึด `shipping.md`. **★ ชื่อ/เลข RT vs SHP = รอ Q1 (ถ้าปอนด์ตอบ B ค่อยปรับ prefix).**
 >
-> **★★★ NEW ล่าสุด (2026-07-29) — G9 Permission-code suffix SWEEP (ทุก mockup):**
-> - **(G9-SWEEP) งานหลัก:** ไล่ทุก mockup ทุก module แล้ว **ต่อท้ายรหัสสิทธิ์เป็น suffix** ให้ **ทุกปุ่ม/เมนู/row-action/tab-action ที่ถูก permission-gate** — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `มอบหมาย Sale (A)` · `สั่งผลิต (C)` · `ตัดสิน QC (U)` · `รีเซ็ตรหัสผ่าน (Ad)` · `ปรับยอดสต็อก (U)` · `รับเข้าคลัง/Goods Receipt (C)`.
-> - **(G9-AUTHORITY) แหล่งรหัส = `permission-matrix.md` §3 คอลัมน์ "Suffix"** — ต่อ module ต่อ action มีรหัสกำกับไว้แล้ว. UX/UI **จับคู่ปุ่มในหน้าจอกับแถวในตาราง** แล้ว append รหัสนั้น. อย่าคิดรหัสใหม่นอก 6 ตัว (R/C/U/D/A/Ad).
-> - **(G9-RULES):** (1) รหัส 6 ตัว: **R/C/U/D/A/Ad** (Ad=Admin). (2) **Read-only view/ปุ่มดูเฉย ๆ ละ (R) ได้** เว้นแต่มีประโยชน์ (ปุ่มที่ gate ด้วย Admin เช่น "ดู Audit log (Ad)" ต้องแสดง). (3) **cross-module = แสดงครบทั้งสอง** เช่น `แปลงเป็น PO (U+C)`. (4) suffix เป็น label ประกอบ — ไม่เปลี่ยน logic การ show/hide/disable ที่มีอยู่ (ยังยึด G5).
-> - **(G9-SCOPE) ครอบทุก module:** customer · quotation · po · so · supply-planning · bom · stock/goods-receipt/return · production · qc · shipping · invoice · pr · supplier · settings (VAT/company/audit/role/user = Ad). Home/Dashboard/Platform = read-only เป็นหลัก (ละ (R) ได้ ยกเว้นปุ่มที่ gate).
-> - ยึด `permission-matrix.md` §1b (G9 rule) + §3 (Suffix ต่อ action).
+> **(C) Delivery Note (DN) — `delivery-note.html`:**
+> - **(DN-1) search:** คนขับ/username/route id (+ ช่วงวันชนิดวัน) · **PO/SO** (ไม่มี DN → DN ว่าง) · **วันที่ลูกค้าต้องการรับ** · **filter สถานะ DN (6)**.
+> - **(DN-2) 6 สถานะ:** แสดง badge อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่.
+> - **(DN-3) print:** ปุ่ม **พิมพ์ DN (R)** + **พิมพ์ Invoice (R)** (จากข้อมูลลูกค้า+PO/SO).
+> - **(DN-4) comment (G6)** ต่อ DN + ประวัติ.
+> - **(DN-5) ★ แก้สถานะ DN โดยตรง = ปุ่มที่ gate ด้วย Shipping.Approve → suffix (A)** + บังคับ comment (+ next date ถ้าเลื่อน).
+> - **(DN-6) สร้าง DN ตรงไม่ได้** — ไม่มีปุ่ม "สร้าง DN".
+> - ยึด `delivery-note.md`.
 >
-> **หมายเหตุ collision:** รอบนี้ PO แก้ **requirement docs เท่านั้น** (`permission-matrix.md` + `README.md`) — G9-SWEEP บน mockups เป็นงานที่ส่งต่อ UX/UI (เข้า GATE 1 review เฉพาะส่วน/ปุ่มที่ label เปลี่ยน). ไม่แตะ mockups ในรอบ PO นี้.
-
-> **★★ รอบก่อน (Production PROD-1..14/STK-1 · Supply Planning SP-1..10 · Comment control · Customer Edit · Quotation REVERT Sent · Stock · Supplier/BOM · Settings) — คงตามรอบก่อน (commit history).**
+> **(D) PO/SO status display — ทุกจอที่โชว์สถานะ PO/SO:**
+> - **(POS-1) combined logic:** `po-list · po-detail · so-list · so-detail · dashboard · production queue · home` แสดงสถานะจัดส่งด้วย **สถานะ PO เอง → พร้อมจัดส่ง → สะท้อนสถานะ DN 6 ค่า** (เลิกใช้ In Delivery/Delivered enum เดิม). ยึด `po.md` §4b / `so.md` §4 · `delivery-note.md` §8.
+>
+> **หมายเหตุ collision:** รอบนี้ PO แก้ **requirement docs เท่านั้น** — งาน mockup ทั้งหมดข้างต้นส่งต่อ UX/UI (เข้า GATE 1 review เฉพาะส่วนที่เปลี่ยน). ไม่แตะ mockups ในรอบ PO นี้.
 
 ---
 
 ## 9. Open questions
-**ไม่มี open question ค้าง — ปิดครบทั้งหมด (2026-07-29).**
+**★ มี 1 open question (Q1) — รอปอนด์:**
 
-**คำถามที่ปิดแล้ว (2026-07-29):** Supply Planning proactive alert · Quotation abandon/review/REVERT Sent · Traceability/Reference · Customer · Comment convention · Stock · Supplier · BOM · Settings · **Production module review** · Delete Sale → unassigned · **Supply Planning module review** · **★★ QC + GR/Stock flow review** · **★★ NEW Return RM selector + list search → DECIDED (settled, no open Q)** · **★★ NEW G8 number-on-save → DECIDED (settled, no open Q)** · **★★★ NEW G9 permission-code suffix → DECIDED (settled, no open Q · code-set RUCDAA+Admin reconciled → R/C/U/D/A/Ad, ไม่มี Archive แยก).**
+> **Q1 (GENUINE) — RT vs SHP numbering:** รอบจัดส่งเดิมมีเลข `SHP-{YYYYMMDD}-{NNNN}` (locked, D-F5). ปอนด์ให้รอบเป็น "Route" รหัส `RT-…`.
+> - **ตัวเลือก A (PO แนะนำ):** **RT แทน SHP ทั้งหมด** — รอบเปลี่ยนชื่อเป็น "Route", เลข `RT-{YYYYMMDD}-{NNNN}` (gapless ต่อวัน แบบเดิม), เลิกใช้ SHP. (ระบบยังไม่ deploy → ไม่มีข้อมูลจริงต้อง migrate; เอกสารทั้งชุดเขียนด้วยสมมติฐานนี้ไว้ก่อน.)
+> - **ตัวเลือก B:** **RT อยู่ร่วมกับ SHP** — รอบมี 2 เลข (SHP = เลขเอกสารรอบ + RT = route identifier แยก).
+> - ถ้าเลือก B → ปรับ delta เล็กที่ `shipping.md`/`numbering-on-save.md`/`non-functional.md` D-F5/entity-status-map §1.9.
 
-> **★★★ NEW — G9 PO reasonable decision (settled; ไม่ถือเป็น open question — ปอนด์ override ได้):**
-> - **Code-set reconciliation:** "RUCDAA + Admin" ตีความชัดว่า A ตัวที่สองของ RUCDAA = **Admin** (ไม่ใช่ Archive) → 6 รหัสสาธารณะ **R/C/U/D/A/Ad** ตรงตามที่ปอนด์ระบุเป๊ะ. **ไม่มี capability "Archive"** ในโมเดลปัจจุบัน (deletion = soft-delete/void ผ่าน D; undelete/restore/force-override = Admin) → **ไม่ต้องเพิ่มรหัสที่ 7** และ **ไม่ ambiguous → ไม่มีคำถามค้าง**. *(ถ้าภายหลังปอนด์ต้องการแยก "Archive" ออกจาก Admin เป็นรหัสของตัวเอง — แจ้งปรับได้.)*
+**PO reasonable decisions รอบนี้ (settled; ไม่ถือเป็น open question — ปอนด์ override ได้):**
+- **DN 6 สถานะ = supersede ชุดเดิม 4** (กำลังนำส่ง/ส่งถึงแล้ว/ถูกปฏิเสธ/เลื่อนส่ง) — ปอนด์ให้ชุดใหม่ครบ; behavior "ถูกปฏิเสธ" เดิม fold เข้า ยกเลิก/เลื่อน/ยังไม่กำหนดวัน (order re-route = gen DN ใหม่).
+- **PO/SO delivery status = สะท้อน DN, rollup = DN ล่าสุด (active).** เพราะ **1 DN = 1 PO เต็มใบ** จึงไม่มีหลาย DN active พร้อมกัน; DN เก่าที่ re-route = ประวัติ (superseded). *(ถ้าอนาคตแตก PO เป็นหลาย DN พร้อมกัน จะนิยาม aggregate rollup เพิ่ม.)*
+- **"เสร็จสิ้น" Route = action ที่ผู้ใช้กด + บังคับสรุปผลราย DN + comment** (แทน auto-close เดิม).
+- **แก้สถานะ DN โดยตรง = Shipping.Approve (A)** (ปอนด์สั่งชัด); print DN/Invoice = (R).
 
-> **★★ NEW — PO reasonable decisions (settled; ไม่ถือเป็น open question — ปอนด์ override ได้):**
-> - **★ G8 ขยายไป DN/SHP · Invoice · PRD · Batch = apply** (ปอนด์: "apply to those too unless one has a reason not to"). **ไม่มีเอกสารใดที่ genuinely shouldn't follow** → **ไม่มีคำถามค้าง**. ข้อยกเว้นเชิงเทคนิคที่อธิบายไว้ (ไม่ใช่ open question): **PRD/Batch** ออกเลขตอน action ("รับงาน"/"เริ่มผลิต") ไม่มีฟอร์ม create ที่โชว์ช่องเลข → ใช้ **confirm popup เดิมแสดงเลข** (NS1 N/A, ไม่ทำ popup ซ้อน); **Batch เลข derived** (`B-{PO}-{line}-{run}`) ไม่ใช่ gapless-per-เดือน; **PR auto จาก PO/SO** = ระบบออกเลขเอง ไม่มี popup (ไม่มี user action); **QC record + master code (RM/BOM/FG)** = นอกขอบเขต G8 (ไม่มี running number). *(ถ้าปอนด์อยากให้ doc ใด ไม่ใช้ G8 หรืออยากโชว์เลขล่วงหน้าบางใบ — แจ้งปรับได้.)*
-> - **★ Return:** "1 Lot หลาย RM" มาจาก lot naming (`{supplier prefix}{YYMM}` แชร์หลาย RM, `goods-receipt.md` §3) → RM selector บังคับ + จำนวนคืนหักจาก (lot, RM). settled.
-
-> **การตัดสินสมเหตุผลของ PO รอบก่อน (ไม่ถือเป็น open question):** QC-gated stock-in / GR object lifecycle / 1 PO หลาย PRD / "พร้อมส่ง" QC-gated / Rework ในกลุ่มกำลังผลิต / Stock Adjust อ้าง Lot/FIFO / Supply Planning revenue = ราคาขาย ก่อน VAT. (คงตามรอบก่อน)
-
-> **สรุปสถานะ:** ทุกรายการ **settled → READY_FOR_UX_UI**. รอบล่าสุด = **doc-completeness fix** (comment-convention + numbering-on-save ได้ HTML view + hub link ครบ; ทุก .md → view 1:1). ก่อนหน้า: **G9 permission-code suffix** · Return RM selector + list search · G8 number-on-save.
+**คำถามที่ปิดแล้ว (รอบก่อน):** Supply Planning/Quotation/Customer(follow-up,financial,unassign)/Comment/Stock/Supplier/BOM/Settings/Production/QC+GR/Return/G8/G9. (คงตามรอบก่อน — commit history)

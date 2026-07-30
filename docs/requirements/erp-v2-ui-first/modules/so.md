@@ -1,11 +1,10 @@
 # Module — Sales Order (SO, Own-Brand)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning · **★ พก batch count ที่เลือก**) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 (**G8**) · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)** · **`bom.md` §5c (inactive-BOM/FG block — ทั้ง 2 โหมด)** · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลขออกตอนบันทึก)** · **`supply-planning.md` §5/§5b (ที่มา prefill produce-to-stock + batch count)**
-> โมดูลใหญ่ — sub-files แนะนำ: `so-sell-from-stock.md` (ก) · `so-produce-to-stock.md` (ข). รอบนี้รวมใน so.md.
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ DN→SO status link 2026-07-30**)
+กฎอ้างอิง: **D1** (เอกสาร/เลขแยก) · **D2** (2 sub-case) · **D8 v2** (prefill จาก Supply Planning · **★ พก batch count ที่เลือก**) · D12/D16 (FG จอง/ตัด FIFO per-Batch) · D18-2 (ไม่มี Quotation) · README §3/§4 (**G8**) · **`customer.md` §4.2 (hard block Disabled/Blacklist — เฉพาะโหมด ก ที่มีลูกค้า)** · **`bom.md` §5c (inactive-BOM/FG block — ทั้ง 2 โหมด)** · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลขออกตอนบันทึก)** · **`supply-planning.md` §5/§5b (ที่มา prefill produce-to-stock + batch count)** · **★ `delivery-note.md` §8 / `po.md` §4b (SO delivery status = สะท้อนจาก DN)**
 
 ## สรุปภาษาไทย
-ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ลูกค้าไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). **★ ถ้าโหมด (ข) มาจากปุ่ม "สั่งผลิต" ใน Supply Planning (D8 v2) → หน้าถูก PRE-FILL FG + จำนวนผลิต = จำนวน batch ที่ผู้ใช้เลือกใน modal × Batch Size** (batches × batch size = qty — `supply-planning.md` §5/§5b). **★ ทั้ง 2 โหมด: FG/BOM ที่ถูกตั้ง Inactive = เปิด SO ไม่ได้ (HARD block, คนละแหล่งกับลูกค้า — `bom.md` §5c)**. **★ เลข SO ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออก gapless ตอนบันทึกสำเร็จ + popup ยืนยันแสดงเลข SO + สรุป (G8 · `numbering-on-save.md`)**. List ค้นด้วยเลข/ช่วงวันที่. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
+ใบสั่งขาย **Own-Brand** เอกสาร/เลขแยกจาก PO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation). 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า (customer dropdown), กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch + SO = พร้อมส่ง (Ready to Ship)** → รอในโมดูล **การจัดส่ง** → ตัด FG FIFO ตอน dispatch → DN/Invoice. **★ โหมด (ก): ลูกค้าสถานะ Disabled/Blacklist = เปิด/ยืนยัน SO ไม่ได้ (HARD block)** — เลือกไม่ได้ใน dropdown + บล็อกตอนยืนยัน. **(ข) ผลิตเก็บสต็อก** = **ไม่เลือกลูกค้า** (hard block ลูกค้าไม่เกี่ยว), ทำตัวเหมือนเปิด PO: BOM RM stock check → production; RM ขาด → สร้าง production order ได้ + **AUTO-open PR**; QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). **★ ถ้าโหมด (ข) มาจากปุ่ม "สั่งผลิต" ใน Supply Planning (D8 v2) → หน้าถูก PRE-FILL FG + จำนวนผลิต = จำนวน batch ที่ผู้ใช้เลือกใน modal × Batch Size**. **★ ทั้ง 2 โหมด: FG/BOM ที่ถูกตั้ง Inactive = เปิด SO ไม่ได้ (HARD block, `bom.md` §5c)**. **★ เลข SO ไม่โชว์ล่วงหน้าบนหน้า create (แสดง "(ระบบออกให้เมื่อบันทึก)") → ออก gapless ตอนบันทึกสำเร็จ + popup ยืนยันแสดงเลข SO + สรุป (G8 · `numbering-on-save.md`)**. List ค้นด้วยเลข/ช่วงวันที่. **★★ ใหม่ (2026-07-30): SO (ก) สถานะจัดส่ง = LINKED จากสถานะ DN** — SO แสดงถึง "พร้อมส่ง" แล้วสะท้อนสถานะ DN (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) เหมือน PO (§4). **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติการแก้ครบ (comment-convention.md).**
 
 ---
 
@@ -15,9 +14,9 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ## 2. Screens
 | หน้าจอ | บทบาท |
 |---|---|
-| `so-list.html` | list SO + filter (สถานะ, โหมด ก/ข) + **search เลข SO / ช่วงวันที่สร้าง** (G2) + 20/หน้า (G1) |
+| `so-list.html` | list SO + filter (สถานะ **รวมสถานะจัดส่งที่สะท้อน DN — §4**, โหมด ก/ข) + **search เลข SO / ช่วงวันที่สร้าง** (G2) + 20/หน้า (G1) |
 | `so-create.html` | สร้าง SO — สลับโหมด (ก) เลือกลูกค้า+FG / (ข) ไม่เลือกลูกค้า+ผลิต + **ช่อง comment** · **★ ช่องเลข SO = "(ระบบออกให้เมื่อบันทึก)" (G8)** |
-| `so-detail.html` | รายละเอียด + lifecycle ตามโหมด + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
+| `so-detail.html` | รายละเอียด + lifecycle ตามโหมด (**ก: สถานะจัดส่งสะท้อน DN — §4**) + **comment ปัจจุบัน + "ประวัติการแก้ไข comment"** |
 
 ## 3. Fields
 | ฟิลด์ | หน่วย/ชนิด | editable/computed | หมายเหตุ |
@@ -27,7 +26,8 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | ลูกค้า | ref customer | editable (dropdown G4) | **(ก) บังคับ · (ข) ว่าง** · (ก) **Disabled/Blacklist เลือกไม่ได้ (§8)** |
 | line items | (ก) FG + qty · (ข) FG(BOM) + qty ผลิต | editable | (ก) โชว์ FG Available ราย Batch (D16) · **(ข) prefill จาก Supply Planning = FG + qty = batch count × Batch Size (§6)** · **FG/BOM ต้อง Active — Inactive เลือกไม่ได้/บล็อก ทั้ง 2 โหมด (§8, `bom.md` §5c)** |
 | FG Available (ราย Batch) | units | computed (read-only) | (ก) เท่านั้น — จาก FG stock |
-| สถานะ | enum (§4) | mostly auto | ต่างกันตามโหมด |
+| วันที่ต้องการรับของ (ก) | date | editable | **★ ใช้จัดเรียง candidate ในหน้า Route + ค้น DN (shipping.md §5 / delivery-note.md §11)** |
+| **สถานะ** | enum (§4) | mostly auto | ต่างกันตามโหมด · **(ก) หลังพร้อมส่ง = สะท้อน DN (§4)** |
 | ราคา/ยอดรวม/VAT | THB | (ก) computed | (ข) ไม่มีลูกค้า/ราคาตอนนี้ |
 | **★ หมายเหตุ (comment)** | free-text (ช่องเดียว) | **editable (แก้ในที่/overwrite)** | **แก้ทุกครั้งเก็บประวัติ ใคร/เมื่อ/เดิม→ใหม่ + โผล่ trace — `comment-convention.md` (CC1–CC7)** · ใช้ได้ทั้งโหมด ก/ข |
 
@@ -35,15 +35,20 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 ### (ก) Sell-from-stock
 ```
 ร่าง → ยืนยันใบสั่งขาย (จอง FG) ──► พร้อมส่ง (Ready to Ship) [จอง FG per-Batch]
-     → [โมดูลการจัดส่ง] ตัด FG FIFO ราย Batch ตอน dispatch ──► ส่งถึงแล้ว
+     → [โมดูลการจัดส่ง = Route] gen DN → ตัด FG FIFO ราย Batch ตอน dispatch
+     ──► [สถานะจัดส่งสะท้อนจาก DN]: อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง → ส่งสำเร็จ
+         (หรือ ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่)
      → Invoice (อ้าง SO) → ชำระ · ยกเลิก SO = คืนจอง FG
 ```
+> **★★ SO (ก) delivery status = LINKED จาก DN status** — เหมือน PO (`po.md` §4b / `delivery-note.md` §8): SO แสดงสถานะตัวเองถึง "พร้อมส่ง" แล้วสะท้อนสถานะ DN. **rollup = DN ล่าสุด (active).** **บังคับใช้ทุกจอที่โชว์สถานะ SO** (so-list/so-detail/dashboard/home). sync entity-status-map §1.10.
+
 ### (ข) Produce-to-stock
 ```
 ร่าง (ไม่เลือกลูกค้า) → ยืนยัน → BOM RM stock check → PRD ไม่ผูกลูกค้า
      → (RM ขาด) auto-open PR → ผลิต → QC ผ่าน → FG เข้าคลัง (per-Batch, D12)
      → ขายภายหลังผ่าน (ก)
 ```
+> โหมด (ข) ไม่มีขั้นจัดส่ง/DN (ผลิตเข้าสต็อก) → ไม่มีสถานะสะท้อน DN.
 
 ## 5. ★ (ก) Sell-from-stock — RESOLVED flow (README §4)
 1. `so-create` โหมด (ก) → **เลือกลูกค้าผ่าน customer search dropdown (G4)** (ค้นเบอร์/บริษัท/ผู้ติดต่อ/เบอร์ผู้ติดต่อ; โชว์สถานะ+credit term; ดู detail modal แล้วกลับไม่เสีย state). **★ ช่องเลข SO บนหน้านี้ = read-only "(ระบบออกให้เมื่อบันทึก)" (G8/NS1).**
@@ -54,8 +59,8 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
    - **★ ออกเลข SO gapless ตอนบันทึก/ยืนยันสำเร็จ + popup ยืนยัน "เลข SO + สรุป (ลูกค้า/FG/จำนวน)" + ลิงก์ so-detail (G8/NS2–NS3).**
    - **จอง FG per-Batch** (มิเรอร์ RM reservation; reserved+, available−).
    - SO เปลี่ยนเป็น **พร้อมส่ง (Ready to Ship)**.
-   - SO **รอในโมดูล "การจัดส่ง (การจัดส่ง/Delivery)"** เพื่อจัดรอบส่ง.
-4. โมดูลการจัดส่งหยิบ SO เข้ารอบ → **ตัด FG FIFO ราย Batch** ตอน dispatch → ออก **DN อ้าง SO** → ส่งถึง.
+   - SO **รอในโมดูล "การจัดส่ง (Route)"** เพื่อจัดรอบส่ง.
+4. โมดูลการจัดส่ง (Route) หยิบ SO เข้ารอบ → gen **DN อ้าง SO** → **ตัด FG FIFO ราย Batch** ตอน dispatch → **สถานะจัดส่งของ SO สะท้อน DN (§4)** → ส่งสำเร็จ.
 5. ออก **Invoice อ้าง SO** (+ cost snapshot ที่ line, D10) → รับชำระ.
 6. **ยกเลิก SO** ก่อน dispatch = **คืนจอง FG** (release).
 
@@ -85,9 +90,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | **ยืนยันใบสั่งขาย (จอง FG)** [ก] | SO.**Update (U)** |
 | ยืนยันผลิตเก็บสต็อก (→ PRD) [ข] | SO.**Create (C)** (สร้าง produce-to-stock PRD) |
 | ยกเลิก SO (คืนจอง) | SO.**Delete/Approve (D/A)** + comment |
-| ออก DN (อ้าง SO) | Shipping.**Create (C)** |
+| ออก DN (อ้าง SO) | Shipping.**Create (C)** (ผ่าน Route) |
 | ออก Invoice (อ้าง SO) | Invoice.**Create (C)** (Finance) |
 | เปิด modal ลูกค้า [ก] | Customer.**Read (R)** |
+> **สถานะจัดส่งของ SO (ก) = สะท้อนจาก DN (§4) — ไม่มีปุ่มเปลี่ยนสถานะจัดส่งบน SO โดยตรง; ควบคุมผ่าน Route/DN.**
 
 ## 8. Validations
 - (ก) บังคับเลือกลูกค้า + FG มี Available พอ (ขาด = เตือน/บล็อกตามนโยบาย FG reserve; มิเรอร์ RM warning-not-block).
@@ -95,6 +101,7 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - **★ Hard block FG/BOM Inactive (bom.md §5c) — ทั้ง 2 โหมด:** ห้ามเลือก/ยืนยัน SO ที่ line อ้าง FG/BOM **Inactive (ปิดใช้งาน)** — **บล็อกจริง** + ข้อความ *"สูตร/สินค้าปิดใช้งาน"*. คนละแหล่งกับ block ลูกค้า. ไม่กระทบ SO เดิม/FG stock เดิม (เดินต่อ/trace ได้ — deletion-policy §2.4).
 - (ข) ห้ามมีลูกค้า; ต้องมี FG(BOM) + จำนวนผลิต — **hard block Disabled/Blacklist ไม่เกี่ยว** (ไม่มีลูกค้า) · **hard block Inactive ยังบังคับ** · **★ ถ้า prefill มาจาก Supply Planning จำนวน = batch count × Batch Size (แก้ต่อได้ก่อนยืนยัน)**.
 - **★ เลข SO ออกตอนบันทึก/ยืนยันสำเร็จเท่านั้น (G8/NS2) — ร่างที่ไม่บันทึกไม่กินเลข (NS4).**
+- **★ (ก) สถานะจัดส่ง = สะท้อน DN (§4)** — ทุกจอที่โชว์สถานะ SO ต้องใช้ combined logic.
 - ยกเลิก = บังคับ comment.
 - **★ comment (หมายเหตุทั่วไป) = ไม่บังคับ** · แก้ได้ทุกสถานะ · ทุกการแก้ถูก audit (comment-convention.md CC2/CC3) · คนละฟิลด์กับ comment ยกเลิก.
 
@@ -102,10 +109,11 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - so-list: 20/หน้า (G1) · search เลข SO **หรือ** ช่วงวันที่สร้าง (G2) · filter สถานะ + โหมด ก/ข.
 
 ## 10. Cross-links
-- **D8 v2 prefill (FG + จำนวน = batch count × Batch Size) → `supply-planning.md` §5/§5b** · FG stock/FIFO → `stock.md` · DN/Invoice อ้าง SO → delivery-note/invoice (scope §10.1) · flow → `flows/ownbrand-flow.md`.
+- **D8 v2 prefill (FG + จำนวน = batch count × Batch Size) → `supply-planning.md` §5/§5b** · FG stock/FIFO → `stock.md` · DN/Invoice อ้าง SO → `delivery-note.md`/`invoice.md` · flow → `flows/ownbrand-flow.md`.
 - **Hard block Disabled/Blacklist (โหมด ก) → `customer.md` §4.2.**
 - **Inactive FG/BOM block (ทั้ง 2 โหมด) → `bom.md` §5c · `deletion-policy.md` §2.4.**
 - **★ เลขออกตอนบันทึก (G8) → `numbering-on-save.md` · gapless → `non-functional.md` §5 (D-F2).**
+- **★★ SO (ก) delivery status = สะท้อน DN → `delivery-note.md` §8 · `po.md` §4b · `shipping.md` §4b · entity-status-map §1.10.**
 - **Comment + change-history → `comment-convention.md` · field-audit → `traceability.md` §4.**
 
 ## 11. Module changelog
@@ -114,4 +122,5 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - **★ เพิ่ม (2026-07-29 — customer feedback):** **hard block เปิด/ยืนยัน SO โหมด (ก) เมื่อลูกค้า Disabled/Blacklist** (§5/§8, ref customer.md §4.2) · โหมด (ข) ไม่เกี่ยว (ไม่มีลูกค้า).
 - **★ เพิ่ม (2026-07-29 — comment cross-cutting feedback, PO module 3 review):** ช่อง **หมายเหตุ (comment)** แบบแก้ในที่ + **เก็บประวัติการแก้ครบ** บน so-create/so-detail (ทั้งโหมด ก/ข) — ยึด `comment-convention.md` (§3 field, §5b, §7 permission).
 - **★ เพิ่ม (2026-07-29 — BOM module review, ปอนด์):** **hard block เปิด/ยืนยัน SO เมื่อ FG/BOM ที่อ้างถูกตั้ง Inactive — ทั้งโหมด ก และ ข** (§3/§5/§6/§8, ref `bom.md` §5c) — คนละแหล่งกับ block ลูกค้า; SO/FG stock เดิมเดินต่อ. FG Inactive ยังถูกกันออกจาก Supply Planning (ไม่โผล่ prefill โหมด ข).
-- **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):** ระบุชัดว่า produce-to-stock SO ที่สร้างจากปุ่ม **"สั่งผลิต" ใน Supply Planning (D8 v2)** ตอนนี้ **พกจำนวน batch (batch count) ที่ผู้ใช้เลือกใน modal → จำนวนผลิต = batch count × Batch Size** (batches × batch size = qty) — §3/§6/§8/§10, ref `supply-planning.md` §5/§5b. เดิม prefill = Suggested คงที่; ตอนนี้พก batch count ที่เลือก (ผู้ใช้ยังทวน/แก้ได้ก่อนยืนยัน).
+- **★ เพิ่ม (2026-07-29 — Supply Planning module review, ปอนด์):** produce-to-stock SO จากปุ่ม **"สั่งผลิต" ใน Supply Planning (D8 v2)** พกจำนวน batch (batch count) → จำนวนผลิต = batch count × Batch Size — §3/§6/§8/§10, ref `supply-planning.md` §5/§5b.
+- **★★ เพิ่ม (2026-07-30 — DN→SO status link, ปอนด์ Module C):** **SO (ก) สถานะจัดส่ง = สะท้อนจากสถานะ DN** (เหมือน PO §4b): SO แสดงสถานะตัวเองถึง "พร้อมส่ง" แล้ว mirror DN (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่); rollup = DN ล่าสุด; บังคับใช้ทุกจอที่โชว์สถานะ SO. §2/§3/§4/§5/§7/§8/§10, ref `delivery-note.md` §8 · `po.md` §4b. โหมด (ข) ไม่มี DN → ไม่สะท้อน.

@@ -19,6 +19,7 @@
       'home.md': 'home.html', 'dashboard.md': 'dashboard.html',
       'goods-receipt.md': 'goods-receipt.html', 'pr.md': 'pr.html',
       'supplier.md': 'supplier.html', 'qc.md': 'qc.html', 'shipping.md': 'shipping.html',
+      'delivery-note.md': 'delivery-note.html',
       'return.md': 'return.html', 'invoice.md': 'invoice.html',
       'traceability.md': 'traceability.html', 'settings.md': 'settings.html',
       'platform.md': 'platform.html', 'non-functional.md': 'non-functional.html',
