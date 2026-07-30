@@ -1,22 +1,22 @@
 # Permission Matrix — Capability → Module → Action (consolidated)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
-กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
+กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)**
 
 ## สรุปภาษาไทย
-RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)"). **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R).
+RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)"). **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R). **★★★★ r12 (confirm, ไม่มี functional change):** **ดู Audit log (มุมมองรวมทุกกิจกรรม non-read + login/logout ใน Settings) = Settings.Admin only → (Ad)** — ยืนยันตามที่ระบุอยู่แล้วในตาราง §3 (VAT/Company/Audit = Admin); trace ผ่าน module เดิมยังใช้ **Read (R)** ของ module นั้น.
 
 ---
 
 ## 1. RUCDAA bits (internal model) → 6 public codes
 | bit (internal) | public code (suffix) | ความหมาย |
 |---|---|---|
-| **R** Read | **(R)** | ดู/ค้น/รายงาน · **พิมพ์/แชร์ PDF (ไม่ mutate) · print DN/Invoice** |
+| **R** Read | **(R)** | ดู/ค้น/รายงาน · **พิมพ์/แชร์ PDF (ไม่ mutate) · print DN/Invoice** · **★★★★ trace ผ่าน module (genealogy + field-audit ของ module ที่มีสิทธิ์ Read)** |
 | **U** Update | **(U)** | แก้ข้อมูล/เปลี่ยนสถานะปกติ · **แก้ sub-record (ผู้ติดต่อ/comment/threshold) · แก้ Route/เปลี่ยนสถานะ Route** |
 | **C** Create | **(C)** | สร้างเอกสาร/record/master ใหม่ · **สร้าง Route + gen DN** |
 | **D** Delete | **(D)** | soft-delete / void / **ปิดใช้งาน (inactivate)** |
 | **A** Approve | **(A)** | อนุมัติ/สิทธิ์ระดับสูง (Blacklist, reassign, reopen) · **★ แก้สถานะ DN โดยตรง** |
-| **Admin** | **(Ad)** | จัดการ config/force override/undelete/restore · **★ gate VAT/Company/Audit** |
+| **Admin** | **(Ad)** | จัดการ config/force override/undelete/restore · **★ gate VAT/Company/Audit** · **★★★★ ดู Audit-log viewer รวม (r12)** |
 
 ### ★ Code-set reconciliation (RUCDAA + Admin → R/C/U/D/A/Ad) — SETTLED
 - โมเดลภายในเดิม = **RUCDAA**; **A ตัวที่สอง = Admin** (ไม่ใช่ "Archive").
@@ -29,7 +29,7 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 ## 1b. ★ G9 — Permission-code suffix on every permissioned control (GLOBAL RULE)
 > ทุก **actionable control ที่ถูก permission-gate** (ปุ่ม / เมนู / row-action / tab-action) **ต้องแสดงรหัส permission เป็น suffix ต่อท้าย label**.
 
-**รูปแบบ:** `‹label› (‹code›)` — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `แก้สถานะ DN (A)`.
+**รูปแบบ:** `‹label› (‹code›)` — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `แก้สถานะ DN (A)` · `ดู Audit log (Ad)`.
 
 **กติกา:**
 1. **รหัส 6 ตัว: R · C · U · D · A · Ad** (ตาม §1). ห้ามคิดรหัสใหม่.
@@ -112,6 +112,8 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 | | สร้าง supplier | Supplier.C | **(C)** |
 | | แก้ข้อมูล/price-matrix · สลับ Active/Inactive | Supplier.U | **(U)** |
 | | soft-delete | Supplier.D | **(D)** |
+| **Traceability** | ค้น entity/topic + genealogy (ต่อ module) · ดูตาราง field-audit ผ่าน module | Read (R) ของ module ต้นทาง | **(R)** |
+| | archive audit เป็น text file | **Super User** | *(Super User)* |
 | **Settings/User-Role** | **ดูแท็บ Role/User** · ค้นหา role/user | Settings.**R** | (R) *(ละได้)* |
 | | สร้าง role/มัดสิทธิ์ | Settings.**Admin** | **(Ad)** |
 | | Disable/Enable role · Restore role · ถอด user ออกจาก role | Settings.**Admin** | **(Ad)** |
@@ -119,7 +121,7 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 | | จัดการ user (create/edit/สลับ Active/เปลี่ยน role) · ตั้ง/รีเซ็ตรหัส · ผูก/ยกเลิก Google | Settings.**Admin** | **(Ad)** |
 | | **ลบ user (→ ลูกค้าที่ดูแล unassigned อัตโนมัติ)** | Settings.**D** | **(D)** |
 | | undelete/restore user/role | Settings.**Admin** | **(Ad)** |
-| | ดู/แก้ VAT · ดู/แก้ ข้อมูลบริษัท · ดู Audit log | Settings.**Admin only** | **(Ad)** |
+| | ดู/แก้ VAT · ดู/แก้ ข้อมูลบริษัท · **★★★★ ดู Audit log (มุมมองรวม ทุกกิจกรรม non-read + login/logout, r12)** | Settings.**Admin only** | **(Ad)** |
 | **G6 (ทุก object)** | **บันทึกหมายเหตุ / comment (💾)** | **= U ของ object แม่** | **(U)** *(รหัสตาม object แม่)* |
 
 > **หมายเหตุ suffix สำหรับ action ที่มี 2 รหัส** (เช่น "ยกเลิก QT (D)/(A)"): ปุ่มจริง 1 ปุ่มถือ permission เดียว → แสดงรหัสของสิทธิ์ที่ผูกกับปุ่มนั้น หรือ default = รหัสแรก.
@@ -146,6 +148,12 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **★ แก้สถานะ DN โดยตรง (จากหน้า DN) = Shipping.Approve (A) → (A)** — ปอนด์ระบุชัดว่า "editor ต้องมี A permission". (ต่างจากการอัปเดต DN ผ่าน Route "เสร็จสิ้น" process = ส่วนของ Shipping.U.)
 - **print DN = Shipping.R → (R)** · **print Invoice จากหน้า DN = Invoice.R → (R)** (print = read-derived, §3.1 #9).
 
+**★★★★ r12 (2026-07-30) — Traceability + Audit-view controls (settled, confirm — ไม่มี functional change):**
+- **ดู Audit log (Settings tab, มุมมองรวม ทุกกิจกรรม non-read + login/logout) = Settings.Admin only → (Ad)** — ยืนยันตามที่มีอยู่แล้ว §3 (VAT/Company/Audit = Admin). label ต้องแสดง **"ดู Audit log (Ad)"** (§1b ข้อ 2).
+- **ค้น trace + genealogy + ดู field-audit ผ่าน module (trace.html)** = **Read (R) ของ module ต้นทาง** (topic ที่ไม่มีสิทธิ์ Read = ไม่โผล่ใน entity/topic selector).
+- **archive audit เป็น text file = Super User เท่านั้น** (ไม่ใช่ 1 ใน 6 public code; เป็น system-level Super User).
+- อ้างอิง: `traceability.md` §6 · `settings.md` §4d/US-SET-05 · `non-functional.md` A8/AU2.
+
 ## 4. หมายเหตุ (D14)
 - **surplus (D13)** = auto → ไม่มี permission แยก → ไม่มี suffix.
 - **★ Quotation:** print/share = Quotation.R → (R); Convert-to-PO ตั้ง QT=Confirmed.
@@ -155,7 +163,8 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **★ Settings:** VAT/Company/Audit-log = Admin bit · effective permission = union role Active · role disable/soft-delete ทำได้แม้มีสมาชิก.
 - **★ ลบ Sale/User:** = Settings.D → ลูกค้า unassigned อัตโนมัติ; reassign = Customer.Approve.
 - **★★★ r11 Route/DN:** **แก้สถานะ DN โดยตรง = Shipping.Approve (A)** (ปอนด์สั่ง) · สร้าง Route + gen DN = Shipping.C · แก้ Route/สถานะ Route = Shipping.U · print DN/Invoice = R. **คนขับ (driver) = system user** (ค้นชื่อ/username) — ไม่ใช่ capability แยก.
+- **★★★★ r12 Trace/Audit:** **ดู Audit log (มุมมองรวม non-read + login) = Settings.Admin only (Ad)** · trace ผ่าน module = Read (R) ของ module ต้นทาง · archive = Super User. ไม่มีสิทธิ์ใหม่ — เป็นการยืนยัน mapping เดิม.
 - **★ G9:** ทุกปุ่มที่ permission-gate แสดงรหัสตาม Suffix; รหัส 6 ตัว (R/C/U/D/A/Ad).
 
 ## 5. Cross-links
-ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A)** · deletion-policy §3 · settings.md §6/§4b/§4c · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) · scope §7.1 · README §3 G9 + §8 · §3.1.
+ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) · scope §7.1 · README §3 G9 + §8 · §3.1.
