@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
+      "current_agent": "ux-ui",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3586,6 +3586,73 @@
           "summary": "r16 cumulative-RBAC role editor: swapped the 6-checkbox permission grid for a per-module single-level segmented selector (ไม่มีสิทธิ์·R·C·U·D·A·Admin, C-before-U) with an inline cumulative explainer + effective-actions summary per row, relabelled header 'ระดับสิทธิ์ (1 ระดับต่อ module)', and made VAT/Company/Audit=Admin explicit. Only settings.html role editor changed; search/filter/user-list/disable/delete/restore untouched. READY_FOR_HUMAN_GATE (Gate 1 look re-review of the modified screen only).",
           "overridden_by": null,
           "updated_at": "2026-07-31T11:30:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "r17-platform-nfr-fold",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "Item 1 — Notification bell-only, event-driven, 4-type taxonomy + dismiss≠read + snackbar/shake + no-email (platform §7, non-functional §7)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 2 — Forget/Reset password: login link + reset-password.html, single-use 3-day email link, no-enumeration/expired/reused edges (US-PLT-06); user email = required reset address (settings §3)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 3 — Account self-disable + Admin re-enable + only-Admin guard + no auto-lockout (US-PLT-07, settings §5/§6, A11)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 4 — Stale perf numbers replaced (§1): read AVG200/MAX1s, write AVG1/MAX3s, ~30 concurrent/module + oracle (H-C1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 5 — Password policy A9 (≥8 lower+upper+digit) + storage encrypt+hash A10 + first-login abandonment A6",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 6 — Global submit-confirm contract §9.1: cancel = zero mutation / no number / no audit (H-B4)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Item 7 — Session warn 5min + mid-action redirect (A2), Environments I5, i18n-ready D-F6, error/empty-state §9, API security §16",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Completeness — every r17 req in .md AND HTML view (platform/non-functional/settings, mapped _render.js) AND linked in modules/index.html",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Backward-compat — only outdated notification + perf text reconciled; D-rules + cumulative-RBAC r16 untouched",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/settings.md",
+            "docs/requirements/erp-v2-ui-first/modules/README.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [
+            "ยืนยัน taxonomy การแจ้งเตือน 4 ประเภท: (1) งานส่งต่อข้ามแผนก [PO→Production, QC pass/fail, DN outcomes, PR auto] (2) ความเสี่ยงสต็อก/การผลิต [FG→Low real-time+J8, potential-delay J4] (3) การเงิน/เครดิต [Invoice Overdue J3] (4) วงจรลูกค้า [Customer Inactivity J2]. รับตามนี้หรือปรับชื่อ/การจัดกลุ่ม?",
+            "ยืนยันนโยบายรหัสผ่าน: ≥8 ตัว + ตัวพิมพ์เล็ก + ตัวพิมพ์ใหญ่ + ตัวเลข (อักขระพิเศษไม่บังคับ). รับหรือปรับ?",
+            "ยืนยันเวลาเตือนก่อนหมด session: 5 นาที. รับหรือปรับ?"
+          ],
+          "summary": "r17: folded Pond 2026-07-31 Platform/NFR decisions into SoT — notification bell-only/event-driven/4-type/dismiss≠read/snackbar+shake/no-email; forget-reset-password (single-use 3-day email link, user email=required reset addr); self-disable+Admin re-enable+no-lockout; replaced stale perf numbers (read200/1s, write1/3s, ~30/module)+oracle (H-C1); password policy+encrypt/hash; global submit-confirm contract (cancel=zero mutation/no number/no audit); session warn 5min+mid-action redirect, environments, i18n-ready, error/empty-state, API security. 3 non-blocking confirmations parked. READY_FOR_UX_UI (change-list L-P).",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T13:30:00+07:00"
         }
       ]
     }
