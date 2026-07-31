@@ -3903,6 +3903,73 @@
           "summary": "Bell-unification sweep: replaced the OLD notification bell (footer -> trace.html \"ดูกิจกรรมทั้งหมด\", ✕/✓ ack dismiss, \"อ่านแล้วทั้งหมด\") on all 31 non-dashboard bell pages with the canonical r18 read-driven bell — footer now -> notifications.html \"ดูทั้งหมด →\", unread=dot+bold / read=muted, scrollable list, note line, header unread-count + ✓ อ่านแล้วทั้งหมด, dismiss UI removed, item deep-links kept. Injected the r18 bell CSS subset per page (matches dashboard classes). dashboard.html/notifications.html untouched. All verify greps pass (trace see-all=0, ack=0); headless spot-render of trace/po-list/qc confirmed.",
           "overridden_by": null,
           "updated_at": "2026-07-31T16:20:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "notification-event-set-r19",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "4 new/expanded categories (trigger/schedule/recipient-by-Read/deep-link): Follow-up, Doc Cancelled/Rejected, Route delivered, SP Low+Overstock DAILY",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "User-initiated soft-delete EXCLUDED from cancel/reject notification",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "FG→Low real-time removed → folded into daily Low+Overstock summary (J8 ~06:00); reservation/planning math untouched",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "J-jobs reconciled: J8 → Low+Overstock daily summary; J2 noti removed (state sweep kept); J3/J4 noti kept",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Pond correction applied: KEPT PO→Production, QC pass/fail, PR auto-created, Invoice Overdue, potential-delay(J4)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Removed: Customer Inactivity (→Follow-up), FG→Low real-time (→daily)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "SP page REUSED for #4 deep-link (Low+Overstock filter query) — no new page",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "r18 read-driven mechanics preserved (read-bit/badge=unread/click=navigate+mark read/mark-all-read/no dismiss/snackbar+shake/bell-only/fan-out by Read)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Completeness: change in .md (platform §7 + non-functional §6/§6.1/§7 + supply-planning §5.1) + HTML views auto-render + index cards/footer refreshed",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/supply-planning.md",
+            "docs/requirements/erp-v2-ui-first/modules/README.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [
+            "r19 ยืนยันตัด 2 event: Customer Inactivity (→Follow-up) + FG→Low real-time (→สรุป Low+Overstock รายวัน) — default ตัดทั้งสอง",
+            "Route ส่งสำเร็จ ผู้รับ = Read Shipping/Route เท่านั้น (default) หรือเพิ่ม Read Sale ที่เกี่ยวข้อง",
+            "Customer Follow-up = near-real-time + light daily due-check ตอน implement (default) หรือ near-real-time เท่านั้น"
+          ],
+          "summary": "r19 Notification event-set: added Customer Follow-up / Document Cancelled-Rejected / Route delivered (near-real-time); FG→Low real-time → daily Low+Overstock summary (J8, deep-link reused SP page filtered); removed Customer Inactivity (→Follow-up); KEPT PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay per Pond correction. r18 read-driven + 4-group UI preserved. Docs+HTML+index complete. READY_FOR_UX_UI.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T16:30:00+07:00"
         }
       ]
     }
