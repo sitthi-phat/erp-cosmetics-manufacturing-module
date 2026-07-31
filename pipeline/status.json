@@ -3854,6 +3854,55 @@
           "summary": "Gate-1-driven r18: reversed notification from dismiss≠read to READ-DRIVEN (platform.md §7 + non-functional.md §7): read-bit replaces dismiss-bit; badge=unread; click=navigate+mark read; mark-all-read; ✕dismiss/ปิดทั้งหมด removed; ดูทั้งหมด shows read/unread; no realtime required. Unchanged (bell-only, 4-type, snackbar+shake, fan-out by Read, FG→Low+J8) preserved. Completeness verified. UX/UI mockups updated in parallel.",
           "overridden_by": null,
           "updated_at": "2026-07-31T15:40:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "gate1-fix",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "bell footer -> notifications.html (ดูทั้งหมด →) on all non-dashboard bell pages",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "no trace.html \"ดูกิจกรรมทั้งหมด\" see-all link left anywhere (grep = 0)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "no old ✕/✓ ack dismiss UI left in any bell (grep class=\"ack\" = 0)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "r18 read-driven look consistent (CSS injected: unread dot+bold / read muted, .noti-scroll, note line, header count + ✓ อ่านแล้วทั้งหมด, mark-all-read handler)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "item deep-links preserved (clickable to destination docs); badge = unread count",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "dashboard.html and notifications.html untouched; only bell block/CSS changed (sidebar/header/body/ESSENCE Hub System intact)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "spot-rendered trace.html/po-list.html/qc.html headless — bell visually r18, footer resolves to notifications.html",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "all ~33 non-dashboard mockup pages under docs/design/erp-v2-ui-first/mockups/ (31 changed: bom, bom-create, contact-create, customer-create, customer-detail, customer-edit, customers, delivery-note, goods-receipt, invoice-detail, invoices, po-create, po-detail, po-list, pr-create, production, purchase-request, qc, quotation-create, quotation-detail, quotation-list, return, settings, shipping, so-create, so-detail, so-list, stock, supplier, supply-planning, trace)"
+          ],
+          "questions_for_pond": [],
+          "summary": "Bell-unification sweep: replaced the OLD notification bell (footer -> trace.html \"ดูกิจกรรมทั้งหมด\", ✕/✓ ack dismiss, \"อ่านแล้วทั้งหมด\") on all 31 non-dashboard bell pages with the canonical r18 read-driven bell — footer now -> notifications.html \"ดูทั้งหมด →\", unread=dot+bold / read=muted, scrollable list, note line, header unread-count + ✓ อ่านแล้วทั้งหมด, dismiss UI removed, item deep-links kept. Injected the r18 bell CSS subset per page (matches dashboard classes). dashboard.html/notifications.html untouched. All verify greps pass (trace see-all=0, ack=0); headless spot-render of trace/po-list/qc confirmed.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T16:20:00+07:00"
         }
       ]
     }
