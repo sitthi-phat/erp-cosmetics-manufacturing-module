@@ -142,6 +142,24 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
     </div>
   </div>
 
+  <div class="dcard chg">
+    <a class="thumb" href="../mockups/po-create.html" target="_blank"><div class="noimg">— ⭐ C4 ใหม่ · เปิด mockup (screenshot รอ audit) —</div></a>
+    <div class="body">
+      <div class="dt"><span class="badge chg">🔵</span> PO (OEM) — สร้าง · ⭐ C4 sell-from-stock</div>
+      <div class="txt"><b>r20 ⭐ C4:</b> per-line "แหล่ง (fulfil)" = 🏭 ผลิตตามสั่ง / 📦 เลือก OEM FG จากสต็อก (ขนาน Own-Brand ก) · จอง OEM FG per-Batch FIFO → พร้อมจัดส่งทันที · 1 PO ผสมได้</div>
+      <div class="links"><a href="../mockups/po-create.html" target="_blank">🖼 Mockup</a> · <a href="modules/po.html" target="_blank">📄 Spec §5.4</a></div>
+    </div>
+  </div>
+
+  <div class="dcard new">
+    <a class="thumb" href="../mockups/po-print.html" target="_blank"><img src="../ux-audit/po-print-screen.png" loading="lazy" alt="PO print"></a>
+    <div class="body">
+      <div class="dt"><span class="badge new">🟢</span> PO (OEM) — พิมพ์เอกสาร</div>
+      <div class="txt">print-ready view หลังบันทึก (ออกเลข PO ตอนบันทึก · G8) — พิมพ์/แชร์เอกสาร PO · สิทธิ์ = PO.Read (R) · มิเรอร์ QT print (B3)</div>
+      <div class="links"><a href="../mockups/po-print.html" target="_blank">🖼 Mockup</a> · <a href="modules/po.html" target="_blank">📄 Spec</a></div>
+    </div>
+  </div>
+
   <div class="dcard new">
     <a class="thumb" href="../mockups/so-create.html" target="_blank"><img src="../ux-audit/so-produce-to-stock.png" loading="lazy" alt="SO create own-brand"></a>
     <div class="body">
@@ -166,6 +184,15 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
       <div class="dt"><span class="badge new">🟢</span> SO — รายละเอียด</div>
       <div class="txt">แสดง flow ตามโหมด (ก)/(ข) · ledger effect · เชื่อม DN/Invoice</div>
       <div class="links"><a href="../mockups/so-detail.html" target="_blank">🖼 Mockup</a> · <a href="modules/so.html" target="_blank">📄 Spec</a></div>
+    </div>
+  </div>
+
+  <div class="dcard new">
+    <a class="thumb" href="../mockups/so-print.html" target="_blank"><img src="../ux-audit/so-print-screen.png" loading="lazy" alt="SO print"></a>
+    <div class="body">
+      <div class="dt"><span class="badge new">🟢</span> SO (Own-Brand) — พิมพ์เอกสาร</div>
+      <div class="txt">print-ready view หลังบันทึก (ออกเลข SO ตอนบันทึก · G8) — พิมพ์/แชร์เอกสาร SO · สิทธิ์ = SO.Read (R) (B3)</div>
+      <div class="links"><a href="../mockups/so-print.html" target="_blank">🖼 Mockup</a> · <a href="modules/so.html" target="_blank">📄 Spec</a></div>
     </div>
   </div>
 </div>
@@ -416,7 +443,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 
 <!-- ===================== NOTIFICATION ===================== -->
-<div class="sec"><span class="n">F</span> การแจ้งเตือน (Notification r18 / r19) <small>— read-driven bell · event set · read-all page</small></div>
+<div class="sec"><span class="n">F</span> การแจ้งเตือน (Notification r18 / r19 / r20) <small>— read-driven bell · 4-category panel ทุกหน้า · event set · read-all page</small></div>
 <div class="grid">
 
   <div class="dcard new">
@@ -431,17 +458,17 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <div class="dcard chg">
     <a class="thumb" href="../mockups/dashboard.html" target="_blank"><img src="../ux-audit/r45_noti.png" loading="lazy" alt="Notification bell"></a>
     <div class="body">
-      <div class="dt"><span class="badge chg">🔵</span> Bell — read-driven (r18)</div>
-      <div class="txt">read แทน dismiss · badge = ยังไม่อ่าน (unread) cap "9+" · คลิก = navigate + mark read (ราย user) · snackbar/toast + bell shake · unified ทุกหน้า</div>
-      <div class="links"><a href="../mockups/dashboard.html" target="_blank">🖼 Mockup (shell/bell)</a> · <a href="modules/platform.html" target="_blank">📄 Spec §4</a></div>
+      <div class="dt"><span class="badge chg">🔵</span> Bell — read-driven · 4 หมวด (r18 → r20 A5)</div>
+      <div class="txt"><b>r20 A5:</b> inner-page bell ทุก ~32 หน้า regenerate เป็น <b>panel 4 หมวด</b> (① งานส่งต่อ/เอกสาร ② ความเสี่ยงสต็อก/ผลิต ③ การเงิน ④ วงจรลูกค้า) mirror dashboard · read แทน dismiss · badge = unread cap "9+" · <b>A6 optimistic</b> (คลิก = ลด badge ทันที) · คลิก = navigate + mark read · "อ่านแล้วทั้งหมด" · ไม่มี ✕ dismiss · "ดูทั้งหมด" → notifications · <b>+ header logo/title = home-link → dashboard ทุกหน้า</b></div>
+      <div class="links"><a href="../mockups/dashboard.html" target="_blank">🖼 Mockup (shell/bell)</a> · <a href="modules/platform.html" target="_blank">📄 Spec §4/§7</a></div>
     </div>
   </div>
 
   <div class="dcard chg">
     <a class="thumb" href="../mockups/notifications.html" target="_blank"><img src="../ux-audit/noti-fg-low.png" loading="lazy" alt="Notification event set"></a>
     <div class="body">
-      <div class="dt"><span class="badge chg">🔵</span> Event set (r19 / r19.1)</div>
-      <div class="txt">คง PO→Production · QC · PR-auto · Invoice Overdue · potential-delay · <b>+ เพิ่ม</b> Doc ยกเลิก/ปฏิเสธ · Route ส่งสำเร็จ (→ Read Shipping/Route <b>+ owning Sale</b>) · Customer Follow-up (near-real-time เท่านั้น) · <b>+ เปลี่ยน</b> Low+Overstock รายวัน (J8)</div>
+      <div class="dt"><span class="badge chg">🔵</span> Event set (r19 → r20)</div>
+      <div class="txt">คง PO→Production · QC · PR-auto · Invoice Overdue · potential-delay · Doc ยกเลิก/ปฏิเสธ · <b>Route "เสร็จสิ้น"</b> (→ Read Shipping/Route <b>+ owning Sale</b>; cancel = RT ใบเดียว) · <b>Customer Follow-up = "ตั้ง flag ต้องติดตาม"</b> (flag-set เท่านั้น · ตัดคำ "ครบกำหนด/due") · Low+Overstock รายวัน (J8) · <b>DN "ยกเลิกการจัดส่ง" = delivery status ไม่ใช่ยกเลิก order</b> (A2)</div>
       <div class="links"><a href="../mockups/notifications.html" target="_blank">🖼 Mockup</a> · <a href="modules/platform.html" target="_blank">📄 Spec §4/§7</a> · <a href="modules/non-functional.html" target="_blank">NFR §7</a></div>
     </div>
   </div>

@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "ux-ui",
-      "status": "READY_FOR_UX_UI",
+      "status": "READY_FOR_PO",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -4280,6 +4280,92 @@
           ],
           "questions_for_pond": [],
           "summary": "Gate-1 Final Team Review reconciliation (r20, spec-only). Settled A1-A4/A6 notification semantics, B1-B7 consistency, C1-C4 flow completeness (incl C4 OEM sell-from-stock), plus header logo/title->Dashboard home-link. Purged all stale notification C-codes. README bumped to r20; index cards refreshed. All backward-compat rules preserved. READY_FOR_UX_UI.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T00:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "gate1-review-uxui-r20",
+          "status": "READY_FOR_PO",
+          "gate_checklist": [
+            {
+              "item": "A5 inner-page bell -> 4-category read-driven panel (31 pages, mirror dashboard, r19/r20 event set, no dismiss, view-all->notifications)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A6 optimistic badge (click = client-side unread decrement before navigate)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A2 DN cancel wording -> yok-lerk-jadsong (delivery-note/shipping/po-detail/po-list; order status unchanged)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C4 CRITICAL po-create OEM sell-from-stock per-line fulfil source + OEM FG picker + FIFO reservation panel (po.md 5.4)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Follow-up wording set-flag; due removed (bell/dashboard/notifications; 0 remaining)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Header logo/title -> dashboard.html home-link on all shell pages",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B3 gate1-delta po-print + so-print (+po-create C4) cards + section F r20 refresh",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B6 index gallery customers card 6 statuses -> 5 statuses + flag",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Polish: notifications bell no longer navigates to dashboard; pager true 20 rows/page",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Stayed within wrapper + mockup-only scope; no requirement .md edited",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "HTTP-verify (200 on all changed pages) + structural sweep (31 pages pass)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Mockup screenshot capture",
+              "pass": false,
+              "missing": "No browser engine installed (Playwright/Puppeteer/Chrome absent); substituted HTTP-200 + static structural verification. Capture fresh po-create C4 + touched-page shots in the visual-audit phase."
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/notifications.html",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/po-list.html",
+            "docs/design/erp-v2-ui-first/mockups/so-create.html",
+            "docs/design/erp-v2-ui-first/mockups/so-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/so-list.html",
+            "docs/design/erp-v2-ui-first/mockups/delivery-note.html",
+            "docs/design/erp-v2-ui-first/mockups/shipping.html",
+            "docs/design/erp-v2-ui-first/mockups/customers.html",
+            "docs/design/erp-v2-ui-first/functional-spec/gate1-delta.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "r20 Gate-1 mockup pass: regenerated 4-category read-driven bell + optimistic badge on 31 inner pages; header logo->dashboard home-link on all shell pages; DN yok-lerk-jadsong relabel; C4 OEM sell-from-stock added to po-create (per-line fulfil source + OEM FG FIFO picker); Follow-up wording set-flag; gate1-delta po-print/so-print/C4 cards + section F refresh; index B6 fix; notifications bell/pager polish. HTTP-200 + structural verification passed; screenshots deferred (no browser engine installed). Re-enters Gate 1 on modified screens only.",
           "overridden_by": null,
           "updated_at": "2026-07-31T00:00:00+07:00"
         }
