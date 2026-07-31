@@ -112,3 +112,46 @@ Counts: **Critical = 1 · Major = 3 · Minor = 4.** None force the Engineer to g
 6. **Track deferred rules explicitly** in a "Deferred controls" register (currently the Invoice Confirmed-gate is only a prose note). One list of "relaxed-this-phase, re-tighten-later" items keeps intentional scope cuts visible to Pond at every gate (m4).
 
 7. **Physically retire tombstones** (git rm) rather than leaving `home.md`/`home.html` in-tree, so "removed" means removed (m3).
+
+---
+
+## After reconciliation — resolutions (2026-07-31)
+
+> **สถานะ: RESOLVED (requirement docs only).** ปอนด์อนุมัติ reconciliation pass ให้แก้ **C1 + M1 + M2 + M3 + m2 + m4**. ข้อจำกัด: **backward-compat** (เปลี่ยน token/prefix แล้วอัปเดต reference ทุกจุด ไม่ให้เหลือ dangling) + **ตรวจความสอดคล้องกับ mockups** (ที่ mockup ต้องเปลี่ยน = ลงเป็น UX follow-up, **ไม่แก้ mockup เอง**). ยึด COMPLETENESS RULE (md + HTML view + ลิงก์ใน index). **BEFORE (ผลตรวจเดิม) ด้านบนคงไว้ครบ — ส่วนนี้คือ AFTER.**
+
+### สรุปภาษาไทย (การแก้)
+แก้ครบ 6 ข้อ: **C1** flow 2 ใบ → เปลี่ยนสถานะปลายทางเป็น DN-mirror (พร้อมจัดส่ง → อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/… ; "ส่งถึง"→"ส่งสำเร็จ"; ถอด In Delivery/Delivered/กำลังจัดส่ง เหลือเฉพาะ note "ห้าม hardcode enum เดิม"). **M1** ให้ใบคืนมี prefix ของตัวเอง **`RET-{YYYYMM}-{NNNNNN}`** (gapless ต่อปี/เดือน, void-only) เพิ่มใน numbering §4 + non-functional D-F5, และเปลี่ยน ledger/trace source ของ Return จาก "RT" → "RET" ทุกจุด (return/stock/traceability); Route คง `RT-…`. **M2** ลบ stray tag ออกจาก 4 ไฟล์. **M3** ใส่ reconciliation banner + inline note ในเอกสาร scope (Quotation lifecycle → quotation.md; SHP → RT) โดยไม่แตะ D-rule. **m2** ระบุใน invoice §4b ว่า financial summary นับเฉพาะใบ active — order ส่งแล้วแต่ใบ void และยังไม่ออกใหม่ = 0 (INTENDED). **m4** เพิ่ม "Deferred-controls register" (non-functional §15) ลง DEF-1 = Invoice Confirmed-gate. **grep ยืนยัน: ไม่มี "RT"=ใบคืน / In Delivery-ส่งถึง ใน flow / stray tag เหลือค้าง.**
+
+### Per-finding resolution
+| Finding | Resolution | Files touched |
+|---|---|---|
+| **C1 (Critical)** — flow files stale terminal statuses | **RESOLVED.** ทั้ง 2 flow refresh เป็น **DN-mirror**: PO/SO fulfilment หลัง "พร้อมจัดส่ง" = สะท้อน DN (อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง → **ส่งสำเร็จ** / ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่). "ส่งถึง"→"ส่งสำเร็จ"; DN step เพิ่มการจัดรอบ (Route)→gen DN. คำเก่า In Delivery/Delivered/กำลังจัดส่ง เหลือเฉพาะในรูป **prohibition note "ห้าม hardcode enum เดิม"** (สอดคล้อง `po.md` §4b). logic ไม่เปลี่ยน. | `flows/oem-flow.md` · `flows/ownbrand-flow.md` |
+| **M1 (Major)** — RT collision + undefined Return number | **RESOLVED.** ใบคืนได้ prefix เฉพาะ **`RET-{YYYYMM}-{NNNNNN}`** (gapless ต่อปี/เดือน, void-only, ออกตอนบันทึก G8/NS2). เพิ่มลง `numbering-on-save.md` §4 (row ใหม่) + §3/§5/§7 + `non-functional.md` D-F2/D-F5. เปลี่ยน return-ledger/trace source token **"RT" → "RET"** ทุกจุด: `return.md` (field เลขใบคืน, summary, list search "เลขใบคืน (RET)", §4/§5/§10 source, cross-link), `stock.md` §6 (ledger row + delta note), `traceability.md` (§3 Return entity, §3.1 id/key, §4 stock-movement audit, §5/§5b sample). Route คง `RT-…`. | `numbering-on-save.md` · `non-functional.md` · `return.md` · `stock.md` · `traceability.md` |
+| **M2 (Major)** — stray wrapper tags | **RESOLVED.** ลบ `</content>`/`</invoke>` ออกจากทั้ง 4 ไฟล์ (body). ยืนยันด้วย grep = 0 occurrence ทั้ง `requirements/` set. | `customer.md` · `invoice.md` · `numbering-on-save.md` · `permission-matrix.md` |
+| **M3 (Major)** — scope doc stale QT lifecycle + SHP | **RESOLVED (annotate เท่านั้น, ไม่ re-derive D-rules).** เพิ่ม **reconciliation banner** บนหัวเอกสาร + inline "[⚠ superseded …]" ที่ enumeration ที่ล้าสมัย (§สรุปไทย, D18-4, §2.2, §10.1, §10.2 "SHP", §10.3) ชี้ authority = `quotation.md` §4 (Draft/Confirmed/Rejected/Cancelled — no "Sent"; "Agreed"→"Confirmed") และ Route `RT-…` (ไม่ใช่ SHP). D1–D18 business logic ไม่ถูกแก้. | `scope-oem-ownbrand-supply-planning.md` |
+| **m2 (Minor)** — financial summary void edge | **RESOLVED.** เพิ่มบรรทัดใน `invoice.md` §4b: financial summary นับเฉพาะใบ active (non-void); order ที่ส่งแล้วแต่ใบเดียวถูก void + ยังไม่ออกใหม่ = **0 (INTENDED, by design)** → QA เขียน AC ให้คาดหวัง 0 (+ US-INV-04 edge). ตอกย้ำใน `customer.md` §7. | `invoice.md` · `customer.md` |
+| **m4 (Minor)** — deferred control not registered | **RESOLVED.** เพิ่ม **§15 "Deferred-controls register"** ใน `non-functional.md` (DEF-1 = Invoice Confirmed-gate, relaxed-this-phase → re-tighten later). invoice §7/§10 + permission-matrix r13 ชี้ไป DEF-1. | `non-functional.md` · `invoice.md` · `permission-matrix.md` |
+| **m3 (Minor)** — home tombstones | **CONFIRMED RESOLVED (dispatcher git-rm'd).** grep/glob ยืนยัน: **ไม่มี `home.md` ในชุด module package และไม่มี `functional-spec/modules/home.html`**; ที่เหลือคือ legacy `functional-spec/home.html` ซึ่งคง **อยู่ใน ⑥ Archive โดยตั้งใจ** (historical, README §104/§117) — ไม่ใช่ tombstone ของ source-of-truth. | — (verify only) |
+
+### UX follow-up list (mockups ที่ควรเปลี่ยนให้ตรง spec — **PO ไม่แก้ mockup, ส่งให้ UX/UI Stage 1 · re-enter GATE 1 เฉพาะจอที่แก้**)
+| # | Mockup | ปัจจุบัน (spot-check) | ต้องเปลี่ยนเป็น | เหตุผล |
+|---|---|---|---|---|
+| **UX-1** | `mockups/return.html` | ป้าย/หัวคอลัมน์เลขใบคืน + ช่องค้นอาจใช้ **"RT"** | **"RET"** (`RET-{YYYYMM}-{NNNNNN}`) — เลขใบคืน + list search "เลขใบคืน (RET)" | M1: Return ได้ prefix ใหม่ RET (คนละตัวกับ Route RT) |
+| **UX-2** | `mockups/stock.html` | return-ledger / movement `return (−)` source อาจแสดง **"RT"** | **"RET"** (เลขใบคืน) เป็น source ของ `return (−)` | M1: sync ledger source token |
+| **UX-3** | `mockups/trace.html` | Return topic / sample อาจอ้าง **"RT ที่ส่งคืน"** | **"เลขใบคืน RET"** | M1: trace Return topic ใช้ RET |
+| **UX-4 (verify)** | `mockups/delivery-note.html` + จอที่โชว์สถานะ PO/SO (dashboard/po-detail/so-detail) | ตรวจว่าไม่มี label **"In Delivery / Delivered / ส่งถึง / กำลังจัดส่ง"** หลงเหลือ | ใช้ DN 6 สถานะ (อยู่ระหว่างการเตรียม/อยู่ระหว่างจัดส่ง/ส่งสำเร็จ/ลูกค้าเลื่อนส่ง/ลูกค้ายกเลิก/ลูกค้ายังไม่กำหนดวันรับใหม่) | C1: ให้ mockup ตรง DN-mirror (delivery-note.html ทำแล้วตาม r11 — ตรวจยืนยัน) |
+> **หมายเหตุ:** UX-4 น่าจะสอดคล้องอยู่แล้ว (mockup Route/DN r11 ใช้ 6 สถานะ) — ระบุไว้เป็น "verify" ให้ UX/QA spot-check. UX-1..3 เป็นการ rename RT→RET เชิง label เท่านั้น (ไม่เปลี่ยน layout/flow) → GATE 1 review เบา.
+
+### Backward-compat / grep verification (ยืนยัน "ไม่มีของเก่าพัง")
+- **Return "RT" (ambiguous):** grep ทั้ง `modules/` — เหลือ **0** ตัวที่ "RT" = ใบคืน. ตัวที่พบทั้งหมดเป็น **Route `RT-…`** (shipping/dashboard/comment-convention/numbering/non-functional/delivery-note/traceability Route topic) ซึ่งถูกต้องต้องคงไว้. pattern `Lot/RM/Supplier/RT` เหลือปรากฏ **เฉพาะในไฟล์ audit นี้ (ส่วน BEFORE)** ตามเจตนา.
+- **flow stale statuses:** grep `flows/` — "In Delivery/Delivered/ส่งถึง/กำลังจัดส่ง" เหลือเฉพาะใน **prohibition note "ห้าม hardcode enum เดิม …"** (ตั้งใจ, mirror po.md) — ไม่มี live status เก่าเหลือ.
+- **stray tags:** grep `</content>`/`</invoke>`/`<parameter`/`</antml` ทั้ง `requirements/erp-v2-ui-first/` = **0 occurrence**.
+- **home tombstone:** ไม่มี `home.md`/`functional-spec/modules/home.html` (legacy `functional-spec/home.html` = Archive โดยตั้งใจ).
+- **new prefix consistency:** `RET-{YYYYMM}-{NNNNNN}` ปรากฏสอดคล้องใน `return.md` · `numbering-on-save.md` §4 · `non-functional.md` D-F2/D-F5 · `stock.md` §6 · `traceability.md`.
+
+### ยังต้องให้ปอนด์ยืนยันที่ Gate (non-blocking — ไม่ค้างงาน)
+- **Q-INV1 (m1):** PO/SO ที่มีใบ active แล้ว → default **(A) explicit cancel-then-create** (UX เดินตาม A แล้ว). ถ้าปอนด์เลือก **(B) auto-supersede** จะปรับ `invoice.md` §4b + ปุ่ม UX 1 จุด → re-review GATE 1.
+- **m4 deferral (DEF-1):** ยืนยันว่า **Invoice Confirmed-gate ผ่อนในเฟสนี้โดยตั้งใจ** (create ได้ทุกสถานะ) และจะ re-tighten ภายหลัง — บันทึกใน `non-functional.md` §15.
+
+### HTML view (COMPLETENESS RULE)
+- เพิ่ม view `functional-spec/modules/po-output-quality-audit.html` (data-src → `../../../../requirements/erp-v2-ui-first/po-output-quality-audit.md`) + ใส่ใน `_render.js` map + ลิงก์ใน `modules/index.html` ใต้หัวข้อ "Reviews / Audit".

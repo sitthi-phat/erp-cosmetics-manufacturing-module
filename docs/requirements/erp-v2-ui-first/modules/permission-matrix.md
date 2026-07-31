@@ -1,6 +1,6 @@
 # Permission Matrix — Capability → Module → Action (consolidated)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30 · + Invoice actions r13 2026-07-30**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30 · + Invoice actions r13 2026-07-30 · + stray-tag cleanup 2026-07-31**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
 กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)** · **★★★★★ r13 (2026-07-30): Invoice — สร้าง = C (รวมสร้างจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (per-invoice override) = U · พิมพ์ = R**
 
 ## สรุปภาษาไทย
@@ -164,7 +164,7 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override) = Invoice.U → (U)** — snapshot บนใบ, ไม่กระทบ customer master.
 - **ยกเลิก/void ใบแจ้งหนี้ (+ เหตุผล) = Invoice.D → (D)** — เอกสารการค้า void-only, เลข gapless คงอยู่ (deletion §2.8).
 - **รับชำระ/อัปเดตสถานะชำระ + แก้ comment = Invoice.U → (U)** · **พิมพ์ใบ/ใบกำกับ = Invoice.R → (R)**.
-- **เฟสนี้ไม่ล็อกสถานะตอนสร้างใบ** (Confirmed-gate = deferred, `invoice.md` §7) — ไม่กระทบ permission (ยังเป็น Invoice.C).
+- **เฟสนี้ไม่ล็อกสถานะตอนสร้างใบ** (Confirmed-gate = deferred, `invoice.md` §7 · `non-functional.md` §15 DEF-1) — ไม่กระทบ permission (ยังเป็น Invoice.C).
 - อ้างอิง: `invoice.md` §6 · `delivery-note.md` §5/§9.
 
 ## 4. หมายเหตุ (D14)
@@ -179,7 +179,7 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - **★★★★ r12 Trace/Audit:** **ดู Audit log (มุมมองรวม non-read + login) = Settings.Admin only (Ad)** · trace ผ่าน module = Read (R) ของ module ต้นทาง · archive = Super User. ไม่มีสิทธิ์ใหม่ — เป็นการยืนยัน mapping เดิม.
 - **★★★★★ r13 Invoice:** **สร้างใบ = C (รวมจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (override) = U · รับชำระ/comment = U · พิมพ์ = R.** ใบ active ทีละใบต่อ PO/SO (`invoice.md` §4b); เฟสนี้ไม่ล็อกสถานะตอนสร้าง (ไม่กระทบ permission).
 - **★ G9:** ทุกปุ่มที่ permission-gate แสดงรหัสตาม Suffix; รหัส 6 ตัว (R/C/U/D/A/Ad).
+- **★ แก้ (2026-07-31 — reconciliation M2 cleanup, ปอนด์):** ลบ stray tag `</content>` ท้ายไฟล์ (ไม่ใช่ spec content); ไม่มีการเปลี่ยน mapping ใด ๆ.
 
 ## 5. Cross-links
-ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A · สร้าง/พิมพ์ Invoice)** · **★★★★★ `invoice.md` §6 (สร้าง=C/void=D/override=U/print=R)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) · scope §7.1 · README §3 G9 + §8 · §3.1.
-</content>
+ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A · สร้าง/พิมพ์ Invoice)** · **★★★★★ `invoice.md` §6 (สร้าง=C/void=D/override=U/print=R)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) + §15 (Deferred-controls) · scope §7.1 · README §3 G9 + §8 · §3.1.

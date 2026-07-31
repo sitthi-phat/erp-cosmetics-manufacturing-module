@@ -1,13 +1,13 @@
 # Module — Invoice / การเงิน
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Invoice review 2026-07-30: search · multi-invoice/one-active · create-when-none (no status lock this phase) · pull-customer-data + per-invoice override · DN-unify**) · **AUTHORITATIVE SPEC** (absorbs functional-spec `invoice.html` US-INV-01..04 + credit-term reconcile)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Invoice review 2026-07-30: search · multi-invoice/one-active · create-when-none (no status lock this phase) · pull-customer-data + per-invoice override · DN-unify** · **+ m2 financial-summary-intended + stray-tag cleanup 2026-07-31**) · **AUTHORITATIVE SPEC** (absorbs functional-spec `invoice.html` US-INV-01..04 + credit-term reconcile)
 Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/invoice-print.html`
 กฎอ้างอิง: entity-status-map §1.3 (billing) · `settings.md` (VAT effective date + ข้อมูลบริษัท) · `customer.md`/README §2.2 (credit term 30/60/90 default 60) + **`customer.md` §3 (pull ชื่อ/ที่อยู่ลูกค้า/เลขภาษี → snapshot แก้ในใบได้)** · `delivery-note.md` §5 (**DN-unify: สร้าง/พิมพ์ Invoice จากหน้า DN = ใบเดียวกัน**) · deletion-policy §2.8 (void) · README §3 (**G8**) · **`comment-convention.md` (comment + change-history)** · **`numbering-on-save.md` (G8 — เลข INV ออกตอนสร้างใบ)**
 
 ## สรุปภาษาไทย
 ออกใบแจ้งหนี้/ใบกำกับภาษีไทยจาก **PO หรือ SO**. **★ ค้น PO/SO/Invoice ด้วย: ชื่อลูกค้า · ชื่อผู้ติดต่อ · เลข PO/SO/Invoice · ช่วงวันที่สร้าง (ของ PO/SO/Invoice)**. **★★ 1 PO/SO มีได้หลายใบแจ้งหนี้ แต่ "active" ได้ทีละ 1 ใบเท่านั้น** — active = ใบที่ยังไม่ถูกยกเลิก (ปัจจุบัน); ใบที่ยกเลิก/void ยังอยู่เป็นประวัติ (§4b). **★ เจอ PO/SO ที่ยังไม่มีใบ → สร้างใบได้เลย; เฟสนี้ "ไม่ล็อกสถานะ"** (ไม่ gate ว่าต้อง Confirmed — relaxed for this phase, ดู reconcile note). **★ สร้างใบ → ระบบออกเลข INV (G8) + พิมพ์ได้ทันที (print-ready)**; ตอนสร้างระบบ **ดึงข้อมูลลูกค้าจากโมดูลลูกค้า (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี)** มาใส่ **แต่ "แก้ได้ในใบ" (per-invoice override — snapshot เก็บบนใบ ไม่แก้ master ลูกค้า)**. ใบกำกับครบฟิลด์ (logo, ผู้ออก+เลขภาษี 13 หลัก, ลูกค้า, เลขที่/วันที่/เครดิต, ตารางรายการ, subtotal/discount/**VAT ตาม effective date ยึด invoice date**/grand total/**ตัวหนังสือไทย**/ลายเซ็น 2 ช่อง). **★ ยกเลิกใบ (cancel/void) ได้** — เก็บเลข/ประวัติ (commercial-docs void-only, deletion §2.8). **Overdue = ส่งของแล้ว (DN ส่งสำเร็จ) + เลยเครดิต + ยังไม่จ่าย** (เครดิตระดับลูกค้า **30/60/90 default 60**, override รายใบได้). เลข `INV-{YYYY}-{NNNNNN}` gapless. **★ เลข INV ไม่โชว์ล่วงหน้า → ออก gapless ตอน "สร้างใบแจ้งหนี้" สำเร็จ + popup ยืนยัน (เลข INV + สรุป ลูกค้า/อ้าง PO-SO/grand total + ลิงก์ detail/print · G8) · void = ใช้เลขเดิม (NS5/NS6)**. **★ มีช่องหมายเหตุ (comment) แก้ในที่ + เก็บประวัติครบ (comment-convention.md).** **★★ DN-unify: การ "สร้าง/พิมพ์ Invoice" จากหน้า DN = ทำงานบน "ใบ active ของ PO/SO เดียวกัน" — ไม่ใช่คนละใบ; ใบที่สร้างจาก DN โผล่ในโมดูล Invoice ด้วย** (§10).
 
-> **หมายเหตุ reconcile (สถานะตอนสร้าง):** เดิมล็อกว่า "ออกใบได้ตั้งแต่ PO=Confirmed เท่านั้น". **★ เฟสนี้ปอนด์สั่งผ่อน (2026-07-30): ไม่ gate สถานะตอนสร้าง** — เจอ PO/SO ใน search แล้วสร้างใบได้เลย. กฎ Confirmed-gate = **deferred (เลื่อนไปเฟสหลัง)** ไม่ได้ยกเลิกถาวร — บันทึกไว้เพื่อ re-tighten ภายหลัง.
+> **หมายเหตุ reconcile (สถานะตอนสร้าง):** เดิมล็อกว่า "ออกใบได้ตั้งแต่ PO=Confirmed เท่านั้น". **★ เฟสนี้ปอนด์สั่งผ่อน (2026-07-30): ไม่ gate สถานะตอนสร้าง** — เจอ PO/SO ใน search แล้วสร้างใบได้เลย. กฎ Confirmed-gate = **deferred (เลื่อนไปเฟสหลัง)** ไม่ได้ยกเลิกถาวร — บันทึกไว้เพื่อ re-tighten ภายหลัง (**register: `non-functional.md` §15 DEF-1**).
 > **หมายเหตุ reconcile (เครดิต):** functional-spec เดิมยกตัวอย่างเครดิต "30 วัน"; แหล่งความจริงล่าสุด = **preset 30/60/90 default 60** (README §2.2 / `customer.md`). ใช้ค่านี้ — override รายใบยังทำได้.
 
 ---
@@ -55,13 +55,14 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
   - **การแก้ข้อมูลบนใบ active (customer override / รายการ / เครดิต) = แก้ในใบเดิม (เลขเดิม, ยังเป็นใบ active เดิม)** — ไม่ใช่การออกใบใหม่. ใช้เมื่อแค่ปรับข้อมูล; ออกใบใหม่ (เลขใหม่) เมื่อจำเป็นต้องแทนใบทั้งใบ (void→create).
 - **★ Partial / split billing = นอกขอบเขตเฟสนี้:** เฟสนี้ **1 ใบ active = คลุมทั้ง PO/SO เต็มใบ** (สอดคล้อง 1 DN = 1 PO เต็ม). ยังไม่รองรับหลายใบ active พร้อมกันแบ่งจ่ายบางส่วน — ถ้าอนาคตต้องแตกบิลบางส่วน จะนิยาม multi-active + aggregate เพิ่ม.
 - **ผลต่อโมดูลอื่น:** ลิงก์ billing/สถานะวางบิลของ PO/SO = **สะท้อนใบ active** (`po.md` §4 billing rail / `so.md`); financial summary ของลูกค้า = Σ ใบที่ **ไม่ void** (customer.md §7).
+- **★ m2 (2026-07-31 — INTENDED behaviour, ไม่ใช่ bug):** financial summary ของลูกค้า (`customer.md` §7) **นับเฉพาะใบ active (non-void)**. ดังนั้น **order (PO/SO) ที่ส่งของแล้ว แต่ใบแจ้งหนี้เดียวถูก void และ "ยังไม่ออกใบใหม่แทน" → contribute 0** ต่อยอดซื้อ/ยอดค้างของลูกค้า (จนกว่าจะออกใบ active ใหม่). **นี่เป็นพฤติกรรมที่ตั้งใจ (by design)** เพื่อไม่ให้เอกสารภาษีที่ถูกยกเลิกไปปนยอด — **QA เขียน AC ให้คาดหวัง 0 (ไม่ถือเป็น defect)**. ถ้าธุรกิจต้องการนับ order ที่ส่งแล้วแม้ใบถูก void จะต้องเปิด reconcile ใหม่ (เปลี่ยนนิยาม summary).
 
 ## 5. User Stories (absorbed + reconciled) + AC สรุป
 - **US-INV-01 (Must) — สร้างใบจาก PO/SO ที่ค้นเจอ (ไม่ล็อกสถานะเฟสนี้) + เห็น stage จริง:** ค้นเจอ PO-176 → **★ กด "สร้างใบแจ้งหนี้" → ระบบ pull ข้อมูลลูกค้า (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี/เครดิต) → ออกเลข INV-2026-000135 (gapless) + popup ยืนยัน (เลข + ลูกค้า/อ้าง PO-SO/grand total) + ลิงก์ detail/print (G8/NS2–NS3) + print-ready ทันที** → INV "รอชำระ" + เป็น **ใบ active** ของ PO-176; ราง billing PO="วางบิลแล้ว"; แสดง fulfilment จริง; เครดิต default จากลูกค้า (แก้ในใบได้). **Edge:** PO ยังไม่ Confirmed/ยังไม่ส่ง → **สร้างได้ (เฟสนี้ไม่ล็อกสถานะ)** + ป้ายบริบทสถานะ PO จริง. **Error:** PO-176 มีใบ active อยู่แล้ว → บล็อก "มีใบ active อยู่แล้ว — ยกเลิกใบเดิมก่อน" (§4b) · **ไม่ออกเลข INV (G8/NS4)**.
 - **US-INV-01b (Must) — per-invoice customer override:** บน invoice-detail แก้ **ชื่อลูกค้า / ที่อยู่ออกเอกสาร / เลขภาษี** ได้เฉพาะใบนี้ → พิมพ์ใบด้วยค่าที่แก้ → **customer master ไม่เปลี่ยน**. ทุกการแก้ audit (entity=Invoice). **สิทธิ์ = Invoice.Update (U).**
 - **US-INV-02 (Must) — ใบกำกับภาษีไทย + VAT effective date:** ตั้ง VAT 7% effective 01/01/2569, ออกใบ 08/07/2569 → ใบครบฟิลด์ + **VAT 7% (มีผล 01/01/2569)** + ตัวหนังสือไทย + ลายเซ็น 2 ช่อง. **Edge:** หลายอัตรา VAT → เลือกอัตราที่ effective ครอบ **invoice date**. **Error:** ข้อมูลบริษัทไม่ครบใน settings → เตือน "ข้อมูลผู้ออกไม่ครบ กรุณากรอกในตั้งค่า" — ไม่พิมพ์ใบที่ฟิลด์บังคับว่าง.
 - **US-INV-03 (Should) — Overdue/ติดตามหนี้:** DN ส่งสำเร็จ + เลยเครดิต + ยังไม่จ่าย → scheduler (J3) → billing "เกินกำหนด" + จำนวนวันค้าง; noti Finance+Sale. **Edge:** ออกใบแล้วแต่ DN ยัง "ไม่ส่งสำเร็จ" → **ยังไม่ overdue** แม้เลยวันเครดิต. **Error:** บันทึกรับชำระเกินยอดใบ → error "ยอดรับชำระเกินยอดค้าง" — ไม่บันทึก.
-- **US-INV-04 (Should) — Cancel/void + one-active:** ยกเลิกใบ (void) + เหตุผล → ใบ=void (ไม่ลบ, เลข gapless) → ไม่ active → PO/SO ออกใบใหม่แทนได้ (§4b, deletion §2.8). **Edge:** void ใบ active → ราง billing/financial summary หยุดนับใบนั้น. **Error:** ไม่มีปุ่ม "ลบ" ถาวร — มีเฉพาะ void (เอกสารการค้าห้าม hard delete).
+- **US-INV-04 (Should) — Cancel/void + one-active:** ยกเลิกใบ (void) + เหตุผล → ใบ=void (ไม่ลบ, เลข gapless) → ไม่ active → PO/SO ออกใบใหม่แทนได้ (§4b, deletion §2.8). **Edge:** void ใบ active → ราง billing/financial summary หยุดนับใบนั้น (order ที่ยังไม่ออกใบใหม่แทน = 0 ในยอดลูกค้า, INTENDED — §4b m2). **Error:** ไม่มีปุ่ม "ลบ" ถาวร — มีเฉพาะ void (เอกสารการค้าห้าม hard delete).
 - **US-INV-05 (Must) — DN-unify:** จากหน้า DN กด **"สร้าง/พิมพ์ Invoice"** → ทำงานบน **ใบ active ของ PO/SO เดียวกัน**: ถ้ายังไม่มีใบ → สร้างใบ active (Invoice.C, G8 popup) แล้ว **ใบนี้โผล่ในโมดูล Invoice ด้วย**; ถ้ามีใบ active แล้ว → **พิมพ์ใบ active ใบเดิม** (ไม่สร้างใบซ้ำ). ใบเดียวกันไม่ว่าเข้าจากหน้า DN หรือหน้า Invoice (§10 · `delivery-note.md` §5).
 
 ## 5b. ★ Comment + change-history (ยึด `comment-convention.md`)
@@ -82,7 +83,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 > ไม่มี hard delete. สร้าง Invoice จากหน้า DN ก็ยึด Invoice.**Create (C)** เดียวกัน (DN-unify).
 
 ## 7. Validations
-- **★ ไม่ล็อกสถานะตอนสร้างใบ (เฟสนี้):** สร้างใบจาก PO/SO ที่ค้นเจอได้ทุกสถานะ (Confirmed-gate = deferred; ดู reconcile note). *(re-tighten ภายหลังได้.)*
+- **★ ไม่ล็อกสถานะตอนสร้างใบ (เฟสนี้):** สร้างใบจาก PO/SO ที่ค้นเจอได้ทุกสถานะ (Confirmed-gate = deferred; ดู reconcile note + `non-functional.md` §15 DEF-1). *(re-tighten ภายหลังได้.)*
 - **★ 1 PO/SO มีใบ active ได้ทีละ 1 ใบ (§4b):** มีใบ active อยู่ → บล็อกการสร้างใบใหม่ (ต้อง void ใบเดิมก่อน).
 - **★ เลข INV ออกตอน "สร้างใบแจ้งหนี้" สำเร็จเท่านั้น (G8/NS2) — บล็อก/ไม่ผ่าน = ไม่ออกเลข (NS4); void = เลขเดิม (NS5/NS6).**
 - **★ per-invoice override:** แก้ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี บนใบ = แก้เฉพาะใบ **ไม่กระทบ customer master**; ทุกการแก้ audit.
@@ -129,6 +130,7 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
   - **§5 US-INV-05 DN-unify:** สร้าง/พิมพ์ Invoice จากหน้า DN = ใบ active เดียวกันของ PO/SO; โผล่ในโมดูล Invoice.
   - **§6 permissions (G9):** สร้าง = (C) · ยกเลิก/void = (D) · แก้ข้อมูลลูกค้าบนใบ = (U) · พิมพ์ = (R). sync `permission-matrix.md`.
   - sync `po.md` · `so.md` · `customer.md` §7 · `delivery-note.md` §5 · `numbering-on-save.md` · `non-functional.md` · `permission-matrix.md` · README.
+- **★★ เพิ่ม (2026-07-31 — reconciliation m2 + M2 cleanup, ปอนด์):** **§4b m2** ระบุชัดว่า financial summary นับเฉพาะใบ active (non-void); order ที่ส่งแล้วแต่ใบ void และยังไม่ออกใบใหม่ = **0 (INTENDED, ไม่ใช่ bug)** → QA เขียน AC ตามนี้ (+ US-INV-04 edge). Confirmed-gate deferral ชี้ไป `non-functional.md` §15 DEF-1. **ลบ stray tag `</content>`/`</invoke>` ท้ายไฟล์ (M2)** — ไม่ใช่ spec content.
 
 ## 12. Overdue trigger — DN ส่งสำเร็จ
 - credit เริ่มนับเมื่อ **DN ส่งสำเร็จ (Delivered)** — ไม่ใช่ตอนออกใบ (delivery-note.md §7 / non-functional J3).
@@ -139,5 +141,3 @@ Mockups: `mockups/invoices.html` · `mockups/invoice-detail.html` · `mockups/in
 > - **(B) auto-supersede** — กด "สร้างใบใหม่" แล้วระบบ void ใบเดิมให้อัตโนมัติ + ออกใบใหม่เป็น active (สะดวกกว่า แต่ void ใบภาษีอัตโนมัติ).
 >
 > **สถานะไม่ถูกบล็อก** — UX/UI เดินหน้าด้วยค่า default (A). ถ้าปอนด์เลือก (B) จะปรับ §4b + UX ปุ่มเดียว.
-</content>
-</invoke>

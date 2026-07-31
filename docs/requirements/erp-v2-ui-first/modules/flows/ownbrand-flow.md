@@ -1,11 +1,11 @@
 # Flow — Own-Brand (SO: ก ขายจากสต็อก / ข ผลิตเก็บสต็อก)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: D1/D2/D8 v2/D12/D16/D18-2 · scenario-walkthrough S4/S5
-โมดูลที่เกี่ยว: `so.md` · `supply-planning.md` · `stock.md` · `production.md` · (delivery-note/invoice/trace = spec เดิม)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ delivery-status reconcile → DN-mirror model, 2026-07-31**)
+กฎอ้างอิง: D1/D2/D8 v2/D12/D16/D18-2 · scenario-walkthrough S4/S5 · **DN-mirror: `so.md` §4 · `delivery-note.md` §7/§8**
+โมดูลที่เกี่ยว: `so.md` · `supply-planning.md` · `stock.md` · `production.md` · **`shipping.md` (Route) · `delivery-note.md` (DN)** · (invoice/trace = spec เดิม)
 
 ## สรุปภาษาไทย
-สาย Own-Brand (แบรนด์ตัวเอง) ใช้ **SO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation)**. 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า → ยืนยัน (จอง FG) → พร้อมส่ง → Delivery ตัด FG FIFO → DN/Invoice. **(ข) ผลิตเก็บสต็อก** = ไม่เลือกลูกค้า, เหมือนเปิด PO → BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → ผลิต → QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). Supply Planning ปุ่มสั่งผลิต = prefill (ข) (D8 v2).
+สาย Own-Brand (แบรนด์ตัวเอง) ใช้ **SO `SO-{YYYYMM}-{NNNNNN}` (คนละโมดูล, ไม่มี Quotation)**. 2 แบบ: **(ก) ขายจากสต็อก** = เลือกลูกค้า → ยืนยัน (จอง FG) → พร้อมจัดส่ง → Delivery ตัด FG FIFO → DN/Invoice. **(ข) ผลิตเก็บสต็อก** = ไม่เลือกลูกค้า, เหมือนเปิด PO → BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → ผลิต → QC ผ่าน → FG เข้าคลัง → ขายภายหลังผ่าน (ก). Supply Planning ปุ่มสั่งผลิต = prefill (ข) (D8 v2). **★ สถานะจัดส่งของ SO (ก) หลัง "พร้อมจัดส่ง" = สะท้อนจาก DN (DN-mirror, ไม่ใช่ enum อิสระ กำลังจัดส่ง/ส่งถึง เดิม — reconcile 2026-07-31).**
 
 ---
 
@@ -13,10 +13,10 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | # | Step | ผู้ทำ | เอกสาร/สถานะ | stock-ledger effect (FG) |
 |---|---|---|---|---|
 | 1 | `so-create` (ก) → **เลือกลูกค้า (customer dropdown)** + FG มีสต็อก → โชว์ FG Available ราย Batch (D16) | Sale Own-Brand | `SO-…` (ร่าง) | — |
-| 2 | กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch** + SO = **พร้อมส่ง (Ready to Ship)** → รอโมดูล **การจัดส่ง** | Sale Own-Brand | SO = พร้อมส่ง | `RESERVE (+reserved FG)` |
-| 3 | โมดูลการจัดส่งหยิบเข้ารอบ → **ตัด FG FIFO ราย Batch** ตอน dispatch | Shipping | SO → กำลังจัดส่ง | `CONSUME (−on_hand FG, FIFO)` |
-| 4 | ออก **DN (อ้าง SO)** → ส่งถึง | Shipping | `DN-…` (Own-Brand badge) | — |
-| 5 | ออก **Invoice (อ้าง SO + cost snapshot, D10)** → รับชำระ | Finance | `INV-…` | — |
+| 2 | กด **"ยืนยันใบสั่งขาย (จอง FG)"** → ของมีในสต็อก → **จอง FG per-Batch** + SO = **พร้อมจัดส่ง (Ready to Ship)** → รอโมดูล **การจัดส่ง** | Sale Own-Brand | SO = พร้อมจัดส่ง | `RESERVE (+reserved FG)` |
+| 3 | โมดูลการจัดส่งหยิบเข้ารอบ (Route) → gen DN → **ตัด FG FIFO ราย Batch** ตอน dispatch | Shipping | **SO สะท้อนสถานะ DN: อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง** | `CONSUME (−on_hand FG, FIFO)` |
+| 4 | **DN (อ้าง SO)** เดินตาม Route → **ส่งสำเร็จ (ลูกค้าเซ็น)** *(หรือ ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่)* · **SO สะท้อนสถานะ DN** (`so.md` §4) | Shipping | `DN-…` (Own-Brand badge) · DN = ส่งสำเร็จ | — |
+| 5 | ออก **Invoice (อ้าง SO + cost snapshot, D10)** → รับชำระ (เริ่มนับเครดิตจาก DN "ส่งสำเร็จ") | Finance | `INV-…` | — |
 | — | **ยกเลิก SO** ก่อน dispatch = คืนจอง FG | Sale Own-Brand | SO = ยกเลิก | `RELEASE (−reserved FG)` |
 
 ## 2. (ข) Produce-to-stock — end-to-end
@@ -42,6 +42,6 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 - ทุก movement มี reason + source (D15).
 
 ## 5. Status touchpoints
-- SO (ก): ร่าง → พร้อมส่ง (จอง FG) → กำลังจัดส่ง → ส่งถึง → (billing) Paid/Overdue.
+- **SO (ก) (delivery status = DN-mirror, reconcile 2026-07-31):** ร่าง → **พร้อมจัดส่ง (จอง FG)** → **[สะท้อนสถานะ DN]** อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง → **ส่งสำเร็จ** / ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่ → (billing) Paid/Overdue. **★ หลัง "พร้อมจัดส่ง" สถานะจัดส่งไม่ใช่ enum อิสระ — สะท้อนจาก DN ที่ผูกอยู่** (authoritative `so.md` §4 · `delivery-note.md` §7/§8; **ห้าม hardcode enum เดิม กำลังจัดส่ง/ส่งถึง**).
 - SO (ข): ร่าง → ผลิตเก็บสต็อก → (PRD/Batch flow) → FG เข้าคลัง.
-- credit term (ก) = ระดับลูกค้า 30/60/90 default 60 (override รายใบแจ้งหนี้ได้).
+- credit term (ก) = ระดับลูกค้า 30/60/90 default 60 (override รายใบแจ้งหนี้ได้; นับ overdue จาก DN "ส่งสำเร็จ").

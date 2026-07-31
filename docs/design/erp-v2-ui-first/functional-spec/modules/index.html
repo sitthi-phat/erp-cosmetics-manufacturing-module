@@ -45,8 +45,8 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="grp"><span class="dot"></span> ภาพรวม &amp; การไหลของงาน</div>
 <div class="tocgrid">
   <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit 60) · global rules G1–G9 · changelog · old→new map · source-of-truth</div></a>
-  <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger</div></a>
-  <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect</div></a>
+  <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger · ★ delivery status=DN-mirror</div></a>
+  <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect · ★ delivery status=DN-mirror</div></a>
   <a class="flow mod" href="../scenario-walkthrough.html"><div class="mt">Scenario Walkthrough 🆕</div><div class="md">S1–S5 + B1–B4 · เดินเรื่อง mock data + ledger before→after</div></a>
   <a class="flow mod" href="../user-journeys.html"><div class="mt">Visual Journeys — 6 สาย</div><div class="md">Customer→PO→ผลิต→QC→จัดส่ง→Billing</div></a>
 </div>
@@ -61,11 +61,11 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <div class="grp"><span class="dot"></span> คลัง &amp; จัดซื้อ</div>
 <div class="tocgrid">
-  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source(D15) · มูลค่าสต็อก</div></a>
+  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source(D15) · มูลค่าสต็อก · ★ return source=RET</div></a>
   <a class="mod" href="goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link</div></a>
   <a class="mod" href="pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto/สร้างตรง · partial→PR ใหม่ · void</div></a>
   <a class="mod" href="supplier.html"><div class="mt">Supplier</div><div class="md">price matrix (max active→BOM) · Active/Inactive · snapshot</div></a>
-  <a class="mod" href="return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ</div></a>
+  <a class="mod" href="return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ · ★ เลขใบคืน RET-…</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> ผลิต &amp; คุณภาพ</div>
@@ -95,15 +95,15 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="tocgrid">
   <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · RUCDAA generic (D14) · ★ §3 คอลัมน์ Suffix (G9) · ★ แก้สถานะ DN = A · ★ Invoice สร้าง=C/void=D/override=U/print=R</div></a>
   <a class="meta mod" href="comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
-  <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch) · ★ Invoice void=เลขเดิม/ใบใหม่=เลขใหม่</div></a>
+  <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch·★RET ใบคืน) · ★ Invoice void=เลขเดิม/ใบใหม่=เลขใหม่</div></a>
 </div>
 
 <!-- ===== (2) NON-FUNCTIONAL ===== -->
 <div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
 <div class="tocgrid">
-  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-RT-/jobs J1–J8 (+J8 Low digest)/notification (+FG→Low)/global search/responsive/reliability</div></a>
+  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md">perf/auth 24h+06:00/audit 1yr/GCP Cloud Run+Cloud SQL+backup/Bangkok-พ.ศ.-UTC/gapless QT-SO-RT-RET-/jobs J1–J8 (+J8 Low digest)/notification (+FG→Low)/global search/responsive/reliability · ★ §15 Deferred-controls register</div></a>
   <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ INV void-only · Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
-  <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain · ★ Route/DN</div></a>
+  <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain · ★ Route/DN · ★ Return topic=RET</div></a>
 </div>
 
 <!-- ===== (3) REFERENCE ===== -->
@@ -113,7 +113,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="ref mod" href="../docs/entity-status-map.html"><div class="mt">Entity Status Map ★ (ref)</div><div class="md">สถานะ/entity/cascade/PRD/Batch/negative-stock/reservation · ★ Route/DN r11</div></a>
   <a class="ref mod" href="../docs/status-journeys.html"><div class="mt">Status Journeys (ref)</div><div class="md">state machine ทุกสาย + RUCDAA + noti/deep-link</div></a>
   <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/stock-reservation.md"><div class="mt">Stock Reservation (ref)</div><div class="md">Option A: ยืนยัน=จอง / เริ่มผลิต=ตัดจริง FIFO</div></a>
-  <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><div class="mt">Scope D1–D18 (ref)</div><div class="md">rule spine OEM/Own-Brand/Supply-Planning</div></a>
+  <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/scope-oem-ownbrand-supply-planning.md"><div class="mt">Scope D1–D18 (ref)</div><div class="md">rule spine OEM/Own-Brand/Supply-Planning · ★ reconciliation banner (QT lifecycle→quotation.md · SHP→RT)</div></a>
   <a class="ref mod" href="../docs/mock-data-spec.html"><div class="mt">Mock Data Spec (ref)</div><div class="md">dataset กลาง (master + 8 use case + screen↔data)</div></a>
   <a class="ref mod" href="../docs/brief.html"><div class="mt">Product Brief (ref)</div><div class="md">Business Key Value + scope + DoD + Gate 1</div></a>
   <a class="ref mod" href="../rtm.html"><div class="mt">RTM (ref)</div><div class="md">Story↔mockup↔journey↔UC</div></a>
@@ -122,7 +122,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="ref mod" href="../list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-30 · Route/DN r11 · Invoice r13 · Home removed → Dashboard landing</footer>
+<!-- ===== Reviews / Audit ===== -->
+<div class="grp"><span class="dot"></span> Reviews / Audit</div>
+<div class="refnote">📎 บันทึกการตรวจคุณภาพ requirement แบบอิสระ + การ reconcile — <b>BEFORE findings คงไว้</b> + <b>AFTER resolutions</b> (COMPLETENESS: md + view).</div>
+<div class="tocgrid">
+  <a class="ref mod" href="po-output-quality-audit.html"><div class="mt">PO Output Quality Audit + Reconciliation 🔍</div><div class="md">Tech-Lead independent audit (C1/M1/M2/M3 + minors) · ★ After reconciliation — resolutions 2026-07-31 + UX follow-up list (RT→RET · flow DN-mirror)</div></a>
+</div>
+
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · Reviews/Audit · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-31 · Route/DN r11 · Invoice r13 · Return RET · reconciliation pass</footer>
 </div>
 <script src="_render.js"></script>
 </body></html>

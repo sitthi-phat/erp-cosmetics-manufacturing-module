@@ -6,10 +6,15 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-28 (r4 — ฝ
 
 > ✅ **ปอนด์เคาะครบทุกข้อ (D1–D18) — ไม่มีคำถามค้าง.** พร้อมส่ง Stage 1 ให้ UX/UI วาด mockup delta.
 
+> ⚠️ **RECONCILIATION BANNER (2026-07-31 — reconcile M3):** เอกสารนี้เป็น **locked business-rules reference (D1–D18)** แต่ **enumeration บางจุดล้าสมัย** ถูก supersede โดย **module package (= source of truth)**. **อย่าสร้างตาม enumeration เก่าในไฟล์นี้** — business logic (D-rules) ไม่เปลี่ยน เปลี่ยนแค่ชื่อสถานะ/prefix:
+> 1. **Quotation lifecycle** (ปรากฏที่ §สรุปภาษาไทย · D18-4 §1.3 · §2.2 · §10.1 · §10.3) แสดง `Draft → Sent → Agreed → Rejected`. **AUTHORITY ปัจจุบัน = `quotation.md` §4:** **`ร่าง (Draft) / ยืนยัน (Confirmed) / ปฏิเสธ (Rejected) / ยกเลิก (Cancelled)`** — **★ ถอด "ส่งแล้ว (Sent)" ออกทั้งหมด** (revert ปอนด์ 2026-07-29; การส่งใบเสนอราคา = print/share **ไม่ใช่สถานะ**) และ **"ตกลง (Agreed)" → "ยืนยัน (Confirmed)"** (Confirmed = สถานะที่เปิดปุ่ม "Convert to PO"). D18 logic (Convert=PO เลขใหม่+ลิงก์ QT↔PO, ยกยอด line/qty/price, OEM-only, optional, แก้=เวอร์ชันใหม่) **คงเดิม**.
+> 2. **รอบจัดส่ง numbering** (§10.2 "เลขเอกสาร") แสดง `SHP`. **AUTHORITY ปัจจุบัน = Route `RT-{YYYYMMDD}-{NNNN}`** (Q1=A DECIDED, drop SHP) — `numbering-on-save.md` §4 · `non-functional.md` D-F5.
+> **ไม่มีการแก้ D-rule ในไฟล์นี้** — แค่ชี้ว่า enumeration ไหน superseded. ถ้าขัดกัน → **module package ชนะ** (README).
+
 ---
 
 ## สรุปภาษาไทย
-สโคปนี้เคาะครบแล้ว: ออเดอร์แยก **2 สาย เป็นคนละโมดูล** — **OEM = ใบเสนอราคา (Quotation, optional) → PO** (line เป็น BOM/วัตถุดิบ, วัตถุดิบตรงก็ยังผ่านขั้นผลิต) และ **Own Brand = ใบสั่งขาย `SO-{YYYYMM}-{NNNNNN}` หน้าแยก (ไม่มี Quotation)** (ขายจากสต็อก=เลือกลูกค้า / ผลิตเก็บสต็อก=ไม่เลือกลูกค้า). **OEM Quotation `QT-{YYYYMM}-{NNNNNN}`** (Draft/Sent/Agreed/Rejected, แก้=เวอร์ชันใหม่เสมอ, ไม่มีวันหมดอายุ) → "ตกลง" แล้ว **Convert เป็น PO เลขใหม่** (ยกยอด line/จำนวน/ราคา + เก็บลิงก์ QT↔PO) · **สร้าง PO ตรงโดยไม่มี Quotation ก็ได้**. โมดูล **Supply Planning** (FG on-hand read-only, in-production นับจาก Batch, ป้าย Low/OK/Overstock ที่ <Target / Target–2×Target / >2×Target, ปุ่ม "สั่งผลิต"=PRD เก็บสต็อกไม่ผูกลูกค้า). **BOM เพิ่มหมวดต้นทุนเองได้ (per-unit) + snapshot ตอนขาย** (เก็บไว้เฉย ๆ ยังไม่ทำรายงาน COGS). **สต็อก:** 1 BOM = 1 FG (auto), **FG แตกราย Batch ตัด FIFO (recall GMP)**, produce-to-stock เข้าคลังตอน QC ผ่าน, **OEM ผลิตเกิน → ฝ่ายผลิตกรอกจำนวนผลิตจริง → ตอน "พร้อมส่ง" ตัดจำนวนสั่งให้ลูกค้า + ส่วนเกินเข้า FG stock (แจ้ง remark ไม่ต้อง approve)**, **loss บังคับเหตุผล ไม่ต้องอนุมัติ ตัด on_hand**, ทุก movement มี reason + source. **RBAC generic (สิทธิ์ราย module/capability)**. ไม่มีคำถามค้าง → **READY_FOR_UX_UI**.
+สโคปนี้เคาะครบแล้ว: ออเดอร์แยก **2 สาย เป็นคนละโมดูล** — **OEM = ใบเสนอราคา (Quotation, optional) → PO** (line เป็น BOM/วัตถุดิบ, วัตถุดิบตรงก็ยังผ่านขั้นผลิต) และ **Own Brand = ใบสั่งขาย `SO-{YYYYMM}-{NNNNNN}` หน้าแยก (ไม่มี Quotation)** (ขายจากสต็อก=เลือกลูกค้า / ผลิตเก็บสต็อก=ไม่เลือกลูกค้า). **OEM Quotation `QT-{YYYYMM}-{NNNNNN}`** (Draft/Sent/Agreed/Rejected **[⚠ superseded → `quotation.md` §4: Draft/Confirmed/Rejected/Cancelled — no "Sent"; "Agreed"→"Confirmed"; ดู banner]**, แก้=เวอร์ชันใหม่เสมอ, ไม่มีวันหมดอายุ) → "ตกลง" แล้ว **Convert เป็น PO เลขใหม่** (ยกยอด line/จำนวน/ราคา + เก็บลิงก์ QT↔PO) · **สร้าง PO ตรงโดยไม่มี Quotation ก็ได้**. โมดูล **Supply Planning** (FG on-hand read-only, in-production นับจาก Batch, ป้าย Low/OK/Overstock ที่ <Target / Target–2×Target / >2×Target, ปุ่ม "สั่งผลิต"=PRD เก็บสต็อกไม่ผูกลูกค้า). **BOM เพิ่มหมวดต้นทุนเองได้ (per-unit) + snapshot ตอนขาย** (เก็บไว้เฉย ๆ ยังไม่ทำรายงาน COGS). **สต็อก:** 1 BOM = 1 FG (auto), **FG แตกราย Batch ตัด FIFO (recall GMP)**, produce-to-stock เข้าคลังตอน QC ผ่าน, **OEM ผลิตเกิน → ฝ่ายผลิตกรอกจำนวนผลิตจริง → ตอน "พร้อมส่ง" ตัดจำนวนสั่งให้ลูกค้า + ส่วนเกินเข้า FG stock (แจ้ง remark ไม่ต้อง approve)**, **loss บังคับเหตุผล ไม่ต้องอนุมัติ ตัด on_hand**, ทุก movement มี reason + source. **RBAC generic (สิทธิ์ราย module/capability)**. ไม่มีคำถามค้าง → **READY_FOR_UX_UI**.
 
 ---
 
@@ -48,7 +53,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-28 (r4 — ฝ
 ### 1.3 รอบสาม D18 (2026-07-28) — OEM Quotation
 | # | เรื่อง | กติกาที่ล็อก |
 |---|---|---|
-| **D18** | ★ OEM Quotation (ก้าวหน้าของ OEM) | **สาย OEM เริ่มด้วย ใบเสนอราคา (Quotation) → ส่งลูกค้า → ลูกค้าตกลง → Convert เป็น PO → เข้า OEM flow เดิม** (จอง stock → ผลิต → QC → surplus→FG ตอนพร้อมส่ง → ส่ง → invoice). กติกา: **(1) เลขของตัวเอง `QT-{YYYYMM}-{NNNNNN}`** (gapless ต่อปี/เดือน) · **Convert = สร้าง PO เลขใหม่ `PO-{YYYYMM}-{NNNNNN}`** พร้อม **เก็บลิงก์ Quotation↔PO** เพื่อ trace · Convert **ยกยอด line items (BOM/RM) + จำนวน + ราคา** จาก QT เข้าสู่ PO ใหม่ · **(2) OEM เท่านั้น** — **Own-Brand SO ไม่มี Quotation** · **(3) ข้ามได้ (optional)** — สร้าง PO ตรงโดยไม่มี Quotation ได้ (po-create คงรองรับ create ตรง) · **(4) สถานะ: ร่าง (Draft) / ส่งแล้ว (Sent) / ตกลง (Agreed) / ปฏิเสธ (Rejected)** — **"ตกลง (Agreed)" คือสถานะที่เปิดปุ่ม "Convert to PO"** · **แก้ทุกครั้ง = เวอร์ชัน/เลขใหม่เสมอ** (immutable เมื่อออกไปแล้ว, เปลี่ยน = เวอร์ชันใหม่ เก็บประวัติ) · **ไม่มีวันหมดอายุ (no Expired status) ตอนนี้** |
+| **D18** | ★ OEM Quotation (ก้าวหน้าของ OEM) | **สาย OEM เริ่มด้วย ใบเสนอราคา (Quotation) → ส่งลูกค้า → ลูกค้าตกลง → Convert เป็น PO → เข้า OEM flow เดิม** (จอง stock → ผลิต → QC → surplus→FG ตอนพร้อมส่ง → ส่ง → invoice). กติกา: **(1) เลขของตัวเอง `QT-{YYYYMM}-{NNNNNN}`** (gapless ต่อปี/เดือน) · **Convert = สร้าง PO เลขใหม่ `PO-{YYYYMM}-{NNNNNN}`** พร้อม **เก็บลิงก์ Quotation↔PO** เพื่อ trace · Convert **ยกยอด line items (BOM/RM) + จำนวน + ราคา** จาก QT เข้าสู่ PO ใหม่ · **(2) OEM เท่านั้น** — **Own-Brand SO ไม่มี Quotation** · **(3) ข้ามได้ (optional)** — สร้าง PO ตรงโดยไม่มี Quotation ได้ (po-create คงรองรับ create ตรง) · **(4) สถานะ: ร่าง (Draft) / ส่งแล้ว (Sent) / ตกลง (Agreed) / ปฏิเสธ (Rejected)** — **"ตกลง (Agreed)" คือสถานะที่เปิดปุ่ม "Convert to PO"** · **แก้ทุกครั้ง = เวอร์ชัน/เลขใหม่เสมอ** (immutable เมื่อออกไปแล้ว, เปลี่ยน = เวอร์ชันใหม่ เก็บประวัติ) · **ไม่มีวันหมดอายุ (no Expired status) ตอนนี้** · **⚠ SUPERSEDED (D18-4 lifecycle):** ชื่อสถานะ `ร่าง/ส่งแล้ว/ตกลง/ปฏิเสธ` **ล้าสมัย** → AUTHORITY = `quotation.md` §4: **`ร่าง/ยืนยัน (Confirmed)/ปฏิเสธ/ยกเลิก` — ไม่มี "ส่งแล้ว (Sent)"; "ตกลง (Agreed)"→"ยืนยัน (Confirmed)"** (สถานะที่เปิด Convert). logic D18 ทั้งหมด (Convert/ยกยอด/optional/version) คงเดิม — ดู reconciliation banner. |
 
 ---
 
@@ -67,7 +72,7 @@ slug: `erp-v2-ui-first` · เขียนโดย PO · 2026-07-28 (r4 — ฝ
 | ผลิตเกิน | **surplus → FG stock ตอน "พร้อมส่ง" (D13)** | ผลิตเก็บสต็อกเข้า FG อยู่แล้ว |
 
 ### 2.2 OEM flow (ฝัง D18)
-- **มี Quotation:** quotation-create (Draft) → ส่งลูกค้า (Sent) → ลูกค้าตกลง (**Agreed**) → กด **"Convert to PO"** → **PO เลขใหม่** (ยกยอด line/จำนวน/ราคา + ลิงก์ QT↔PO) → OEM flow เดิม (จอง RM → ผลิต → QC → surplus→FG ตอนพร้อมส่ง → DN → invoice).
+- **มี Quotation:** quotation-create (Draft) → ส่งลูกค้า (Sent) → ลูกค้าตกลง (**Agreed**) → กด **"Convert to PO"** → **PO เลขใหม่** (ยกยอด line/จำนวน/ราคา + ลิงก์ QT↔PO) → OEM flow เดิม (จอง RM → ผลิต → QC → surplus→FG ตอนพร้อมส่ง → DN → invoice). **[⚠ superseded lifecycle: "ส่งลูกค้า (Sent)" = print/share ไม่ใช่สถานะ; "ตกลง (Agreed)" → "ยืนยัน (Confirmed)" — AUTHORITY `quotation.md` §4; ดู banner]**
   - ลูกค้าไม่ตกลง → Quotation = **Rejected** (จบสาย ไม่เกิด PO).
   - แก้ราคา/รายการ → **เวอร์ชัน/เลข QT ใหม่เสมอ** (เก็บประวัติ, immutable — D18-4).
 - **ไม่มี Quotation (ข้าม):** สร้าง PO ตรงที่ po-create (เดิม) → OEM flow (po-create มี field origin optional "created from QT-…" ว่างได้).
@@ -233,7 +238,7 @@ GMP เดิม: Lot → Batch → PRD → PO → ลูกค้า → DN/Inv
 ### 10.1 ต่อหน้าจอ
 | หน้าจอ | As-Is (ล็อกปัจจุบัน) | To-Be (หลังสโคปนี้) | ชนิดงาน |
 |---|---|---|---|
-| **quotation-create/list/detail.html** | — | **ใหม่:** ใบเสนอราคา OEM `QT-{YYYYMM}-{NNNNNN}` (Draft/Sent/Agreed/Rejected), line BOM/RM+qty+ราคา, **แก้=เวอร์ชันใหม่**, ปุ่ม **"Convert to PO"** (เมื่อ Agreed) → PO เลขใหม่+ลิงก์ (D18) | **ใหม่** |
+| **quotation-create/list/detail.html** | — | **ใหม่:** ใบเสนอราคา OEM `QT-{YYYYMM}-{NNNNNN}` (Draft/Sent/Agreed/Rejected **[⚠ superseded → `quotation.md` §4: Draft/Confirmed/Rejected/Cancelled — no "Sent"; "Agreed"→"Confirmed"; ดู banner]**), line BOM/RM+qty+ราคา, **แก้=เวอร์ชันใหม่**, ปุ่ม **"Convert to PO"** (เมื่อ Confirmed) → PO เลขใหม่+ลิงก์ (D18) | **ใหม่** |
 | **po-create.html** | เปิด PO, line = BOM/RM, จองตอนยืนยัน | + ระบุชัด **RM-direct line ยังผ่านขั้นผลิต (D3)**; ไม่มี Own-Brand ที่นี่; + **origin ref optional "created from QT-…"** (สร้างตรงก็ได้ D18-3) | **แก้เล็ก** |
 | **po-list.html** | ลิสต์ PO | + แสดง **ลิงก์ QT ต้นทาง** ถ้ามี (อื่นเหมือนเดิม, OEM) | **แก้เล็ก** |
 | **so-create.html** | — | **ใหม่:** SO — (a) เลือกลูกค้า+FG มีสต็อก / (b) เติมสต็อกไม่เลือกลูกค้า; โชว์ FG Available ราย Batch; **ไม่มี Quotation** | **ใหม่** |
@@ -260,11 +265,11 @@ GMP เดิม: Lot → Batch → PRD → PO → ลูกค้า → DN/Inv
 | ต้นทุน | material cost snapshot | + **multi-category per-unit snapshot**, ใช้ตอนขาย (D9/D10) |
 | loss | (ไม่ชัด) | production/warehouse, ตัด on_hand, บังคับเหตุผล, ไม่อนุมัติ, ledger reason/source (D15) |
 | สิทธิ์ | RUCDAA per module | + 3 module ใหม่ (Quotation/SO/Supply Planning), **generic permission-per-capability (D14)** |
-| เลขเอกสาร | PO/Batch/DN/SHP/INV/PR/GR/Lot | + **`QT-{YYYYMM}-{NNNNNN}` (Quotation)** + `SO-{YYYYMM}-{NNNNNN}` (gapless ต่อปี/เดือน) |
+| เลขเอกสาร | PO/Batch/DN/SHP/INV/PR/GR/Lot **[⚠ "SHP" superseded → Route `RT-{YYYYMMDD}-{NNNN}` (Q1=A, drop SHP); ดู banner + `numbering-on-save.md` §4]** | + **`QT-{YYYYMM}-{NNNNNN}` (Quotation)** + `SO-{YYYYMM}-{NNNNNN}` (gapless ต่อปี/เดือน) **+ ใบคืน `RET-{YYYYMM}-{NNNNNN}` (2026-07-31)** |
 
 ### 10.3 ★ Stage-1 UX/UI work-list (execute ได้เลย — zero guessing)
 **วาดใหม่ (NEW):**
-1. `quotation-create.html` + `quotation-list.html` + `quotation-detail.html` — OEM Quotation (Draft/Sent/Agreed/Rejected), line BOM/RM+qty+ราคา, แก้=เวอร์ชันใหม่, ปุ่ม **"Convert to PO"** เมื่อ Agreed (D18)
+1. `quotation-create.html` + `quotation-list.html` + `quotation-detail.html` — OEM Quotation (Draft/Sent/Agreed/Rejected **[⚠ superseded → `quotation.md` §4: Draft/Confirmed/Rejected/Cancelled — no "Sent"; "Agreed"→"Confirmed"]**), line BOM/RM+qty+ราคา, แก้=เวอร์ชันใหม่, ปุ่ม **"Convert to PO"** เมื่อ Confirmed (D18)
 2. `supply-planning.html` — §3 ครบ (3 tiles, การ์ด FG per §3.2–3.5, ปุ่มสั่งผลิต)
 3. `so-create.html` — 2 sub-case (a เลือกลูกค้า / b ไม่เลือก), เลือก FG + โชว์ Available ราย Batch (ไม่มี Quotation)
 4. `so-detail.html` + `so-list.html` — lifecycle D2
@@ -293,9 +298,11 @@ GMP เดิม: Lot → Batch → PRD → PO → ลูกค้า → DN/Inv
 - `entity-status-map.md` — เพิ่ม entity: **Quotation (QT)**, **SO**, **FG stock item (per-Batch)**, **PRD produce-to-stock (variant)**, **surplus/loss ledger movement types** — PO อัปเดตหลัง Stage 1 (หรือคู่ขนาน BA/TL Stage 2).
 - `mock-data-spec/journeys` — เพิ่ม Quotation (OEM) + Own-Brand + FG (FG-101/204) + surplus/loss เคส — งาน PO รอบถัดไป.
 - BOM/PO functional-spec — §4/§2 ขยาย ไม่ลบกติกาเดิม.
-- **Doc numbering (glossary):** เพิ่ม `QT-{YYYYMM}-{NNNNNN}` + `SO-{YYYYMM}-{NNNNNN}` (gapless ต่อปี/เดือน ตามธรรมเนียมเดิม).
+- **Doc numbering (glossary):** เพิ่ม `QT-{YYYYMM}-{NNNNNN}` + `SO-{YYYYMM}-{NNNNNN}` (gapless ต่อปี/เดือน ตามธรรมเนียมเดิม). **[⚠ authoritative numbering registry = `numbering-on-save.md` §4 + `non-functional.md` D-F5 — Route `RT-…` (ไม่ใช่ SHP), ใบคืน `RET-…`]**
 
 ---
 
 ## 12. Open questions
 **ไม่มี** — ปอนด์เคาะครบ D1–D18. → **READY_FOR_UX_UI**.
+
+> **หมายเหตุ reconcile 2026-07-31 (M3):** enumeration ที่ล้าสมัย 2 จุด (Quotation lifecycle Sent/Agreed · SHP numbering) ได้ annotate ชี้ authority แล้ว (banner ด้านบน + inline). **ไม่แก้ D-rule** — module package = source of truth.

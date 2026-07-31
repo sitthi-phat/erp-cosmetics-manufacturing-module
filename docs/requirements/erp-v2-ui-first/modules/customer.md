@@ -106,7 +106,7 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 | **ยังไม่จ่าย / ค้างชำระ (Outstanding)** | = ยอดซื้อรวม − จ่ายมาแล้ว | THB |
 
 - **read-only/computed ล้วน** (รวมในโหมด edit ก็ยัง read-only — §2b).
-- **ขอบเขต:** ยึด **ใบแจ้งหนี้ (Invoice) ที่ active** เป็นฐาน (1 PO/SO = 1 ใบ active; ใบ void ไม่นับ — `invoice.md` §4b).
+- **ขอบเขต:** ยึด **ใบแจ้งหนี้ (Invoice) ที่ active** เป็นฐาน (1 PO/SO = 1 ใบ active; ใบ void ไม่นับ — `invoice.md` §4b). **★ order ที่ส่งแล้วแต่ใบเดียวถูก void และยังไม่ออกใบใหม่ = 0 (INTENDED — `invoice.md` §4b m2).**
 - **Cross-link:** `invoice.md` (§4b/§6/§9).
 
 ## 8. Actions & Permissions (per-action, D14/§7.1)
@@ -173,5 +173,5 @@ Mockups: `mockups/customers.html` · `mockups/customer-detail.html` · `mockups/
 - **★ เพิ่ม (2026-07-29 — ปอนด์, resolve US-SET-02):** **"Sale ที่ดูแล (assigned Sale)" = NULLABLE/ว่างได้** · "ไม่มีผู้ดูแล (unassigned)" = valid state (ไม่บล็อกงานขาย) · **★ เมื่อลบ Sale → ฟิลด์นี้ถูกล้างเป็นว่างอัตโนมัติ (ไม่บังคับ bulk-reassign, ไม่มีหน้า bulk-reassign)** · reassign ภายหลังด้วยมือ (Customer.Approve) · filter รายชื่อลูกค้าเพิ่มตัวเลือก "ไม่มีผู้ดูแล" · ทุกการเปลี่ยน audit-logged. เพิ่ม §4.3 · แก้ field Sale (§3) · §2/§2b/§5/§8/§9/§10/§11 · sync `deletion-policy.md` §2.15 · `settings.md` §4c/§5.
 - **★★ เพิ่ม (2026-07-30 — Module A, ปอนด์):** **(A1) ที่อยู่ 2 ชุดแยกกัน** — "ที่อยู่ลูกค้า (registered/ออกเอกสาร)" + "ที่อยู่จัดส่งสินค้า (shipping)" (+ option "ใช้ที่อยู่เดียวกัน"); ที่อยู่จัดส่งไปแสดงใน modal PO/SO/DN บนหน้า Route + หัวใบส่งของ DN. **(A2) ผู้ติดต่อเพิ่ม flag "เป็นคนรับสินค้า (is receiver)"** — ติด flag = ชื่อ+เบอร์บังคับครบ (§9b, HARD validation); มีได้หลายคน; ผู้รับสินค้าไปแสดงใน Route modal + หัว DN. อัปเดต §1/§2/§2b/§3/§8/§9/§9b/§11/§12, ref `shipping.md` §5 · `delivery-note.md` §5/§7. **แยกจากฟิลด์ "ที่อยู่/เลขภาษี" เดิม (split เป็น ที่อยู่ลูกค้า + เลขภาษี + ที่อยู่จัดส่ง).**
 - **★★ เพิ่ม (2026-07-30 — Invoice module review, ปอนด์):** note **per-invoice override** — ตอนสร้างใบแจ้งหนี้ระบบ pull ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี จาก master นี้ **แต่แก้ได้เฉพาะบนใบ (snapshot, Invoice.U) ไม่กระทบ master** · financial summary = ใบ **active/ไม่รวม void** (§3/§7/§8/§9b/§11, ref `invoice.md` §3/§4b/§6).
+- **★ แก้ (2026-07-31 — reconciliation M2 cleanup, ปอนด์):** ลบ stray tag `</content>` ท้ายไฟล์ (ไม่ใช่ spec content) · §7 เพิ่ม note "order ส่งแล้วแต่ใบ void = 0 (INTENDED)" ชี้ `invoice.md` §4b m2.
 - **คงเดิม:** TYPE (OEM/Own-Brand, both) · credit term preset 30/60/90 default 60 · management-history · QT/PO history · customer search dropdown (G4).
-</content>

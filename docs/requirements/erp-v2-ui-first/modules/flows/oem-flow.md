@@ -1,11 +1,11 @@
 # Flow — OEM (Quotation → PO → ผลิต → surplus → ส่ง → Invoice)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
-กฎอ้างอิง: D3/D10/D13/D18 · stock-reservation (Option A) · entity-status-map · scenario-walkthrough S1
-โมดูลที่เกี่ยว: `quotation.md` · `po.md` · `stock.md` · `production.md` · (delivery-note/invoice/trace = spec เดิม)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ delivery-status reconcile → DN-mirror model, 2026-07-31**)
+กฎอ้างอิง: D3/D10/D13/D18 · stock-reservation (Option A) · entity-status-map · scenario-walkthrough S1 · **DN-mirror: `po.md` §4b · `delivery-note.md` §7/§8**
+โมดูลที่เกี่ยว: `quotation.md` · `po.md` · `stock.md` · `production.md` · **`shipping.md` (Route) · `delivery-note.md` (DN)** · (invoice/trace = spec เดิม)
 
 ## สรุปภาษาไทย
-สาย OEM (รับจ้างผลิต): เริ่มที่ **ใบเสนอราคา (optional)** → ลูกค้าตกลง → **Convert เป็น PO เลขใหม่** (prefill) → ยืนยัน PO = จองวัตถุดิบ → เริ่มผลิต = ตัดจริง FIFO → QC → ฝ่ายผลิตกรอกจำนวนผลิตจริง → ตอน "พร้อมส่ง" ส่งตามสั่ง + **ส่วนเกินเข้า FG stock** (remark) → DN (อ้าง PO) → Invoice (+ cost snapshot) → ชำระ. **สร้าง PO ตรงโดยไม่มี Quotation ก็ได้** (D18-3). **★ การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (ไม่มี "ส่งแล้ว/Sent" — revert 2026-07-29).**
+สาย OEM (รับจ้างผลิต): เริ่มที่ **ใบเสนอราคา (optional)** → ลูกค้าตกลง → **Convert เป็น PO เลขใหม่** (prefill) → ยืนยัน PO = จองวัตถุดิบ → เริ่มผลิต = ตัดจริง FIFO → QC → ฝ่ายผลิตกรอกจำนวนผลิตจริง → ตอน "พร้อมส่ง" ส่งตามสั่ง + **ส่วนเกินเข้า FG stock** (remark) → DN (อ้าง PO) → Invoice (+ cost snapshot) → ชำระ. **สร้าง PO ตรงโดยไม่มี Quotation ก็ได้** (D18-3). **★ การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (ไม่มี "ส่งแล้ว/Sent" — revert 2026-07-29).** **★ สถานะจัดส่งของ PO หลัง "พร้อมจัดส่ง" = สะท้อนจาก DN (DN-mirror, ไม่ใช่ enum อิสระ In Delivery/Delivered เดิม — reconcile 2026-07-31).**
 
 ---
 
@@ -20,20 +20,21 @@ slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29
 | 6 | ฝ่ายผลิต **รับงาน** (gen PRD) → **เริ่มผลิต** (gen Batch + ตัดจริง FIFO, ติดลบได้) | Production | `PRD-…` · `B-{PO}-{line}-{run}` | `CONSUME (−on_hand)` |
 | 7 | ส่งตรวจ → **QC ผ่าน** (ไม่ผ่าน+feedback → Rework run+1) | QC | Batch = QC ผ่าน | — |
 | 8 | กรอก **จำนวนผลิตจริง (actual qty)** (อาจเกินสั่ง) | Production | actual/ordered | — |
-| 9 | กด **"พร้อมส่ง (Ready to Ship)"** → ส่งตามสั่ง · **ส่วนเกิน → FG stock** (remark, ไม่ approve, คง Batch identity ผูก PO/PRD/Batch) | Production | FG(สินค้านั้น) per-Batch | `surplus (+FG on_hand)` |
-| 10 | ออก **DN (อ้าง PO)** → ส่งถึง (ลูกค้าเซ็น) | Shipping | `DN-…` | — |
-| 11 | ออก **Invoice (อ้าง PO + cost snapshot line, D10)** → รับชำระ / overdue ตาม credit term | Finance | `INV-…` | — |
+| 9 | กด **"พร้อมส่ง (Ready to Ship)"** → ส่งตามสั่ง · **ส่วนเกิน → FG stock** (remark, ไม่ approve, คง Batch identity ผูก PO/PRD/Batch) → **PO = พร้อมจัดส่ง** (รอเข้ารอบจัดส่ง) | Production | FG(สินค้านั้น) per-Batch | `surplus (+FG on_hand)` |
+| 10 | **จัดรอบส่ง (Route) → ระบบ gen DN (อ้าง PO)**; สถานะ DN เดินตาม Route: **อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง → ส่งสำเร็จ (ลูกค้าเซ็น)** *(หรือปลายทางอื่น: ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่)* · **PO สะท้อนสถานะ DN ทุกขั้น** (`po.md` §4b) | Shipping | `RT-…` · `DN-…` | — |
+| 11 | ออก **Invoice (อ้าง PO + cost snapshot line, D10)** → รับชำระ / overdue ตาม credit term (เริ่มนับเครดิตจาก DN "ส่งสำเร็จ") | Finance | `INV-…` | — |
 
 ## 2. Variants
 - **ไม่มี Quotation (D18-3):** ข้าม step 1–3 → เปิด PO ตรงที่ po-create (origin QT ว่าง).
 - **RM-direct line (D3):** line วัตถุดิบตรง **ยังผ่านขั้นผลิต** (แปรรูปจริง optional) — เดินสถานะ production เหมือน BOM.
 - **Cancel ก่อนเริ่มผลิต:** release reservation ที่ยังไม่ consume (คืน available). หลังเริ่มผลิต: ส่วนที่ consume แล้วไม่คืน.
+- **★ Route ยกเลิกทั้งรอบ (shipping.md §4d):** DN = void (ประวัติ) → PO กลับไปแสดง "พร้อมจัดส่ง" รอเข้ารอบใหม่ (`delivery-note.md` §4/§8).
 
 ## 3. Trace chain (GMP + cost)
 `QT ↔ PO ↔ PRD ↔ Batch ↔ (FG surplus per-Batch) ↔ Lot ↔ DN ↔ ลูกค้า` + cost snapshot ที่ line + ledger reason/source ทุก movement (scope §8.1/§8.6). QT Rejected = เก็บประวัติ ไม่เกิด PO.
 
 ## 4. Status touchpoints
 - QT: **ร่าง (Draft) → ยืนยัน (Confirmed)** (กด "Convert to PO" เปิดสาย PO) / **ปฏิเสธ (Rejected)** · **ยกเลิก (Cancelled) ได้ทุกสถานะ** · การส่งใบเสนอราคา = print/share ไม่ใช่สถานะ (ไม่มี Sent).
-- PO fulfilment: Draft→Confirmed→In Production→Ready→In Delivery→Delivered.
-- PO billing: Not Invoiced→Invoiced→Paid/Overdue (credit term 30/60/90 default 60).
+- **PO fulfilment (delivery status = DN-mirror, reconcile 2026-07-31):** ร่าง → ยืนยันแล้ว-รอรับงาน → กำลังผลิต → **พร้อมจัดส่ง** → **[สะท้อนสถานะ DN]** อยู่ระหว่างการเตรียม → อยู่ระหว่างจัดส่ง → **ส่งสำเร็จ** / ลูกค้าเลื่อนส่ง / ลูกค้ายกเลิก / ลูกค้ายังไม่กำหนดวันรับใหม่. **★ หลัง "พร้อมจัดส่ง" สถานะจัดส่งไม่ใช่ enum อิสระ — สะท้อนจาก DN ที่ผูกอยู่** (authoritative `po.md` §4b · `delivery-note.md` §7/§8; **ห้าม hardcode enum เดิม In Delivery/Delivered/ส่งถึง**).
+- PO billing: Not Invoiced→Invoiced→Paid/Overdue (credit term 30/60/90 default 60; นับ overdue จาก DN "ส่งสำเร็จ").
 - Surplus จับที่ **"พร้อมส่ง" ไม่ใช่ QC pass** (D13).

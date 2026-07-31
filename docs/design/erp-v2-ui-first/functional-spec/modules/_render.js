@@ -25,7 +25,8 @@
       'platform.md': 'platform.html', 'non-functional.md': 'non-functional.html',
       'deletion-policy.md': 'deletion-policy.html',
       'comment-convention.md': 'comment-convention.html',
-      'numbering-on-save.md': 'numbering-on-save.html'
+      'numbering-on-save.md': 'numbering-on-save.html',
+      'po-output-quality-audit.md': 'po-output-quality-audit.html'
     };
     if (mods[base] && !/requirements\//.test(u)) return mods[base] + hash;
     // PO principle docs already published as hub views
