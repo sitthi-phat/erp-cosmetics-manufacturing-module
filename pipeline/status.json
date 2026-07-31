@@ -3970,6 +3970,32 @@
           "summary": "r19 Notification event-set: added Customer Follow-up / Document Cancelled-Rejected / Route delivered (near-real-time); FG→Low real-time → daily Low+Overstock summary (J8, deep-link reused SP page filtered); removed Customer Inactivity (→Follow-up); KEPT PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay per Pond correction. r18 read-driven + 4-group UI preserved. Docs+HTML+index complete. READY_FOR_UX_UI.",
           "overridden_by": null,
           "updated_at": "2026-07-31T16:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {"item": "Group 1 shows 3 KEEP (PO→Production, QC ผ่าน/ไม่ผ่าน, PR auto-created) + 2 NEW (เอกสารถูกยกเลิก/ปฏิเสธ, Route ส่งสำเร็จ)", "pass": true, "missing": null},
+            {"item": "Group 2 shows potential-delay (KEEP) + daily Supply-Planning Low+Overstock summary item", "pass": true, "missing": null},
+            {"item": "SP daily-summary item deep-links reused SP page with Low+Overstock filter (supply-planning.html?filter=low-overstock)", "pass": true, "missing": null},
+            {"item": "Group 3 Invoice Overdue (KEEP) + Group 4 Customer Follow-up (NEW) present", "pass": true, "missing": null},
+            {"item": "Customer Inactivity item removed from all bells; FG→Low real-time item removed from all bells", "pass": true, "missing": null},
+            {"item": "User soft-delete has NO notification item (only cancel/void/reject shown)", "pass": true, "missing": null},
+            {"item": "r18 read-driven mechanics intact (read-bit, badge=unread, click=navigate+mark read, อ่านแล้วทั้งหมด, no ✕ dismiss, snackbar+shake, ดูทั้งหมด history, 4-group grouping)", "pass": true, "missing": null},
+            {"item": "Other ~31 bell pages aligned (shared over-reservation real-time item replaced by daily SP-summary; no removed events remain)", "pass": true, "missing": null}
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/notifications.html",
+            "docs/design/erp-v2-ui-first/mockups/ (29 other bell pages: po-list, po-detail, po-create, so-list, so-detail, so-create, quotation-list/detail/create, customers, customer-create/detail/edit, contact-create, stock, supplier, bom, bom-create, purchase-request, pr-create, goods-receipt, production, qc, return, shipping, delivery-note, invoice-detail, supply-planning, trace, settings)",
+            "docs/design/erp-v2-ui-first/ux-audit/r19-dashboard-bell.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r19-notifications-history.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r19-polist-bell.png"
+          ],
+          "questions_for_pond": [],
+          "summary": "r19 notification event-set applied to mockups. dashboard.html bell + notifications.html history now show the exact r19 set across 4 groups: KEPT PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay; ADDED Customer Follow-up, Document Cancelled/Rejected, Route delivered; CHANGED FG→Low real-time → single daily Low+Overstock summary deep-linking reused SP page (filter=low-overstock); REMOVED Customer Inactivity. The shared real-time over-reservation bell item on 29 other pages was replaced by the daily SP-summary so no page shows a removed event. All r18 read-driven mechanics preserved. Rendered + verified via Playwright + grep.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T17:20:00+07:00"
         }
       ]
     }

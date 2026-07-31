@@ -192,26 +192,24 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
    <div class="right"><div class="noti-wrap"><button class="noti-btn" id="notiBtn" onclick="document.getElementById('notiPanel').classList.toggle('open')">🔔<span class="noti-badge" id="notiBadge">9+</span></button>
  <div class="noti-panel" id="notiPanel"><div class="noti-h"><span>การแจ้งเตือน <span id="notiCount">(10 ยังไม่อ่าน)</span></span><span class="na"><button class="btn-link" style="font-size:12px" onclick="markAllRead()">✓ อ่านแล้วทั้งหมด</button></span></div>
  <div class="noti-scroll" id="notiScroll">
-  <!-- กลุ่มที่ 1: งานส่งต่อข้ามแผนก -->
-  <div class="noti-group"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก<span class="gn">3</span></div>
+  <!-- กลุ่มที่ 1: งานส่งต่อข้ามแผนก / เอกสาร -->
+  <div class="noti-group"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก / เอกสาร<span class="gn">5</span></div>
   <div class="noti-item unread" onclick="openNoti(this,'production.html')"><span class="ud"></span><span class="di">🏭</span><div><a>งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · PO ยืนยัน → การผลิต</div></div></div>
-  <div class="noti-item unread" onclick="openNoti(this,'production.html')"><span class="ud"></span><span class="di">🔁</span><div><a>QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · QC → การผลิต</div></div></div>
+  <div class="noti-item unread" onclick="openNoti(this,'qc.html')"><span class="ud"></span><span class="di">✅</span><div><a>QC ตรวจรับผ่าน: Batch B-PO-202607-000181-1-1 (โลชั่น) → เข้าสต็อก FG</a><div class="tm">7 นาทีที่แล้ว · QC ผ่าน → สต็อก/ผลิต</div></div></div>
   <div class="noti-item unread" onclick="openNoti(this,'purchase-request.html')"><span class="ud"></span><span class="di">📥</span><div><a>คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · GR-008 รับไม่ครบ → จัดซื้อ</div></div></div>
-  <div class="noti-item read" onclick="openNoti(this,'po-detail.html')"><span class="ud"></span><span class="di">↩️</span><div><a>DN-20260730-00119 (PO-175) ลูกค้ายกเลิก → แจ้งฝ่ายขาย</a><div class="tm">วันนี้ 11:40 · จัดส่ง → ขาย · อ่านแล้ว</div></div></div>
+  <div class="noti-item unread" onclick="openNoti(this,'po-detail.html')"><span class="ud"></span><span class="di">⛔</span><div><a>PO-202607-000181 ถูกยกเลิก (void) — โปรดตรวจสอบงานที่เกี่ยวข้อง</a><div class="tm">18 นาทีที่แล้ว · เอกสารถูกยกเลิก/ปฏิเสธ · ใบสั่งซื้อ (PO)</div></div></div>
+  <div class="noti-item unread" onclick="openNoti(this,'shipping.html')"><span class="ud"></span><span class="di">🚚</span><div><a>Route RT-20260731-004 ส่งสำเร็จครบทุกจุด (3 DN)</a><div class="tm">25 นาทีที่แล้ว · Route ส่งสำเร็จ · จัดส่ง</div></div></div>
   <!-- กลุ่มที่ 2: ความเสี่ยงสต็อก/การผลิต -->
-  <div class="noti-group"><span class="gi g2">2</span>ความเสี่ยงสต็อก / การผลิต<span class="gn">3</span></div>
-  <div class="noti-item unread" onclick="openNoti(this,'supply-planning.html')"><span class="ud"></span><span class="di">📉</span><div><a>FG ต่ำกว่าเป้า: เซรั่มวิตซี 30ml เหลือคุ้ม 3 วัน — แนะนำผลิต 1,200 ชิ้น</a><div class="tm">8 นาทีที่แล้ว · วางแผนผลิต</div></div></div>
-  <div class="noti-item unread" onclick="openNoti(this,'stock.html')"><span class="ud"></span><span class="di">🔒</span><div><a>จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · สต็อก</div></div></div>
+  <div class="noti-group"><span class="gi g2">2</span>ความเสี่ยงสต็อก / การผลิต<span class="gn">2</span></div>
+  <div class="noti-item unread" onclick="openNoti(this,'supply-planning.html?filter=low-overstock')"><span class="ud"></span><span class="di">📊</span><div><a>สรุปสต็อกวันนี้: Low 4 รายการ · Overstock 2 รายการ</a><div class="tm">วันนี้ 06:00 · สรุปรายวัน · วางแผนผลิต (Supply)</div></div></div>
   <div class="noti-item unread" onclick="openNoti(this,'production.html')"><span class="ud"></span><span class="di">⏳</span><div><a>อาจส่งไม่ทัน: PRD-…091 คาดเสร็จเลยกำหนดส่ง SO-000042</a><div class="tm">30 นาทีที่แล้ว · การผลิต/ขาย</div></div></div>
   <!-- กลุ่มที่ 3: การเงิน/เครดิต -->
   <div class="noti-group"><span class="gi g3">3</span>การเงิน / เครดิต<span class="gn">2</span></div>
   <div class="noti-item unread" onclick="openNoti(this,'invoice-detail.html')"><span class="ud"></span><span class="di">💳</span><div><a>ใบแจ้งหนี้ INV-202607-0031 เกินกำหนดชำระ 5 วัน (กลอรี่ คอสเมติกส์)</a><div class="tm">วันนี้ 09:00 · การเงิน</div></div></div>
   <div class="noti-item unread" onclick="openNoti(this,'invoice-detail.html')"><span class="ud"></span><span class="di">💳</span><div><a>ใบแจ้งหนี้ INV-202607-0028 เกินกำหนดชำระ 12 วัน</a><div class="tm">เมื่อวาน · การเงิน</div></div></div>
-  <div class="noti-item read" onclick="openNoti(this,'invoice-detail.html')"><span class="ud"></span><span class="di">💳</span><div><a>ใบแจ้งหนี้ INV-202607-0025 เกินกำหนดชำระ 20 วัน</a><div class="tm">2 วันก่อน · การเงิน · อ่านแล้ว</div></div></div>
   <!-- กลุ่มที่ 4: วงจรลูกค้า -->
-  <div class="noti-group"><span class="gi g4">4</span>วงจรลูกค้า<span class="gn">2</span></div>
-  <div class="noti-item unread" onclick="openNoti(this,'customer-detail.html')"><span class="ud"></span><span class="di">👤</span><div><a>ลูกค้าเงียบหาย: บิวตี้เฮ้าส์ ไม่มีคำสั่งซื้อ 90 วัน → เปลี่ยนเป็น "ไม่เคลื่อนไหว"</a><div class="tm">วันนี้ 06:00 · ลูกค้า</div></div></div>
-  <div class="noti-item unread" onclick="openNoti(this,'customer-detail.html')"><span class="ud"></span><span class="di">👤</span><div><a>ลูกค้าเงียบหาย: สปาราตรี ไม่มีคำสั่งซื้อ 90 วัน</a><div class="tm">วันนี้ 06:00 · ลูกค้า</div></div></div>
+  <div class="noti-group"><span class="gi g4">4</span>วงจรลูกค้า<span class="gn">1</span></div>
+  <div class="noti-item unread" onclick="openNoti(this,'customer-detail.html')"><span class="ud"></span><span class="di">🚩</span><div><a>ครบกำหนดติดตามลูกค้า: กลอรี่ คอสเมติกส์ (⚑ ต้องติดตาม)</a><div class="tm">วันนี้ 08:30 · ติดตามลูกค้า · ลูกค้า</div></div></div>
  </div>
  <div class="noti-empty" id="notiEmpty"><div class="ei">✅</div><h4>อ่านครบทุกรายการแล้ว</h4><div class="tiny">รายการที่อ่านแล้วยังดูย้อนหลังได้ที่ "ดูทั้งหมด"</div></div>
  <div class="noti-note" id="notiNote">💡 คลิกรายการ = เปิดเอกสารปลายทาง + ทำเครื่องหมาย "อ่านแล้ว" · <b>อ่านแล้วจะหายจากกระดิ่งเมื่อรีเฟรช</b> (ยังดูย้อนหลังได้ที่ "ดูทั้งหมด")</div>
