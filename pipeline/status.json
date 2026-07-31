@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "status": "READY_FOR_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3525,6 +3525,67 @@
           "summary": "RBAC -> cumulative per-module level (R<C<U<D<A<Admin); G9=min-level mapping preserved; settings editor=single-level selector; README r16; DEF-2 SoD non-blocking.",
           "overridden_by": null,
           "updated_at": "2026-07-31T00:00:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "r16-role-editor-mockup",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "K-1 6 independent checkboxes per module -> ONE single-level selector (segmented radio) with options ไม่มีสิทธิ์ · R · C · U · D · A · Admin, ordered by cumulative ladder (C before U)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "K-2 Inline cumulative explainer per row (e.g. U -> 'ทำได้: ดู (R) · สร้าง (C) · แก้ (U)'; A -> '...+ ลบ (D) · อนุมัติ (A)') + ladder legend in header",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "K-3 Effective actions of chosen level shown (short summary) live before save; updates on selection via setLvl()",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "K-4 Permission-cells header relabelled 'ระดับสิทธิ์ (1 ระดับต่อ module)'; removed 'tick multiple' hint (old '6 ระดับต่อเมนู' + Admin-column note replaced)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "K-5 VAT/Company/Audit-log access requires Admin — explicit lock note on ตั้งค่าระบบ row + info alert",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "K-6 Role search/filter (Active/Disabled/Deleted), role user-list + remove-user, Disable/Soft-delete/Restore all UNCHANGED",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Backward-compat: only role-editor permission UI touched in settings.html; sidebar/header/product name (ESSENCE Hub System)/other tabs untouched; no other mockup file edited",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Same design system (existing CSS tokens/classes/spacing); control swap not restyle; Thai-only copy; effective-level=max note added; maps to permission-matrix §1a + settings.md §4/US-SET-01",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Playwright-verified render at desktop 1440x900 + tablet 768x1024; screenshots in ux-audit/",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/settings.html",
+            "docs/design/erp-v2-ui-first/ux-audit/settings-role-editor-r16-desktop.png",
+            "docs/design/erp-v2-ui-first/ux-audit/settings-role-editor-r16-tablet.png"
+          ],
+          "questions_for_pond": [],
+          "summary": "r16 cumulative-RBAC role editor: swapped the 6-checkbox permission grid for a per-module single-level segmented selector (ไม่มีสิทธิ์·R·C·U·D·A·Admin, C-before-U) with an inline cumulative explainer + effective-actions summary per row, relabelled header 'ระดับสิทธิ์ (1 ระดับต่อ module)', and made VAT/Company/Audit=Admin explicit. Only settings.html role editor changed; search/filter/user-list/disable/delete/restore untouched. READY_FOR_HUMAN_GATE (Gate 1 look re-review of the modified screen only).",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T11:30:00+07:00"
         }
       ]
     }
