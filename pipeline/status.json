@@ -3,8 +3,8 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "po",
-      "status": "IN_PROGRESS",
+      "current_agent": "ux-ui",
+      "status": "READY_FOR_UX_UI",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -4170,8 +4170,121 @@
           "summary": "Built po-print.html + so-print.html — print-ready PO/SO document views mirroring quotation-print.html (same A4 paper, ESSENCE Hub header, party blocks, line-item table, VAT totals, baht-text, terms, signatures, @media print rules). Wired the existing 'พิมพ์' actions on po/so detail pageheads + create post-save popups to open them (reachable AFTER save/number only — Pond rule). Added 2 gallery cards. Permission R, no status change. Rendered both to screenshot+PDF (ux-audit) — verified as proper printable docs. Stayed entirely in mockups/.",
           "overridden_by": null,
           "updated_at": "2026-07-31T18:05:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "gate1-review-reconciliation-r20",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "A1 Customer Follow-up = flag-set-only (drop due-date) + de-dup with Invoice-Overdue (platform.md 4/7, non-functional.md 7, customer.md 4.1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A2 Route delivered fires on Route done (generic, Read Route+owning Sale, Sale sees whole route this phase); Route-cancel = single RT noti (suppress NxDN-void); DN cancel-delivery = delivery status only, order unchanged, not doc-cancel (platform.md, shipping.md 4b/4d, delivery-note.md 7)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A3 single fan-out rule = Read of destination module; (Sale)/(Finance) descriptive only; Route +owning Sale is the one exception (non-functional.md 7, platform.md 6/9)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A4 no new events (Ready-to-Ship/DN-delivered = queue-discovered); purged stale C-codes C5/C6/C9/C10/C12/C13/C15/C17/C18 in qc/pr/return/shipping/goods-receipt (grep = 0 remaining)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "A6 optimistic badge: click marks read + decrements badge immediately client-side; poll <=15s (P5) reconcile (platform.md 7, non-functional.md 1 P5/7)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B1 permission-matrix 3: +PO-print(R) +SO-print(R) +Return void(D) +RET create(C); normalized cancel QT/SO/PR (D)/(A) -> min-level (D) + note",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B2 README 9 advisory box synced CLOSED (matches non-functional 12)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B4 return.md 12/13 RT->RET UX note marked DONE",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B5 supply-planning 5.1 deep-link param pinned = ?filter=low-overstock",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "B7 pins: (a) rollup latest active DN = most-recent status-change ts among non-void DNs; (b) only-Admin guard = >=1 other Active user with effective Settings level=Admin; (c) J8 after J1, 06:00-06:15 window",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C1 SO(a) FG shortage = WARN-not-block (Pond D2); reconciled so.md 5/8, negative FG reserve stated; ownbrand-flow synced",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C2 SO(b) terminal produced-to-stock (Completed/stocked) added (so.md 4), excluded from Route candidate, production.md 4 rollup label fixed",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C3 direct PO/SO cancel BLOCKED while non-void DN active (via Route/DN) - po.md 4d, so.md 8, delivery-note.md 4",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "C4 CRITICAL OEM sell-from-stock: OEM surplus + held/customer-cancelled goods -> FG stock (OEM identity, sellable); OEM PO fulfilled by selecting existing OEM FG - po.md 5.4, stock.md 4, production.md 5b, delivery-note.md 7, oem-flow.md; UX/UI note flagged",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Completeness: every change in .md + rendered via existing HTML views + index.html card descriptions refreshed; no requirement lives only in a mockup",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Backward-compat: DN 6-status, RT/RET numbering, cumulative RBAC, DN-unify, GR->QC stock-in, G8/G9, entity-status-map untouched",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/customer.md",
+            "docs/requirements/erp-v2-ui-first/modules/so.md",
+            "docs/requirements/erp-v2-ui-first/modules/po.md",
+            "docs/requirements/erp-v2-ui-first/modules/production.md",
+            "docs/requirements/erp-v2-ui-first/modules/stock.md",
+            "docs/requirements/erp-v2-ui-first/modules/delivery-note.md",
+            "docs/requirements/erp-v2-ui-first/modules/shipping.md",
+            "docs/requirements/erp-v2-ui-first/modules/permission-matrix.md",
+            "docs/requirements/erp-v2-ui-first/modules/supply-planning.md",
+            "docs/requirements/erp-v2-ui-first/modules/qc.md",
+            "docs/requirements/erp-v2-ui-first/modules/pr.md",
+            "docs/requirements/erp-v2-ui-first/modules/return.md",
+            "docs/requirements/erp-v2-ui-first/modules/goods-receipt.md",
+            "docs/requirements/erp-v2-ui-first/modules/flows/oem-flow.md",
+            "docs/requirements/erp-v2-ui-first/modules/flows/ownbrand-flow.md",
+            "docs/requirements/erp-v2-ui-first/modules/README.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Gate-1 Final Team Review reconciliation (r20, spec-only). Settled A1-A4/A6 notification semantics, B1-B7 consistency, C1-C4 flow completeness (incl C4 OEM sell-from-stock), plus header logo/title->Dashboard home-link. Purged all stale notification C-codes. README bumped to r20; index cards refreshed. All backward-compat rules preserved. READY_FOR_UX_UI.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T00:00:00+07:00"
         }
-      ]
+      ],
+      "updated_at": "2026-07-31T00:00:00+07:00"
     }
   },
   "generated_at": "2026-07-31T06:35:58.656Z"

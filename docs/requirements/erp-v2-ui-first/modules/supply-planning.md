@@ -1,11 +1,11 @@
 # Module — Supply Planning (Demand & Production Cover)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**★★★★★★★★★ + Notification: FG→Low real-time ตัด → สรุป Low+Overstock รายวัน (J8 ~06:00) r19 2026-07-31**)
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**★★★★★★★★★ + Notification: FG→Low real-time ตัด → สรุป Low+Overstock รายวัน (J8 ~06:00) r19 2026-07-31 · ★ + Gate-1 B5: pin deep-link param `?filter=low-overstock` r20 2026-07-31**)
 Mockups: `mockups/supply-planning.html`
 กฎอ้างอิง: **D4** (FG on-hand read-only, in-production นับจาก Batch) · **D5** (badge thresholds) · **D6** (suggested + batch rounding) · **D7** (rate conversion) · **D8 v2** (ปุ่มสั่งผลิต → prefill SO produce-to-stock; **★ รอบนี้ = ระบุจำนวน batch เอง**) · **D9/D10** (BOM total cost + snapshot) · **D16** (config on FG master) · **`bom.md` §3/§4/§5c (ราคาขาย = revenue source · ต้นทุนรวม/หน่วย = cost source · Inactive ถูกกันออก)** · README §2.1/§3 · `non-functional.md` §6 (J8) + §7 (noti)
 
 ## สรุปภาษาไทย
-เครื่องมือวางแผน demand/cover ของ FG (Own-Brand). อ่าน FG on-hand (read-only) + in-production (นับจาก Batch), คำนวณ cover/safety/reorder/target/suggested. **★ ปรับโครงหน้าใหม่ (2026-07-29): จากการ์ดต่อ FG → "รายการ (list) FG" ที่สแกนง่าย** — **ค้น FG ได้ทั้ง (1) ชื่อ · (2) รหัส · (3) วัตถุดิบ (RM) ที่สูตรใช้ (reverse lookup: หา FG ที่ BOM มี RM นั้น, ค้น RM ด้วยชื่อ/รหัส)** · **filter สถานะ Low/OK/Overstock** (คงไว้). **แต่ละแถวโชว์ ชื่อ/รหัส/สถานะ + "การคำนวณว่าทำไมได้สถานะนั้น" (why-calc inline)** — เห็นตัวเลข cover เทียบ Target/Safety ไม่ใช่แค่ป้าย · **กดขยายแถว → breakdown วัตถุดิบ (RM) open/close ของสูตร + สต็อกคงเหลือปัจจุบันต่อ RM**. **★ คลิก FG → MODAL รายละเอียดเต็ม** ที่มี: **(A) "สั่งผลิต" โดยระบุจำนวน batch เอง** → modal คำนวณ **ต้นทุน/รายได้/กำไร** สำหรับจำนวนที่ผลิต (batch × batch size): **cost = ต้นทุนรวม BOM (วัตถุดิบ+ต้นทุนอื่น, D9/D10) × qty · revenue = ราคาขาย FG × qty · margin = revenue − cost (+ margin %)** — **แหล่งราคาขาย = ฟิลด์ "ราคาขาย" (mandatory) บน BOM/FG master (`bom.md` §3)**; margin นี้เป็น **decision-support ระหว่างวางแผน ไม่ใช่รายงาน COGS/บัญชี** (D10 snapshot คงหน้าที่ snapshot-only). "สั่งผลิต" ยัง **prefill SO ผลิตเก็บสต็อก (D8 v2)** — แต่รอบนี้พก **จำนวน batch ที่เลือก**. **(B) แก้ค่าพารามิเตอร์การวางแผนใน modal (sale rate/lead/safety/target/batch) เพื่อ "จำลองใหม่ (re-simulate) โดยไม่บันทึกกลับ BOM"** (scratch/what-if) + มีปุ่มแยก **"บันทึกกลับ BOM master"** ที่ persist ค่าจริง (audited). **★ FG/BOM Inactive ถูกกันออกจากการวางแผน** (ไม่โผล่/ไม่คำนวณ/ไม่มีปุ่มสั่งผลิต/ไม่ยิง Low alert — `bom.md` §5c). **★★★★★★★★★ แจ้งเตือน (r19 — DAILY summary):** **ตัด FG→Low real-time** — สต็อกแจ้งผ่าน **สรุปรายวัน ~06:00 (J8)** = **จำนวน+รายการ FG Low และ จำนวน+รายการ FG Overstock** (แจ้งใบเดียว) + deep-link ไป **หน้า Supply Planning เดิม (filter Low+Overstock)**. หน้า SP ยังคง **Low bell/indicator ของตัวเอง** (page feature). **§6 = สรุปสูตรทั้งหมด (why-calc + cost/revenue/margin) ให้ปอนด์รีวิว**.
+เครื่องมือวางแผน demand/cover ของ FG (Own-Brand). อ่าน FG on-hand (read-only) + in-production (นับจาก Batch), คำนวณ cover/safety/reorder/target/suggested. **★ ปรับโครงหน้าใหม่ (2026-07-29): จากการ์ดต่อ FG → "รายการ (list) FG" ที่สแกนง่าย** — **ค้น FG ได้ทั้ง (1) ชื่อ · (2) รหัส · (3) วัตถุดิบ (RM) ที่สูตรใช้ (reverse lookup)** · **filter สถานะ Low/OK/Overstock** (คงไว้). **แต่ละแถวโชว์ ชื่อ/รหัส/สถานะ + "การคำนวณว่าทำไมได้สถานะนั้น" (why-calc inline)** · **กดขยายแถว → breakdown วัตถุดิบ (RM) + สต็อกคงเหลือปัจจุบันต่อ RM**. **★ คลิก FG → MODAL รายละเอียดเต็ม** ที่มี: **(A) "สั่งผลิต" โดยระบุจำนวน batch เอง** → modal คำนวณ **ต้นทุน/รายได้/กำไร** (batch × batch size). **(B) แก้ค่าพารามิเตอร์การวางแผนใน modal เพื่อ "จำลองใหม่ (re-simulate) โดยไม่บันทึกกลับ BOM"** + ปุ่มแยก **"บันทึกกลับ BOM master"** (audited). **★ FG/BOM Inactive ถูกกันออกจากการวางแผน**. **★★★★★★★★★ แจ้งเตือน (r19 — DAILY summary):** **ตัด FG→Low real-time** — สต็อกแจ้งผ่าน **สรุปรายวัน ~06:00 (J8)** = **จำนวน+รายการ FG Low และ จำนวน+รายการ FG Overstock** (แจ้งใบเดียว) + deep-link ไป **หน้า Supply Planning เดิม `?filter=low-overstock`** (★ r20 B5 pin param). หน้า SP ยังคง **Low bell/indicator ของตัวเอง** (page feature). **§6 = สรุปสูตรทั้งหมด**.
 
 ---
 
@@ -13,18 +13,18 @@ Mockups: `mockups/supply-planning.html`
 มองเห็นว่า FG ตัวไหนกำลังจะขาด (Low), เข้าใจ **ว่าทำไมถึงได้สถานะนั้น (why-calc)**, ดู **breakdown วัตถุดิบ + สต็อกคงเหลือ** ต่อ FG, แนะนำจำนวนที่ควรผลิตเติม (ปัดเป็นทวีคูณ Batch), **จำลอง (what-if) ต้นทุน/รายได้/กำไร ก่อนตัดสินใจสั่งผลิตตามจำนวน batch ที่เลือก**, แจ้งเตือนสรุปสต็อก Low+Overstock รายวัน, และเปิดทางสั่งผลิตเก็บสต็อกจากที่นี่ — เฉพาะ FG ที่ยัง **Active**.
 
 ## 2. ★ Screen layout — LIST-first (restructure 2026-07-29)
-> **เปลี่ยนจากการ์ดต่อ FG → รายการ (list) ที่สแกนง่าย + ขยายแถว + คลิกเข้า modal.** รายละเอียดหนัก (สั่งผลิต + cost/revenue/margin + แก้ param) ย้ายไป **modal** (§5a–§5c).
+> **เปลี่ยนจากการ์ดต่อ FG → รายการ (list) ที่สแกนง่าย + ขยายแถว + คลิกเข้า modal.**
 
 - **Header:** "SUPPLY PLANNING / Demand & Production Cover".
-- **3 stat tiles (คงไว้ — วางบนหัวรายการ):** (1) **ITEMS BELOW TARGET** "X of N" (cover < Target) · (2) **SUGGESTED PRODUCTION** = Σ suggested · (3) **SHORTEST COVER** = min(cover) วัน. (ยังมีประโยชน์ในฐานะสรุปภาพรวม — คงตำแหน่งบน list header.)
+- **3 stat tiles (คงไว้):** (1) **ITEMS BELOW TARGET** "X of N" · (2) **SUGGESTED PRODUCTION** = Σ suggested · (3) **SHORTEST COVER** = min(cover) วัน.
 - **แถบค้นหา + filter:** ช่องค้น (ชื่อ/รหัส/RM — §4) + filter สถานะ Low/OK/Overstock (§4).
 - **★ รายการ FG (list) — แต่ละแถว (row):**
   - **ชื่อ FG · รหัส FG · badge สถานะ (Low/OK/Overstock)**.
-  - **★ why-calc inline** — เหตุผลย่อว่าทำไมได้สถานะนั้น: `cover วันนี้ {CoverToday} วัน · Target {TargetCover} วัน · (Safety {SafetyCover}, Lead {LeadTime})` + Suggested (ceil-to-batch) ถ้า Low. ผู้วางแผน **เห็นตัวเลขเบื้องหลังป้าย ไม่ใช่แค่ badge** (§4b, §6).
-  - **ปุ่มขยาย (expand ▸/▾):** กด → เปิด **breakdown วัตถุดิบ (RM) ของสูตร (open/close inline)** + **สต็อกคงเหลือปัจจุบัน (on_hand/available) ต่อ RM** (§4b).
-  - **คลิกที่แถว (ไม่ใช่ปุ่มขยาย) → เปิด MODAL รายละเอียดเต็ม** (§5a).
-- **20/หน้า (G1) + pagination** เมื่อรายการยาว.
-- **(UX/UI follow-up — list only, ยังไม่แก้ mockup):** bell/badge "Low" บนหัวหน้า supply-planning + รายการใน notification panel (§5.2).
+  - **★ why-calc inline** — เหตุผลย่อว่าทำไมได้สถานะนั้น (§4b, §6).
+  - **ปุ่มขยาย (expand ▸/▾):** กด → เปิด **breakdown วัตถุดิบ (RM) + สต็อกคงเหลือปัจจุบัน (on_hand/available) ต่อ RM** (§4b).
+  - **คลิกที่แถว → เปิด MODAL รายละเอียดเต็ม** (§5a).
+- **20/หน้า (G1) + pagination**.
+- **(UX/UI follow-up — list only):** bell/badge "Low" บนหัวหน้า supply-planning + รายการใน notification panel (§5.2).
 
 ## 3. Fields (D4)
 | ฟิลด์ | หน่วย | ชนิด |
@@ -42,81 +42,77 @@ Mockups: `mockups/supply-planning.html`
 - **★ ค้น FG ได้ 3 แกน (any-match):**
   1. **ชื่อ FG**.
   2. **รหัส FG** (= รหัส BOM, shared — `bom.md` §5).
-  3. **★ วัตถุดิบ (RM) — reverse lookup:** พิมพ์ **ชื่อหรือรหัส RM** → คืน **FG ทุกตัวที่ BOM (สูตร) มี RM นั้นเป็น component** (ค้นย้อนจากวัตถุดิบ→สินค้าที่ใช้). ช่วยตอบ "RM ตัวนี้กระทบ FG ใดบ้าง" (เช่นวัตถุดิบใกล้หมด/มีปัญหา).
-  > UI: ช่องค้นเดียว match ทั้ง 3 แกน (ระบุ hint "ค้นชื่อ/รหัส FG หรือวัตถุดิบ") หรือ toggle "ค้นด้วยวัตถุดิบ" — รายละเอียดหน้าตา = งาน UX/UI.
-- **filter สถานะ Low / OK / Overstock** (D5) — **คงไว้** · **★★★★★★★★★ r19: ใช้ซ้ำเป็น deep-link target ของแจ้งเตือนสรุปรายวัน (filter query Low+Overstock, §5.1)**.
-- **★ ขอบเขต (scope): แสดง/คำนวณเฉพาะ FG ที่ BOM/FG = Active** — **FG Inactive ถูกกันออก** (ไม่โผล่ใน list/tiles, ไม่คำนวณ Suggested, ไม่มีปุ่มสั่งผลิต, ไม่ยิงแจ้งเตือน Low). สอดคล้อง `bom.md` §5c, `so.md` §6. — **PO ตัดสินสมเหตุผล (ไม่ถือเป็นคำถามค้าง)**.
+  3. **★ วัตถุดิบ (RM) — reverse lookup:** พิมพ์ **ชื่อหรือรหัส RM** → คืน **FG ทุกตัวที่ BOM (สูตร) มี RM นั้นเป็น component**.
+  > UI: ช่องค้นเดียว match ทั้ง 3 แกน หรือ toggle "ค้นด้วยวัตถุดิบ" — งาน UX/UI.
+- **filter สถานะ Low / OK / Overstock** (D5) — **คงไว้** · **★★★★★★★★★ r19: ใช้ซ้ำเป็น deep-link target ของแจ้งเตือนสรุปรายวัน (★ r20 B5: deep-link = `?filter=low-overstock` — เปิด filter Low+Overstock, §5.1)**.
+- **★ ขอบเขต (scope): แสดง/คำนวณเฉพาะ FG ที่ BOM/FG = Active** — **FG Inactive ถูกกันออก** (ไม่โผล่ใน list/tiles, ไม่คำนวณ Suggested, ไม่มีปุ่มสั่งผลิต, ไม่ยิงแจ้งเตือน Low). สอดคล้อง `bom.md` §5c, `so.md` §6.
 - 20/หน้า (G1) + pagination.
 
 ## 4b. ★ FG list row — why-calc inline + expand RM breakdown (NEW 2026-07-29)
-- **★ Inline why-calc ต่อแถว (เหตุผลของสถานะ):** แสดงตัวเลขที่ทำให้ได้ badge — อย่างน้อย: **Cover today** (วัน) เทียบ **Target Cover** (+ Safety/Lead ประกอบ) และ **Suggested production** (ถ้า Low). สูตร = §6 (เดียวกับ badge). เป้าหมาย: ผู้วางแผน **เห็น "ทำไม Low/OK/Overstock"** ทันทีในแถว ไม่ต้องเปิด modal.
+- **★ Inline why-calc ต่อแถว:** แสดงตัวเลขที่ทำให้ได้ badge — **Cover today** เทียบ **Target Cover** (+ Safety/Lead) และ **Suggested production** (ถ้า Low). สูตร = §6.
   - ตัวอย่าง (Low): *"เหลือ cover 14.3 วัน < Target 30 วัน (Safety 5 / Lead 7) — ควรผลิต 1,500 ชิ้น"*.
   - ตัวอย่าง (Overstock): *"cover 96.7 วัน > 2×Target (60) — ไม่ต้องผลิต"*.
-- **★ Expand แถว → RM breakdown (open/close inline):** กดปุ่มขยาย → โชว์ **รายการวัตถุดิบ (RM) ของสูตร BOM ของ FG นั้น** พร้อม **สต็อกคงเหลือปัจจุบันต่อ RM** (on_hand / available จาก `stock.md`). ให้ผู้วางแผนประเมิน "ถ้าจะสั่งผลิต RM พร้อมไหม" โดยไม่ต้องออกจากหน้า.
-  - แต่ละ RM row: **รหัส RM · ชื่อ RM · qty ต่อหน่วยสินค้า (จาก BOM) · สต็อกคงเหลือ (on_hand/available)**.
-  - เป็น **read-only** (การจัดการ RM/สต็อกอยู่ที่ `stock.md`; การแก้สูตรอยู่ที่ `bom.md`).
-- **หมายเหตุ:** expand = ดูเร็วในแถว; modal (§5a) = รายละเอียดเต็ม + action (สั่งผลิต + margin sim + แก้ param).
+- **★ Expand แถว → RM breakdown (open/close inline):** โชว์ **รายการวัตถุดิบ (RM) ของสูตร BOM + สต็อกคงเหลือปัจจุบันต่อ RM** (on_hand / available).
+  - แต่ละ RM row: **รหัส RM · ชื่อ RM · qty ต่อหน่วยสินค้า · สต็อกคงเหลือ**.
+  - เป็น **read-only**.
+- **หมายเหตุ:** expand = ดูเร็ว; modal (§5a) = รายละเอียดเต็ม + action.
 
 ## 5. ★ ปุ่ม/action "สั่งผลิต" (D8 v2 — UPDATED: ระบุจำนวน batch เอง)
-- **ที่อยู่:** อยู่ใน **modal รายละเอียด FG** (§5a) — ไม่ใช่ปุ่มบนการ์ดอีกต่อไป.
-- **★ ผู้ใช้ระบุ "จำนวน batch (batch count)" เอง** (default = จำนวน batch ที่ทำให้ถึง Suggested, ceil-to-batch, §6.2) → **จำนวนผลิต (qty) = batch count × Batch Size**.
+- **ที่อยู่:** อยู่ใน **modal รายละเอียด FG** (§5a).
+- **★ ผู้ใช้ระบุ "จำนวน batch (batch count)" เอง** (default = จำนวน batch ที่ทำให้ถึง Suggested, §6.2) → **จำนวนผลิต (qty) = batch count × Batch Size**.
 - กด **"สั่งผลิต"** →
-  - **พาไปหน้า "สร้างใบสั่งขาย (Own-Brand) → (ข) ผลิตเก็บสต็อก (ไม่เลือกลูกค้า)" แบบ PRE-FILL** (FG ตัวนั้น + **จำนวน = batch count × Batch Size ที่เลือก**).
-  - ผู้ใช้ทวน/ยืนยัน → เข้าสาย production ปกติ (BOM check → PRD ไม่ผูกลูกค้า → RM ขาด auto-PR → ผลิต → QC ผ่าน → **FG เข้าคลัง**). ดู `so.md` §6.
-- **เปลี่ยนจาก D8 v1** (เดิมสร้าง PRD ทันที) และจาก v2-เดิม (prefill = Suggested คงที่) → **ตอนนี้ prefill = จำนวนตาม batch count ที่ผู้ใช้เลือกใน modal** (ที่มา produce-to-stock = เดียว). README §2.1.
-- **★ ปุ่มสั่งผลิตโผล่เฉพาะ FG Active** (Inactive ไม่เข้าข่าย — §4).
+  - **พาไปหน้า "สร้างใบสั่งขาย (Own-Brand) → (ข) ผลิตเก็บสต็อก" แบบ PRE-FILL** (FG + **จำนวน = batch count × Batch Size**).
+  - ผู้ใช้ทวน/ยืนยัน → เข้าสาย production ปกติ → **FG เข้าคลัง** → **★ SO(ข) terminal = "ผลิตเข้าคลังแล้ว" (`so.md` §4)**. ดู `so.md` §6.
+- **★ ปุ่มสั่งผลิตโผล่เฉพาะ FG Active**.
 
 ## 5a. ★ Click FG → MODAL รายละเอียดเต็ม (NEW 2026-07-29)
-คลิกแถว FG (นอกปุ่มขยาย) → **modal dialog** (ไม่สลับหน้า; ปิดแล้วกลับ list ไม่เสีย state — G3) แสดง:
+คลิกแถว FG → **modal dialog** (ปิดแล้วกลับ list ไม่เสีย state — G3) แสดง:
 1. **หัว:** ชื่อ/รหัส FG + badge สถานะ + narrative (§6.5).
 2. **ตัวเลขวางแผนเต็ม:** On Hand / In Production / Available / Cover today / Safety / Reorder / Target / Suggested / Cover after / runs-out / cover-through (§6) + coverage bar (4 markers).
-3. **RM breakdown + สต็อกคงเหลือต่อ RM** (เหมือน §4b — read-only).
+3. **RM breakdown + สต็อกคงเหลือต่อ RM** (read-only).
 4. **★ "สั่งผลิต" + batch count + cost/revenue/margin simulation** (§5b).
 5. **★ แก้พารามิเตอร์การวางแผน (simulate) + "บันทึกกลับ BOM master"** (§5c).
-- **ลิงก์:** (เมื่อเหมาะสม) "เปิดหน้า BOM/FG เต็ม" (`bom.html`) และ "เปิดหน้า SO produce-to-stock".
+- **ลิงก์:** "เปิดหน้า BOM/FG เต็ม" · "เปิดหน้า SO produce-to-stock".
 
 ## 5b. ★ สั่งผลิต — batch count + cost / revenue / margin simulation (NEW 2026-07-29)
-> **decision-support ระหว่างวางแผน — ไม่ใช่รายงาน COGS/บัญชี.** ใช้ค่า **live** จาก BOM/FG master (ต้นทุนรวม + ราคาขาย) ตอนคำนวณ. **ไม่กระทบ D10 cost snapshot** (snapshot ยังเกิดตอนขายจริงเท่านั้น, snapshot-only).
+> **decision-support ระหว่างวางแผน — ไม่ใช่รายงาน COGS/บัญชี.** ใช้ค่า **live** จาก BOM/FG master. **ไม่กระทบ D10 cost snapshot**.
 
-- **input:** **จำนวน batch (batch count)** ที่ modal (integer ≥ 1) → `qty = batch count × Batch Size`.
-- **สูตร (ต่อการจำลอง):**
+- **input:** **จำนวน batch (batch count)** (integer ≥ 1) → `qty = batch count × Batch Size`.
+- **สูตร:**
   | Output | สูตร | แหล่งข้อมูล |
   |---|---|---|
   | **qty (จำนวนผลิต)** | `batch count × Batch Size` | Batch Size จาก BOM (D16) |
-  | **cost (ต้นทุน)** | `ต้นทุนรวม/หน่วย (BOM) × qty` | ต้นทุนรวม/หน่วย = Σ ราคาซื้อ RM + Σ ต้นทุนอื่น (`bom.md` §4, D9) |
-  | **revenue (รายได้)** | `ราคาขาย FG × qty` | **ราคาขาย = ฟิลด์ mandatory บน BOM/FG master (`bom.md` §3)** |
+  | **cost (ต้นทุน)** | `ต้นทุนรวม/หน่วย (BOM) × qty` | `bom.md` §4, D9 |
+  | **revenue (รายได้)** | `ราคาขาย FG × qty` | **ราคาขาย = mandatory บน BOM/FG master (`bom.md` §3)** |
   | **margin (กำไร)** | `revenue − cost` | — |
   | **margin %** | `margin ÷ revenue × 100` (revenue > 0) | — |
-- **★ แหล่ง revenue = ราคาขาย FG (BOM/FG master)** — **มีนิยามอยู่แล้วในสเปก** (`bom.md` §3 "ราคาขาย" mandatory, THB/หน่วย). ไม่ประดิษฐ์แหล่งราคาใหม่. (ต้นทุนและราคาขายเป็นค่า **ก่อน VAT** ทั้งคู่ — VAT เป็นเรื่องตอนออก invoice, D-F3 `non-functional.md` — ดังนั้น margin ที่คำนวณเป็น margin ก่อน VAT, สมมาตร cost/revenue.)
-- **UI:** เปลี่ยน batch count → cost/revenue/margin/margin% **อัปเดตทันที (recompute live)** ก่อนกด "สั่งผลิต".
-- **หมายเหตุ:** ถ้า FG ไม่มีราคาขาย (ไม่ควรเกิด — ราคาขาย mandatory ที่ BOM) หรือไม่มีต้นทุนรวม → แสดง hint "ข้อมูลราคา/ต้นทุนไม่ครบใน BOM" + ปิดการคำนวณ margin (สั่งผลิตยังทำได้).
+- **★ แหล่ง revenue = ราคาขาย FG (BOM/FG master)** — มีนิยามอยู่แล้ว (`bom.md` §3). (ค่าก่อน VAT ทั้งคู่.)
+- **UI:** เปลี่ยน batch count → cost/revenue/margin/margin% **อัปเดตทันที**.
+- **หมายเหตุ:** ถ้าไม่มีราคาขาย/ต้นทุน → hint "ข้อมูลราคา/ต้นทุนไม่ครบใน BOM" + ปิด margin (สั่งผลิตยังทำได้).
 
 ## 5c. ★ แก้พารามิเตอร์: จำลอง (ไม่บันทึก) vs บันทึกกลับ BOM master (NEW 2026-07-29)
-> แยกให้ชัด 2 โหมด — ตอบคำสั่งปอนด์ "แก้เพื่อจำลองใหม่โดยไม่ save ลง BOM + มีปุ่มแยกบันทึกกลับ BOM".
-
 - **(1) Edit-for-simulation (scratch / what-if — NOT persisted):**
-  - ใน modal ผู้ใช้ **แก้ Sales Rate / Lead Time / Safety Cover / Target Cover / Batch Size** ได้ → **ทุกตัวเลข (cover/safety/reorder/target/suggested/cost-revenue-margin) recompute ทันที** ในโหมดจำลอง.
-  - **ไม่เขียนกลับ BOM master** — ปิด modal / เปลี่ยน FG = **ทิ้งค่าจำลอง** (revert เป็นค่าจริงจาก BOM). ไม่มี audit (เพราะไม่ persist).
-  - มี affordance ชัดเจนว่า "กำลังจำลอง (unsaved)" + ปุ่ม **"รีเซ็ตกลับค่าจริง"**.
+  - แก้ Sales Rate / Lead Time / Safety Cover / Target Cover / Batch Size → recompute ทันที (จำลอง).
+  - **ไม่เขียนกลับ BOM master** — ปิด modal / เปลี่ยน FG = ทิ้งค่าจำลอง. ไม่มี audit.
+  - affordance "กำลังจำลอง (unsaved)" + ปุ่ม **"รีเซ็ตกลับค่าจริง"**.
 - **(2) Save-back-to-BOM (persisted + audited):**
-  - ปุ่มแยกชัดเจน **"บันทึกกลับ BOM master"** → เขียนค่าพารามิเตอร์ที่แก้กลับไปที่ **1-BOM=1-FG master** (D16) — มีผลถาวรกับการวางแผน/แจ้งเตือนของ FG นั้น.
-  - **audited (field-level: ใคร/เมื่อ/เดิม→ใหม่)** ผ่าน field-audit เดียวกับ BOM (`bom.md` §5/§8, `traceability.md`, `non-functional.md` AU1) — ต้องมีสิทธิ์ **Supply Planning.Update (= BOM.Update ผ่าน planning)**.
-  - หลังบันทึก → ค่าจริงอัปเดต, โหมดจำลองล้าง, สถานะ/Suggested/alert คำนวณจากค่าใหม่.
-- **แยกจากกันชัด:** "สั่งผลิต" (§5b) ไม่ต้อง save param ก่อน (สั่งผลิตด้วยค่าจำลองปัจจุบันได้ — แต่จำนวน = batch count × Batch Size); "บันทึกกลับ BOM" เป็นการ persist config อย่างเดียว.
+  - ปุ่มแยก **"บันทึกกลับ BOM master"** → เขียนค่ากลับที่ **1-BOM=1-FG master** (D16).
+  - **audited (field-level)** — ต้องสิทธิ์ **Supply Planning.Update (= BOM.Update ผ่าน planning)**.
+- **แยกจากกันชัด:** "สั่งผลิต" (§5b) ไม่ต้อง save param ก่อน.
 
-## 5.1 ★★★★★★★★★ Notification — DAILY Low + Overstock summary (r19 — ปอนด์ Gate-1 2026-07-31 · แทน real-time+digest ของ 2026-07-29)
-- **Trigger:** rollup รายวัน **J8 ~06:00** — สรุปสุขภาพสต็อกของวัน: **จำนวน + รายการ FG (Active) ที่ Low** และ **จำนวน + รายการ FG ที่ Overstock** เป็น **แจ้งเตือนสรุปรวมใบเดียว** (ไม่ใช่ราย item, ไม่ใช่ real-time). Low/Overstock ตาม badge threshold (§6.3).
-- **★ r19: ตัด real-time FG→Low** (เดิม (a) ยิงทันทีตอนพลิก non-Low→Low) — Low/Overstock แจ้งผ่าน **สรุปรายวันเท่านั้น**. **FG→Low reservation/planning math คงเดิม** (§6) — เปลี่ยนเฉพาะ *การส่ง notification*.
-- **★ ไม่เข้าข่ายสำหรับ FG Inactive** (ถูกกันออกตั้งแต่ scope — §4).
-- **Delivery:** ผ่าน **notification outbox + per-user read-bit** · **ผู้รับ = ผู้มีสิทธิ์ Read Supply Planning** (notification-by-Read, ไม่ hardcode role) · จัดกลุ่ม UI = หมวด "ความเสี่ยงสต็อก/การผลิต" (`non-functional.md` §7).
-- **Deep-link:** → **หน้า Supply Planning เดิม พร้อม filter query (Low + Overstock)** — **reuse หน้า SP** (§2/§4 filter Low/OK/Overstock มีอยู่แล้ว; **ไม่สร้างหน้าใหม่**, ปอนด์ยืนยันการ reuse).
+## 5.1 ★★★★★★★★★ Notification — DAILY Low + Overstock summary (r19 — ปอนด์ Gate-1 2026-07-31 · ★ r20 B5 pin param)
+- **Trigger:** rollup รายวัน **J8 ~06:00 (★ r20: หลัง J1, หน้าต่าง 06:00–06:15 · `non-functional.md` §6)** — สรุปสุขภาพสต็อกของวัน: **จำนวน + รายการ FG (Active) ที่ Low** และ **จำนวน + รายการ FG ที่ Overstock** เป็น **แจ้งเตือนสรุปรวมใบเดียว** (ไม่ใช่ราย item, ไม่ใช่ real-time). Low/Overstock ตาม badge threshold (§6.3).
+- **★ r19: ตัด real-time FG→Low** — Low/Overstock แจ้งผ่าน **สรุปรายวันเท่านั้น**. **FG→Low reservation/planning math คงเดิม** (§6).
+- **★ ไม่เข้าข่ายสำหรับ FG Inactive** (§4).
+- **Delivery:** ผ่าน **notification outbox + per-user read-bit** · **ผู้รับ = ผู้มีสิทธิ์ Read Supply Planning** · จัดกลุ่ม UI = หมวด "ความเสี่ยงสต็อก/การผลิต" (`non-functional.md` §7).
+- **★ Deep-link (r20 B5 — pin param):** → **หน้า Supply Planning เดิม พร้อม query `?filter=low-overstock`** = เปิด filter Low+Overstock — **reuse หน้า SP** (§2/§4 filter Low/OK/Overstock มีอยู่แล้ว; **ไม่สร้างหน้าใหม่**). *(param ตายตัว `?filter=low-overstock` — mockup/route hard-code ค่านี้; UX/UI ยึดตาม.)*
 - **กันสแปม (idempotent):** J8 = snapshot รายวัน (1 สรุป/วัน/ผู้รับ).
-- **★ หน้า SP คง Low bell/indicator ของตัวเอง** (page feature — นับ FG Low ตอนนี้บนหัวหน้า, §5.2) แยกจาก notification event.
+- **★ หน้า SP คง Low bell/indicator ของตัวเอง** (page feature, §5.2) แยกจาก notification event.
 
 ## 5.2 UI touchpoints (UX/UI follow-up — list only)
-1. **★★★★★★★★★ r19:** รายการแจ้งเตือน **"สรุปสต็อกวันนี้: Low {X} รายการ · Overstock {Y} รายการ"** ใน **notification panel** → deep-link มา **หน้า supply-planning (filter Low+Overstock)**.
+1. **★★★★★★★★★ r19:** รายการแจ้งเตือน **"สรุปสต็อกวันนี้: Low {X} รายการ · Overstock {Y} รายการ"** ใน **notification panel** → deep-link มา **หน้า supply-planning `?filter=low-overstock`** (★ r20 B5).
 2. **Low badge/bell** บนหัวหน้า supply-planning (นับ FG ที่ Low ตอนนี้) — **page feature, คงไว้**.
-3. **★★★★★★★★★ r19:** สรุปเช้า (J8) = **1 entry รวม "Low {X} · Overstock {Y}"** → เปิดหน้า SP filter Low+Overstock.
+3. **★★★★★★★★★ r19:** สรุปเช้า (J8) = **1 entry รวม "Low {X} · Overstock {Y}"** → เปิดหน้า SP `?filter=low-overstock`.
 
 ## 6. ★★ FORMULA SUMMARY (สำหรับปอนด์รีวิว — ครบทุกสูตร รวม why-calc + cost/revenue/margin)
 > `r` = Sales Rate **per-day** (แปลงตาม D7). ตรวจกับ FG-101 (On Hand 1200, In Production 13, r=85/day, Lead 7, Safety 5, Target 30, Batch 500) = ✓.
@@ -138,21 +134,20 @@ Mockups: `mockups/supply-planning.html`
 | **Target stock** | `Target Cover × r` | 30×85 = **2550** |
 | **Risk line (วัน)** | `Lead Time + Safety Cover` | 7+5 = **12** |
 | **Suggested production** | `ceil( max(0, Target stock − Available) ÷ Batch Size ) × Batch Size` **(D6)** | ceil((2550−1213)/500)×500 = 3×500 = **1500** |
-| **Suggested batch count** | `ceil( max(0, Target stock − Available) ÷ Batch Size )` (= default batch count ใน §5b) | **3** |
+| **Suggested batch count** | `ceil( max(0, Target stock − Available) ÷ Batch Size )` | **3** |
 | **Cover after production (วัน)** | `(Available + Suggested) ÷ r` | (1213+1500)/85 = **31.9** |
-| **Runs-out date** | `today + Cover today (วันปฏิทิน — D7)` | 10 Aug |
-| **Cover-through date** | `today + Cover after (วันปฏิทิน)` | 27 Aug |
+| **Runs-out date** | `today + Cover today` | 10 Aug |
+| **Cover-through date** | `today + Cover after` | 27 Aug |
 
 ### 6.2b ★ Cost / Revenue / Margin (สั่งผลิต simulation — §5b) — NEW
-> ใช้ค่า live จาก BOM/FG master. **planning decision-support, ไม่ใช่ COGS (D10 snapshot คงเดิม).** ค่าก่อน VAT ทั้งคู่.
-| Output | สูตร | ตัวอย่าง (batch count 3, Batch 500 → qty 1500; ต้นทุน 42 THB/unit, ราคาขาย 70 THB/unit) |
+> ใช้ค่า live จาก BOM/FG master. **planning decision-support, ไม่ใช่ COGS.** ค่าก่อน VAT ทั้งคู่.
+| Output | สูตร | ตัวอย่าง (batch count 3, Batch 500 → qty 1500; ต้นทุน 42, ราคาขาย 70) |
 |---|---|---|
 | **qty** | `batch count × Batch Size` | 3×500 = **1500** |
-| **cost** | `ต้นทุนรวม/หน่วย (BOM) × qty` | 42×1500 = **63,000** |
-| **revenue** | `ราคาขาย FG (BOM) × qty` | 70×1500 = **105,000** |
-| **margin** | `revenue − cost` | 105,000−63,000 = **42,000** |
-| **margin %** | `margin ÷ revenue × 100` | 42,000/105,000 = **40%** |
-> ตัวเลขต้นทุน/ราคาขายด้านบนเป็นตัวอย่างประกอบสูตรเท่านั้น (ค่าจริงมาจาก BOM master).
+| **cost** | `ต้นทุนรวม/หน่วย × qty` | 42×1500 = **63,000** |
+| **revenue** | `ราคาขาย FG × qty` | 70×1500 = **105,000** |
+| **margin** | `revenue − cost` | **42,000** |
+| **margin %** | `margin ÷ revenue × 100` | **40%** |
 
 ### 6.3 Badge thresholds (D5)
 | badge | เงื่อนไข (cover เทียบ Target Cover) |
@@ -177,40 +172,35 @@ Overstock (Suggested=0): คงประโยค "...Produce 0 units...".
 - SUGGESTED PRODUCTION = Σ Suggested production ทุก FG (Active).
 - SHORTEST COVER = min(Cover today) วัน.
 
-> **จุดที่ปอนด์ควรเคาะ (ถ้าไม่เห็นด้วย):** (a) In Production นับจาก Batch สถานะใด — ยึด "Batch ของ FG ที่ยังไม่เข้าคลัง" (D4). (b) ปัดขึ้นเป็นทวีคูณ Batch เสมอ (D6). (c) **revenue ใช้ "ราคาขาย" บน BOM/FG master (ค่าก่อน VAT); margin sim เป็น decision-support ไม่ใช่ COGS.** (a/b ตรง D4/D6; c ตรง `bom.md` §3 + D10 — ดู §5b.)
+> **จุดที่ปอนด์ควรเคาะ:** (a) In Production นับจาก Batch สถานะใด — ยึด "Batch ของ FG ที่ยังไม่เข้าคลัง" (D4). (b) ปัดขึ้นเป็นทวีคูณ Batch เสมอ (D6). (c) **revenue ใช้ "ราคาขาย" บน BOM/FG master (ก่อน VAT)**.
 
 ## 7. Actions & Permissions (D14)
 | ปุ่ม/action | Permission required |
 |---|---|
 | ดู/ค้น (ชื่อ/รหัส/RM)/filter/expand RM/เปิด modal | Supply Planning.**Read (R)** |
 | รับแจ้งเตือนสรุป Low+Overstock รายวัน (J8 ~06:00) | Supply Planning.**Read (R)** (fan-out ตาม Read-bit) |
-| **แก้ param เพื่อจำลอง (simulate, ไม่ persist)** | Supply Planning.**Read (R)** (ไม่เขียนข้อมูล — เป็น what-if ฝั่ง client/scratch) |
+| **แก้ param เพื่อจำลอง (simulate, ไม่ persist)** | Supply Planning.**Read (R)** (what-if ฝั่ง client/scratch) |
 | **บันทึกกลับ BOM master (persist param)** | Supply Planning.**Update (U)** (= BOM.Update ผ่าน planning) + **audit** |
 | ปุ่ม "สั่งผลิต" (→ prefill SO produce-to-stock, batch count) | Supply Planning.**Create (C)** (ปลายทางสร้าง PRD = SO/Production.Create) |
-| ดู cost/revenue/margin simulation | Supply Planning.**Read (R)** (คำนวณจากค่า BOM ที่มีสิทธิ์อ่าน) |
+| ดู cost/revenue/margin simulation | Supply Planning.**Read (R)** |
 
 ## 8. Validations
-- Sales Rate/Batch Size > 0 เพื่อคำนวณ; ขาด → แถว/ modal เตือน (FG type ต้องมี config — `bom.md` §7).
-- **★ FG/BOM ต้อง Active จึงจะโผล่/คำนวณ/แจ้งเตือน** (Inactive ถูกกันออก — §4, `bom.md` §5c).
+- Sales Rate/Batch Size > 0 เพื่อคำนวณ; ขาด → แถว/ modal เตือน (`bom.md` §7).
+- **★ FG/BOM ต้อง Active จึงจะโผล่/คำนวณ/แจ้งเตือน** (Inactive ถูกกันออก — §4).
 - suggested = 0 เมื่อ Available ≥ Target.
 - **★ batch count (สั่งผลิต) = integer ≥ 1**; qty = batch count × Batch Size.
-- **★ margin sim:** ต้องมี **ราคาขาย** (BOM/FG master, mandatory) + **ต้นทุนรวม/หน่วย** จึงคำนวณ margin ได้; ขาด → ปิด margin (สั่งผลิตยังทำได้) + hint.
-- **★ simulate ≠ persist:** แก้ param ในโหมดจำลองไม่เขียน BOM; ต้องกด **"บันทึกกลับ BOM master"** เท่านั้นจึง persist (audited) — §5c.
-- **★★★★★★★★★ r19: ตัด real-time — แจ้งเตือน Low/Overstock ส่งผ่านสรุปรายวัน J8 (~06:00) เท่านั้น** (Low+Overstock ในสรุปเดียว, deep-link หน้า SP filter Low+Overstock); หน้า SP คง Low indicator ของตัวเอง (§5.2).
+- **★ margin sim:** ต้องมี **ราคาขาย** + **ต้นทุนรวม/หน่วย** จึงคำนวณ margin; ขาด → ปิด margin + hint.
+- **★ simulate ≠ persist:** ต้องกด **"บันทึกกลับ BOM master"** เท่านั้นจึง persist (audited) — §5c.
+- **★★★★★★★★★ r19/★ r20: ตัด real-time — แจ้งเตือน Low/Overstock ส่งผ่านสรุปรายวัน J8 (~06:00, หลัง J1) เท่านั้น** (Low+Overstock ในสรุปเดียว, **deep-link `?filter=low-overstock`**); หน้า SP คง Low indicator ของตัวเอง (§5.2).
 
 ## 9. Cross-links
-- config source/save-back → `bom.md` §5 · **revenue = ราคาขาย · cost = ต้นทุนรวม/หน่วย → `bom.md` §3/§4 · D9/D10 snapshot คงเดิม** · **Inactive exclusion → `bom.md` §5c · `deletion-policy.md` §2.4** · ปุ่มสั่งผลิต (batch count) → `so.md` §6 (produce-to-stock) · In Production/FG on-hand/RM stock → `stock.md`/`production.md` · **save-back param audit → `traceability.md` §3/§4 · `non-functional.md` AU1** · **★★★★★★★★★ r19 alerting (Low+Overstock daily) → `non-functional.md` §6 (J8)/§6.1 + §7 (noti) · `platform.md` §7 (หมวด 2)** · D8 delta → README §2.1.
+- config source/save-back → `bom.md` §5 · **revenue = ราคาขาย · cost = ต้นทุนรวม/หน่วย → `bom.md` §3/§4 · D9/D10** · **Inactive exclusion → `bom.md` §5c · `deletion-policy.md` §2.4** · ปุ่มสั่งผลิต (batch count) → `so.md` §6 (produce-to-stock, terminal "ผลิตเข้าคลังแล้ว" §4) · In Production/FG on-hand/RM stock → `stock.md`/`production.md` · **save-back param audit → `traceability.md` §3/§4 · `non-functional.md` AU1** · **★★★★★★★★★ r19/★ r20 alerting (Low+Overstock daily, deep-link `?filter=low-overstock`) → `non-functional.md` §6 (J8, หลัง J1)/§6.1 + §7 (noti) · `platform.md` §7 (หมวด 2)** · D8 delta → README §2.1.
 
 ## 10. Module changelog
 - **เพิ่ม (รอบก่อน):** search FG by name + filter Low/OK/Overstock · edit rates + save back to BOM · formula summary (§6) · **proactive Low alerting (§5.1) — real-time + J8 (DECIDED 2026-07-29)**. *(→ r19: real-time ตัด, J8 = Low+Overstock daily summary.)*
 - **แก้ (รอบก่อน):** D8 ปุ่มสั่งผลิต → prefill SO produce-to-stock (D8 v2) · on-read-only → proactive alerting.
 - **★ เพิ่ม (2026-07-29 — BOM module review):** FG/BOM Inactive ถูกกันออกจากการวางแผน.
-- **★★ CHANGED (2026-07-29 — Supply Planning module review, ปอนด์) — restructure + สั่งผลิต decision-support:**
-  1. **Layout: การ์ดต่อ FG → รายการ (list) FG** (name/code/status + **inline why-calc** + **expand RM breakdown + สต็อกคงเหลือต่อ RM** + คลิก→modal) — §2/§4b. คง 3 stat tiles บน list header.
-  2. **★ Search 3 แกน:** ชื่อ FG · รหัส FG · **RM reverse lookup (หา FG ที่ BOM มี RM นั้น, ค้น RM ชื่อ/รหัส)** — §4. filter Low/OK/Overstock คงไว้.
-  3. **★ Click FG → MODAL detail เต็ม** (§5a) — ตัวเลขวางแผน + RM breakdown + สั่งผลิต + margin sim + แก้ param.
-  4. **★ สั่งผลิต: ระบุ "จำนวน batch (batch count)" เอง** → qty = batch count × Batch Size (D8 v2 prefill carry batch count) — §5. sync `so.md` §6.
-  5. **★ Cost / Revenue / Margin simulation** ใน modal — **cost = ต้นทุนรวม BOM × qty (D9/D10) · revenue = ราคาขาย FG (BOM/FG master, `bom.md` §3) × qty · margin = revenue − cost (+ %)** — §5b/§6.2b. **decision-support, ไม่ใช่ COGS (D10 snapshot คงเดิม)**; ค่าก่อน VAT.
-  6. **★ แก้ param = 2 โหมดแยกชัด:** **simulate (ไม่ persist, ทิ้งเมื่อปิด)** vs **"บันทึกกลับ BOM master" (persist + audited)** — §5c.
-  - **PO ตัดสิน (settled):** แหล่ง revenue = "ราคาขาย" บน BOM/FG master (มีนิยามอยู่แล้ว, `bom.md` §3) → **ไม่ประดิษฐ์แหล่งราคาใหม่, ไม่ block**. margin ก่อน VAT (สมมาตร cost/revenue; VAT เป็นเรื่อง invoice, D-F3). ถ้าปอนด์อยากได้ฐานราคาอื่น/รวม VAT → แจ้งปรับได้ (ดู README §9).
-- **★★★★★★★★★ CHANGED (2026-07-31 — Notification: FG→Low real-time → Low+Overstock DAILY summary, r19 ปอนด์ Gate-1):** **§5.1 rewrite** — ตัด real-time FG→Low; แจ้งผ่าน **สรุปรายวัน J8 ~06:00** = จำนวน+รายการ FG **Low** และ จำนวน+รายการ FG **Overstock** (แจ้งใบเดียว) · **deep-link → หน้า Supply Planning เดิม (filter Low+Overstock, reuse SP page — ไม่สร้างหน้าใหม่)** · **§5.2** touchpoints อัปเดต (entry สรุป Low+Overstock; page Low bell/indicator คงไว้) · **§6.3** Low/Overstock → นับเข้าสรุปรายวัน · **§7/§8** permission+validation อัปเดต · **§4** filter reuse เป็น deep-link target. **★ FG→Low reservation/planning math (§6) คงเดิมทั้งหมด — เปลี่ยนเฉพาะ notification delivery.** authoritative = `platform.md` §7 · `non-functional.md` §6.1/§7. **ใช้ view เดิม (`supply-planning.html` render จาก .md) — no view ใหม่.**
+- **★★ CHANGED (2026-07-29 — Supply Planning module review, ปอนด์):** Layout list-first · Search 3 แกน · Click FG → MODAL · สั่งผลิต batch count · Cost/Revenue/Margin simulation · simulate vs save-back.
+- **★★★★★★★★★ CHANGED (2026-07-31 — Notification: FG→Low real-time → Low+Overstock DAILY summary, r19 ปอนด์ Gate-1):** **§5.1 rewrite** — ตัด real-time FG→Low; แจ้งผ่าน **สรุปรายวัน J8 ~06:00** · deep-link → หน้า SP เดิม (filter Low+Overstock, reuse) · §5.2/§6.3/§7/§8/§4. **★ FG→Low reservation/planning math (§6) คงเดิม.** authoritative = `platform.md` §7 · `non-functional.md` §6.1/§7.
+- **★ เพิ่ม (2026-07-31 — Gate-1 review reconciliation r20 · B5, ปอนด์):** **pin deep-link param = `?filter=low-overstock`** (§4/§5.1/§5.2/§8/§9 + summary) — mockup/route hard-code ค่านี้เพื่อเปิด filter Low+Overstock ตายตัว · เพิ่ม note J8 รันหลัง J1 (หน้าต่าง 06:00–06:15, `non-functional.md` §6) · sync SO(ข) terminal "ผลิตเข้าคลังแล้ว" (§5/§9). **ใช้ view เดิม (`supply-planning.html` render จาก .md).**
+- **คงเดิม:** list-first layout, search 3 แกน, modal, margin sim, simulate/save-back, J8 daily summary.

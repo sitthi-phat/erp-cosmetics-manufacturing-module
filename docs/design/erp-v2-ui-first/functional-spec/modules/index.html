@@ -37,63 +37,63 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <h1>Per-Module Requirement Package — SINGLE SOURCE OF TRUTH</h1>
 <p class="lead">slug <code>erp-v2-ui-first</code> · IA: <b>① Functional</b> (จัดตามแถบเมนูแอป) · <b>② Non-Functional</b> · <b>③ Reference</b> · render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code></p>
 
-<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง.</b> ทุกลิงก์ในหน้านี้อยู่ในแพ็กเกจ + เอกสารอ้างอิงที่ยังใช้ได้ ไม่เด้งออกไปหน้าเก่า · เอกสารเก่า (superseded) อยู่ในหมวด Archive ของ <a href="../index.html#archive">Document Hub</a> · เริ่มที่ <a href="package-overview.html"><b>ภาพรวม + changelog + old→new map</b></a></div>
+<div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง.</b> ทุกลิงก์ในหน้านี้อยู่ในแพ็กเกจ + เอกสารอ้างอิงที่ยังใช้ได้ ไม่เด้งออกไปหน้าเก่า · เอกสารเก่า (superseded) อยู่ในหมวด Archive ของ <a href="../index.html#archive">Document Hub</a> · เริ่มที่ <a href="package-overview.html"><b>ภาพรวม + changelog + old→new map</b></a> · <b>★★★★★★★★★★ r20 Gate-1 review reconciliation (2026-07-31): A1-A6 notification · B1-B7 consistency · C1-C4 flow (C4 ⭐ OEM sell-from-stock)</b></div>
 
 <!-- ===== (1) FUNCTIONAL ===== -->
 <div class="sec"><span class="n">①</span> FUNCTIONAL Requirements <small>— สิ่งที่ระบบทำ · จัดกลุ่มตามแถบเมนูของแอป</small></div>
 
 <div class="grp"><span class="dot"></span> ภาพรวม &amp; การไหลของงาน</div>
 <div class="tocgrid">
-  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit 60) · global rules G1–G9 · changelog · old→new map · source-of-truth</div></a>
-  <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger · ★ delivery status=DN-mirror</div></a>
-  <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock · (ข) produce-to-stock · ledger effect · ★ delivery status=DN-mirror</div></a>
+  <a class="meta mod" href="package-overview.html"><div class="mt">ภาพรวมแพ็กเกจ (README)</div><div class="md">file tree · D-rule spine (D8 v2 + credit 60) · global rules G1–G9 · changelog · old→new map · source-of-truth · ★r20 Gate-1 reconciliation (A1-A6/B1-B7/C1-C4)</div></a>
+  <a class="flow mod" href="oem-flow.html"><div class="mt">OEM Flow</div><div class="md">Quotation→PO→ผลิต→surplus→DN→Invoice · trace + ledger · ★ delivery status=DN-mirror · <b>★r20 C4 sell-from-stock variant (OEM FG จากสต็อก)</b></div></a>
+  <a class="flow mod" href="ownbrand-flow.html"><div class="mt">Own-Brand Flow</div><div class="md">(ก) sell-from-stock <b>★r20 C1 warn-not-block</b> · (ข) produce-to-stock <b>★r20 C2 terminal "ผลิตเข้าคลังแล้ว"</b> · ledger effect · ★ delivery status=DN-mirror</div></a>
   <a class="flow mod" href="../scenario-walkthrough.html"><div class="mt">Scenario Walkthrough 🆕</div><div class="md">S1–S5 + B1–B4 · เดินเรื่อง mock data + ledger before→after</div></a>
   <a class="flow mod" href="../user-journeys.html"><div class="mt">Visual Journeys — 6 สาย</div><div class="md">Customer→PO→ผลิต→QC→จัดส่ง→Billing</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> งานขาย / Order</div>
 <div class="tocgrid">
-  <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · ★ ที่อยู่ลูกค้า+ที่อยู่จัดส่ง · ★ ผู้ติดต่อ=คนรับสินค้า · ★ invoice pull+per-invoice override · QT/PO history · ★r19 flag "ต้องติดตาม" = แจ้งเตือน Follow-up</div></a>
-  <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO · ยกเลิกได้ทุกสถานะ</div></a>
-  <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · ★ พิมพ์เอกสาร PO (print-ready หลังบันทึก, R) · ★ สถานะจัดส่ง=สะท้อน DN (§4b) · ★ billing=ใบ active (§4c)</div></a>
-  <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก (สถานะจัดส่ง=สะท้อน DN · billing=ใบ active) · (ข) ผลิตเก็บสต็อก auto-PR · ★ พิมพ์เอกสาร SO (print-ready หลังบันทึก, R · ทั้ง ก/ข)</div></a>
+  <a class="mod" href="customer.html"><div class="mt">Customer</div><div class="md">TYPE OEM/Own-Brand · credit 30/60/90 def 60 · ★ ที่อยู่ลูกค้า+ที่อยู่จัดส่ง · ★ ผู้ติดต่อ=คนรับสินค้า · ★ invoice pull+per-invoice override · QT/PO history · <b>★r20 A1 flag "ต้องติดตาม" = แจ้งเตือน Follow-up ตอนตั้ง flag เท่านั้น (flag-set-only, ไม่มี due-date) + de-dup กับ Invoice-Overdue</b></div></a>
+  <a class="mod" href="quotation.html"><div class="mt">Quotation (OEM)</div><div class="md">material check (no auto-PR) · บันทึก→print-ready · Convert to PO · ยกเลิกได้ทุกสถานะ (★r20 B1 suffix = min-level (D))</div></a>
+  <a class="mod" href="po.html"><div class="mt">Purchase Order (OEM)</div><div class="md">customer dropdown · reserve→consume(A) · surplus(D13) · ★ พิมพ์เอกสาร PO (R) · ★ สถานะจัดส่ง=สะท้อน DN (§4b) · ★ billing=ใบ active (§4c) · <b>★r20 C4 ⭐ OEM sell-from-stock (เลือก OEM FG จากสต็อก, §5.4) · C3 ยกเลิกบล็อกถ้ามี DN active (§4d)</b></div></a>
+  <a class="mod" href="so.html"><div class="mt">Sales Order (Own-Brand)</div><div class="md">(ก) ขายจากสต็อก (สถานะจัดส่ง=สะท้อน DN · billing=ใบ active) · (ข) ผลิตเก็บสต็อก auto-PR · ★ พิมพ์เอกสาร SO (R · ทั้ง ก/ข) · <b>★r20 C1 (ก) FG ไม่พอ=WARN-not-block (D2) · C2 (ข) terminal "ผลิตเข้าคลังแล้ว" (ไม่เข้า Route) · C3 ยกเลิกบล็อกถ้ามี DN active</b></div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> คลัง &amp; จัดซื้อ</div>
 <div class="tocgrid">
-  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source(D15) · มูลค่าสต็อก · ★ return source=RET</div></a>
-  <a class="mod" href="goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line · gen Lot · ปิด/แตก PR auto · ชดเชยติดลบ+FIFO retro-link</div></a>
-  <a class="mod" href="pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto/สร้างตรง · partial→PR ใหม่ · void · ★r19 PR auto-created = แจ้งเตือน</div></a>
+  <a class="mod" href="stock.html"><div class="mt">Stock (RM + FG)</div><div class="md">FG per-Batch/FIFO(D16) · ปรับยอด FG ตรง · 3 ยอด · ledger reason/source(D15) · ★ return source=RET · <b>★r20 C4 ⭐ OEM FG = sellable bucket (OEM identity) — จาก surplus + held/customer-cancelled → ขายซ้ำผ่าน OEM PO</b></div></a>
+  <a class="mod" href="goods-receipt.html"><div class="mt">Goods Receipt (GR)</div><div class="md">multi-line · gen Lot · ปิด/แตก PR auto (★r20 queue-discovered) · ชดเชยติดลบ+FIFO retro-link (ตอน QC ผ่าน)</div></a>
+  <a class="mod" href="pr.html"><div class="mt">Purchase Request (PR)</div><div class="md">auto/สร้างตรง · partial→PR ใหม่ · void · ★r19 PR auto-created = แจ้งเตือน (★r20 A4 purge C15/C17; GR-fulfil=queue-discovered)</div></a>
   <a class="mod" href="supplier.html"><div class="mt">Supplier</div><div class="md">price matrix (max active→BOM) · Active/Inactive · snapshot</div></a>
-  <a class="mod" href="return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ · ★ เลขใบคืน RET-…</div></a>
+  <a class="mod" href="return.html"><div class="mt">Return (คืน RM)</div><div class="md">lot→supplier auto → ตัด stock + comment บังคับ · ★ เลขใบคืน RET-… · <b>★r20 B1 สร้าง=C/void=D · B4 RT→RET DONE · A4 purge C18/C13</b></div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> ผลิต &amp; คุณภาพ</div>
 <div class="tocgrid">
-  <a class="mod" href="production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus(D13) · PRD ไม่ผูกลูกค้า · ★r19 PO→Production + potential-delay = แจ้งเตือน</div></a>
-  <a class="mod" href="qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain · ★r19 QC ผ่าน/ไม่ผ่าน = แจ้งเตือน</div></a>
-  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA · <b>★r19 แจ้งเตือน = สรุป Low+Overstock รายวัน (J8 ~06:00) → deep-link หน้า SP filter Low+Overstock (ตัด FG→Low real-time)</b></div></a>
+  <a class="mod" href="production.html"><div class="mt">Production</div><div class="md">queue search/filter OEM/Own-Brand · actual/surplus(D13) · PRD ไม่ผูกลูกค้า · ★r19 PO→Production + potential-delay = แจ้งเตือน · <b>★r20 C2 roll-up SO(ข)="ผลิตเข้าคลังแล้ว" (ไม่ใช่พร้อมจัดส่ง) · C4 OEM surplus→OEM FG sellable</b></div></a>
+  <a class="mod" href="qc.html"><div class="mt">QC</div><div class="md">ตรวจ Batch/Lot · rework เฉพาะ line เสีย + feedback · GMP chain · ★r19 QC ผ่าน/ไม่ผ่าน = แจ้งเตือน (★r20 A4 purge C5/C6/C17/C18; order-ready-to-ship=queue-discovered)</div></a>
+  <a class="mod" href="supply-planning.html"><div class="mt">Supply Planning ★สูตร</div><div class="md">D4–D8 · filter Low/OK/Overstock · edit→save BOM · §6 FORMULA · <b>★r19 แจ้งเตือน = สรุป Low+Overstock รายวัน (J8 ~06:00, ★r20 หลัง J1) → deep-link หน้า SP <code>?filter=low-overstock</code> (★r20 B5 pin)</b></div></a>
   <a class="mod" href="bom.html"><div class="mt">BOM</div><div class="md">ต้นทุนอื่น per-unit(D9)+รวม · TYPE OEM/FG · planning config</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> จัดส่ง &amp; การเงิน</div>
 <div class="tocgrid">
-  <a class="mod" href="shipping.html"><div class="mt">Shipping / Route ★</div><div class="md">รอบ = Route (RT-) · คนขับ/ประเภทรถ · modal เพิ่ม PO/SO/DN · สถานะ เตรียมจัดของ→ออกไปส่ง→เสร็จสิ้น(สรุป DN) · ★r19 Route ส่งสำเร็จ = แจ้งเตือน</div></a>
-  <a class="mod" href="delivery-note.html"><div class="mt">Delivery Note (DN) ★ใหม่</div><div class="md">DN 6 สถานะ · สร้างตรงไม่ได้ (ผ่าน Route) · print DN · ★ สร้าง/พิมพ์ Invoice = ใบ active เดียวกัน (DN-unify) · comment · แก้สถานะ DN = A · PO สะท้อน DN</div></a>
-  <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน ★r13</div><div class="md">★ ค้น PO/SO/INV (ลูกค้า/ผู้ติดต่อ/เลข/ช่วงวัน) · ★ 1 PO/SO หลายใบ active ทีละใบ · สร้างเมื่อยังไม่มี (เฟสนี้ไม่ล็อกสถานะ) · G8+print-ready · ★ pull+per-invoice override · VAT invoice date · ★r19 overdue(DN) = แจ้งเตือน · void</div></a>
+  <a class="mod" href="shipping.html"><div class="mt">Shipping / Route ★</div><div class="md">รอบ = Route (RT-) · คนขับ/ประเภทรถ · modal เพิ่ม PO/SO/DN · สถานะ เตรียมจัดของ→ออกไปส่ง→เสร็จสิ้น(สรุป DN) · <b>★r20 A2 "เสร็จสิ้น"=1 noti Route ส่งสำเร็จ (Read Route+owning Sale, เห็นทั้งรอบ) · Route cancel=1 RT noti (ตัด N×DN-void) · A4 purge C9/C10/C12</b></div></a>
+  <a class="mod" href="delivery-note.html"><div class="mt">Delivery Note (DN) ★ใหม่</div><div class="md">DN 6 สถานะ · สร้างตรงไม่ได้ (ผ่าน Route) · print DN · ★ สร้าง/พิมพ์ Invoice = ใบ active เดียวกัน (DN-unify) · comment · แก้สถานะ DN = A · PO สะท้อน DN · <b>★r20 A2 "ยกเลิกการจัดส่ง"≠doc-cancel(order ไม่เปลี่ยน) · B7a rollup=DN non-void status-change ล่าสุด · C3 cancel-block · C4 OEM held/cancelled→FG</b></div></a>
+  <a class="mod" href="invoice.html"><div class="mt">Invoice / การเงิน ★r13</div><div class="md">★ ค้น PO/SO/INV · ★ 1 PO/SO หลายใบ active ทีละใบ · สร้างเมื่อยังไม่มี (เฟสนี้ไม่ล็อกสถานะ) · G8+print-ready · ★ pull+per-invoice override · VAT invoice date · ★r19 overdue(DN) = แจ้งเตือน · void</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> ระบบ (System) &amp; การเข้าถึง</div>
 <div class="tocgrid">
-  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 (29 tile) ★landing</div><div class="md">★ หน้าแรกหลัง login · แต่ละแผนกเห็นงานประจำวันของตนตามสิทธิ์ Read · event/state · date-range รายแผนก(+date-type) · drill · ใกล้หมด=Available <br>(Home ถูกตัดทิ้ง 2026-07-30)</div></a>
-  <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">★r16 RBAC = ลำดับชั้นสะสม (cumulative R&lt;C&lt;U&lt;D&lt;A&lt;Admin) · role editor = เลือก 1 ระดับ/module (radio) + explainer · user · VAT · company · audit (non-read+login, Admin-only) · <b>★r17 user email (บังคับ)=reset address · Admin re-enable บัญชี self-disabled · password policy A9</b></div></a>
-  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login→Dashboard · global search · shell · <b>★r19 Notification bell = event-driven, จัดกลุ่ม 4 หมวด (งานส่งต่อ-เอกสาร / ความเสี่ยงสต็อก-ผลิต / การเงิน / วงจรลูกค้า). Event set: เพิ่ม ติดตามลูกค้า(Follow-up) + เอกสารถูกยกเลิก/ปฏิเสธ(QT/PO/SO/RT/DN/Invoice, ไม่รวม user soft-delete) + Route ส่งสำเร็จ; เปลี่ยน FG→Low real-time → สรุป Low+Overstock รายวัน; ตัด Customer Inactivity(→Follow-up); คง PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay. ★★r18 read-driven (คลิก=navigate+mark READ · badge=ยังไม่อ่าน · "อ่านแล้วทั้งหมด" · ไม่มี ✕dismiss) + snackbar+shake + ไม่มี email</b> · ลืมรหัสผ่าน→reset (single-use 3วัน) · account self-disable/Admin re-enable · session warn 5 นาที</div></a>
+  <a class="mod" href="dashboard.html"><div class="mt">Dashboard ×7 (29 tile) ★landing</div><div class="md">★ หน้าแรกหลัง login · แต่ละแผนกเห็นงานประจำวันของตนตามสิทธิ์ Read · event/state · date-range รายแผนก(+date-type) · drill · ใกล้หมด=Available <br>(Home ถูกตัดทิ้ง 2026-07-30 · ★r20 header logo/title = home-link → Dashboard)</div></a>
+  <a class="mod" href="settings.html"><div class="mt">Settings (5 หน้าจอ)</div><div class="md">★r16 RBAC = ลำดับชั้นสะสม (cumulative R&lt;C&lt;U&lt;D&lt;A&lt;Admin) · role editor = เลือก 1 ระดับ/module (radio) + explainer · user · VAT · company · audit (non-read+login, Admin-only) · <b>★r17 user email (บังคับ)=reset address · Admin re-enable บัญชี self-disabled (★r20 guard=≥1 other Active Admin) · password policy A9</b></div></a>
+  <a class="mod" href="platform.html"><div class="mt">Platform / Identity / Noti</div><div class="md">login→Dashboard · <b>★r20 header logo/title = home-link → Dashboard ทุกหน้า</b> · global search · shell · <b>★r19/r20 Notification bell = event-driven, จัดกลุ่ม 4 หมวด. Event set: +ติดตามลูกค้า(Follow-up, ★r20 flag-set-only+de-dup) + เอกสารถูกยกเลิก/ปฏิเสธ(ไม่รวม user soft-delete · ★r20 ไม่รวม DN "ยกเลิกการจัดส่ง") + Route "เสร็จสิ้น"(★r20 generic, Read Route+owning Sale, single; cancel=1 RT); FG→Low→สรุปรายวัน; ตัด Inactivity; คง PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay. ★r20 A3 single fan-out rule · A6 optimistic badge. ★★r18 read-driven + snackbar+shake + ไม่มี email</b> · ลืมรหัสผ่าน→reset · account self-disable · session warn 5 นาที</div></a>
 </div>
 
 <div class="grp"><span class="dot"></span> Global Rules &amp; Conventions (cross-cutting · governance)</div>
 <div class="refnote">📎 กติกากลาง cross-cutting — <b>นิยามครั้งเดียว</b> ที่นี่ แล้วอ้างจากทุก module ที่เกี่ยวข้อง (ไม่เขียนซ้ำ) · authority ให้ UX/UI ไป apply.</div>
 <div class="tocgrid">
-  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · ★r16 RBAC = CUMULATIVE per-module level (§1a: R&lt;C&lt;U&lt;D&lt;A&lt;Admin, D14) · ★ §3 คอลัมน์ Suffix (G9=min level) · ★ แก้สถานะ DN = A · ★ Audit view = Admin (Ad) · ★ Invoice สร้าง=C/void=D/override=U/print=R</div></a>
+  <a class="meta mod" href="permission-matrix.html"><div class="mt">Permission Matrix (access control)</div><div class="md">capability→module→action · ★r16 RBAC = CUMULATIVE per-module level (§1a: R&lt;C&lt;U&lt;D&lt;A&lt;Admin, D14) · ★ §3 คอลัมน์ Suffix (G9=min level) · ★ แก้สถานะ DN = A · ★ Audit view = Admin (Ad) · ★ Invoice สร้าง=C/void=D/override=U/print=R · <b>★r20 B1: +พิมพ์ PO/SO (R) · +สร้างใบคืน RET (C)/void (D) · normalize ยกเลิก QT/SO/PR → min-level (D)</b></div></a>
   <a class="meta mod" href="comment-convention.html"><div class="mt">★ Comment Convention (G6)</div><div class="md">ช่องหมายเหตุเดียว แก้ในที่ + เก็บประวัติครบ (CC1–CC7) · 12 object ธุรกรรม · ผ่าน field-audit เดิม</div></a>
   <a class="meta mod" href="numbering-on-save.html"><div class="mt">★ Numbering on Save (G8)</div><div class="md">เลขเอกสารออกตอนบันทึก (NS1–NS7) · create ไม่โชว์เลขล่วงหน้า → gapless + popup ยืนยัน · Lot/GR/QT/SO/PO/PR (+DN/RT·Invoice·PRD·Batch·★RET ใบคืน) · ★ Invoice void=เลขเดิม/ใบใหม่=เลขใหม่</div></a>
 </div>
@@ -101,9 +101,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <!-- ===== (2) NON-FUNCTIONAL ===== -->
 <div class="sec"><span class="n">②</span> NON-FUNCTIONAL Requirements <small>— ระบบต้องทำงานอย่างไร (คุณภาพ/governance)</small></div>
 <div class="tocgrid">
-  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md"><b>★r17 perf: read AVG 200ms/MAX 1s · write AVG 1s/MAX 3s · rate-limit ~30 concurrent/module (§1)</b> · auth 24h+06:00 <b>+warn 5 นาที + password ≥8 lower+upper+digit + encrypt+hash + self-disable/reset (§2 A2/A9–A12)</b> · ★r16 RBAC cumulative (A3) · audit 1yr non-read+login · GCP <b>+Environments Dev/Test/Prod (I5)</b> · <b>★r19 Notification bell-only, event set: +Follow-up/+Doc-Cancelled-Rejected/+Route-delivered · SP Low+Overstock DAILY (แทน FG→Low real-time) · −Customer-Inactivity · คง PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay · ★★r18 read-driven + snackbar (§6 J8 · §7)</b> · <b>global submit-confirm contract (§9.1) · i18n-ready (D-F6) · API security HTTPS/rate-limit/CSRF (§16)</b> · jobs J1–J8 · ★ §15 Deferred-controls (DEF-1/DEF-2)</div></a>
+  <a class="nfr mod" href="non-functional.html"><div class="mt">★ Non-Functional (NFR)</div><div class="md"><b>★r17 perf: read AVG 200ms/MAX 1s · write AVG 1s/MAX 3s · rate-limit ~30 concurrent/module (§1)</b> · auth 24h+06:00 <b>+warn 5 นาที + password ≥8 lower+upper+digit + encrypt+hash + self-disable/reset (§2 A2/A9–A12 · ★r20 A11 guard=≥1 other Active Admin)</b> · ★r16 RBAC cumulative (A3) · audit 1yr non-read+login · GCP <b>+Environments Dev/Test/Prod (I5)</b> · <b>★r19/r20 Notification bell-only, event set: +Follow-up(flag-set+de-dup)/+Doc-Cancelled(ไม่รวม DN ยกเลิกการจัดส่ง)/+Route-"เสร็จสิ้น"(Read Route+owning Sale, single fan-out) · SP Low+Overstock DAILY (<code>?filter=low-overstock</code>, J8 หลัง J1) · optimistic badge · queue-discovered (no new events) · ★★r18 read-driven + snackbar (§6 J8 · §7)</b> · <b>global submit-confirm (§9.1) · i18n-ready (D-F6) · API security (§16)</b> · jobs J1–J8 · ★ §15 Deferred-controls (DEF-1/DEF-2/★r20 DEF-3)</div></a>
   <a class="nfr mod" href="deletion-policy.html"><div class="mt">★ Deletion Policy (data lifecycle)</div><div class="md">soft-delete/void baseline + reference-guard + entity ใหม่ · ★ INV void-only · Quotation ยกเลิกได้ทุกสถานะ (loose ref, no cascade)</div></a>
-  <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain · ★ Route/DN · ★ Return topic=RET</div></a>
+  <a class="nfr mod" href="traceability.html"><div class="mt">★ Traceability + Audit (cross-cutting)</div><div class="md">พื้นผิว trace/audit governance ข้าม module · entity/field search · genealogy · field-audit · QT head-of-chain · ★ Route/DN · ★ Return topic=RET · ★r20 OEM FG identity chain (C4)</div></a>
 </div>
 
 <!-- ===== (3) REFERENCE ===== -->
@@ -118,7 +118,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
   <a class="ref mod" href="../docs/brief.html"><div class="mt">Product Brief (ref)</div><div class="md">Business Key Value + scope + DoD + Gate 1</div></a>
   <a class="ref mod" href="../rtm.html"><div class="mt">RTM (ref)</div><div class="md">Story↔mockup↔journey↔UC</div></a>
   <a class="ref mod" href="../glossary.html"><div class="mt">Glossary (ref)</div><div class="md">ป้ายสถานะไทย · เลขเอกสาร · Lot vs Batch</div></a>
-  <a class="ref mod" href="../continuity.html"><div class="mt">Cascade + Notification (ref)</div><div class="md">20 แถว cascade (+C20) + noti matrix</div></a>
+  <a class="ref mod" href="../continuity.html"><div class="mt">Cascade + Notification (ref)</div><div class="md">20 แถว cascade (+C20) + noti matrix · <i>(★r20 note: notification handoff C-codes เก่า → event r19 names / queue-discovered ใน module docs)</i></div></a>
   <a class="ref mod" href="../list-conventions.html"><div class="mt">List Page Conventions (ref)</div><div class="md">filter/sort/page-size/empty → G1–G3</div></a>
 </div>
 
@@ -127,9 +127,9 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="refnote">📎 บันทึกการตรวจคุณภาพ requirement แบบอิสระ + การ reconcile — <b>BEFORE findings คงไว้</b> + <b>AFTER resolutions</b> (COMPLETENESS: md + view).</div>
 <div class="tocgrid">
   <a class="ref mod" href="po-output-quality-audit.html"><div class="mt">PO Output Quality Audit + Reconciliation 🔍</div><div class="md">Tech-Lead independent audit (C1/M1/M2/M3 + minors) · ★ After reconciliation — resolutions 2026-07-31 + UX follow-up list (RT→RET · flow DN-mirror)</div></a>
+  <a class="ref mod" href="../../../../requirements/erp-v2-ui-first/gate1-team-review-report.md"><div class="mt">Gate-1 Final Team Review 🔍 ★r20</div><div class="md">6-reviewer consolidated findings (A1-A6 notification · B1-B7 consistency · C1-C4 flow · D1-D2 Pond decisions) → r20 reconciliation input</div></a>
 </div>
 
-<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional (grouped by app sidebar + flows + permission + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · Reviews/Audit · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-31 · Route/DN r11 · Invoice r13 · Return RET · reconciliation pass · ★ RBAC cumulative r16 · ★ Platform/NFR decisions r17 (noti · reset · self-disable · perf · submit-confirm · security) · ★ Notification READ-DRIVEN r18 (read แทน dismiss) · ★ Notification event-set update r19 (+Follow-up/+Doc-Cancelled-Rejected/+Route-delivered · SP Low+Overstock DAILY · −Customer-Inactivity · −FG→Low real-time) · ★ PO/SO document print (print-ready หลังบันทึก, R) 2026-07-31</footer>
+<footer>ESSENCE Hub System · Per-Module Requirement Package (SINGLE SOURCE OF TRUTH) · ① Functional · ② Non-Functional · ③ Reference · Reviews/Audit · render จาก docs/requirements/erp-v2-ui-first/modules/*.md · 2026-07-31 · Route/DN r11 · Invoice r13 · Return RET · ★ RBAC cumulative r16 · ★ Platform/NFR r17 · ★ Notification READ-DRIVEN r18 · ★ Notification event-set r19 · ★ PO/SO document print · <b>★★★★★★★★★★ Gate-1 review reconciliation r20 (A1 Follow-up flag-set+de-dup · A2 Route "เสร็จสิ้น" generic + single RT-cancel + DN "ยกเลิกการจัดส่ง"≠doc-cancel · A3 single fan-out · A4 no new events+purge C-codes · A6 optimistic badge · B1 perm PO/SO-print+RET+normalize · B5 SP deep-link · B7 rollup/only-Admin/J8-after-J1 pins · C1 SO(ก) warn-not-block · C2 SO(ข) terminal · C3 cancel-block-active-DN · C4 ⭐ OEM sell-from-stock · header→Dashboard)</b></footer>
 </div>
 <script src="_render.js"></script>
-</body></html>
