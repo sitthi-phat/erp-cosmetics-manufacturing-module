@@ -12,6 +12,8 @@ h1{font-size:26px;margin:18px 0 6px}
 .sec{margin:30px 0 4px;padding:11px 15px;border-radius:9px;background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .sec .n{background:rgba(255,255,255,.16);border-radius:6px;padding:1px 9px;font-size:14px}
 .sec small{font-weight:400;color:#Bfece8;font-size:12.5px}
+.sec.gate{background:linear-gradient(135deg,#7A3E00,#E0912F)}
+.sec.gate small{color:#FbEAD2}
 .lead{color:var(--text2);font-size:13px;margin:6px 2px 2px}
 .grp{margin:16px 0 2px;font-weight:700;color:#10322F;font-size:13.5px;display:flex;align-items:center;gap:8px}
 .grp .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);display:inline-block}
@@ -25,10 +27,13 @@ p{margin:8px 0}.sub{color:var(--text2);font-size:13px}
 .tocgrid a.meta{border-left-color:var(--info)}
 .tocgrid a.ref{border-left-color:#9AA5B1;background:#FbFcFd}
 .tocgrid a.legacy{border-left-color:#B9C0C8;background:#FAFAFB}
-.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid a.ref .mt,.tocgrid a.legacy .mt{color:var(--text2)}
+.tocgrid a.gate{border-left-color:#E0912F;background:#FFFaf2}
+.tocgrid .mt{font-weight:600;color:var(--primary)}.tocgrid a.ref .mt,.tocgrid a.legacy .mt{color:var(--text2)}.tocgrid a.gate .mt{color:#B15C00}
 .tocgrid .md{font-size:12px;color:var(--text2);margin-top:4px}
 .hero{border:1px solid #Bfe3e0;background:linear-gradient(135deg,#F2FAF9,#E6F4F3);border-radius:12px;padding:14px 16px;margin:14px 0}
 .hero b{color:#0B5D5C}
+.gatehero{border:1px solid #F1D6A6;background:linear-gradient(135deg,#FFF7EC,#FBEfD8);border-radius:12px;padding:14px 16px;margin:14px 0}
+.gatehero b{color:#B15C00}
 .note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;padding:10px 12px;border-radius:7px;margin:10px 0;font-size:13px}
 .refnote{background:#F4F6F8;border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:7px;margin:6px 0 8px;font-size:12.5px}
 details.arch{margin:14px 0 0;border:1px dashed var(--border);border-radius:10px;background:#FAFAFB}
@@ -47,6 +52,13 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <p class="lead">ERP โรงงานเครื่องสำอาง · slug <code>erp-v2-ui-first</code> · IA: <b>① Functional</b> · <b>② Non-Functional</b> · <b>③ Reference</b> · ④ Architecture · ⑤ Mockups · ⑥ Archive</p>
 
 <div class="hero">📗 <b>อ่านที่เดียวจบ — นี่คือฉบับจริง (Single Source of Truth).</b> ทุกลิงก์ในหมวด ①/②/③ พาอยู่ใน <b>Per-Module Package</b> + เอกสารอ้างอิงที่ยังใช้ได้ (render จาก <code>docs/requirements/erp-v2-ui-first/modules/*.md</code>) ไม่เด้งออกไปหน้าเก่า. เอกสารเก่า/ซ้ำถูกย้ายไป <a href="#archive"><b>หมวด ⑥ Archive</b></a> ด้านล่าง. เปิดผ่าน HTTP (docs-site) เพื่อ render เต็ม.</div>
+
+<!-- ========================= 🚦 GATE-1 DELTA REVIEW ========================= -->
+<div class="sec gate"><span class="n">🚦</span> Gate-1 Review — What changed since 2026-07-09 <small>— แกลเลอรีรวม "สิ่งที่เปลี่ยน" สำหรับรีวิว Gate-1 · ที่เดียวจบ</small></div>
+<div class="gatehero">🚦 <b>สำหรับปอนด์รีวิว Gate-1:</b> เปิด <a href="gate1-delta.html"><b>Gate-1 Delta Gallery</b></a> — แกลเลอรีเดียวที่รวมทุกหน้าจอที่ <b>🟢 ใหม่</b> / <b>🔵 แก้ไข</b> ตั้งแต่ Gate-1 round-4 (2026-07-09) พร้อม thumbnail + ลิงก์ไป mockup ต้นฉบับ + สเปกราย module. เป็น <b>ดัชนีสำหรับรีวิว ไม่ใช่ spec ใหม่</b> (ไม่ทำสำเนาเนื้อหา — Source-of-Truth เดียว).</div>
+<div class="tocgrid">
+  <a class="mod gate" href="gate1-delta.html"><div class="mt">🚦 Gate-1 Delta Gallery</div><div class="md">~38 หน้าจอ/พื้นที่ · จัดกลุ่ม A ขาย · B คลัง/จัดซื้อ · C ผลิต/คุณภาพ · D จัดส่ง/การเงิน · E ระบบ · F แจ้งเตือน · thumbnail + 🖼 Mockup + 📄 Spec</div></a>
+</div>
 
 <!-- ========================= (1) FUNCTIONAL ========================= -->
 <div class="sec"><span class="n">①</span> FUNCTIONAL Requirements <small>— สิ่งที่ระบบทำ · จัดกลุ่มตามแถบเมนูของแอป</small></div>
@@ -147,6 +159,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <div class="sec"><span class="n">⑤</span> Mockups <small>— หน้าจอจริง (spec ภาพ)</small></div>
 <div class="tocgrid">
   <a class="mod" href="../mockups/index.html" target="_blank"><div class="mt">Mockups Gallery ↗</div><div class="md">หน้าจอ clickable (theme A teal) — spec ภาพของทุก module · 🟢 หน้าใหม่ · 🔵 หน้าแก้ (Quotation/SO/Supply-Planning/FG/surplus/BOM)</div></a>
+  <a class="mod gate" href="gate1-delta.html"><div class="mt">🚦 Gate-1 Delta Gallery</div><div class="md">แกลเลอรีรวมสิ่งที่ 🟢 ใหม่ / 🔵 แก้ ตั้งแต่ 2026-07-09 (review index + thumbnail + ลิงก์ mockup/spec)</div></a>
 </div>
 
 <!-- ========================= (6) ARCHIVE ========================= -->
@@ -185,5 +198,5 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 </div>
 </details>
 
-<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-30 · IA: ① Functional (grouped by app sidebar + flows + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า · Home removed → Dashboard landing</footer>
+<footer>ESSENCE Hub System · Document Hub · Stage 2 · 2026-07-31 · IA: ① Functional (grouped by app sidebar + flows + G6/G8/G9 conventions) · ② Non-Functional (NFR + Deletion + Traceability/Audit) · ③ Reference · ④ Architecture · ⑤ Mockups · ⑥ Archive (superseded, collapsed) · 🚦 Gate-1 Delta Gallery (review index) · ฉบับจริง = docs/requirements/erp-v2-ui-first/modules/*.md · หมวด ①/②/③ ไม่ลิงก์ออกหน้าเก่า · Home removed → Dashboard landing</footer>
 </div></body></html>

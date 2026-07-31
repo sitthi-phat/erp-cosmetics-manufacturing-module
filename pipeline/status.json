@@ -4069,6 +4069,53 @@
           "summary": "Gate-1 completeness: PO+SO document print were unspecified (QT had it; PO zero; SO only Invoice-print). Added print-ready + พิมพ์/ส่ง document action to po.md (PO doc) + so.md (SO doc both ก+ข), mirroring quotation.md: print only AFTER save (G8), permission module Read (R), no status change. UX/UI: build PO/SO print-ready view consistent with quotation-print.html.",
           "overridden_by": null,
           "updated_at": "2026-07-31T17:05:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "noti-r19.1-correction + gate1-delta-gallery",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "PART A #1 — Route delivered recipient = Read Shipping/Route + owning Sale (platform §4/§5/§6/§7 + non-functional §7/§12/R5)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "PART A #2 — Customer Follow-up = near-real-time ONLY; 'light daily due-check' removed (platform §4 + non-functional §7/§12)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Changelog r19.1 in both md; HTML views auto-render — spec-only, no mockup change",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "PART B — gate1-delta.html built INSIDE Hub, teal theme, references canonical mockups + screenshots (no duplication)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "gate1-delta.html linked prominently from functional-spec/index.html '🚦 Gate-1 Review — What changed since 2026-07-09'",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "All referenced ../mockups/*.html + ../ux-audit/*.png + modules/*.html verified on disk; screens w/o screenshot link mockup only",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/functional-spec/gate1-delta.html",
+            "docs/design/erp-v2-ui-first/functional-spec/index.html",
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "PART A: 2 notification r19.1 corrections (Route delivered → +owning Sale; Customer Follow-up = near-real-time only, dropped daily due-check) in platform.md + non-functional.md, flags §12 CLOSED. PART B: single Gate-1 Delta Gallery (gate1-delta.html) inside Hub — ~38 grouped cards (ขาย/คลัง/ผลิต/จัดส่ง/ระบบ/แจ้งเตือน) each linking canonical mockup + screenshot + spec, review-index not a copy; linked from Hub index. Links verified on disk.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T17:20:00+07:00"
         }
       ]
     }
