@@ -247,11 +247,11 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>สร้างลูกค้า + contact + เลขภาษี</td><td><a href="customer.html">US-CUS-01</a></td></tr>
- <tr><td>Lead→Active (ยืนยันใบแรก) / Active↔Inactive (scheduler)</td><td><a href="customer.html">US-CUS-02</a> + <a href="po.html">US-PO-02</a></td></tr>
- <tr><td>ตั้ง Follow-up + comment บังคับ</td><td><a href="customer.html">US-CUS-03</a></td></tr>
- <tr><td>Blacklist/Disabled + reassign + ปลด=Admin</td><td><a href="customer.html">US-CUS-04</a></td></tr>
- <tr><td>งานลูกค้าค้างโผล่หน้าแรก</td><td><a href="home.html">US-HOME-01</a></td></tr></table>
+ <tr><td>สร้างลูกค้า + contact + เลขภาษี</td><td><a href="_archive/customer.html">US-CUS-01</a></td></tr>
+ <tr><td>Lead→Active (ยืนยันใบแรก) / Active↔Inactive (scheduler)</td><td><a href="_archive/customer.html">US-CUS-02</a> + <a href="_archive/po.html">US-PO-02</a></td></tr>
+ <tr><td>ตั้ง Follow-up + comment บังคับ</td><td><a href="_archive/customer.html">US-CUS-03</a></td></tr>
+ <tr><td>Blacklist/Disabled + reassign + ปลด=Admin</td><td><a href="_archive/customer.html">US-CUS-04</a></td></tr>
+ <tr><td>งานลูกค้าค้างโผล่หน้าแรก</td><td><a href="_archive/home.html">US-HOME-01</a></td></tr></table>
  </details>
 </div>
 
@@ -323,12 +323,12 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>สร้างร่าง + ราคา 0 ได้</td><td><a href="po.html">US-PO-01</a></td></tr>
- <tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs Available)</td><td><a href="po.html">US-PO-07</a></td></tr>
- <tr><td>ยืนยัน → คิว "รอรับงาน" + จองวัตถุดิบ + Lead→Active</td><td><a href="po.html">US-PO-02</a></td></tr>
- <tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด (vs Available)</td><td><a href="purchase-request.html">US-PR-01</a></td></tr>
- <tr><td>ยกเลิก + เปิดใหม่คงเลข (คืนจอง / dialog คืน-ไม่คืน)</td><td><a href="po.html">US-PO-04</a></td></tr>
- <tr><td>แก้ PO เคส Hold + trace ราย field + ปรับจอง delta</td><td><a href="po.html">US-PO-05</a></td></tr></table>
+ <tr><td>สร้างร่าง + ราคา 0 ได้</td><td><a href="_archive/po.html">US-PO-01</a></td></tr>
+ <tr><td>suggest ราคา + เช็ควัตถุดิบ (ΣBOM×qty vs Available)</td><td><a href="_archive/po.html">US-PO-07</a></td></tr>
+ <tr><td>ยืนยัน → คิว "รอรับงาน" + จองวัตถุดิบ + Lead→Active</td><td><a href="_archive/po.html">US-PO-02</a></td></tr>
+ <tr><td>วัตถุดิบขาด → auto PR ส่วนที่ขาด (vs Available)</td><td><a href="_archive/purchase-request.html">US-PR-01</a></td></tr>
+ <tr><td>ยกเลิก + เปิดใหม่คงเลข (คืนจอง / dialog คืน-ไม่คืน)</td><td><a href="_archive/po.html">US-PO-04</a></td></tr>
+ <tr><td>แก้ PO เคส Hold + trace ราย field + ปรับจอง delta</td><td><a href="_archive/po.html">US-PO-05</a></td></tr></table>
  </details>
 </div>
 
@@ -421,11 +421,11 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม, ยังไม่ตัด stock)</td><td><a href="production.html">US-PRD-01</a></td></tr>
- <tr><td>เริ่มผลิต → gen Batch + convert จอง→ตัดจริง FIFO (ติดลบได้)</td><td><a href="production.html">US-PRD-02</a> + <a href="stock.html">US-STK-03</a></td></tr>
- <tr><td>ส่งตรวจ QC (Batch เดิมเปลี่ยนสถานะ)</td><td><a href="production.html">US-PRD-03</a></td></tr>
- <tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป (ตัด Available run เพิ่ม)</td><td><a href="production.html">US-PRD-04</a></td></tr>
- <tr><td>Hold + raise Sale/Stock</td><td><a href="production.html">US-PRD-05</a></td></tr></table>
+ <tr><td>รับงาน → gen PRD (+ เตือนวัตถุดิบอาจไม่พร้อม, ยังไม่ตัด stock)</td><td><a href="_archive/production.html">US-PRD-01</a></td></tr>
+ <tr><td>เริ่มผลิต → gen Batch + convert จอง→ตัดจริง FIFO (ติดลบได้)</td><td><a href="_archive/production.html">US-PRD-02</a> + <a href="_archive/stock.html">US-STK-03</a></td></tr>
+ <tr><td>ส่งตรวจ QC (Batch เดิมเปลี่ยนสถานะ)</td><td><a href="_archive/production.html">US-PRD-03</a></td></tr>
+ <tr><td>Rework เฉพาะ line ที่ตก + gen run ถัดไป (ตัด Available run เพิ่ม)</td><td><a href="_archive/production.html">US-PRD-04</a></td></tr>
+ <tr><td>Hold + raise Sale/Stock</td><td><a href="_archive/production.html">US-PRD-05</a></td></tr></table>
  </details>
 </div>
 
@@ -490,9 +490,9 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>ตรวจ Batch ผ่าน → PRD/PO cascade</td><td><a href="qc.html">US-QC-01</a></td></tr>
- <tr><td>ไม่ผ่าน + feedback บังคับ + ประวัติ run</td><td><a href="qc.html">US-QC-02</a></td></tr>
- <tr><td>ตรวจรับ Lot ขาเข้า ผ่าน/ไม่ผ่าน→คืน</td><td><a href="qc.html">US-QC-03</a> + <a href="return.html">US-RET-01</a></td></tr></table>
+ <tr><td>ตรวจ Batch ผ่าน → PRD/PO cascade</td><td><a href="_archive/qc.html">US-QC-01</a></td></tr>
+ <tr><td>ไม่ผ่าน + feedback บังคับ + ประวัติ run</td><td><a href="_archive/qc.html">US-QC-02</a></td></tr>
+ <tr><td>ตรวจรับ Lot ขาเข้า ผ่าน/ไม่ผ่าน→คืน</td><td><a href="_archive/qc.html">US-QC-03</a> + <a href="_archive/return.html">US-RET-01</a></td></tr></table>
  </details>
 </div>
 
@@ -557,9 +557,9 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>สร้างรอบ + DN ราย PO + ข้อมูลรถ</td><td><a href="shipping.html">US-SHP-01</a></td></tr>
- <tr><td>Delivered / Rejected / Postponed</td><td><a href="shipping.html">US-SHP-02</a></td></tr>
- <tr><td>reconcile รอบ (จบรอบ/Partially) + print</td><td><a href="shipping.html">US-SHP-03</a></td></tr></table>
+ <tr><td>สร้างรอบ + DN ราย PO + ข้อมูลรถ</td><td><a href="_archive/shipping.html">US-SHP-01</a></td></tr>
+ <tr><td>Delivered / Rejected / Postponed</td><td><a href="_archive/shipping.html">US-SHP-02</a></td></tr>
+ <tr><td>reconcile รอบ (จบรอบ/Partially) + print</td><td><a href="_archive/shipping.html">US-SHP-03</a></td></tr></table>
  </details>
 </div>
 
@@ -631,10 +631,10 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color
 
  <details><summary>อ้างอิง step ↔ story (สำหรับ BA)</summary>
  <table><tr><th>step / ทางแยก</th><th>story</th></tr>
- <tr><td>ออกใบตั้งแต่ Confirmed + โชว์ stage จริง</td><td><a href="invoice.html">US-INV-01</a></td></tr>
- <tr><td>ใบกำกับภาษีไทย + VAT ตาม invoice date</td><td><a href="invoice.html">US-INV-02</a> + <a href="settings.html">US-SET-03</a></td></tr>
- <tr><td>Overdue + ติดตามหนี้</td><td><a href="invoice.html">US-INV-03</a></td></tr>
- <tr><td>versioning + void (ไม่ลบ/gapless)</td><td><a href="invoice.html">US-INV-04</a></td></tr></table>
+ <tr><td>ออกใบตั้งแต่ Confirmed + โชว์ stage จริง</td><td><a href="_archive/invoice.html">US-INV-01</a></td></tr>
+ <tr><td>ใบกำกับภาษีไทย + VAT ตาม invoice date</td><td><a href="_archive/invoice.html">US-INV-02</a> + <a href="_archive/settings.html">US-SET-03</a></td></tr>
+ <tr><td>Overdue + ติดตามหนี้</td><td><a href="_archive/invoice.html">US-INV-03</a></td></tr>
+ <tr><td>versioning + void (ไม่ลบ/gapless)</td><td><a href="_archive/invoice.html">US-INV-04</a></td></tr></table>
  </details>
 </div>
 

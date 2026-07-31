@@ -40,14 +40,14 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td><b>po-list</b> (มีแล้ว)</td><td>เลข PO / ลูกค้า</td><td>ประเภทวันที่ 3 แบบ (สร้าง/จัดส่งจริง/ต้องการรับ) + ช่วง · สถานะ fulfilment · สถานะ billing</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่พบใบสั่งซื้อในช่วงที่เลือก"</td></tr>
 <tr><td><b>customers</b></td><td>ชื่อ / รหัส CUS / เบอร์</td><td>สถานะ 6 แบบ (ผู้สนใจ/ลูกค้าประจำ/ต้องติดตาม/ห่างหาย/บัญชีดำ/ปิดใช้งาน) · Sale ผู้ดูแล</td><td>ชื่อ (ก→ฮ)</td><td>"ไม่พบลูกค้าตามเงื่อนไข"</td></tr>
 <tr><td><b>stock</b></td><td>ชื่อวัตถุดิบ / RM / เลข Lot</td><td>สถานะ Lot (รอตรวจรับ/พร้อมใช้/ระงับ/หมด) · เฉพาะใกล้หมด · เฉพาะติดลบ</td><td>ชื่อวัตถุดิบ (ก→ฮ)</td><td>"ไม่พบวัตถุดิบตามเงื่อนไข"</td></tr>
-<tr><td><b>supplier</b> (ดู <a href="supplier.html">US-SUP-03</a>)</td><td>ชื่อ / รหัส SUP / วัตถุดิบที่ผูก</td><td>สถานะ (Active/Inactive/ทั้งหมด)</td><td>ชื่อ (ก→ฮ)</td><td>"ไม่พบ supplier ตามเงื่อนไข"</td></tr>
+<tr><td><b>supplier</b> (ดู <a href="_archive/supplier.html">US-SUP-03</a>)</td><td>ชื่อ / รหัส SUP / วัตถุดิบที่ผูก</td><td>สถานะ (Active/Inactive/ทั้งหมด)</td><td>ชื่อ (ก→ฮ)</td><td>"ไม่พบ supplier ตามเงื่อนไข"</td></tr>
 <tr><td><b>purchase-request</b></td><td>เลข PR / วัตถุดิบ</td><td>สถานะ (เปิดคำขอ/รับทราบ/รับบางส่วน/ของเข้าครบ/ยกเลิก) · ที่มา (auto/สร้างตรง)</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่พบคำขอสั่งซื้อ"</td></tr>
 <tr><td><b>invoices</b></td><td>เลข INV / ลูกค้า / เลข PO</td><td>สถานะ billing (ยังไม่วางบิล/รอชำระ/ชำระแล้ว/เกินกำหนด) · ช่วงวันครบกำหนด</td><td>วันครบกำหนด (ใกล้สุดก่อน)</td><td>"ไม่พบใบแจ้งหนี้/ใบกำกับ"</td></tr>
 <tr><td><b>qc</b></td><td>เลข Lot / เลข Batch / เลข PO</td><td>ชนิด (lot ขาเข้า/batch ผลิต) · ผล (รอตรวจ/ผ่าน/ไม่ผ่าน)</td><td>วันที่รอตรวจ (เก่าสุดก่อน = คิว)</td><td>"ไม่มีรายการรอตรวจ"</td></tr>
 <tr><td><b>shipping</b></td><td>เลข SHP / DN / PO / ลูกค้า</td><td>สถานะรอบ (ร่าง/กำลังนำส่ง/ปิดรอบ) · ประเภทรถ/Route</td><td>วันที่รอบ (ใหม่→เก่า)</td><td>"ไม่พบรอบจัดส่ง"</td></tr>
 <tr><td><b>delivery-note</b></td><td>เลข DN / PO / ลูกค้า</td><td>สถานะ DN (กำลังนำส่ง/ส่งถึงแล้ว/ถูกปฏิเสธ/เลื่อน)</td><td>วันที่ส่ง (ใหม่→เก่า)</td><td>"ไม่พบใบส่งของ"</td></tr>
 <tr><td><b>return</b></td><td>เลข Return / Lot / supplier</td><td>สถานะ (ร่าง/ส่งคืนแล้ว)</td><td>วันที่สร้าง (ใหม่→เก่า)</td><td>"ไม่มีใบคืนของ"</td></tr>
-<tr><td><b>settings ▸ audit</b> (ดู <a href="settings.html">US-SET-05</a>)</td><td>คำค้นในเหตุผล/entity</td><td>ผู้ใช้ · module · ช่วงวัน · field</td><td>เวลา (ใหม่→เก่า)</td><td>"ไม่พบเหตุการณ์"</td></tr>
+<tr><td><b>settings ▸ audit</b> (ดู <a href="_archive/settings.html">US-SET-05</a>)</td><td>คำค้นในเหตุผล/entity</td><td>ผู้ใช้ · module · ช่วงวัน · field</td><td>เวลา (ใหม่→เก่า)</td><td>"ไม่พบเหตุการณ์"</td></tr>
 </table>
 
 <h2>2. User Story + Acceptance Criteria</h2>
