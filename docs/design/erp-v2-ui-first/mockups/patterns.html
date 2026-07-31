@@ -101,7 +101,7 @@ section{padding:26px 0;border-bottom:1px solid var(--border2)}
  <div class="grid3">
   <div class="card"><div class="empty"><div class="ei">🔍</div><h3>ไม่พบผลการค้นหา</h3><p>ลองปรับคำค้นหรือช่วงวันที่ใหม่อีกครั้ง</p><button class="btn btn-sm">ล้างตัวกรอง</button></div></div>
   <div class="card"><div class="empty"><div class="ei">📄</div><h3>ยังไม่มีรายการ</h3><p>ยังไม่มีใบสั่งซื้อในระบบ เริ่มต้นด้วยการเปิดใบแรก</p><a class="btn btn-primary btn-sm" href="po-create.html">➕ เปิด PO ใหม่</a></div></div>
-  <div class="card"><div class="empty"><div class="ei">🔔</div><h3>ไม่มีการแจ้งเตือน</h3><p>รายการที่ปิดไปแล้วยังดูย้อนหลังได้ที่ "ดูทั้งหมด"</p><a class="btn btn-sm" href="notifications.html">ดูทั้งหมด</a></div></div>
+  <div class="card"><div class="empty"><div class="ei">🔔</div><h3>ไม่มีการแจ้งเตือน</h3><p>รายการที่อ่านแล้วยังดูย้อนหลังได้ที่ "ดูทั้งหมด"</p><a class="btn btn-sm" href="notifications.html">ดูทั้งหมด</a></div></div>
  </div>
 </section>
 
@@ -113,9 +113,9 @@ section{padding:26px 0;border-bottom:1px solid var(--border2)}
    <div class="card"><div class="card-h">กระดิ่งแจ้งเตือน (redesign)</div><div class="card-b">
      <ul class="rulelist">
        <li>🔴 <div>Badge สูงสุด <b>"9+"</b></div></li>
-       <li>❌ <div><b>ปิดราย item (✕)</b> = เอาออกจากกระดิ่งของ user นั้น — <b>ไม่ใช่ "อ่านแล้ว"</b> (dismiss ≠ read; เป็นรายบุคคล)</div></li>
-       <li>🧹 <div>ปุ่ม <b>"ปิดทั้งหมด"</b> = ล้างกระดิ่งของตัวเอง (badge → 0)</div></li>
-       <li>📜 <div>ลิงก์ <b>"ดูทั้งหมด"</b> → หน้าประวัติ 20/หน้า (ประวัติไม่หายแม้ปิดจากกระดิ่ง)</div></li>
+       <li>✅ <div><b>คลิกรายการ</b> = เปิดเอกสารปลายทาง + ทำเครื่องหมาย <b>"อ่านแล้ว"</b> → หายจากกระดิ่งเมื่อรีเฟรช (แต่ประวัติยังอยู่ · เป็นรายบุคคล)</div></li>
+       <li>🧹 <div>ปุ่ม <b>"อ่านแล้วทั้งหมด"</b> = ทำเครื่องหมายอ่านทุกรายการของตัวเอง (badge → 0)</div></li>
+       <li>📜 <div>ลิงก์ <b>"ดูทั้งหมด"</b> → หน้าประวัติ 20/หน้า (ประวัติไม่หายแม้อ่านแล้ว)</div></li>
        <li>🗂️ <div>จัดกลุ่ม <b>4 ประเภท</b>: <span class="codebit">1 งานส่งต่อข้ามแผนก</span> <span class="codebit">2 ความเสี่ยงสต็อก/ผลิต</span> <span class="codebit">3 การเงิน</span> <span class="codebit">4 วงจรลูกค้า</span></div></li>
        <li>📳 <div>มี notification ใหม่ → <b>snackbar เด้ง + กระดิ่งสั่น (shake)</b></div></li>
      </ul>
