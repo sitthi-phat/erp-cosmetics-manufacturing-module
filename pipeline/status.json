@@ -3,7 +3,7 @@
     "erp-v2-ui-first": {
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
-      "current_agent": "ux-ui",
+      "current_agent": "po",
       "status": "IN_PROGRESS",
       "human_gates": {
         "gate1_look": {
@@ -3975,14 +3975,46 @@
           "agent": "ux-ui",
           "status": "READY_FOR_HUMAN_GATE",
           "gate_checklist": [
-            {"item": "Group 1 shows 3 KEEP (PO→Production, QC ผ่าน/ไม่ผ่าน, PR auto-created) + 2 NEW (เอกสารถูกยกเลิก/ปฏิเสธ, Route ส่งสำเร็จ)", "pass": true, "missing": null},
-            {"item": "Group 2 shows potential-delay (KEEP) + daily Supply-Planning Low+Overstock summary item", "pass": true, "missing": null},
-            {"item": "SP daily-summary item deep-links reused SP page with Low+Overstock filter (supply-planning.html?filter=low-overstock)", "pass": true, "missing": null},
-            {"item": "Group 3 Invoice Overdue (KEEP) + Group 4 Customer Follow-up (NEW) present", "pass": true, "missing": null},
-            {"item": "Customer Inactivity item removed from all bells; FG→Low real-time item removed from all bells", "pass": true, "missing": null},
-            {"item": "User soft-delete has NO notification item (only cancel/void/reject shown)", "pass": true, "missing": null},
-            {"item": "r18 read-driven mechanics intact (read-bit, badge=unread, click=navigate+mark read, อ่านแล้วทั้งหมด, no ✕ dismiss, snackbar+shake, ดูทั้งหมด history, 4-group grouping)", "pass": true, "missing": null},
-            {"item": "Other ~31 bell pages aligned (shared over-reservation real-time item replaced by daily SP-summary; no removed events remain)", "pass": true, "missing": null}
+            {
+              "item": "Group 1 shows 3 KEEP (PO→Production, QC ผ่าน/ไม่ผ่าน, PR auto-created) + 2 NEW (เอกสารถูกยกเลิก/ปฏิเสธ, Route ส่งสำเร็จ)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Group 2 shows potential-delay (KEEP) + daily Supply-Planning Low+Overstock summary item",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "SP daily-summary item deep-links reused SP page with Low+Overstock filter (supply-planning.html?filter=low-overstock)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Group 3 Invoice Overdue (KEEP) + Group 4 Customer Follow-up (NEW) present",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Customer Inactivity item removed from all bells; FG→Low real-time item removed from all bells",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "User soft-delete has NO notification item (only cancel/void/reject shown)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "r18 read-driven mechanics intact (read-bit, badge=unread, click=navigate+mark read, อ่านแล้วทั้งหมด, no ✕ dismiss, snackbar+shake, ดูทั้งหมด history, 4-group grouping)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Other ~31 bell pages aligned (shared over-reservation real-time item replaced by daily SP-summary; no removed events remain)",
+              "pass": true,
+              "missing": null
+            }
           ],
           "output_files": [
             "docs/design/erp-v2-ui-first/mockups/dashboard.html",
