@@ -45,12 +45,16 @@ h1{font-size:24px;font-weight:600;line-height:1.3}h3{font-size:16px;font-weight:
 .alert .ai{font-size:18px;flex-shrink:0}.alert-info{background:#E8F0FE;border-color:#BBD1F8;color:#204A9E}.alert a,.alert b{color:inherit}
 .badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
 .b-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}.b-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}
+.b-unread{color:var(--primary);background:var(--primary-bg);border-color:#9FD5D2}
 .ttag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap}
 .ttag .gi{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;color:#fff}
 .g1{background:#2C7BE5}.g2{background:#E0912F}.g3{background:#2E9E5B}.g4{background:#8E5BD9}
 .nlist{list-style:none;margin:0;padding:0}
-.nrow{display:flex;gap:12px;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--border2)}
+.nrow{display:flex;gap:12px;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--border2);cursor:pointer}
 .nrow:hover{background:#FAFCFC}.nrow:last-child{border-bottom:none}
+.nrow .ud{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:7px}
+.nrow.unread{background:#F3FAF9}.nrow.unread:hover{background:#ECF6F5}.nrow.unread .nbody a{font-weight:700;color:var(--text)}
+.nrow.read .ud{visibility:hidden}.nrow.read .di{opacity:.45}.nrow.read .nbody a{font-weight:500;color:var(--text3)}
 .nrow .di{font-size:18px;flex-shrink:0;margin-top:1px}
 .nrow .nbody{flex:1;min-width:0}.nrow .nbody a{font-weight:600}
 .nrow .nmeta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -81,34 +85,55 @@ h1{font-size:24px;font-weight:600;line-height:1.3}h3{font-size:16px;font-weight:
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
    <div class="right"><button class="noti-btn" title="กระดิ่งการแจ้งเตือน" onclick="location.href='dashboard.html'">🔔<span class="noti-badge">9+</span></button><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">มีหลายแผนก</div></div></div></div></div>
   <div class="content">
-   <div class="pagehead"><div><h1>การแจ้งเตือนทั้งหมด</h1><div class="sub">ประวัติการแจ้งเตือนทั้งหมดของคุณ (20 รายการ/หน้า) · แบ่งเป็น <b>4 ประเภท</b> · การกด <b>ปิด (✕) ที่กระดิ่ง</b> เอารายการออกจากกระดิ่งเท่านั้น <b>ไม่ใช่ "อ่านแล้ว"</b> — ประวัติยังคงอยู่ที่หน้านี้เสมอ</div></div></div>
+   <div class="pagehead"><div><h1>การแจ้งเตือนทั้งหมด</h1><div class="sub">ประวัติการแจ้งเตือนทั้งหมดของคุณ (20 รายการ/หน้า) · แบ่งเป็น <b>4 ประเภท</b> · แต่ละรายการมีสถานะ <b>อ่าน / ยังไม่อ่าน</b> — คลิกเพื่อไปยังเอกสารปลายทางและทำเครื่องหมายว่าอ่านแล้ว · ประวัติยังคงอยู่ที่หน้านี้เสมอ</div></div></div>
 
-   <div class="alert alert-info"><span class="ai">🔔</span><div>ปิด (dismiss) = เอาออกจากกระดิ่งของคุณเท่านั้น (เป็นรายบุคคล ไม่กระทบเพื่อนร่วมงาน) · หน้านี้เก็บ<b>ประวัติครบทุกรายการ</b>รวมที่ปิดไปแล้ว · คลิกลิงก์ในแต่ละรายการเพื่อไปยังเอกสารปลายทาง</div></div>
+   <div class="alert alert-info"><span class="ai">🔔</span><div>คลิกที่รายการ = ไปยังเอกสารปลายทาง + ทำเครื่องหมาย <b>"อ่านแล้ว"</b> · รายการที่อ่านแล้วจะหายจากกระดิ่งเมื่อรีเฟรช แต่<b>ยังดูย้อนหลังได้ที่หน้านี้เสมอ</b> · กด <b>"อ่านแล้วทั้งหมด"</b> เพื่อล้างทั้งหมดเป็นอ่านแล้ว</div></div>
 
-   <div class="filterchips">
-     <span class="chip on">ทั้งหมด <b>&nbsp;68</b></span>
-     <span class="chip"><span class="d g1"></span>1 · งานส่งต่อข้ามแผนก</span>
-     <span class="chip"><span class="d g2"></span>2 · ความเสี่ยงสต็อก/ผลิต</span>
-     <span class="chip"><span class="d g3"></span>3 · การเงิน/เครดิต</span>
-     <span class="chip"><span class="d g4"></span>4 · วงจรลูกค้า</span>
+   <div class="filterchips" id="readchips"><span class="tiny" style="align-self:center;color:var(--text2);font-weight:600;margin-right:2px">แสดง:</span>
+     <span class="chip on" onclick="pickRead(this,'all')">ทั้งหมด</span>
+     <span class="chip" onclick="pickRead(this,'unread')">ยังไม่อ่าน <b id="unreadCount">&nbsp;6</b></span>
    </div>
 
-   <div class="card"><div class="card-h"><h3>รายการแจ้งเตือน</h3><span class="tiny">เรียงใหม่→เก่า</span></div>
+   <div class="filterchips" id="typechips"><span class="tiny" style="align-self:center;color:var(--text2);font-weight:600;margin-right:2px">ประเภท:</span>
+     <span class="chip on" onclick="pickType(this,'all')">ทั้งหมด <b>&nbsp;68</b></span>
+     <span class="chip" onclick="pickType(this,'1')"><span class="d g1"></span>1 · งานส่งต่อข้ามแผนก</span>
+     <span class="chip" onclick="pickType(this,'2')"><span class="d g2"></span>2 · ความเสี่ยงสต็อก/ผลิต</span>
+     <span class="chip" onclick="pickType(this,'3')"><span class="d g3"></span>3 · การเงิน/เครดิต</span>
+     <span class="chip" onclick="pickType(this,'4')"><span class="d g4"></span>4 · วงจรลูกค้า</span>
+   </div>
+
+   <div class="card"><div class="card-h"><h3>รายการแจ้งเตือน</h3><div style="display:flex;gap:10px;align-items:center"><span class="tiny">เรียงใหม่→เก่า</span><button class="btn btn-sm" onclick="markAllRead()">✓ อ่านแล้วทั้งหมด</button></div></div>
     <ul class="nlist">
-     <li class="nrow"><span class="di">🏭</span><div class="nbody"><a href="production.html">งานใหม่รอรับ: PO-202607-000186 เข้าคิว "รอรับงาน"</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· PO ยืนยัน → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อสักครู่</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">📉</span><div class="nbody"><a href="supply-planning.html">FG ต่ำกว่าเป้า: เซรั่มวิตซี 30ml เหลือคุ้ม 3 วัน — แนะนำผลิต 1,200 ชิ้น</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· วางแผนผลิต</span></div></div><div class="nstate"><span class="tiny">8 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">🔒</span><div class="nbody"><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· สต็อก</span></div></div><div class="nstate"><span class="tiny">10 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">📥</span><div class="nbody"><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· GR-008 รับไม่ครบ → จัดซื้อ</span></div></div><div class="nstate"><span class="tiny">15 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">💳</span><div class="nbody"><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0031 เกินกำหนดชำระ 5 วัน (กลอรี่ คอสเมติกส์)</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">วันนี้ 09:00</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">👤</span><div class="nbody"><a href="customer-detail.html">ลูกค้าเงียบหาย: บิวตี้เฮ้าส์ ไม่มีคำสั่งซื้อ 90 วัน → เปลี่ยนเป็น "ไม่เคลื่อนไหว"</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">วันนี้ 06:00</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
-     <li class="nrow"><span class="di">🔁</span><div class="nbody"><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 16:20</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
-     <li class="nrow"><span class="di">✅</span><div class="nbody"><a href="qc.html">QC ตรวจรับวัตถุดิบผ่าน: Lot RM-ALC-0091 (แอลกอฮอล์) → เข้าสต็อก</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → สต็อก</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 14:05</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
-     <li class="nrow"><span class="di">🚚</span><div class="nbody"><a href="shipping.html">DN-20260729-00118 ส่งสำเร็จ — ลูกค้ารับครบ</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· จัดส่ง → ขาย</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 11:40</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
-     <li class="nrow"><span class="di">💳</span><div class="nbody"><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0028 เกินกำหนดชำระ 12 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 09:00</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
-     <li class="nrow"><span class="di">👤</span><div class="nbody"><a href="customer-detail.html">ลูกค้าเงียบหาย: สปาราตรี ไม่มีคำสั่งซื้อ 90 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">2 วันก่อน</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+     <li class="nrow unread" data-type="1" onclick="openNoti(this,'production.html')"><span class="ud"></span><span class="di">🏭</span><div class="nbody"><a>งานใหม่รอรับ: PO-202607-000186 เข้าคิว "รอรับงาน"</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· PO ยืนยัน → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อสักครู่</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow unread" data-type="2" onclick="openNoti(this,'supply-planning.html')"><span class="ud"></span><span class="di">📉</span><div class="nbody"><a>FG ต่ำกว่าเป้า: เซรั่มวิตซี 30ml เหลือคุ้ม 3 วัน — แนะนำผลิต 1,200 ชิ้น</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· วางแผนผลิต</span></div></div><div class="nstate"><span class="tiny">8 นาทีที่แล้ว</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow unread" data-type="2" onclick="openNoti(this,'stock.html')"><span class="ud"></span><span class="di">🔒</span><div class="nbody"><a>จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· สต็อก</span></div></div><div class="nstate"><span class="tiny">10 นาทีที่แล้ว</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow unread" data-type="1" onclick="openNoti(this,'purchase-request.html')"><span class="ud"></span><span class="di">📥</span><div class="nbody"><a>คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· GR-008 รับไม่ครบ → จัดซื้อ</span></div></div><div class="nstate"><span class="tiny">15 นาทีที่แล้ว</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow unread" data-type="3" onclick="openNoti(this,'invoice-detail.html')"><span class="ud"></span><span class="di">💳</span><div class="nbody"><a>ใบแจ้งหนี้ INV-202607-0031 เกินกำหนดชำระ 5 วัน (กลอรี่ คอสเมติกส์)</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">วันนี้ 09:00</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow unread" data-type="4" onclick="openNoti(this,'customer-detail.html')"><span class="ud"></span><span class="di">👤</span><div class="nbody"><a>ลูกค้าเงียบหาย: บิวตี้เฮ้าส์ ไม่มีคำสั่งซื้อ 90 วัน → เปลี่ยนเป็น "ไม่เคลื่อนไหว"</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">วันนี้ 06:00</span><span class="badge b-unread">ยังไม่อ่าน</span></div></li>
+     <li class="nrow read" data-type="1" onclick="openNoti(this,'production.html')"><span class="ud"></span><span class="di">🔁</span><div class="nbody"><a>QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 16:20</span><span class="badge b-neutral">อ่านแล้ว</span></div></li>
+     <li class="nrow read" data-type="1" onclick="openNoti(this,'qc.html')"><span class="ud"></span><span class="di">✅</span><div class="nbody"><a>QC ตรวจรับวัตถุดิบผ่าน: Lot RM-ALC-0091 (แอลกอฮอล์) → เข้าสต็อก</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → สต็อก</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 14:05</span><span class="badge b-neutral">อ่านแล้ว</span></div></li>
+     <li class="nrow read" data-type="1" onclick="openNoti(this,'shipping.html')"><span class="ud"></span><span class="di">🚚</span><div class="nbody"><a>DN-20260729-00118 ส่งสำเร็จ — ลูกค้ารับครบ</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· จัดส่ง → ขาย</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 11:40</span><span class="badge b-neutral">อ่านแล้ว</span></div></li>
+     <li class="nrow read" data-type="3" onclick="openNoti(this,'invoice-detail.html')"><span class="ud"></span><span class="di">💳</span><div class="nbody"><a>ใบแจ้งหนี้ INV-202607-0028 เกินกำหนดชำระ 12 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 09:00</span><span class="badge b-neutral">อ่านแล้ว</span></div></li>
+     <li class="nrow read" data-type="4" onclick="openNoti(this,'customer-detail.html')"><span class="ud"></span><span class="di">👤</span><div class="nbody"><a>ลูกค้าเงียบหาย: สปาราตรี ไม่มีคำสั่งซื้อ 90 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">2 วันก่อน</span><span class="badge b-neutral">อ่านแล้ว</span></div></li>
     </ul>
     <div class="pager"><span class="tiny">แสดง 1–11 จาก 68 รายการ (20/หน้า)</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">2</button><button class="pgbtn">3</button><button class="pgbtn">4</button><button class="pgbtn">›</button></div></div>
    </div>
   </div>
 </div></div>
+<script>
+var FT='all',FR='all'; // FT = type filter · FR = read filter (all / unread)
+function applyFilter(){document.querySelectorAll('.nlist .nrow').forEach(function(r){
+  var okT=FT==='all'||r.dataset.type===FT;
+  var okR=FR==='all'||(FR==='unread'&&r.classList.contains('unread'));
+  r.style.display=(okT&&okR)?'flex':'none';});
+  var u=document.querySelectorAll('.nlist .nrow.unread').length;
+  var uc=document.getElementById('unreadCount');if(uc)uc.innerHTML='&nbsp;'+u;}
+function pickType(el,t){document.querySelectorAll('#typechips .chip').forEach(function(c){c.classList.remove('on')});el.classList.add('on');FT=t;applyFilter();}
+function pickRead(el,r){document.querySelectorAll('#readchips .chip').forEach(function(c){c.classList.remove('on')});el.classList.add('on');FR=r;applyFilter();}
+// click row → mark READ (visual) then navigate to deep-link
+function openNoti(el,href){el.classList.remove('unread');el.classList.add('read');var b=el.querySelector('.nstate .badge');if(b){b.className='badge b-neutral';b.textContent='อ่านแล้ว';}applyFilter();if(href)window.location.href=href;}
+// mark all read → all rows become read (history stays on this page)
+function markAllRead(){document.querySelectorAll('.nlist .nrow.unread').forEach(function(r){r.classList.remove('unread');r.classList.add('read');var b=r.querySelector('.nstate .badge');if(b){b.className='badge b-neutral';b.textContent='อ่านแล้ว';}});applyFilter();}
+applyFilter();
+</script>
 </body></html>

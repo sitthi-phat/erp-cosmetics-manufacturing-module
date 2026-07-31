@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "po + ux-ui",
-      "status": "IN_PROGRESS",
+      "status": "READY_FOR_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3728,9 +3728,135 @@
           "questions_for_pond": [],
           "summary": "r17 Platform/NFR mockups (L–P): new reset-password.html (3 states, no-enumeration, A9 rules, expired/used edges) + login forgot-password link + first-login A9 hint; settings Users email(required)/self-disabled+re-enable/A9; dashboard shell redesign (4-type bell, ✕ dismiss≠read, ปิดทั้งหมด, ดูทั้งหมด→notifications.html, badge 9+, snackbar+shake, user-menu ปิดบัญชีของฉัน, session banner); new patterns.html (submit-confirm/403-404-500/empty-state/i18n). Stayed inside mockups/; theme-A reused. Gate 1 = review only these changed/new screens.",
           "updated_at": "2026-07-31T04:31:50.538Z"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "r18-notification-read-driven-model",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "Badge = count of UNREAD (caps 9+); shows only when unread>0",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Read/unread visual distinction — unread = bold + teal dot + tinted bg; read = muted/greyed + dot hidden",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Click a notification (bell row or list row) = navigate to deep-link AND mark READ (visual change applied)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Read items auto-clear note shown: อ่านแล้วจะหายจากกระดิ่งเมื่อรีเฟรช (no real-time animation, per Pond)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "อ่านแล้วทั้งหมด (mark all read) button in bell + on history page — clears to read state, badge to 0",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "REMOVED all dismiss UI — per-item ✕, ปิดทั้งหมด, dismissOne/dismissAll JS, and all dismiss/ปิด wording",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ดูทั้งหมด history page — read/unread indicator per row + filter (ทั้งหมด/ยังไม่อ่าน) + 4-type filter, 20/page, each row deep-links (click=navigate+read)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "KEPT unchanged: snackbar/toast + bell-shake on new noti; badge 9+; 4-type grouping; shell/header/sidebar; ESSENCE Hub System",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Stayed inside mockups/ only — no src/tests/requirements/functional-spec touched",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/notifications.html",
+            "docs/design/erp-v2-ui-first/ux-audit/r18-bell-open-desktop.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r18-bell-allread-desktop.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r18-notifications-desktop.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r18-notifications-unread-filter.png",
+            "docs/design/erp-v2-ui-first/ux-audit/r18-notifications-tablet.png"
+          ],
+          "questions_for_pond": [],
+          "summary": "Switched notification bell + history page from dismiss-model to READ-DRIVEN model (Pond r18). Badge=unread count; unread=bold+dot, read=muted; click row=navigate+mark-read; อ่านแล้วทั้งหมด button; note that read rows drop off bell on refresh. Removed all ✕/dismiss/ปิดทั้งหมด UI. History page gains all/unread filter + read state per row. Kept snackbar+shake, 9+, 4-type grouping, shell.",
+          "updated_at": "2026-07-31T06:35:58.656Z"
+        },
+        {
+          "agent": "po",
+          "phase": "r18-notification-read-driven",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "read-bit replaces dismiss-bit; badge = unread (cap 9+)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "click a notification (bell or ดูทั้งหมด) = navigate deep-link + mark READ (per-user)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "read items auto-clear from bell on next refresh/poll; no realtime/websocket/batch",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "อ่านแล้วทั้งหมด (mark all read) clears the bell",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "per-item ✕ dismiss and ปิดทั้งหมด removed entirely",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "ดูทั้งหมด history shows อ่าน/ยังไม่อ่าน, 20/page (G1), grouped by 4 types, rows deep-link",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "unchanged items preserved: bell-only/no-email, 4-type taxonomy, snackbar+shake, fan-out by Read, FG→Low realtime+J8, deep-links",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "completeness: change in .md + rendered in existing HTML views + linked in modules index (cards refreshed)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "scope guarded: only read/dismiss mechanics + data-model bit + badge; taxonomy/RBAC/D-rules untouched",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/platform.md",
+            "docs/requirements/erp-v2-ui-first/modules/non-functional.md",
+            "docs/requirements/erp-v2-ui-first/modules/README.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Gate-1-driven r18: reversed notification from dismiss≠read to READ-DRIVEN (platform.md §7 + non-functional.md §7): read-bit replaces dismiss-bit; badge=unread; click=navigate+mark read; mark-all-read; ✕dismiss/ปิดทั้งหมด removed; ดูทั้งหมด shows read/unread; no realtime required. Unchanged (bell-only, 4-type, snackbar+shake, fan-out by Read, FG→Low+J8) preserved. Completeness verified. UX/UI mockups updated in parallel.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T15:40:00+07:00"
         }
       ]
     }
   },
-  "generated_at": "2026-07-31T04:31:50.539Z"
+  "generated_at": "2026-07-31T06:35:58.656Z"
 }
