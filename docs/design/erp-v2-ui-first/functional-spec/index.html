@@ -148,6 +148,7 @@ code{background:#EEF1F4;padding:1px 5px;border-radius:4px;font-size:12px}
 
 <!-- ========================= (4) ARCHITECTURE ========================= -->
 <div class="sec"><span class="n">④</span> Architecture (Tech-Lead) <small>— API / DB / ADR / งานตั้งเวลา</small></div>
+<div class="warnband">⚠ <b>STALE — ยังไม่ reconcile (จะทำใน Gate 2).</b> เอกสารสถาปัตยกรรมชุดนี้ (ADR / API / DB / scheduled-jobs) ลงวันที่ 2026-07-09 และ <b>ยังไม่ตรงกับมติปัจจุบัน</b> — เช่น RBAC ยัง 6-bit (ปัจจุบัน = cumulative level r16), notification ยัง 14-event/ack=read (ปัจจุบัน = read-driven 4-กลุ่ม r18/r19), ยังมี SHP/Home/สถานะ DN เก่า/ไม่มี RET/ไม่มี Goods-Receipt object. <b>อย่าใช้เป็น spec สำหรับ build หรือ review</b> — Tech-Lead จะ reconcile ให้ตรงมติปัจจุบันตอนเริ่ม Gate 2. ฉบับจริงของ requirement = per-module package (หมวด ① / ②). เก็บไว้เพื่อ trace เหตุผลการตัดสินใจเดิม.</div>
 <div class="tocgrid">
   <a class="mod arch" href="../architecture/index.html" target="_blank"><div class="mt">Architecture Hub ↗</div><div class="md">system + service diagram (Phase2 local→Phase3 GCP) + ลิงก์ API ทุก module</div></a>
   <a class="mod arch" href="../architecture/db-schema.html" target="_blank"><div class="mt">Database Schema ↗</div><div class="md">ทุก entity + hard cases (stock ledger+reservation, PRD, RUCDAA, VAT, soft-delete)</div></a>
