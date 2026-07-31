@@ -4116,6 +4116,60 @@
           "summary": "PART A: 2 notification r19.1 corrections (Route delivered → +owning Sale; Customer Follow-up = near-real-time only, dropped daily due-check) in platform.md + non-functional.md, flags §12 CLOSED. PART B: single Gate-1 Delta Gallery (gate1-delta.html) inside Hub — ~38 grouped cards (ขาย/คลัง/ผลิต/จัดส่ง/ระบบ/แจ้งเตือน) each linking canonical mockup + screenshot + spec, review-index not a copy; linked from Hub index. Links verified on disk.",
           "overridden_by": null,
           "updated_at": "2026-07-31T17:20:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "gate1-delta-print",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "po-print.html built — printable PO document mirroring quotation-print.html (ESSENCE Hub header, doc title 'ใบสั่งซื้อ (PO)', PO number, parties, line items, subtotal/VAT/total, baht-text, terms, signatures) with sample data + print stylesheet",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "so-print.html built — printable SO document ('ใบสั่งขาย (SO)', Own-Brand) mirroring same layout; note applies to both modes ก/ข; clarifies Invoice is a separate doc printed from DN",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Print buttons wired AFTER save only: po-detail pagehead + po-create post-save popup (svm-f) -> po-print.html; so-detail pagehead + so-create post-save popup (svm-f) -> so-print.html. No pre-save/create-form print entry (no number = no document, Pond rule)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Gallery cards for po-print.html + so-print.html added to mockups/index.html (Delta section, next to quotation docs) with 🟢 new tag + R-permission/after-save note",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Permission = module Read (R), print does not change status — labelled on toolbar/okbar/buttons, mirrors QT (quotation.md §5/§7 · po.md §5.3 · so.md §5c · G9 print=R)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Rendered headless (1440x900 screenshot + A4 PDF) — both verified as proper printable documents; stayed inside mockups/ (+ ux-audit evidence), no src/ or requirements/ edits, no git",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/po-print.html",
+            "docs/design/erp-v2-ui-first/mockups/so-print.html",
+            "docs/design/erp-v2-ui-first/mockups/po-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/po-create.html",
+            "docs/design/erp-v2-ui-first/mockups/so-detail.html",
+            "docs/design/erp-v2-ui-first/mockups/so-create.html",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/ux-audit/po-print-screen.png",
+            "docs/design/erp-v2-ui-first/ux-audit/so-print-screen.png",
+            "docs/design/erp-v2-ui-first/ux-audit/po-print.pdf",
+            "docs/design/erp-v2-ui-first/ux-audit/so-print.pdf"
+          ],
+          "questions_for_pond": [],
+          "summary": "Built po-print.html + so-print.html — print-ready PO/SO document views mirroring quotation-print.html (same A4 paper, ESSENCE Hub header, party blocks, line-item table, VAT totals, baht-text, terms, signatures, @media print rules). Wired the existing 'พิมพ์' actions on po/so detail pageheads + create post-save popups to open them (reachable AFTER save/number only — Pond rule). Added 2 gallery cards. Permission R, no status change. Rendered both to screenshot+PDF (ux-audit) — verified as proper printable docs. Stayed entirely in mockups/.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T18:05:00+07:00"
         }
       ]
     }
