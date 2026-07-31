@@ -1,10 +1,10 @@
 # Permission Matrix — Capability → Module → Action (consolidated)
 
-slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30 · + Invoice actions r13 2026-07-30 · + stray-tag cleanup 2026-07-31**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
-กฎอ้างอิง: **D14** (RBAC generic) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)** · **★★★★★ r13 (2026-07-30): Invoice — สร้าง = C (รวมสร้างจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (per-invoice override) = U · พิมพ์ = R**
+slug: `erp-v2-ui-first` · per-module canonical · PO · 2026-07-29 (**+ Route/DN actions 2026-07-30 · + Audit-view r12 confirm 2026-07-30 · + Invoice actions r13 2026-07-30 · + stray-tag cleanup 2026-07-31 · ★★★★★★ + CUMULATIVE-level RBAC model r16 2026-07-31**) · **★ G9 permission-code suffix + authoritative action→code map** · **★★ G9 sweep — 9 ambiguous controls SETTLED (§3.1)**
+กฎอ้างอิง: **D14** (RBAC) · **D17** · scope §7.1 · **★ Settings review 2026-07-29** · **★ Sale delete → customers unassigned** · **★ G9 permission-code suffix** · **★★★ r11 (2026-07-30): Route/DN actions — แก้สถานะ DN โดยตรง = Shipping.Approve (A)** · **★★★★ r12 (2026-07-30): ดู Audit log (ทุกกิจกรรม non-read + login) = Settings.Admin only (Ad)** · **★★★★★ r13 (2026-07-30): Invoice — สร้าง = C (รวมสร้างจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (per-invoice override) = U · พิมพ์ = R** · **★★★★★★ r16 (2026-07-31, ปอนด์): RBAC = CUMULATIVE per-module level (ลำดับชั้นสะสม R < C < U < D < A < Admin) — ดู §1a**
 
 ## สรุปภาษาไทย
-RBAC เป็น **generic** — บังคับสิทธิ์ที่ระดับ **module/capability** (โมเดล RUCDAA: Read/Update/Create/Delete/Approve/Admin ต่อ module), ไม่ hardcode ชื่อ role. ใครถือ permission ตรงก็ทำได้; สร้าง role/มัดสิทธิ์ = admin config ใน Settings. ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)"). **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R). **★★★★ r12 (confirm):** **ดู Audit log = Settings.Admin only → (Ad)**; trace ผ่าน module เดิมยังใช้ **Read (R)** ของ module นั้น. **★★★★★ r13 (Invoice review):** ยืนยัน/เพิ่ม action ของ Invoice — **สร้างใบแจ้งหนี้ = Invoice.C (รวมสร้างจากหน้า DN, DN-unify)** · **ยกเลิก/void ใบ = Invoice.D** · **แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override) = Invoice.U** · **พิมพ์ = Invoice.R**.
+RBAC เป็น **cumulative per-module level (ลำดับชั้นสะสม)** — แต่ละ role ได้ **ระดับเดียวต่อ module** ตามลำดับ **R < C < U < D < A < Admin** และระดับนั้น**รวมทุก action ที่ต่ำกว่าอัตโนมัติ** (ไม่ใช่ checkbox แยกราย action), ไม่ hardcode ชื่อ role. ใครถือระดับ ≥ ที่ปุ่มต้องการก็ทำได้; ตั้ง role/เลือกระดับต่อ module = admin config ใน Settings. **(เดิมอธิบายเป็น "RUCDAA bits อิสระ/generic per-capability" — ปอนด์ 2026-07-31 เปลี่ยนเป็น total order สะสม; ดู §1a. mapping ปุ่ม→รหัสใน §3/§3.1 ไม่เปลี่ยน — เปลี่ยนแค่ semantics เป็น "รหัส = ระดับต่ำสุดที่ใช้ปุ่มได้".)** ตารางนี้รวม **ทุกปุ่ม/action ของทุก module**. **★ G9:** ทุกปุ่ม/action ที่ permission-gate ต้อง **แสดงรหัสสิทธิ์เป็น suffix ต่อท้าย label** (เช่น "บันทึก (C)", "อนุมัติ (A)", "ตั้งค่า VAT (Ad)") — **รหัส = ระดับต่ำสุด (min level) ที่ใช้ปุ่มนั้นได้ (ระดับสูงกว่าใช้ได้ด้วย)**. **รหัส 6 ตัวเป๊ะ: R / C / U / D / A / Ad** (Ad=Admin; ไม่มี "Archive" แยก). **★★★ r11:** เพิ่ม action ของ Route (สร้าง=C, แก้/เปลี่ยนสถานะ=U) และ **DN (แก้สถานะ DN โดยตรง = Approve (A))** + print DN/Invoice = (R). **★★★★ r12 (confirm):** **ดู Audit log = Settings.Admin only → (Ad)**; trace ผ่าน module เดิมยังใช้ **Read (R)** ของ module นั้น. **★★★★★ r13 (Invoice review):** ยืนยัน/เพิ่ม action ของ Invoice — **สร้างใบแจ้งหนี้ = Invoice.C (รวมสร้างจากหน้า DN, DN-unify)** · **ยกเลิก/void ใบ = Invoice.D** · **แก้ข้อมูลลูกค้าบนใบ (ชื่อ/ที่อยู่ออกเอกสาร/เลขภาษี — per-invoice override) = Invoice.U** · **พิมพ์ = Invoice.R**.
 
 ---
 
@@ -12,8 +12,8 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 | bit (internal) | public code (suffix) | ความหมาย |
 |---|---|---|
 | **R** Read | **(R)** | ดู/ค้น/รายงาน · **พิมพ์/แชร์ PDF (ไม่ mutate) · print DN/Invoice** · **★★★★ trace ผ่าน module (genealogy + field-audit ของ module ที่มีสิทธิ์ Read)** |
-| **U** Update | **(U)** | แก้ข้อมูล/เปลี่ยนสถานะปกติ · **แก้ sub-record (ผู้ติดต่อ/comment/threshold) · แก้ Route/เปลี่ยนสถานะ Route · แก้ข้อมูลลูกค้าบนใบแจ้งหนี้ (per-invoice override)** |
 | **C** Create | **(C)** | สร้างเอกสาร/record/master ใหม่ · **สร้าง Route + gen DN · สร้างใบแจ้งหนี้ (รวมจากหน้า DN)** |
+| **U** Update | **(U)** | แก้ข้อมูล/เปลี่ยนสถานะปกติ · **แก้ sub-record (ผู้ติดต่อ/comment/threshold) · แก้ Route/เปลี่ยนสถานะ Route · แก้ข้อมูลลูกค้าบนใบแจ้งหนี้ (per-invoice override)** |
 | **D** Delete | **(D)** | soft-delete / void / **ปิดใช้งาน (inactivate)** · **ยกเลิก/void ใบแจ้งหนี้** |
 | **A** Approve | **(A)** | อนุมัติ/สิทธิ์ระดับสูง (Blacklist, reassign, reopen) · **★ แก้สถานะ DN โดยตรง** |
 | **Admin** | **(Ad)** | จัดการ config/force override/undelete/restore · **★ gate VAT/Company/Audit** · **★★★★ ดู Audit-log viewer รวม (r12)** |
@@ -22,22 +22,55 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 - โมเดลภายในเดิม = **RUCDAA**; **A ตัวที่สอง = Admin** (ไม่ใช่ "Archive").
 - **6 รหัสสาธารณะ = R, C, U, D, A, Ad** เป๊ะ. Admin บน UI = **(Ad)**.
 - **ไม่มี capability "Archive"** — archive/undelete/restore/force-override = **Admin = (Ad)**.
-- ลำดับที่แสดง = **R · C · U · D · A · Ad**. *(ไม่ต้องถามปอนด์.)*
+- ลำดับที่แสดง (cumulative order) = **R · C · U · D · A · Ad**. *(★★★★★★ r16: Create อยู่ต่ำกว่า Update — ดู §1a; ไม่ต้องถามปอนด์.)*
+
+---
+
+## 1a. ★★★★★★ RBAC model — CUMULATIVE per-module level (ปอนด์ 2026-07-31, r16) — AUTHORITATIVE
+> **โมเดลสิทธิ์ = ลำดับชั้นสะสม (cumulative total order).** แต่ละ role ได้รับ **ระดับเดียวต่อ 1 module** และระดับนั้น **รวมทุก action ที่ต่ำกว่าโดยอัตโนมัติ** — **ไม่ใช่ checkbox แยกราย action อีกต่อไป**.
+
+**ลำดับ (ต่ำ→สูง): `R < C < U < D < A < Admin`**
+> ⚠️ **Create (C) อยู่ต่ำกว่า Update (U)** — ต่างจากลำดับตัวอักษรของ acronym "RUCDAA". ในโมเดลสะสม ผู้ถือระดับ **U** ทำ **R, C, U** ได้ทั้งหมด.
+
+| ระดับ | ชื่อ | ทำอะไรได้ (สะสมลงล่าง) | admin-only? |
+|---|---|---|---|
+| **R** | Read | ดู/ค้น/รายงาน · พิมพ์/แชร์ PDF (read-derived) · trace ผ่าน module | — |
+| **C** | Create | **R** + สร้างเอกสาร/record/master ใหม่ · สร้าง Route+gen DN · สร้างใบแจ้งหนี้ | — |
+| **U** | Update | **R+C** + แก้ค่า/เปลี่ยนสถานะปกติ · แก้ sub-record (ผู้ติดต่อ/threshold) · comment (G6) · แก้ Route/สถานะ Route · per-invoice override · reactivate BOM | — |
+| **D** | Delete | **R+C+U** + soft-delete / void / cancel / **inactivate** · void ใบแจ้งหนี้ · ลบ user/role · ลบผู้ติดต่อ | — |
+| **A** | Approve | **R+C+U+D** + อนุมัติ/สิทธิ์ระดับสูง: Blacklist · reassign Sale · reopen PO/PR · **แก้สถานะ DN โดยตรง** | — |
+| **Admin** | Admin | **R+C+U+D+A** + **admin-only:** config/force-override/undelete/restore · สร้าง/แก้ role-matrix · จัดการ user + password + Google-link · **gate VAT / ข้อมูลบริษัท / Audit-log viewer** | ✅ |
+
+**กติกาสำคัญ (บังคับ):**
+1. **1 ระดับต่อ 1 module** — การตั้ง role = **เลือกระดับเดียว** (radio/dropdown R/C/U/D/A/Admin) ต่อ module; ว่าง = ไม่มีสิทธิ์บน module นั้นเลย (ไม่เห็น). **ยกเลิก notion "ติ๊ก bit ราย action"**.
+2. **สะสมลงล่าง** — ถือระดับ **X** = ทำได้ทุก action ที่รหัส **≤ X**. เช่น ระดับ **U** → ทำ R, C, U ได้; ปุ่ม **(D)** ต้องระดับ **≥ D**; ปุ่ม **(Ad)** ต้อง **Admin**.
+3. **รหัส G9 = minimum level** — Suffix ของปุ่ม (§3) = **ระดับต่ำสุดที่ใช้ปุ่มนั้นได้** (ระดับสูงกว่าใช้ได้เสมอ). เช่น "อนุมัติ (A)" = ต้อง ≥ A; "บันทึก (C)" = ต้อง ≥ C.
+4. **Combined control (เช่น (U/A), (D/A/Ad))** = อ่านว่า "**ระดับต่ำสุดที่จะเห็น/กด "ตัวเลือกที่ enable"**" — value/mode-dependent (§3.1) ยังคงเดิม: ผู้ถือระดับสูงกว่าเห็นตัวเลือกครบ, ระดับต่ำเห็นเฉพาะตัวเลือกที่รหัส ≤ ระดับตน.
+5. **Admin-only (VAT / ข้อมูลบริษัท / Audit-log viewer / force-override / undelete/restore / role-matrix / จัดการ user)** = ต้องระดับ **Admin** เป๊ะ (รหัส (Ad)).
+6. **ไม่มี capability "Archive" แยก** — archive/undelete/restore = Admin.
+7. **Effective level (หลาย role)** = ต่อ module เอา **ระดับสูงสุด (max)** จาก role ที่ **Active** ทั้งหมดของผู้ใช้ (union → **max level**, ไม่ใช่ union ของ bit อิสระ). role Disabled/Deleted ไม่ contribute.
+
+> **★ ผลต่อ §3/§3.1:** ตาราง Suffix เดิม **ยังถูกทั้งหมด** — ตีความ "Permission required = `Module.X`" ใหม่เป็น "**ต้องระดับ ≥ X บน module นั้น**". **ไม่มี mapping ใดเปลี่ยน** — เปลี่ยนแค่ semantics จาก "ถือ bit อิสระ" → "ถือระดับ ≥". (คอลัมน์ Suffix = ตัวเดียวกับ min level.)
+
+> **⚠️ ผลข้างเคียงของ total order (ปอนด์ตัดสินใจแล้ว = ยอมรับ ladder นี้; ดู §4 หมายเหตุ awkward-case + questions_for_pond):**
+> - **A (Approve) รวม D (Delete) เสมอ** → ไม่มีทางให้ role "อนุมัติได้แต่ห้ามลบ/void" (separation-of-duties แบบ approver ไม่ให้ลบ = เป็นไปไม่ได้ในลำดับเข้ม).
+> - **U (Update) รวม C (Create) เสมอ** → ไม่มีทางให้ role "แก้ของเดิมได้แต่ห้ามสร้างใหม่" เช่น Stock.U (ปรับยอด) ย่อมได้ Stock.C (เพิ่ม RM master) ติดมาด้วย.
+> - เป็นการแลกความเรียบง่าย (1 ระดับ/module) กับความละเอียดของ SoD. ปอนด์ยืนยัน ladder แบบเข้มแล้ว — flag ไว้เป็นคำถาม non-blocking (§4).
 
 ---
 
 ## 1b. ★ G9 — Permission-code suffix on every permissioned control (GLOBAL RULE)
-> ทุก **actionable control ที่ถูก permission-gate** (ปุ่ม / เมนู / row-action / tab-action) **ต้องแสดงรหัส permission เป็น suffix ต่อท้าย label**.
+> ทุก **actionable control ที่ถูก permission-gate** (ปุ่ม / เมนู / row-action / tab-action) **ต้องแสดงรหัส permission เป็น suffix ต่อท้าย label** — **รหัส = ระดับต่ำสุด (min level, §1a) ที่ใช้ปุ่มนั้นได้**.
 
 **รูปแบบ:** `‹label› (‹code›)` — เช่น `บันทึก (C)` · `แก้ไข (U)` · `ลบ (D)` · `อนุมัติ (A)` · `ตั้งค่า VAT (Ad)` · `แก้สถานะ DN (A)` · `ดู Audit log (Ad)` · `สร้างใบแจ้งหนี้ (C)` · `ยกเลิกใบ (D)`.
 
 **กติกา:**
-1. **รหัส 6 ตัว: R · C · U · D · A · Ad** (ตาม §1). ห้ามคิดรหัสใหม่.
+1. **รหัส 6 ตัว: R · C · U · D · A · Ad** (ตาม §1/§1a). ห้ามคิดรหัสใหม่. **รหัส = ระดับต่ำสุด (min level) — ผู้ถือระดับสูงกว่ากดได้เสมอ.**
 2. **Read-only view / ปุ่มดูเฉย ๆ** ละ **(R)** ได้ เว้นแต่มีประโยชน์ (เช่น "ดู Audit log (Ad)"). **print/แชร์ PDF (รวม print DN/Invoice) = (R) และควรแสดง (R)**.
-3. **Action ที่ต้องถือหลาย permission (cross-module)** แสดงครบคั่นด้วย `+` เช่น `แปลงเป็น PO (U+C)`.
-4. **การ gate จริง** ยังยึด permission ตาม §3 — suffix เป็น label ประกอบ.
-5. **แหล่งอ้างอิงรหัส** = ตาราง §3 + §3.1.
-6. **★★ Value/mode-dependent control:** ปุ่ม save 1 ปุ่มที่ผลลัพธ์ขึ้นกับค่า/โหมด → gate ตามค่าที่เลือก; suffix แสดงเซ็ต `(U/A)` ฯลฯ.
+3. **Action ที่ต้องถือหลาย permission (cross-module)** แสดงครบคั่นด้วย `+` เช่น `แปลงเป็น PO (U+C)` — หมายถึงต้องมีระดับ ≥ ในทั้งสอง module.
+4. **การ gate จริง** ยังยึด permission ตาม §3 + โมเดลสะสม §1a — suffix เป็น label ประกอบ.
+5. **แหล่งอ้างอิงรหัส** = ตาราง §3 + §3.1 (= min level).
+6. **★★ Value/mode-dependent control:** ปุ่ม save 1 ปุ่มที่ผลลัพธ์ขึ้นกับค่า/โหมด → gate ตามค่าที่เลือก (min level ของตัวเลือกนั้น); suffix แสดงเซ็ต `(U/A)` ฯลฯ = ช่วงระดับต่ำสุดของแต่ละตัวเลือก.
 
 ---
 
@@ -45,9 +78,9 @@ RBAC เป็น **generic** — บังคับสิทธิ์ที่�
 Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Warehouse/Stock (+ Return + Goods Receipt) · Production · QC · **Shipping/Route** · **Delivery Note (DN)** · Invoice · PR · Supplier · Settings/User-Role.
 
 ## 3. ★ Consolidated capability → action → permission → **Suffix (G9)**
-> คอลัมน์ **Suffix** = รหัสที่ UX/UI ต้องต่อท้าย label ปุ่มจริง (G9). Admin → **(Ad)**.
+> คอลัมน์ **Suffix** = รหัสที่ UX/UI ต้องต่อท้าย label ปุ่มจริง (G9) = **ระดับต่ำสุด (min level, §1a)**. Admin → **(Ad)**. "Permission required = `Module.X`" อ่านว่า **ต้องระดับ ≥ X บน module นั้น**.
 
-| Module | ปุ่ม/action | Permission required | **Suffix (G9)** |
+| Module | ปุ่ม/action | Permission required (min level) | **Suffix (G9)** |
 |---|---|---|---|
 | **Customer** | ดู list/detail/history · modal detail | Customer.R | (R) *(ละได้)* |
 | | สร้างลูกค้า | Customer.C | **(C)** |
@@ -129,28 +162,30 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 | | ดู/แก้ VAT · ดู/แก้ ข้อมูลบริษัท · **★★★★ ดู Audit log (มุมมองรวม ทุกกิจกรรม non-read + login/logout, r12)** | Settings.**Admin only** | **(Ad)** |
 | **G6 (ทุก object)** | **บันทึกหมายเหตุ / comment (💾)** | **= U ของ object แม่** | **(U)** *(รหัสตาม object แม่)* |
 
-> **หมายเหตุ suffix สำหรับ action ที่มี 2 รหัส** (เช่น "ยกเลิก QT (D)/(A)"): ปุ่มจริง 1 ปุ่มถือ permission เดียว → แสดงรหัสของสิทธิ์ที่ผูกกับปุ่มนั้น หรือ default = รหัสแรก.
+> **หมายเหตุ suffix สำหรับ action ที่มี 2 รหัส** (เช่น "ยกเลิก QT (D)/(A)"): ปุ่มจริง 1 ปุ่มถือ min level เดียว → แสดงรหัสของระดับต่ำสุดที่ผูกกับปุ่มนั้น (default = รหัสแรก/ต่ำสุด). ผู้ถือระดับสูงกว่ากดได้เสมอ (สะสม §1a).
 
 ---
 
 ## 3.1 ★★ G9 sweep — 9 ambiguous controls **SETTLED** (2026-07-29, PO = single authority)
-> คงตามรอบก่อน — controls #1–#9 ตัดสินครบ.
+> คงตามรอบก่อน — controls #1–#9 ตัดสินครบ. **★★★★★★ r16:** ตีความใหม่ในกรอบ cumulative = "**ระดับต่ำสุดที่จะเห็น/กดตัวเลือกที่ enable**" (ผู้ถือระดับสูงกว่าเห็นครบ). combined value/mode-dependent = ช่วง min-level ของแต่ละตัวเลือก; ไม่ split ปุ่ม.
 
 | # | Control (หน้า) | UX tentative | **PO ruling** | Suffix | Split? | UX label fix? |
 |---|---|---|---|---|---|---|
-| 1 | customer-detail **"บันทึกสถานะ"** | (U/A) | value-dependent gating (ปกติ=U; Disabled/Blacklist=A) | **(U/A)** | ไม่ | ไม่ |
-| 2 | po-detail **"บันทึกการเปลี่ยนสถานะ…"** | (D/A/Ad) | value-dependent (ยกเลิก=D · reopen=A · force=Ad) | **(D/A/Ad)** | ไม่ | ไม่ |
-| 3 | so-create **"ยืนยันใบสั่งขาย"** | (U) | mode-dependent (ก=U · ข=C) | **(U)** ก / **(C)** ข | ไม่ | **ใช่** — โหมด ข = (C) |
+| 1 | customer-detail **"บันทึกสถานะ"** | (U/A) | value-dependent gating (ปกติ=min U; Disabled/Blacklist=min A) | **(U/A)** | ไม่ | ไม่ |
+| 2 | po-detail **"บันทึกการเปลี่ยนสถานะ…"** | (D/A/Ad) | value-dependent (ยกเลิก=min D · reopen=min A · force=min Ad) | **(D/A/Ad)** | ไม่ | ไม่ |
+| 3 | so-create **"ยืนยันใบสั่งขาย"** | (U) | mode-dependent (ก=min U · ข=min C) | **(U)** ก / **(C)** ข | ไม่ | **ใช่** — โหมด ข = (C) |
 | 4 | customer-detail **"⚑ ต้องติดตาม"** | (U) | Customer.U | **(U)** | — | ไม่ |
-| 5 | G6 **"💾 บันทึกหมายเหตุ"** | U object แม่ | comment = U object แม่ | **(U)** | — | ไม่ |
-| 6 | stock **"เพิ่มวัตถุดิบใหม่"** + threshold | C / U | create RM = C · threshold = U | **(C)** / **(U)** | — | ไม่ |
+| 5 | G6 **"💾 บันทึกหมายเหตุ"** | U object แม่ | comment = min U object แม่ | **(U)** | — | ไม่ |
+| 6 | stock **"เพิ่มวัตถุดิบใหม่"** + threshold | C / U | create RM = min C · threshold = min U | **(C)** / **(U)** | — | ไม่ |
 | 7 | customer-edit contact **"ลบ"** | (U) | Customer.U (sub-record) | **(U)** | — | ไม่ |
-| 8 | bom **"ปิดใช้งาน"** / reactivate | D / U? | ปิด=D · reactivate=U | ปิด **(D)** / reactivate **(U)** | — | ไม่ |
-| 9 | Print buttons (QT/invoice) | QT=(U) | print/แชร์ = (R) ทั้งคู่ | **(R)** | — | **ใช่** — QT (U)→(R) |
+| 8 | bom **"ปิดใช้งาน"** / reactivate | D / U? | ปิด=min D · reactivate=min U | ปิด **(D)** / reactivate **(U)** | — | ไม่ |
+| 9 | Print buttons (QT/invoice) | QT=(U) | print/แชร์ = min R ทั้งคู่ | **(R)** | — | **ใช่** — QT (U)→(R) |
+
+> **★★★★★★ r16 cumulative note (ตัวอย่างชัดเจน):** #3 so-create — เพราะ **C < U**, ผู้ถือ **SO.U** ทำได้ **ทั้ง** โหมด ก และ ข (U รวม C); ผู้ถือ **SO.C** ทำได้เฉพาะ **โหมด ข** (ยังไม่ถึง U). #6 stock — ผู้ถือ **Stock.U** ได้ "เพิ่มวัตถุดิบใหม่ (C)" ติดมาด้วย (U รวม C). #2 po — ผู้ถือ **PO.A** ยกเลิก (D) ได้ด้วยเสมอ; **PO.Admin** ทำได้ทุกตัวเลือก. (ผลข้างเคียง total order — §1a/§4.)
 
 **★★★ r11 (2026-07-30) — Route/DN controls (settled, ไม่กำกวม):**
 - **สร้าง Route + gen DN = Shipping.C → (C)** · **แก้ Route/เปลี่ยนสถานะ Route (จัดของ/ออกไปส่ง/เสร็จสิ้น/ยกเลิก) = Shipping.U → (U)**.
-- **★ แก้สถานะ DN โดยตรง (จากหน้า DN) = Shipping.Approve (A) → (A)** — ปอนด์ระบุชัดว่า "editor ต้องมี A permission". (ต่างจากการอัปเดต DN ผ่าน Route "เสร็จสิ้น" process = ส่วนของ Shipping.U.)
+- **★ แก้สถานะ DN โดยตรง (จากหน้า DN) = Shipping.Approve (A) → (A)** — ปอนด์ระบุชัดว่า "editor ต้องมีระดับ ≥ A". (ต่างจากการอัปเดต DN ผ่าน Route "เสร็จสิ้น" process = ส่วนของ Shipping.U.)
 - **print DN = Shipping.R → (R)** · **print Invoice จากหน้า DN = Invoice.R → (R)** (print = read-derived, §3.1 #9).
 
 **★★★★ r12 (2026-07-30) — Traceability + Audit-view controls (settled, confirm — ไม่มี functional change):**
@@ -168,18 +203,23 @@ Customer · **Quotation** · PO · **SO** · **Supply Planning** · BOM · Wareh
 - อ้างอิง: `invoice.md` §6 · `delivery-note.md` §5/§9.
 
 ## 4. หมายเหตุ (D14)
+- **★★★★★★ r16 (cumulative RBAC):** โมเดล = ลำดับชั้นสะสม `R < C < U < D < A < Admin` (§1a). role = 1 ระดับ/module. "Permission required = Module.X" = **ต้องระดับ ≥ X**. Suffix = min level. VAT/Company/Audit-log/undelete/force-override = **Admin (Ad)**.
 - **surplus (D13)** = auto → ไม่มี permission แยก → ไม่มี suffix.
 - **★ Quotation:** print/share = Quotation.R → (R); Convert-to-PO ตั้ง QT=Confirmed.
 - **★★ Comment/หมายเหตุ (G6):** = Update (U) ของ object แม่.
 - **★★ Print/แชร์เอกสาร:** = Read (R) — รวม **print DN / print Invoice**.
-- **★★ Value/mode-dependent controls:** gate ตามค่า/โหมด, ไม่ split.
-- **★ Settings:** VAT/Company/Audit-log = Admin bit · effective permission = union role Active · role disable/soft-delete ทำได้แม้มีสมาชิก.
+- **★★ Value/mode-dependent controls:** gate ตามค่า/โหมด (min level ของตัวเลือก), ไม่ split.
+- **★ Settings:** VAT/Company/Audit-log = Admin level · effective level = **max ของ role Active** · role disable/soft-delete ทำได้แม้มีสมาชิก.
 - **★ ลบ Sale/User:** = Settings.D → ลูกค้า unassigned อัตโนมัติ; reassign = Customer.Approve.
 - **★★★ r11 Route/DN:** **แก้สถานะ DN โดยตรง = Shipping.Approve (A)** (ปอนด์สั่ง) · สร้าง Route + gen DN = Shipping.C · แก้ Route/สถานะ Route = Shipping.U · print DN/Invoice = R. **คนขับ (driver) = system user** (ค้นชื่อ/username) — ไม่ใช่ capability แยก.
 - **★★★★ r12 Trace/Audit:** **ดู Audit log (มุมมองรวม non-read + login) = Settings.Admin only (Ad)** · trace ผ่าน module = Read (R) ของ module ต้นทาง · archive = Super User. ไม่มีสิทธิ์ใหม่ — เป็นการยืนยัน mapping เดิม.
 - **★★★★★ r13 Invoice:** **สร้างใบ = C (รวมจากหน้า DN) · ยกเลิก/void = D · แก้ข้อมูลลูกค้าบนใบ (override) = U · รับชำระ/comment = U · พิมพ์ = R.** ใบ active ทีละใบต่อ PO/SO (`invoice.md` §4b); เฟสนี้ไม่ล็อกสถานะตอนสร้าง (ไม่กระทบ permission).
-- **★ G9:** ทุกปุ่มที่ permission-gate แสดงรหัสตาม Suffix; รหัส 6 ตัว (R/C/U/D/A/Ad).
-- **★ แก้ (2026-07-31 — reconciliation M2 cleanup, ปอนด์):** ลบ stray tag `</content>` ท้ายไฟล์ (ไม่ใช่ spec content); ไม่มีการเปลี่ยน mapping ใด ๆ.
+- **★ G9:** ทุกปุ่มที่ permission-gate แสดงรหัสตาม Suffix (= min level); รหัส 6 ตัว (R/C/U/D/A/Ad).
+- **★ แก้ (2026-07-31 — reconciliation M2 cleanup, ปอนด์):** ลบ stray tag ท้ายไฟล์ (ไม่ใช่ spec content); ไม่มีการเปลี่ยน mapping ใด ๆ.
+- **★★★★★★ AWKWARD-CASE ของ total order (r16 — flag ให้ปอนด์, non-blocking):** ลำดับเข้ม `R<C<U<D<A<Admin` ทำให้ action ที่บาง business มองว่า "แยกกัน" ถูกมัดรวม:
+  1. **A รวม D เสมอ** → role ที่ "อนุมัติได้แต่ห้ามลบ/void" (separation-of-duties ของ approver) = เป็นไปไม่ได้.
+  2. **U รวม C เสมอ** → role ที่ "แก้ของเดิมได้แต่ห้ามสร้างใหม่" (เช่น Stock.U ปรับยอด แต่ไม่ให้ Stock.C เพิ่ม RM master) = เป็นไปไม่ได้.
+  - **ปอนด์ยืนยัน ladder เข้มแล้ว** → implement ตามนี้. ถ้าภายหลังต้องการ SoD ละเอียดขึ้น → เพิ่ม exception flag (นอก total order) เป็นงานรอบถัดไป. คำถาม non-blocking = ดู questions_for_pond.
 
 ## 5. Cross-links
-ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A · สร้าง/พิมพ์ Invoice)** · **★★★★★ `invoice.md` §6 (สร้าง=C/void=D/override=U/print=R)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §6/US-SET-05 (Audit log = Admin only)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A6/A7/A8) + §3 (AU1/AU2/AU6) + §15 (Deferred-controls) · scope §7.1 · README §3 G9 + §8 · §3.1.
+ต่อ module: customer/quotation/po/so/stock/bom/production/supply-planning/pr/supplier §Actions · **★ `shipping.md` §6 (Route) · `delivery-note.md` §9 (DN — แก้สถานะ = A · สร้าง/พิมพ์ Invoice)** · **★★★★★ `invoice.md` §6 (สร้าง=C/void=D/override=U/print=R)** · **★★★★ `traceability.md` §6 (trace = Read module ต้นทาง; archive = Super User) · `settings.md` §4/§6/US-SET-05 (Audit log = Admin only · ★★★★★★ role editor = per-module level selector r16)** · deletion-policy §3 · settings.md §6/§4b/§4c/§4d · customer.md §4.3/§8 · non-functional §2 (A3/A6/A7/A8) + §3 (AU1/AU2/AU6) + §15 (Deferred-controls) · scope §7.1 · README §3 G9 + §8 · §3.1 · **§1a (cumulative model)**.
