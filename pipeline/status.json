@@ -4028,6 +4028,47 @@
           "summary": "r19 notification event-set applied to mockups. dashboard.html bell + notifications.html history now show the exact r19 set across 4 groups: KEPT PO→Production/QC/PR-auto/Invoice-Overdue/potential-delay; ADDED Customer Follow-up, Document Cancelled/Rejected, Route delivered; CHANGED FG→Low real-time → single daily Low+Overstock summary deep-linking reused SP page (filter=low-overstock); REMOVED Customer Inactivity. The shared real-time over-reservation bell item on 29 other pages was replaced by the daily SP-summary so no page shows a removed event. All r18 read-driven mechanics preserved. Rendered + verified via Playwright + grep.",
           "overridden_by": null,
           "updated_at": "2026-07-31T17:20:00+07:00"
+        },
+        {
+          "agent": "po",
+          "phase": "gate1-completeness-po-so-document-print",
+          "status": "READY_FOR_UX_UI",
+          "gate_checklist": [
+            {
+              "item": "PO document print added to po.md — print-ready after save (G8/numbering-on-save), print AFTER save only, permission PO.Read (R); §2/§3/§5/§5.3/§6/§7/§9/§10",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "SO document print added to so.md BOTH modes ก+ข — print-ready after save (G8), print AFTER save only, permission SO.Read (R); distinct from Invoice print; §2/§3/§5c/§6/§7/§8/§10/§11",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Mirrors quotation.md (print-ready after save · print=Read · after-save-only) + consistent with G9 + numbering-on-save.md",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Completeness: in .md + auto-renders po.html/so.html + linked per-module index (PO/SO cards refreshed)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Did NOT touch functional-spec/index.html, gate1-delta.html, platform.md, non-functional.md, mockups/** (Delta-Gallery PO owns those)",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/requirements/erp-v2-ui-first/modules/po.md",
+            "docs/requirements/erp-v2-ui-first/modules/so.md",
+            "docs/design/erp-v2-ui-first/functional-spec/modules/index.html"
+          ],
+          "questions_for_pond": [],
+          "summary": "Gate-1 completeness: PO+SO document print were unspecified (QT had it; PO zero; SO only Invoice-print). Added print-ready + พิมพ์/ส่ง document action to po.md (PO doc) + so.md (SO doc both ก+ข), mirroring quotation.md: print only AFTER save (G8), permission module Read (R), no status change. UX/UI: build PO/SO print-ready view consistent with quotation-print.html.",
+          "overridden_by": null,
+          "updated_at": "2026-07-31T17:05:00+07:00"
         }
       ]
     }
