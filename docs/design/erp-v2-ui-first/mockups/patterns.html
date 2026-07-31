@@ -1,0 +1,176 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global Patterns (r17) · ESSENCE Hub System</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%230E7C7B%22%2F%3E%3Cpath%20d%3D%22M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-hover:#12938C;--primary-bg:#E6F4F3;--sidebar:#10322F;
+ --text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#FFFFFF;
+ --success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;--radius:8px;--radius-lg:12px;--radius-sm:6px;}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55}
+a{color:var(--primary);text-decoration:none}
+h1{font-size:26px;font-weight:600}h2{font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px}h3{font-size:15px;font-weight:600}
+.muted{color:var(--text2)}.tiny{font-size:12px;color:var(--text3)}
+.hero{background:linear-gradient(135deg,#10322F,#0E7C7B);color:#fff;padding:36px 0}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.hero .brand{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:600;margin-bottom:14px}
+.hero p{opacity:.9;max-width:760px;margin-top:8px}
+.tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:12px;margin-bottom:6px}
+section{padding:26px 0;border-bottom:1px solid var(--border2)}
+.sub{color:var(--text2);margin:4px 0 16px;font-size:13px}
+.dot{width:11px;height:11px;border-radius:3px;background:var(--primary)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 1px 3px rgba(16,25,40,.06);overflow:hidden}
+.card-h{padding:14px 18px;border-bottom:1px solid var(--border2);font-weight:600}
+.card-b{padding:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover);color:#fff}
+.btn-danger{color:var(--error);border-color:#F2C2C2}.btn-danger:hover{background:#FCEAEA}
+.btn-sm{height:32px;padding:0 12px;font-size:13px}
+.rulelist{list-style:none;margin:0;padding:0;font-size:13px}
+.rulelist li{display:flex;gap:9px;padding:6px 0;border-bottom:1px dashed var(--border2)}
+.rulelist li:last-child{border-bottom:none}
+.yes{color:var(--success);font-weight:700}.no{color:var(--error);font-weight:700}
+.empty{text-align:center;padding:34px 18px}.empty .ei{font-size:38px;opacity:.5}.empty h3{margin:12px 0 6px}.empty p{color:var(--text2);margin-bottom:16px;font-size:13px}
+.err-preview{text-align:center;padding:30px 18px}
+.err-code{font-size:44px;font-weight:700;letter-spacing:.04em}
+.err-403 .err-code{color:var(--warning)}.err-404 .err-code{color:var(--info)}.err-500 .err-code{color:var(--error)}
+.err-preview h3{margin:6px 0 6px}.err-preview p{color:var(--text2);font-size:13px;margin-bottom:16px;max-width:340px;margin-left:auto;margin-right:auto}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
+.modal-bg.open{display:block}
+.modal{max-width:440px;margin:70px auto;background:#fff;border-radius:var(--radius-lg);box-shadow:0 12px 40px rgba(16,25,40,.28);overflow:hidden}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;padding:4px}
+.modal-b{padding:20px}.modal-f{display:flex;justify-content:flex-end;gap:10px;padding:0 20px 20px}
+.cfm-sum{background:#FAFBFC;border:1px solid var(--border2);border-radius:8px;padding:11px 14px;font-size:13px;margin:12px 0 4px}
+.cfm-sum .cr{display:flex;justify-content:space-between;gap:10px;padding:3px 0}.cfm-sum .cr .k{color:var(--text2)}.cfm-sum .cr .v{font-weight:600;text-align:right}
+.snackwrap{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;flex-direction:column;gap:10px}
+.snack{display:flex;gap:11px;align-items:flex-start;background:#10322F;color:#fff;border-radius:10px;padding:13px 15px;box-shadow:0 10px 28px rgba(16,25,40,.32);width:330px;max-width:90vw}
+.snack .sc{flex:1;font-size:13px}.snack a{color:#8FE3DC;font-weight:600}.snack .sx{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px}
+.note{background:#E8F0FE;border:1px solid #BBD1F8;color:#204A9E;border-radius:8px;padding:12px 14px;font-size:13px}
+.note b{color:inherit}
+.codebit{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#EEF1F4;border-radius:5px;padding:1px 6px;color:#334}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
+</style></head><body>
+<div class="hero"><div class="wrap">
+ <div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="10" fill="#0E7C7B"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff"/></svg> ESSENCE Hub System</div>
+ <span class="tag">r17 · Global Patterns (P-1 · P-2 · P-3) + Shell patterns (O)</span>
+ <h1>รูปแบบมาตรฐานทั้งระบบ (Global Patterns)</h1>
+ <p>หน้ารวมรูปแบบที่ใช้ซ้ำทุกหน้า: <b>ป็อปอัปยืนยันก่อนบันทึก</b> · <b>หน้า error</b> (403/404/500) · <b>สถานะว่าง (empty state)</b> · และองค์ประกอบ shell (กระดิ่ง/snackbar/แบนเนอร์ session/ปิดบัญชีของฉัน) ที่เห็นตัวอย่างจริงได้ที่ <a href="dashboard.html" style="color:#8FE3DC">แดชบอร์ด →</a></p>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ P-1 submit-confirm ============ -->
+<section>
+ <h2><span class="dot"></span>P-1 · ป็อปอัปยืนยันก่อนบันทึก (Global submit-confirm)</h2>
+ <p class="sub">ทุก action ที่<b>เปลี่ยนข้อมูล</b>ต้องยืนยันก่อนเสมอ · ยกเลิก = ไม่มีอะไรเปลี่ยน (ไม่กินเลขเอกสาร ไม่บันทึก audit) · อ้าง non-functional.md §9.1</p>
+ <div class="grid2">
+  <div class="card"><div class="card-h">ต้องยืนยัน / ไม่ต้องยืนยัน</div><div class="card-b">
+    <ul class="rulelist">
+     <li><span class="yes">ต้อง ✔</span><div>สร้าง · บันทึก/แก้ไข · เปลี่ยนสถานะ · ลบ · void · ยกเลิก · อนุมัติ · ตั้งค่า (VAT/บริษัท/role)</div></li>
+     <li><span class="no">ไม่ ✕</span><div>ค้นหา · เปิดดู/อ่าน · กรอง (filter) · เปลี่ยนหน้า (pagination) — ทำได้ทันที ไม่มีป็อปอัป</div></li>
+    </ul>
+    <div class="note" style="margin-top:14px">โครงป็อปอัป: <b>(1)</b> หัวเรื่องบอกการกระทำ · <b>(2)</b> สรุปสิ่งที่จะเปลี่ยน (เอกสาร/ค่า/สถานะ เดิม→ใหม่; ถ้าออกเลขตอนบันทึก = แจ้งว่าเลขจะออกเมื่อยืนยัน) · <b>(3)</b> ปุ่ม <b>ยืนยัน</b> + <b>ยกเลิก</b></div>
+  </div></div>
+  <div class="card"><div class="card-h">ลองใช้งานจริง</div><div class="card-b">
+    <p class="tiny" style="margin-bottom:14px">คลิกเพื่อดูป็อปอัปยืนยัน 3 แบบ — สังเกตว่าสรุปการเปลี่ยนแปลงชัดเจน และมีปุ่มยกเลิกเสมอ</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="openM('cfmSave')">💾 บันทึก (create)</button>
+      <button class="btn btn-sm" onclick="openM('cfmStatus')">🔀 เปลี่ยนสถานะ</button>
+      <button class="btn btn-danger btn-sm" onclick="openM('cfmVoid')">🗑 ยกเลิก/void</button>
+    </div>
+    <p class="tiny" style="margin-top:14px">💡 snackbar ยืนยันผลสำเร็จจะเด้งมุมขวาล่าง (คนละอย่างกับป็อปอัป — เป็นการแจ้ง<b>หลัง</b>ทำสำเร็จ)</p>
+  </div></div>
+ </div>
+</section>
+
+<!-- ============ P-2 error pages ============ -->
+<section>
+ <h2><span class="dot" style="background:#D64545"></span>P-2 · หน้า Error ที่เป็นมิตร (403 / 404 / 500)</h2>
+ <p class="sub">ข้อความไทยเข้าใจง่าย + ทางออกกลับเสมอ · ไม่โชว์ stack trace / enum ดิบ / error ระบบ · อ้าง non-functional.md §9</p>
+ <div class="grid3">
+  <div class="card err-403"><div class="err-preview"><div class="err-code">403</div><h3>ไม่มีสิทธิ์เข้าถึง</h3><p>บัญชีของคุณยังไม่มีสิทธิ์ดูหน้านี้ หากต้องการเข้าถึง กรุณาติดต่อผู้ดูแลระบบ</p><a class="btn btn-sm" href="dashboard.html">← กลับแดชบอร์ด</a></div></div>
+  <div class="card err-404"><div class="err-preview"><div class="err-code">404</div><h3>ไม่พบหน้าที่ต้องการ</h3><p>หน้าหรือเอกสารที่คุณเปิดอาจถูกย้าย ลบ หรือลิงก์ไม่ถูกต้อง</p><a class="btn btn-sm" href="dashboard.html">← กลับแดชบอร์ด</a></div></div>
+  <div class="card err-500"><div class="err-preview"><div class="err-code">500</div><h3>ระบบขัดข้องชั่วคราว</h3><p>เกิดข้อผิดพลาดที่ฝั่งระบบ กรุณาลองใหม่อีกครั้ง หากยังพบปัญหา กรุณาแจ้งผู้ดูแลระบบ</p><button class="btn btn-sm" onclick="location.reload()">↻ ลองใหม่</button></div></div>
+ </div>
+</section>
+
+<!-- ============ P-2 empty states ============ -->
+<section>
+ <h2><span class="dot" style="background:#E0912F"></span>P-2 · สถานะว่าง (Empty State)</h2>
+ <p class="sub">ทุก list / ผลค้นหา ที่ไม่มีข้อมูล = ข้อความเป็นมิตร + ปุ่มถัดไป (ถ้ามี) — ไม่ใช่หน้าเปล่าหรือ error</p>
+ <div class="grid3">
+  <div class="card"><div class="empty"><div class="ei">🔍</div><h3>ไม่พบผลการค้นหา</h3><p>ลองปรับคำค้นหรือช่วงวันที่ใหม่อีกครั้ง</p><button class="btn btn-sm">ล้างตัวกรอง</button></div></div>
+  <div class="card"><div class="empty"><div class="ei">📄</div><h3>ยังไม่มีรายการ</h3><p>ยังไม่มีใบสั่งซื้อในระบบ เริ่มต้นด้วยการเปิดใบแรก</p><a class="btn btn-primary btn-sm" href="po-create.html">➕ เปิด PO ใหม่</a></div></div>
+  <div class="card"><div class="empty"><div class="ei">🔔</div><h3>ไม่มีการแจ้งเตือน</h3><p>รายการที่ปิดไปแล้วยังดูย้อนหลังได้ที่ "ดูทั้งหมด"</p><a class="btn btn-sm" href="notifications.html">ดูทั้งหมด</a></div></div>
+ </div>
+</section>
+
+<!-- ============ O shell patterns ============ -->
+<section>
+ <h2><span class="dot" style="background:#8E5BD9"></span>O · องค์ประกอบ Shell (กระดิ่ง 4 ประเภท · snackbar+สั่น · session banner · ปิดบัญชีของฉัน)</h2>
+ <p class="sub">ดูตัวอย่างที่เคลื่อนไหวจริงได้ที่ <a href="dashboard.html">แดชบอร์ด</a> (มีปุ่มรีวิวมุมซ้ายล่าง) · หน้าประวัติแจ้งเตือน = <a href="notifications.html">การแจ้งเตือนทั้งหมด</a></p>
+ <div class="grid2">
+   <div class="card"><div class="card-h">กระดิ่งแจ้งเตือน (redesign)</div><div class="card-b">
+     <ul class="rulelist">
+       <li>🔴 <div>Badge สูงสุด <b>"9+"</b></div></li>
+       <li>❌ <div><b>ปิดราย item (✕)</b> = เอาออกจากกระดิ่งของ user นั้น — <b>ไม่ใช่ "อ่านแล้ว"</b> (dismiss ≠ read; เป็นรายบุคคล)</div></li>
+       <li>🧹 <div>ปุ่ม <b>"ปิดทั้งหมด"</b> = ล้างกระดิ่งของตัวเอง (badge → 0)</div></li>
+       <li>📜 <div>ลิงก์ <b>"ดูทั้งหมด"</b> → หน้าประวัติ 20/หน้า (ประวัติไม่หายแม้ปิดจากกระดิ่ง)</div></li>
+       <li>🗂️ <div>จัดกลุ่ม <b>4 ประเภท</b>: <span class="codebit">1 งานส่งต่อข้ามแผนก</span> <span class="codebit">2 ความเสี่ยงสต็อก/ผลิต</span> <span class="codebit">3 การเงิน</span> <span class="codebit">4 วงจรลูกค้า</span></div></li>
+       <li>📳 <div>มี notification ใหม่ → <b>snackbar เด้ง + กระดิ่งสั่น (shake)</b></div></li>
+     </ul>
+   </div></div>
+   <div class="card"><div class="card-h">Session / บัญชี</div><div class="card-b">
+     <ul class="rulelist">
+       <li>⏳ <div><b>แบนเนอร์เตือน session</b> โผล่ล่วงหน้า 10 นาที "อีก 10 นาทีจะออกจากระบบ" ก่อนตัดเวลา 06:00 (A2)</div></li>
+       <li>🚫 <div>เมนูผู้ใช้มี <b>"ปิดบัญชีของฉัน"</b> → ยืนยัน → ตัด session + login ไม่ได้จนกว่า Admin เปิดคืน (A11)</div></li>
+       <li>🔑 <div><b>"ลืมรหัสผ่าน"</b> บน login → <a href="reset-password.html">reset-password</a> (ลิงก์ใช้ครั้งเดียว 3 วัน, ไม่เปิดเผยว่ามีบัญชีหรือไม่)</div></li>
+     </ul>
+     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+       <button class="btn btn-sm" onclick="pushSnack('🏭','<b>แจ้งเตือนใหม่</b><br><a href=\'production.html\'>PO เข้าคิวผลิต</a>')">📳 ลอง snackbar</button>
+       <a class="btn btn-sm" href="dashboard.html">▶ ดู shell จริง</a>
+     </div>
+   </div></div>
+ </div>
+</section>
+
+<!-- ============ P-3 i18n ============ -->
+<section style="border-bottom:none">
+ <h2><span class="dot" style="background:#52606D"></span>P-3 · เตรียมพร้อม i18n</h2>
+ <p class="sub">เฟสนี้แสดงภาษาไทยอย่างเดียว แต่โครงสร้างต้องพร้อมสลับภาษาในอนาคต</p>
+ <div class="note">ข้อความ UI ทุกจุด<b>ไม่ hardcode ปนใน logic</b> — วางเป็น label ที่ externalize ได้ (คีย์ข้อความ) · สถานะ/รหัส (enum) แปลผ่าน label map เสมอ ไม่โชว์ค่าดิบ (เช่น <span class="codebit">QCApproved → "QC ผ่าน"</span>) · เลข/วันที่/สกุลเงินจัดรูปแบบตาม locale</div>
+</section>
+
+</div>
+
+<!-- confirm popups -->
+<div id="cfmSave" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ยืนยันการบันทึก</h3><button class="modal-x" onclick="closeM('cfmSave')">✕</button></div>
+  <div class="modal-b"><p class="muted" style="font-size:13px">ตรวจสอบสิ่งที่จะเปลี่ยนแปลงก่อนยืนยัน</p>
+   <div class="cfm-sum"><div class="cr"><span class="k">เอกสาร</span><span class="v">ใบสั่งซื้อ (PO)</span></div><div class="cr"><span class="k">การกระทำ</span><span class="v">สร้างใหม่ (เลขออกเมื่อยืนยัน)</span></div><div class="cr"><span class="k">ลูกค้า</span><span class="v">กลอรี่ คอสเมติกส์</span></div><div class="cr"><span class="k">ยอดรวม</span><span class="v">128,400.00 บาท</span></div></div>
+   <p class="tiny" style="margin-top:8px">ยกเลิก = ไม่มีการเปลี่ยนแปลง / ไม่กินเลขเอกสาร</p></div>
+  <div class="modal-f"><button class="btn" onclick="closeM('cfmSave')">ยกเลิก</button><button class="btn btn-primary" onclick="closeM('cfmSave');pushSnack('✅','บันทึกสำเร็จ — ออกเลข <b>PO-202607-000186</b>')">ยืนยัน</button></div>
+</div></div>
+<div id="cfmStatus" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ยืนยันการเปลี่ยนสถานะ</h3><button class="modal-x" onclick="closeM('cfmStatus')">✕</button></div>
+  <div class="modal-b"><div class="cfm-sum"><div class="cr"><span class="k">เอกสาร</span><span class="v">DN-20260730-00119</span></div><div class="cr"><span class="k">สถานะ</span><span class="v">อยู่ระหว่างจัดส่ง → ส่งสำเร็จ</span></div></div>
+   <p class="tiny" style="margin-top:8px">ยกเลิก = ไม่มีการเปลี่ยนแปลง</p></div>
+  <div class="modal-f"><button class="btn" onclick="closeM('cfmStatus')">ยกเลิก</button><button class="btn btn-primary" onclick="closeM('cfmStatus');pushSnack('✅','อัปเดตสถานะเป็น <b>ส่งสำเร็จ</b> แล้ว')">ยืนยัน</button></div>
+</div></div>
+<div id="cfmVoid" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ยืนยันการยกเลิก (void)</h3><button class="modal-x" onclick="closeM('cfmVoid')">✕</button></div>
+  <div class="modal-b"><div class="note" style="background:#FBF0DE;border-color:#F1D6A6;color:#7A4A0F;margin-bottom:12px">⚠️ การยกเลิกจะคงเลขเอกสารไว้เป็นประวัติ (gapless) และย้อนกลับไม่ได้</div>
+   <div class="cfm-sum"><div class="cr"><span class="k">เอกสาร</span><span class="v">INV-202607-0031</span></div><div class="cr"><span class="k">การกระทำ</span><span class="v">void (ยกเลิกใบแจ้งหนี้)</span></div></div>
+   <div style="margin-top:12px"><label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">เหตุผล <span style="color:var(--error)">*</span></label><textarea style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-family:inherit;font-size:14px" rows="2" placeholder="ระบุเหตุผลการยกเลิก"></textarea></div></div>
+  <div class="modal-f"><button class="btn" onclick="closeM('cfmVoid')">ยกเลิก</button><button class="btn btn-danger" onclick="closeM('cfmVoid');pushSnack('🗑','ยกเลิก (void) <b>INV-202607-0031</b> แล้ว')">ยืนยันการยกเลิก</button></div>
+</div></div>
+
+<div class="snackwrap" id="snackwrap"></div>
+<script>
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function pushSnack(icon,html){var w=document.getElementById('snackwrap');var s=document.createElement('div');s.className='snack';
+  s.innerHTML='<span style="font-size:18px">'+icon+'</span><div class="sc">'+html+'</div><button class="sx" onclick="this.parentNode.remove()">✕</button>';
+  w.appendChild(s);setTimeout(function(){s.remove();},5000);}
+</script>
+</body></html>

@@ -1,0 +1,114 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การแจ้งเตือนทั้งหมด · ESSENCE Hub System</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2310322F%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230E7C7B%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22url(%23g)%22%2F%3E%3Cpath%20d%3D%22M20%209c3.6%205.4%206.4%208.2%206.4%2011.8a6.4%206.4%200%201%201-12.8%200C13.6%2017.2%2016.4%2014.4%2020%209z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#0E7C7B;--primary-hover:#12938C;--primary-bg:#E6F4F3;--sidebar:#10322F;--sidebar-text:#CFE0DE;
+ --text:#1F2933;--text2:#52606D;--text3:#7B8794;--border:#D7DDE3;--border2:#E4E7EB;--bg:#F4F6F8;--card:#FFFFFF;
+ --success:#2E9E5B;--warning:#E0912F;--error:#D64545;--info:#2C7BE5;--radius:8px;--radius-lg:12px;--radius-sm:6px;}
+body{font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+h1{font-size:24px;font-weight:600;line-height:1.3}h3{font-size:16px;font-weight:600}
+.muted{color:var(--text2)}.tiny{font-size:12px;color:var(--text3)}
+.app{display:flex;min-height:100vh}
+.sider{width:240px;background:var(--sidebar);color:var(--sidebar-text);flex-shrink:0;position:sticky;top:0;height:100vh;overflow:auto;z-index:30}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 18px;color:#fff;font-weight:600;font-size:15px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand small{display:block;font-size:11px;color:rgba(255,255,255,.5);font-weight:400}
+.menu-group{padding:14px 20px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.menu a{display:flex;align-items:center;gap:12px;padding:10px 20px;color:var(--sidebar-text);font-size:14px;border-left:3px solid transparent}
+.menu a:hover{background:rgba(255,255,255,.06);color:#fff}
+.menu a.active{background:var(--primary);color:#fff;border-left-color:#fff;font-weight:500}
+.menu a .ico{width:18px;text-align:center;opacity:.9}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.header{height:64px;background:var(--card);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:20;gap:14px}
+.crumb{font-size:12px;color:var(--text3)}.crumb a{color:var(--text3)}.crumb b{color:var(--text2)}
+.gsearch{flex:1;max-width:320px;position:relative}
+.gsearch input{width:100%;height:38px;border:1px solid var(--border);border-radius:20px;padding:0 14px 0 36px;font-family:inherit;font-size:13px}
+.gsearch .si{position:absolute;left:13px;top:9px;color:var(--text3)}
+.right{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-bg);color:var(--primary);display:grid;place-items:center;font-weight:600}
+.userbox{display:flex;align-items:center;gap:8px}.userbox .nm{font-size:13px;font-weight:500;line-height:1.2}.userbox .rl{font-size:11px;color:var(--text3)}
+.noti-btn{background:none;border:none;cursor:pointer;font-size:18px;position:relative;color:var(--text2);padding:4px}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--error);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.content{padding:24px;flex:1}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.pagehead .sub{color:var(--text2);margin-top:4px;font-size:13px;max-width:720px}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 1px 3px rgba(16,25,40,.06);margin-bottom:20px}
+.card-h{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-b{padding:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-sm{height:32px;padding:0 12px;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);font-size:13px;background:#fff;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--primary-bg);border-color:var(--primary);color:var(--primary);font-weight:500}
+.chip .d{width:9px;height:9px;border-radius:3px}
+.filterchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius);border:1px solid;margin-bottom:16px;font-size:13px}
+.alert .ai{font-size:18px;flex-shrink:0}.alert-info{background:#E8F0FE;border-color:#BBD1F8;color:#204A9E}.alert a,.alert b{color:inherit}
+.badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;border:1px solid;white-space:nowrap}
+.b-neutral{color:#52606D;background:#EEF1F4;border-color:#D7DDE3}.b-success{color:#1E7A44;background:#E6F5EC;border-color:#B7E0C6}
+.ttag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap}
+.ttag .gi{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;color:#fff}
+.g1{background:#2C7BE5}.g2{background:#E0912F}.g3{background:#2E9E5B}.g4{background:#8E5BD9}
+.nlist{list-style:none;margin:0;padding:0}
+.nrow{display:flex;gap:12px;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--border2)}
+.nrow:hover{background:#FAFCFC}.nrow:last-child{border-bottom:none}
+.nrow .di{font-size:18px;flex-shrink:0;margin-top:1px}
+.nrow .nbody{flex:1;min-width:0}.nrow .nbody a{font-weight:600}
+.nrow .nmeta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.nrow .nstate{flex-shrink:0;text-align:right;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.pager{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;flex-wrap:wrap;gap:10px;border-top:1px solid var(--border2)}
+.pager .pages{display:flex;gap:6px}.pgbtn{min-width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;font-size:13px;font-family:inherit}
+.pgbtn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
+.drawer-bg{display:none}
+@media(max-width:991px){
+ .sider{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .2s;box-shadow:2px 0 12px rgba(0,0,0,.2)}
+ body.nav-open .sider{transform:translateX(0)}
+ body.nav-open .drawer-bg{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:25}
+ .hamb{display:inline-flex}.gsearch{display:none}
+}
+@media(max-width:575px){.content{padding:14px}.userbox .nm,.userbox .rl{display:none}.nrow .nstate{display:none}}
+</style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app">
+<aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div>
+<div class="menu-group">หลัก</div><nav class="menu"><a href="dashboard.html"><span class="ico">📊</span>แดชบอร์ด</a></nav>
+<div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html"><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html"><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html"><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html"><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav>
+<div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html"><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html"><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html"><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html"><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav>
+<div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html"><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html"><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html"><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html"><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav>
+<div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html"><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html"><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html"><span class="ico">💳</span>ใบแจ้งหนี้</a></nav>
+<div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html"><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html"><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside>
+<div class="main">
+  <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
+   <div style="min-width:0"><div class="crumb"><a href="dashboard.html">หน้าหลัก</a> › <b>การแจ้งเตือนทั้งหมด</b></div></div>
+   <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
+   <div class="right"><button class="noti-btn" title="กระดิ่งการแจ้งเตือน" onclick="location.href='dashboard.html'">🔔<span class="noti-badge">9+</span></button><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">มีหลายแผนก</div></div></div></div></div>
+  <div class="content">
+   <div class="pagehead"><div><h1>การแจ้งเตือนทั้งหมด</h1><div class="sub">ประวัติการแจ้งเตือนทั้งหมดของคุณ (20 รายการ/หน้า) · แบ่งเป็น <b>4 ประเภท</b> · การกด <b>ปิด (✕) ที่กระดิ่ง</b> เอารายการออกจากกระดิ่งเท่านั้น <b>ไม่ใช่ "อ่านแล้ว"</b> — ประวัติยังคงอยู่ที่หน้านี้เสมอ</div></div></div>
+
+   <div class="alert alert-info"><span class="ai">🔔</span><div>ปิด (dismiss) = เอาออกจากกระดิ่งของคุณเท่านั้น (เป็นรายบุคคล ไม่กระทบเพื่อนร่วมงาน) · หน้านี้เก็บ<b>ประวัติครบทุกรายการ</b>รวมที่ปิดไปแล้ว · คลิกลิงก์ในแต่ละรายการเพื่อไปยังเอกสารปลายทาง</div></div>
+
+   <div class="filterchips">
+     <span class="chip on">ทั้งหมด <b>&nbsp;68</b></span>
+     <span class="chip"><span class="d g1"></span>1 · งานส่งต่อข้ามแผนก</span>
+     <span class="chip"><span class="d g2"></span>2 · ความเสี่ยงสต็อก/ผลิต</span>
+     <span class="chip"><span class="d g3"></span>3 · การเงิน/เครดิต</span>
+     <span class="chip"><span class="d g4"></span>4 · วงจรลูกค้า</span>
+   </div>
+
+   <div class="card"><div class="card-h"><h3>รายการแจ้งเตือน</h3><span class="tiny">เรียงใหม่→เก่า</span></div>
+    <ul class="nlist">
+     <li class="nrow"><span class="di">🏭</span><div class="nbody"><a href="production.html">งานใหม่รอรับ: PO-202607-000186 เข้าคิว "รอรับงาน"</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· PO ยืนยัน → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อสักครู่</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">📉</span><div class="nbody"><a href="supply-planning.html">FG ต่ำกว่าเป้า: เซรั่มวิตซี 30ml เหลือคุ้ม 3 วัน — แนะนำผลิต 1,200 ชิ้น</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· วางแผนผลิต</span></div></div><div class="nstate"><span class="tiny">8 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">🔒</span><div class="nbody"><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="nmeta"><span class="ttag"><span class="gi g2">2</span>ความเสี่ยงสต็อก/ผลิต</span><span>· สต็อก</span></div></div><div class="nstate"><span class="tiny">10 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">📥</span><div class="nbody"><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· GR-008 รับไม่ครบ → จัดซื้อ</span></div></div><div class="nstate"><span class="tiny">15 นาทีที่แล้ว</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">💳</span><div class="nbody"><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0031 เกินกำหนดชำระ 5 วัน (กลอรี่ คอสเมติกส์)</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">วันนี้ 09:00</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">👤</span><div class="nbody"><a href="customer-detail.html">ลูกค้าเงียบหาย: บิวตี้เฮ้าส์ ไม่มีคำสั่งซื้อ 90 วัน → เปลี่ยนเป็น "ไม่เคลื่อนไหว"</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">วันนี้ 06:00</span><span class="badge b-success">อยู่ในกระดิ่ง</span></div></li>
+     <li class="nrow"><span class="di">🔁</span><div class="nbody"><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → การผลิต</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 16:20</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+     <li class="nrow"><span class="di">✅</span><div class="nbody"><a href="qc.html">QC ตรวจรับวัตถุดิบผ่าน: Lot RM-ALC-0091 (แอลกอฮอล์) → เข้าสต็อก</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· QC → สต็อก</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 14:05</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+     <li class="nrow"><span class="di">🚚</span><div class="nbody"><a href="shipping.html">DN-20260729-00118 ส่งสำเร็จ — ลูกค้ารับครบ</a><div class="nmeta"><span class="ttag"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก</span><span>· จัดส่ง → ขาย</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 11:40</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+     <li class="nrow"><span class="di">💳</span><div class="nbody"><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0028 เกินกำหนดชำระ 12 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g3">3</span>การเงิน/เครดิต</span><span>· การเงิน</span></div></div><div class="nstate"><span class="tiny">เมื่อวาน 09:00</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+     <li class="nrow"><span class="di">👤</span><div class="nbody"><a href="customer-detail.html">ลูกค้าเงียบหาย: สปาราตรี ไม่มีคำสั่งซื้อ 90 วัน</a><div class="nmeta"><span class="ttag"><span class="gi g4">4</span>วงจรลูกค้า</span><span>· ลูกค้า</span></div></div><div class="nstate"><span class="tiny">2 วันก่อน</span><span class="badge b-neutral">ปิดจากกระดิ่งแล้ว</span></div></li>
+    </ul>
+    <div class="pager"><span class="tiny">แสดง 1–11 จาก 68 รายการ (20/หน้า)</span><div class="pages"><button class="pgbtn">‹</button><button class="pgbtn on">1</button><button class="pgbtn">2</button><button class="pgbtn">3</button><button class="pgbtn">4</button><button class="pgbtn">›</button></div></div>
+   </div>
+  </div>
+</div></div>
+</body></html>

@@ -125,6 +125,44 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
 .hamb{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--text)}
 .mobilebar{display:none}
 .drawer-bg{display:none}
+/* ===== r17 shell: bell redesign · user menu · snackbar · session banner · submit-confirm ===== */
+@keyframes bellshake{0%,100%{transform:rotate(0)}15%{transform:rotate(-16deg)}30%{transform:rotate(13deg)}45%{transform:rotate(-10deg)}60%{transform:rotate(7deg)}75%{transform:rotate(-4deg)}}
+.noti-btn.shake{animation:bellshake .6s ease}
+.noti-panel{width:378px}
+.noti-h .na{display:flex;gap:12px;align-items:center;font-weight:400}
+.noti-scroll{max-height:60vh;overflow:auto}
+.noti-group{display:flex;align-items:center;gap:8px;padding:9px 14px 6px;font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--text2);background:#FAFBFC;border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:1}
+.noti-group .gi{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;color:#fff;flex-shrink:0}
+.noti-group .gn{margin-left:auto;color:var(--text3);font-weight:600}
+.g1{background:#2C7BE5}.g2{background:#E0912F}.g3{background:#2E9E5B}.g4{background:#8E5BD9}
+.noti-item .dis{margin-left:auto;color:var(--text3);cursor:pointer;font-size:13px;flex-shrink:0;line-height:1;padding:3px 5px;border-radius:6px}
+.noti-item .dis:hover{background:#FCEAEA;color:var(--error)}
+.noti-empty{display:none;text-align:center;padding:34px 20px;color:var(--text2)}.noti-empty .ei{font-size:34px;opacity:.5}.noti-empty h4{margin:8px 0 2px;font-size:14px}
+.usermenu-wrap{position:relative}
+.userbox{cursor:pointer;user-select:none;border-radius:8px;padding:3px 6px 3px 3px}.userbox:hover{background:#FAFCFC}
+.usermenu{display:none;position:absolute;right:0;top:calc(100% + 8px);width:236px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(16,25,40,.16);z-index:55;overflow:hidden}
+.usermenu.open{display:block}
+.usermenu .uh{padding:13px 15px;border-bottom:1px solid var(--border2)}.usermenu .uh .nm{font-weight:600}.usermenu .uh .rl{font-size:12px;color:var(--text3)}
+.usermenu button,.usermenu a{display:flex;width:100%;align-items:center;gap:11px;padding:11px 15px;background:none;border:none;font-family:inherit;font-size:14px;color:var(--text);cursor:pointer;text-align:left}
+.usermenu button:hover,.usermenu a:hover{background:#FAFCFC}
+.usermenu .sep{height:1px;background:var(--border2)}
+.usermenu .danger{color:var(--error)}.usermenu .danger:hover{background:#FCEAEA}
+.snackwrap{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;flex-direction:column;gap:10px;max-width:92vw}
+.snack{display:flex;gap:11px;align-items:flex-start;background:#10322F;color:#fff;border-radius:10px;padding:13px 15px;box-shadow:0 10px 28px rgba(16,25,40,.32);width:340px;max-width:92vw;animation:snackin .25s ease}
+@keyframes snackin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+.snack .si2{font-size:18px;flex-shrink:0}.snack .sc{flex:1;font-size:13px;line-height:1.5}.snack a{color:#8FE3DC;font-weight:600}
+.snack .sx{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0}
+.sessionbar{display:none;background:#FBF0DE;border-bottom:1px solid #F1D6A6;color:#7A4A0F;padding:10px 20px;font-size:13px;align-items:center;gap:12px}
+.sessionbar.show{display:flex}.sessionbar .sbi{font-size:16px;flex-shrink:0}.sessionbar b{color:inherit}
+.sessionbar .sb-r{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(16,25,40,.45);z-index:60;overflow:auto;padding:20px}
+.modal-bg.open{display:block}
+.modal{max-width:440px;margin:70px auto;background:#fff;border-radius:var(--radius-lg);box-shadow:0 12px 40px rgba(16,25,40,.28);overflow:hidden}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border2)}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;padding:4px}
+.modal-b{padding:20px}.modal-f{display:flex;justify-content:flex-end;gap:10px;padding:0 20px 20px}
+.cfm-sum{background:#FAFBFC;border:1px solid var(--border2);border-radius:8px;padding:11px 14px;font-size:13px;margin:12px 0 4px}
+.cfm-sum .cr{display:flex;justify-content:space-between;gap:10px;padding:3px 0}.cfm-sum .cr .k{color:var(--text2)}.cfm-sum .cr .v{font-weight:600;text-align:right}
 @media(max-width:991px){
  .sider{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .2s;box-shadow:2px 0 12px rgba(0,0,0,.2)}
  body.nav-open .sider{transform:translateX(0)}
@@ -143,13 +181,46 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  .mobilebar a .mi{font-size:18px}.mobilebar a.active{color:var(--primary)}
 }
 </style></head><body><div class="drawer-bg" onclick="document.body.classList.remove('nav-open')"></div><div class="app"><aside class="sider"><div class="brand"><svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10322F"/><stop offset="1" stop-color="#0E7C7B"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#eg)"/><path d="M20 9c3.6 5.4 6.4 8.2 6.4 11.8a6.4 6.4 0 1 1-12.8 0C13.6 17.2 16.4 14.4 20 9z" fill="#fff" fill-opacity=".95"/><circle cx="17.6" cy="19.5" r="1.7" fill="#0E7C7B" fill-opacity=".35"/></svg><div>ESSENCE Hub<small>ระบบบริหารโรงงาน</small></div></div><div class="menu-group">หลัก</div><nav class="menu"><a href="dashboard.html" class="active"><span class="ico">📊</span>แดชบอร์ด</a></nav><div class="menu-group">งานขาย</div><nav class="menu"><a href="customers.html" class=""><span class="ico">👥</span>ลูกค้า</a><a href="quotation-list.html" class=""><span class="ico">📝</span>ใบเสนอราคา (OEM)</a><a href="po-list.html" class=""><span class="ico">📄</span>ใบสั่งซื้อ (PO)</a><a href="so-list.html" class=""><span class="ico">🧴</span>ใบสั่งขาย (Own-Brand)</a></nav><div class="menu-group">คลัง & จัดซื้อ</div><nav class="menu"><a href="stock.html" class=""><span class="ico">🗄️</span>สต็อก (RM + FG)</a><a href="purchase-request.html" class=""><span class="ico">📥</span>คำขอสั่งซื้อ (PR)</a><a href="supplier.html" class=""><span class="ico">🏷️</span>ผู้จำหน่าย (Supplier)</a><a href="bom.html" class=""><span class="ico">🧬</span>สูตรการผลิต (BOM)</a></nav><div class="menu-group">ผลิต & คุณภาพ</div><nav class="menu"><a href="production.html" class=""><span class="ico">🏭</span>การผลิต</a><a href="supply-planning.html" class=""><span class="ico">📈</span>วางแผนผลิต (Supply)</a><a href="qc.html" class=""><span class="ico">🛡️</span>ตรวจคุณภาพ (QC)</a><a href="return.html" class=""><span class="ico">↩️</span>คืนวัตถุดิบ</a></nav><div class="menu-group">จัดส่ง & การเงิน</div><nav class="menu"><a href="shipping.html" class=""><span class="ico">🚚</span>การจัดส่ง</a><a href="delivery-note.html" class=""><span class="ico">📦</span>ใบจัดส่ง (DN)</a><a href="invoices.html" class=""><span class="ico">💳</span>ใบแจ้งหนี้</a></nav><div class="menu-group">ระบบ</div><nav class="menu"><a href="trace.html" class=""><span class="ico">🔗</span>สืบย้อนกลับ</a><a href="settings.html" class=""><span class="ico">⚙️</span>ตั้งค่าระบบ</a></nav></aside><div class="main">
+  <div class="sessionbar" id="sessionBar"><span class="sbi">⏳</span><div><b>อีก 10 นาทีจะออกจากระบบ</b> — ระบบจะออกจากระบบอัตโนมัติเวลา 06:00 กรุณาบันทึกงานที่ค้างไว้ก่อน</div><div class="sb-r"><button class="btn btn-sm btn-primary" onclick="document.getElementById('sessionBar').classList.remove('show')">อยู่ต่อ</button><button class="btn btn-sm" onclick="document.getElementById('sessionBar').classList.remove('show')">ปิด</button></div></div>
   <div class="header"><button class="hamb" onclick="document.body.classList.toggle('nav-open')">☰</button>
    <div style="min-width:0"><div class="crumb">หน้าหลัก › <b>แดชบอร์ด</b></div></div>
    <div class="gsearch"><span class="si">🔍</span><input placeholder="ค้นหาทั้งระบบ: PO / ลูกค้า / Lot / ใบแจ้งหนี้"></div>
-   <div class="right"><div class="noti-wrap"><button class="noti-btn" onclick="this.parentNode.querySelector('.noti-panel').classList.toggle('open')">🔔<span class="noti-badge">6</span></button>
- <div class="noti-panel"><div class="noti-h"><span>การแจ้งเตือน (6)</span><button class="btn-link" style="font-size:12px" onclick="this.closest('.noti-panel').querySelectorAll('.noti-item').forEach(function(e){e.style.display='none'});this.closest('.noti-wrap').querySelector('.noti-badge').style.display='none'">อ่านแล้วทั้งหมด</button></div>
- <div class="noti-item"><span class="di">🔒</span><div><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · แจ้ง Stock</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · จาก PO ยืนยัน</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🔁</span><div><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · ฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · จาก GR-008 รับไม่ครบ</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">🚚</span><div><a href="shipping.html">PO-202607-000170 พร้อมจัดส่ง — เข้าคิวจัดส่งแล้ว</a><div class="tm">1 ชม.ที่แล้ว · จากฝ่ายผลิต</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div><div class="noti-item"><span class="di">↩️</span><div><a href="po-detail.html">DN-123 (PO-175) ถูกปฏิเสธ → raise Sale (ติดต่อลูกค้า)</a><div class="tm">วันนี้ 11:40 · จัดส่ง</div></div><span class="ack" title="รับทราบ" onclick="this.closest('.noti-item').style.display='none'">✓</span></div>
- <div class="noti-f"><a href="trace.html">ดูกิจกรรมทั้งหมด</a></div></div></div><div class="userbox"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">มีหลายแผนก</div></div></div></div></div>
+   <div class="right"><div class="noti-wrap"><button class="noti-btn" id="notiBtn" onclick="document.getElementById('notiPanel').classList.toggle('open')">🔔<span class="noti-badge" id="notiBadge">9+</span></button>
+ <div class="noti-panel" id="notiPanel"><div class="noti-h"><span>การแจ้งเตือน <span id="notiCount">(12)</span></span><span class="na"><button class="btn-link" style="font-size:12px" onclick="dismissAll(this)">ปิดทั้งหมด</button></span></div>
+ <div class="noti-scroll" id="notiScroll">
+  <!-- กลุ่มที่ 1: งานส่งต่อข้ามแผนก -->
+  <div class="noti-group"><span class="gi g1">1</span>งานส่งต่อข้ามแผนก<span class="gn">4</span></div>
+  <div class="noti-item"><span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000185 (2 line) เข้าคิว "รอรับงาน"</a><div class="tm">5 นาทีที่แล้ว · PO ยืนยัน → การผลิต</div></div><span class="dis" title="ปิดรายการนี้ (เอาออกจากกระดิ่ง)" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">🔁</span><div><a href="production.html">QC ตีกลับ line #2 (โฟม) B-PO-202607-000181-2-1 → ผลิตซ้ำ run 2</a><div class="tm">2 นาทีที่แล้ว · QC → การผลิต</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">📥</span><div><a href="purchase-request.html">คำขอซื้อใหม่ PR-000032 (แอลกอฮอล์ขาด 50 ล.)</a><div class="tm">15 นาทีที่แล้ว · GR-008 รับไม่ครบ → จัดซื้อ</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">↩️</span><div><a href="po-detail.html">DN-20260730-00119 (PO-175) ลูกค้ายกเลิก → แจ้งฝ่ายขาย</a><div class="tm">วันนี้ 11:40 · จัดส่ง → ขาย</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <!-- กลุ่มที่ 2: ความเสี่ยงสต็อก/การผลิต -->
+  <div class="noti-group"><span class="gi g2">2</span>ความเสี่ยงสต็อก / การผลิต<span class="gn">3</span></div>
+  <div class="noti-item"><span class="di">📉</span><div><a href="supply-planning.html">FG ต่ำกว่าเป้า: เซรั่มวิตซี 30ml เหลือคุ้ม 3 วัน — แนะนำผลิต 1,200 ชิ้น</a><div class="tm">8 นาทีที่แล้ว · วางแผนผลิต</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">🔒</span><div><a href="stock.html">จองเกินคลัง: ไทเทเนียมไดออกไซด์ ใช้ได้ -15 กก. (PO-202607-000185)</a><div class="tm">10 นาทีที่แล้ว · สต็อก</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">⏳</span><div><a href="production.html">อาจส่งไม่ทัน: PRD-…091 คาดเสร็จเลยกำหนดส่ง SO-000042</a><div class="tm">30 นาทีที่แล้ว · การผลิต/ขาย</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <!-- กลุ่มที่ 3: การเงิน/เครดิต -->
+  <div class="noti-group"><span class="gi g3">3</span>การเงิน / เครดิต<span class="gn">3</span></div>
+  <div class="noti-item"><span class="di">💳</span><div><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0031 เกินกำหนดชำระ 5 วัน (กลอรี่ คอสเมติกส์)</a><div class="tm">วันนี้ 09:00 · การเงิน</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">💳</span><div><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0028 เกินกำหนดชำระ 12 วัน</a><div class="tm">เมื่อวาน · การเงิน</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">💳</span><div><a href="invoice-detail.html">ใบแจ้งหนี้ INV-202607-0025 เกินกำหนดชำระ 20 วัน</a><div class="tm">2 วันก่อน · การเงิน</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <!-- กลุ่มที่ 4: วงจรลูกค้า -->
+  <div class="noti-group"><span class="gi g4">4</span>วงจรลูกค้า<span class="gn">2</span></div>
+  <div class="noti-item"><span class="di">👤</span><div><a href="customer-detail.html">ลูกค้าเงียบหาย: บิวตี้เฮ้าส์ ไม่มีคำสั่งซื้อ 90 วัน → เปลี่ยนเป็น "ไม่เคลื่อนไหว"</a><div class="tm">วันนี้ 06:00 · ลูกค้า</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+  <div class="noti-item"><span class="di">👤</span><div><a href="customer-detail.html">ลูกค้าเงียบหาย: สปาราตรี ไม่มีคำสั่งซื้อ 90 วัน</a><div class="tm">วันนี้ 06:00 · ลูกค้า</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span></div>
+ </div>
+ <div class="noti-empty" id="notiEmpty"><div class="ei">🔔</div><h4>ไม่มีการแจ้งเตือน</h4><div class="tiny">รายการที่ปิดไปแล้วยังดูย้อนหลังได้ที่ "ดูทั้งหมด"</div></div>
+ <div class="noti-f"><a href="notifications.html">ดูทั้งหมด →</a></div></div></div>
+ <div class="usermenu-wrap"><div class="userbox" onclick="document.getElementById('userMenu').classList.toggle('open')"><div class="avatar">สม</div><div><div class="nm">สมชาย ใจดี</div><div class="rl">มีหลายแผนก</div></div><span style="color:var(--text3);font-size:11px">▾</span></div>
+   <div class="usermenu" id="userMenu">
+     <div class="uh"><div class="nm">สมชาย ใจดี</div><div class="rl">somchai.j · มีหลายแผนก</div></div>
+     <a href="settings.html">⚙️ ตั้งค่าระบบ</a>
+     <div class="sep"></div>
+     <button class="danger" onclick="document.getElementById('userMenu').classList.remove('open');document.getElementById('selfDisableModal').classList.add('open')">🚫 ปิดบัญชีของฉัน</button>
+     <div class="sep"></div>
+     <a href="login.html">↩️ ออกจากระบบ</a>
+   </div>
+ </div></div></div>
   <div class="content">
  <div class="pagehead"><div><h1>แดชบอร์ด <span class="pill">หน้าแรกหลังเข้าสู่ระบบ</span></h1><div class="sub">แต่ละแผนกเห็น<b>งานประจำวันของตัวเอง</b> · เห็นเฉพาะแผนกที่คุณมีสิทธิ์ <b>อ่าน (Read)</b> · ทุก tile กดเพื่อดูรายการ (drill-down) แล้วเข้าโมดูลได้ · รีเฟรชอัตโนมัติทุก 15 วินาที</div></div></div>
  <div class="refbar" style="margin-bottom:12px"><span style="font-weight:600">ช่วงเวลา:</span>
@@ -224,4 +295,74 @@ textarea.inp{height:auto;padding:10px 12px;resize:vertical}
  setInterval(function(){if(AUTO)doRefresh();},15000);
  setDateType('sale');
  </script>
- <div class="alert alert-info"><span class="ai">💡</span><div><b>แดชบอร์ด = หน้าแรกหลังเข้าสู่ระบบ</b> (แทนหน้า Home เดิมที่ถูกตัดทิ้ง) · สลับแผนกด้านบน (เห็นเฉพาะแผนกที่มีสิทธิ์ Read) · แต่ละแผนกมี<b>ช่วงเวลา + ชนิดวันของตัวเอง</b> · กด tile เพื่อ drill-down เป็นรายการ + แบ่งหน้า แล้วคลิกรายการเข้าโมดูลพร้อม context · dashboard แต่ละแผนก<b>ไม่เหมือนกัน</b> และสะท้อนสถานะข้ามโมดูล · <b>สถานะว่าง:</b> บัญชีที่ไม่มี Read แผนกใดจะเห็นข้อความ "ยังไม่มีสิทธิ์ดูแดชบอร์ดของแผนกใด" (ดู <code>#dept-empty</code>) ไม่ใช่ error</div></div></div></div></div><nav class="mobilebar"><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav></body></html>
+ <div class="alert alert-info"><span class="ai">💡</span><div><b>แดชบอร์ด = หน้าแรกหลังเข้าสู่ระบบ</b> (แทนหน้า Home เดิมที่ถูกตัดทิ้ง) · สลับแผนกด้านบน (เห็นเฉพาะแผนกที่มีสิทธิ์ Read) · แต่ละแผนกมี<b>ช่วงเวลา + ชนิดวันของตัวเอง</b> · กด tile เพื่อ drill-down เป็นรายการ + แบ่งหน้า แล้วคลิกรายการเข้าโมดูลพร้อม context · dashboard แต่ละแผนก<b>ไม่เหมือนกัน</b> และสะท้อนสถานะข้ามโมดูล · <b>สถานะว่าง:</b> บัญชีที่ไม่มี Read แผนกใดจะเห็นข้อความ "ยังไม่มีสิทธิ์ดูแดชบอร์ดของแผนกใด" (ดู <code>#dept-empty</code>) ไม่ใช่ error</div></div></div></div></div><nav class="mobilebar"><a href="po-list.html"><span class="mi">📄</span>PO</a><a href="po-create.html"><span class="mi">➕</span>เปิด PO</a><a href="dashboard.html"><span class="mi">📊</span>สรุป</a></nav>
+
+<!-- Snackbar / toast container (new notification arrives) -->
+<div class="snackwrap" id="snackwrap"></div>
+
+<!-- Self-disable confirm popup (US-PLT-07 · A11) -->
+<div id="selfDisableModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ปิดบัญชีของฉัน</h3><button class="modal-x" onclick="document.getElementById('selfDisableModal').classList.remove('open')">✕</button></div>
+  <div class="modal-b">
+    <div class="alert alert-warn" style="font-size:13px;margin-bottom:4px"><span class="ai">⚠️</span><div>เมื่อยืนยัน บัญชีของคุณจะถูก<b>ปิดใช้งานทันที</b> และคุณจะ<b>ออกจากระบบ</b> ทันที — จะ login ไม่ได้อีกจนกว่า <b>ผู้ดูแลระบบ (Admin)</b> จะเปิดคืนบัญชีให้</div></div>
+    <div class="cfm-sum">
+      <div class="cr"><span class="k">บัญชี</span><span class="v">สมชาย ใจดี (somchai.j)</span></div>
+      <div class="cr"><span class="k">สถานะ</span><span class="v">ใช้งาน → ปิดบัญชีเอง (Self-disabled)</span></div>
+      <div class="cr"><span class="k">ผลทันที</span><span class="v">ตัด session + บล็อกการเข้าสู่ระบบ</span></div>
+    </div>
+    <p class="tiny" style="margin-top:8px">ยกเลิก = ไม่มีอะไรเปลี่ยนแปลง</p>
+  </div>
+  <div class="modal-f"><button class="btn" onclick="document.getElementById('selfDisableModal').classList.remove('open')">ยกเลิก</button><a class="btn btn-danger" href="login.html">ยืนยันปิดบัญชี</a></div>
+</div></div>
+
+<!-- Example generic submit-confirm popup (P-1 pattern) -->
+<div id="demoConfirm" class="modal-bg" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal">
+  <div class="modal-h"><h3>ยืนยันการบันทึก</h3><button class="modal-x" onclick="document.getElementById('demoConfirm').classList.remove('open')">✕</button></div>
+  <div class="modal-b">
+    <p class="muted" style="font-size:13px">ตรวจสอบสิ่งที่จะเปลี่ยนแปลงก่อนยืนยัน</p>
+    <div class="cfm-sum">
+      <div class="cr"><span class="k">เอกสาร</span><span class="v">ใบสั่งซื้อ (PO)</span></div>
+      <div class="cr"><span class="k">การกระทำ</span><span class="v">สร้างใหม่ (เลขจะออกเมื่อยืนยัน)</span></div>
+      <div class="cr"><span class="k">ลูกค้า</span><span class="v">กลอรี่ คอสเมติกส์</span></div>
+      <div class="cr"><span class="k">ยอดรวม</span><span class="v">128,400.00 บาท</span></div>
+    </div>
+    <p class="tiny" style="margin-top:8px">ยกเลิก = ไม่มีการเปลี่ยนแปลง / ไม่กินเลขเอกสาร</p>
+  </div>
+  <div class="modal-f"><button class="btn" onclick="document.getElementById('demoConfirm').classList.remove('open')">ยกเลิก</button><button class="btn btn-primary" onclick="document.getElementById('demoConfirm').classList.remove('open');pushSnack('✅','บันทึกสำเร็จ — ออกเลข <b>PO-202607-000186</b>')">ยืนยัน</button></div>
+</div></div>
+
+<!-- Review helper (mockup only) -->
+<div style="position:fixed;left:12px;bottom:12px;z-index:75;display:flex;gap:6px;flex-wrap:wrap;background:#10322F;color:#fff;padding:7px 10px;border-radius:10px;font-size:11px;box-shadow:0 6px 18px rgba(0,0,0,.25)">
+  <b style="color:#8FE3DC;align-self:center">รีวิว shell r17:</b>
+  <button class="btn btn-sm" style="height:26px" onclick="simulateNew()">🔔 แจ้งเตือนใหม่ (snackbar+สั่น)</button>
+  <button class="btn btn-sm" style="height:26px" onclick="document.getElementById('sessionBar').classList.add('show')">⏳ session banner</button>
+  <button class="btn btn-sm" style="height:26px" onclick="document.getElementById('demoConfirm').classList.add('open')">✔ submit-confirm</button>
+</div>
+
+<script>
+function pushSnack(icon,html){var w=document.getElementById('snackwrap');var s=document.createElement('div');s.className='snack';
+  s.innerHTML='<span class="si2">'+icon+'</span><div class="sc">'+html+'</div><button class="sx" onclick="this.parentNode.remove()">✕</button>';
+  w.appendChild(s);setTimeout(function(){s.remove();},5000);}
+function refreshNotiCount(){var n=document.querySelectorAll('#notiScroll .noti-item').length;
+  document.getElementById('notiCount').textContent='('+n+')';
+  var b=document.getElementById('notiBadge');if(n<=0){b.style.display='none';}else{b.style.display='grid';b.textContent=n>9?'9+':String(n);}
+  // hide empty groups
+  document.querySelectorAll('#notiScroll .noti-group').forEach(function(g){var c=0,el=g.nextElementSibling;while(el&&el.classList.contains('noti-item')){if(el.style.display!=='none')c++;el=el.nextElementSibling;}g.style.display=c?'flex':'none';var gn=g.querySelector('.gn');if(gn)gn.textContent=c;});
+  document.getElementById('notiEmpty').style.display=n?'none':'block';
+  document.getElementById('notiScroll').style.display=n?'block':'none';}
+function dismissOne(el){el.closest('.noti-item').remove();refreshNotiCount();}
+function dismissAll(btn){document.querySelectorAll('#notiScroll .noti-item').forEach(function(i){i.remove();});refreshNotiCount();}
+function simulateNew(){var b=document.getElementById('notiBtn');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+  pushSnack('🏭','<b>แจ้งเตือนใหม่</b><br><a href="production.html">PO-202607-000186 เข้าคิว "รอรับงาน"</a>');
+  // prepend to group 1
+  var g=document.querySelector('#notiScroll .noti-group');var it=document.createElement('div');it.className='noti-item';
+  it.innerHTML='<span class="di">🏭</span><div><a href="production.html">งานใหม่รอรับ: PO-202607-000186 เข้าคิว "รอรับงาน"</a><div class="tm">เมื่อสักครู่ · PO ยืนยัน → การผลิต</div></div><span class="dis" title="ปิดรายการนี้" onclick="dismissOne(this)">✕</span>';
+  g.after(it);refreshNotiCount();}
+refreshNotiCount();
+// close popovers on outside click
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.noti-wrap'))document.getElementById('notiPanel').classList.remove('open');
+  if(!e.target.closest('.usermenu-wrap'))document.getElementById('userMenu').classList.remove('open');
+});
+</script>
+</body></html>

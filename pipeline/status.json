@@ -4,7 +4,7 @@
       "title": "ESSENCE Hub System — ERP v2, UI-First Rebuild (design system + mockups ก่อน แล้วค่อย implement)",
       "created_at": "2026-07-08T10:00:00+07:00",
       "current_agent": "ux-ui",
-      "status": "IN_PROGRESS",
+      "status": "READY_FOR_HUMAN_GATE",
       "human_gates": {
         "gate1_look": {
           "approved": true,
@@ -3653,9 +3653,84 @@
           "summary": "r17: folded Pond 2026-07-31 Platform/NFR decisions into SoT — notification bell-only/event-driven/4-type/dismiss≠read/snackbar+shake/no-email; forget-reset-password (single-use 3-day email link, user email=required reset addr); self-disable+Admin re-enable+no-lockout; replaced stale perf numbers (read200/1s, write1/3s, ~30/module)+oracle (H-C1); password policy+encrypt/hash; global submit-confirm contract (cancel=zero mutation/no number/no audit); session warn 5min+mid-action redirect, environments, i18n-ready, error/empty-state, API security. 3 non-blocking confirmations parked. READY_FOR_UX_UI (change-list L-P).",
           "overridden_by": null,
           "updated_at": "2026-07-31T13:30:00+07:00"
+        },
+        {
+          "agent": "ux-ui",
+          "phase": "r17-platform-nfr-mockups",
+          "status": "READY_FOR_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "1 Login — add \"ลืมรหัสผ่าน\" link → reset-password.html; first-login shows A9 password rules (L)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "2 NEW reset-password.html — 3 states: request (no-enumeration generic msg) + set-new (2x + show/hide + A9 live rules) + errors (link expired >3d / already-used) (M)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "3 Settings Users — email field (required = reset address) + Self-disabled state + \"เปิดคืนบัญชี (Ad)\" (Admin) + A9 password-rule hint (N)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "4 Shell user menu — \"ปิดบัญชีของฉัน\" (self-disable) with confirm popup (session-kill note); logout (O-1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "5 Notification bell redesign — per-item ✕ dismiss (dismiss≠read) + \"ปิดทั้งหมด\" + \"ดูทั้งหมด\" history page (notifications.html, 20/page) + grouped 4-type + badge 9+ + snackbar + bell shake (O-2/O-3)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "6 Session-warning banner — \"อีก 5 นาทีจะออกจากระบบ\" pattern on dashboard shell (O-4)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "7 Global submit-confirm popup — reusable pattern (title + change-summary + ยืนยัน/ยกเลิก; cancel=zero change), demoed on dashboard + patterns.html; NOT on search (P-1)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "8 Error pages (403/404/500) + empty-state patterns — patterns.html (P-2)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "9 i18n-ready — Thai-only copy, label-mapped statuses, no raw enums; documented in patterns.html (P-3)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Constraints — worked ONLY in mockups/; reused theme-A teal tokens + existing shell; product name ESSENCE Hub System intact; requirement/functional-spec/pipeline paths untouched",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Evidence — all new/changed screens render (playwright headless 1440x900 + 768x1024) → ux-audit/*.png",
+              "pass": true,
+              "missing": null
+            }
+          ],
+          "output_files": [
+            "docs/design/erp-v2-ui-first/mockups/reset-password.html",
+            "docs/design/erp-v2-ui-first/mockups/notifications.html",
+            "docs/design/erp-v2-ui-first/mockups/patterns.html",
+            "docs/design/erp-v2-ui-first/mockups/login.html",
+            "docs/design/erp-v2-ui-first/mockups/settings.html",
+            "docs/design/erp-v2-ui-first/mockups/dashboard.html",
+            "docs/design/erp-v2-ui-first/mockups/index.html",
+            "docs/design/erp-v2-ui-first/ux-audit/"
+          ],
+          "questions_for_pond": [],
+          "summary": "r17 Platform/NFR mockups (L–P): new reset-password.html (3 states, no-enumeration, A9 rules, expired/used edges) + login forgot-password link + first-login A9 hint; settings Users email(required)/self-disabled+re-enable/A9; dashboard shell redesign (4-type bell, ✕ dismiss≠read, ปิดทั้งหมด, ดูทั้งหมด→notifications.html, badge 9+, snackbar+shake, user-menu ปิดบัญชีของฉัน, session banner); new patterns.html (submit-confirm/403-404-500/empty-state/i18n). Stayed inside mockups/; theme-A reused. Gate 1 = review only these changed/new screens.",
+          "updated_at": "2026-07-31T04:31:50.538Z"
         }
       ]
     }
   },
-  "generated_at": "2026-07-31T10:00:00+07:00"
+  "generated_at": "2026-07-31T04:31:50.539Z"
 }
