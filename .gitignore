@@ -12,3 +12,6 @@ playwright-report/
 blob-report/
 playwright/.cache/
 deploy/docs-site/oauth.env
+
+# Session-local scratch/working files (agent helper scripts, test screenshots) — never committed
+scratchpad/
