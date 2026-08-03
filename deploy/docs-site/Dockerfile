@@ -29,6 +29,17 @@ COPY deploy/docs-site/nginx.conf /etc/nginx/conf.d/default.conf
 # Static content — keep the repo path structure intact.
 COPY docs/design/erp-v2-ui-first/ /usr/share/nginx/html/docs/design/erp-v2-ui-first/
 
+# Requirements .md SOURCE OF TRUTH — REQUIRED, not just design assets.
+# The per-module Hub pages (functional-spec/modules/*.html) client-side fetch
+# their Markdown via _render.js: from
+#   /docs/design/erp-v2-ui-first/functional-spec/modules/customer.html
+# the data-src "../../../../requirements/erp-v2-ui-first/modules/customer.md"
+# resolves to /docs/requirements/erp-v2-ui-first/modules/customer.md.
+# Without this tree the .md 404s on Cloud Run and every module page shows
+# "ไม่สามารถโหลดเอกสารได้ ... กรุณาเปิดผ่าน HTTP". (Covers modules/, flows/,
+# and root po-output-quality-audit.md — all data-src targets live under here.)
+COPY docs/requirements/erp-v2-ui-first/ /usr/share/nginx/html/docs/requirements/erp-v2-ui-first/
+
 # Pipeline dashboard (fetches ../pipeline/status.json -> /pipeline/status.json).
 COPY dashboard/       /usr/share/nginx/html/dashboard/
 COPY dashboard.html   /usr/share/nginx/html/dashboard.html

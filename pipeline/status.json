@@ -4429,9 +4429,64 @@
           "summary": "Deploy prep verified for Gate-1 docs site (Cloud Run + oauth2-proxy). All content paths, r20 status.json snapshot, allow-list (Pond email present), and oauth.env (non-placeholder) pass; working tree clean and pushed. Local docker build skipped (daemon off, optional). Not running the deploy per constraint - Pond presses: bash deploy/docs-site/deploy.sh. Only open item: confirm OAuth redirect URI is registered.",
           "overridden_by": null,
           "updated_at": "2026-07-31T06:40:00+07:00"
+        },
+        {
+          "agent": "devops",
+          "phase": "docs-site-fix-md-source-copy",
+          "status": "WAITING_HUMAN_GATE",
+          "gate_checklist": [
+            {
+              "item": "Root cause confirmed (_render.js fetches .md via data-src; requirements tree not in image)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Dockerfile COPY added for docs/requirements/erp-v2-ui-first/ at matching web path",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Scanned deployed content for other outside refs - none needed (docs/*.html are inline verbatim; ADR/arch STALE inline)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Verified all 29 data-src targets resolve to existing source files (missing=0)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Docker build verification",
+              "pass": true,
+              "missing": "daemon off (DAEMON_OFF) - verified by path/COPY dest match instead, per instruction not a blocker"
+            },
+            {
+              "item": "runbook updated (gcp-docs-hosting.md troubleshooting row)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "No secrets committed (only Dockerfile + docs edits)",
+              "pass": true,
+              "missing": null
+            },
+            {
+              "item": "Redeploy performed",
+              "pass": false,
+              "missing": "Pond runs deploy.sh himself - Human Gate"
+            }
+          ],
+          "output_files": [
+            "deploy/docs-site/Dockerfile",
+            "docs/infra/erp-v2-ui-first/gcp-docs-hosting.md"
+          ],
+          "questions_for_pond": [],
+          "summary": "Fixed docs-site Cloud Run bug where every per-module Hub page showed load-doc error. Cause: _render.js client-fetches the .md source-of-truth from /docs/requirements/erp-v2-ui-first/** but the image only copied docs/design/, so the .md 404'd. Added COPY docs/requirements/erp-v2-ui-first/ to the matching web path (covers modules/, flows/, po-output-quality-audit.md). No other missing paths (docs/*.html use inline verbatim markdown). Docker daemon off; verified all 29 data-src targets resolve to existing files (missing=0) and COPY dest matches browser-requested path. runbook updated. Pond redeploys via deploy.sh.",
+          "overridden_by": null,
+          "updated_at": "2026-08-04T00:00:00+07:00"
         }
       ],
-      "updated_at": "2026-07-31T06:40:00+07:00"
+      "updated_at": "2026-08-04T00:00:00+07:00"
     }
   },
   "generated_at": "2026-07-31T06:35:58.656Z"

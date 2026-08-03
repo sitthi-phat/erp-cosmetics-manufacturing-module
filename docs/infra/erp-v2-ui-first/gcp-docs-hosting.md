@@ -196,6 +196,7 @@ gcloud run services delete essence-docs --region=asia-southeast1
 | ขึ้น 403 "Permission Denied" หลัง login | อีเมลไม่อยู่ใน `authenticated-emails.txt` — เพิ่มแล้ว redeploy |
 | deploy fail "still holds placeholder values" | ยังไม่ได้เติมค่าจริงใน `oauth.env` (§3 ขั้น A) |
 | ลิงก์ในหน้าเอกสารกด 404 | image ไม่ได้ copy โครงพาธครบ — build ต้องมาจาก **root ของ repo** (context `.`) |
+| หน้าโมดูล (เช่น `functional-spec/modules/customer.html`) ขึ้น `ไม่สามารถโหลดเอกสารได้ ... กรุณาเปิดผ่าน HTTP` | `_render.js` fetch ไฟล์ `.md` ต้นฉบับที่ `/docs/requirements/erp-v2-ui-first/...` แต่ image ไม่ได้ copy โครง `docs/requirements/` → ไฟล์ .md 404. แก้แล้วใน Dockerfile (มี `COPY docs/requirements/erp-v2-ui-first/ ...`) — redeploy ด้วย `deploy.sh` |
 | dashboard โหลด status.json เก่า | เป็น snapshot ณ ตอน build — รัน `deploy.sh` ใหม่เพื่อ refresh |
 | ตัวอักษรไทยเพี้ยน | HTML ประกาศ `charset=utf-8` + nginx.conf ตั้ง `charset utf-8` — ถ้าเพี้ยนแปลว่าไฟล์ต้นทางเพี้ยน |
 | 502 ตอนเปิด (จาก IAP เดิม) | deploy ใหม่ด้วย `deploy.sh` จะ `--no-iap` + `--allow-unauthenticated` ทับให้ auth ไปที่ proxy |
